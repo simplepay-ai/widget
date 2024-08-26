@@ -2,27 +2,25 @@
 
 ## Usage
 
-### 1. Install package
+### 1. Install
+
+As NPM package
 
 ```bash
 npm install --save-dev @simplepay-ai/widget
 ```
 
-### 2. Import
-
-As module:
-
 ```typescript
 import '@simplepay-ai/widget';
 ```
 
-or as script:
+Or include as script
 
 ```html
-<script src="widget.js" type="module"></script>
+<script src="https://cdn.jsdelivr.net/npm/@simplepay-ai/widget@0.0.3/dist/widget.js" type="module"></script>
 ```
 
-### 3. Add component to desired place on page
+### 2. Add component to desired place on page
 
 ```html
 <payment-app
