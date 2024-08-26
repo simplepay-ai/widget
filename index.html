@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>PaymentWidget</title>
+    </head>
+    <body>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100svh;
+            }
+
+            .appContainer {
+                margin: 0 auto;
+                width: 100%;
+                height: 600px;
+                max-width: 390px;
+                border-radius: 6px;
+                overflow: hidden;
+                border: 1px solid #e4e4e7;
+            }
+
+            @media (max-width: 768px) {
+                .appContainer {
+                    height: 100%;
+                    max-width: unset;
+                    border-radius: 0;
+                    border: 0;
+                }
+            }
+        </style>
+
+        <div class="appContainer">
+            <payment-app
+                price="0.8"
+                appId="eb651bb3-6e26-4f1d-9549-d96540300d8e"
+                clientId="707533d2-971d-4cd6-a2a5-9c6dd44c0fe5"
+                invoiceId=""
+                backToStoreUrl="https://simplepay.ai"
+                serverUrl="https://api.simplepay.ai/invoice"
+                dark
+            ></payment-app>
+        </div>
+
+        <script src="src/main.ts" type="module"></script>
+    </body>
+</html>
