@@ -230,6 +230,7 @@ export class PaymentApp extends LitElement {
         const ws = new WsClient();
 
         const response = await fetch(this.serverUrl, {
+            method: 'POST',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
