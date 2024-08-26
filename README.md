@@ -5,7 +5,7 @@
 ### 1. Install package
 
 ```bash
-npm install --save-dev @simplepay-ai/api-client
+npm install --save-dev @simplepay-ai/widget
 ```
 
 ### 2. Import
@@ -13,7 +13,7 @@ npm install --save-dev @simplepay-ai/api-client
 As module:
 
 ```typescript
-import '@simplepay-ai/api-client';
+import '@simplepay-ai/widget';
 ```
 
 or as script:
