@@ -3,6 +3,7 @@
     "version": "0.0.4",
     "type": "module",
     "main": "./dist/widget.js",
+    "keywords": ["crypto", "processing", "crypto-payments", "simplepay"],
     "files": [
         "dist"
     ],
@@ -12,7 +13,7 @@
     "author": "SimplePay",
     "license": "MIT",
     "description": "SimplePay Payment Widget",
-    "homepage": "https://github.com/simplepay-ai/widget",
+    "homepage": "https://simplepay.ai",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/simplepay-ai/widget.git"

@@ -1,5 +1,7 @@
 # SimplePay Payment Widget
 
+Visit [Demo payment page](https://simplepay-widget.vercel.app/pay). 
+
 ## Usage
 
 ### 1. Install
