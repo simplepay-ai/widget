@@ -1,6 +1,6 @@
 # SimplePay Payment Widget
 
-Visit [Demo payment page](https://simplepay-widget.vercel.app/pay). 
+Visit [Demo payment page](https://simplepay-widget.vercel.app/pay).
 
 ## Usage
 
@@ -19,7 +19,10 @@ import '@simplepay-ai/widget';
 Or include as script
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@simplepay-ai/widget@0.0.3/dist/widget.js" type="module"></script>
+<script
+    src="https://cdn.jsdelivr.net/npm/@simplepay-ai/widget@0.0.3/dist/widget.js"
+    type="module"
+></script>
 ```
 
 ### 2. Add component to desired place on page

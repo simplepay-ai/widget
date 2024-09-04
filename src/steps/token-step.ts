@@ -55,10 +55,6 @@ export class TokenStep extends LitElement {
         super.firstUpdated(_changedProperties);
 
         this.accordionHeight = this.accordionContentElement.offsetHeight;
-
-        // const selectedToken = this.tokens.find((item) => item.symbol === this.selectedTokenSymbol);
-        // const stableCoinCheck = Boolean(selectedToken && selectedToken.stable);
-
         this.accordionActive = true;
         this.accordionContentElement.style.maxHeight = `${this.accordionHeight}px`;
     }
@@ -74,117 +70,126 @@ export class TokenStep extends LitElement {
 
                 <div class="stepContent">
                     <div class="tokensList">
-                        <div class="accordion">
-                            <div class="trigger tokenItem" @click=${this.toggleAccordion}>
-                                <div class="tokenContent">
-                                    <div class="imagePlaceholder">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            stroke-width="3"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                        >
-                                            <line x1="12" x2="12" y1="2" y2="22" />
-                                            <path
-                                                d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
-                                            />
-                                        </svg>
-                                    </div>
+                        ${this.stableCoins && this.stableCoins.length > 0
+                            ? html`
+                                  <div class="accordion">
+                                      <div class="trigger tokenItem" @click=${this.toggleAccordion}>
+                                          <div class="tokenContent">
+                                              <div class="imagePlaceholder">
+                                                  <svg
+                                                      xmlns="http://www.w3.org/2000/svg"
+                                                      width="24"
+                                                      height="24"
+                                                      viewBox="0 0 24 24"
+                                                      fill="none"
+                                                      stroke="currentColor"
+                                                      stroke-width="3"
+                                                      stroke-linecap="round"
+                                                      stroke-linejoin="round"
+                                                  >
+                                                      <line x1="12" x2="12" y1="2" y2="22" />
+                                                      <path
+                                                          d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
+                                                      />
+                                                  </svg>
+                                              </div>
 
-                                    <div class="info">
-                                        <p>Stable coins</p>
+                                              <div class="info">
+                                                  <p>Stable coins</p>
 
-                                        <div
-                                            class=${`
+                                                  <div
+                                                      class=${`
                                         arrow
                                         ${this.accordionActive ? 'active' : ''}
                                         `}
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="24"
-                                                height="24"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                stroke-width="2"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                            >
-                                                <path d="m6 9 6 6 6-6" />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                                  >
+                                                      <svg
+                                                          xmlns="http://www.w3.org/2000/svg"
+                                                          width="24"
+                                                          height="24"
+                                                          viewBox="0 0 24 24"
+                                                          fill="none"
+                                                          stroke="currentColor"
+                                                          stroke-width="2"
+                                                          stroke-linecap="round"
+                                                          stroke-linejoin="round"
+                                                      >
+                                                          <path d="m6 9 6 6 6-6" />
+                                                      </svg>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      </div>
 
-                            <div id="accordionContent" class="content">
-                                ${this.stableCoins &&
-                                this.stableCoins.map((token: Cryptocurrency) => {
-                                    return token.networks?.map((network) => {
-                                        const networkStandart = this.getTokenStandart(
-                                            network.symbol
-                                        );
-                                        //@ts-ignore
-                                        const price = this.price / token.rates['usd'];
-                                        const formatPrice = this.roundUp(
-                                            price.toString(),
-                                            token.stable
-                                        );
+                                      <div id="accordionContent" class="content">
+                                          ${this.stableCoins &&
+                                          this.stableCoins.map((token: Cryptocurrency) => {
+                                              return token.networks?.map((network) => {
+                                                  const networkStandart = this.getTokenStandart(
+                                                      network.symbol
+                                                  );
+                                                  //@ts-ignore
+                                                  const price = this.price / token.rates['usd'];
+                                                  const formatPrice = this.roundUp(
+                                                      price.toString(),
+                                                      token.stable
+                                                  );
 
-                                        return html`
-                                            <div
-                                                @click=${() =>
-                                                    this.selectToken(token.symbol, network.symbol)}
-                                                class=${`tokenItem
+                                                  return html`
+                                                      <div
+                                                          @click=${() =>
+                                                              this.selectToken(
+                                                                  token.symbol,
+                                                                  network.symbol
+                                                              )}
+                                                          class=${`tokenItem
                                                 ${this.selectedTokenSymbol === token.symbol && this.selectedNetworkSymbol === network.symbol ? 'selected' : ''}
                                                 `}
-                                            >
-                                                <div class="tokenContent">
-                                                    <div class="tokenIconWrapper">
-                                                        <token-icon
-                                                            .id=${token.symbol}
-                                                            width="32"
-                                                            height="32"
-                                                            class="tokenIcon"
-                                                        ></token-icon>
+                                                      >
+                                                          <div class="tokenContent">
+                                                              <div class="tokenIconWrapper">
+                                                                  <token-icon
+                                                                      .id=${token.symbol}
+                                                                      width="32"
+                                                                      height="32"
+                                                                      class="tokenIcon"
+                                                                  ></token-icon>
 
-                                                        <network-icon
-                                                            .id=${network.symbol}
-                                                            width="16"
-                                                            height="16"
-                                                            class="networkIcon"
-                                                        ></network-icon>
-                                                    </div>
+                                                                  <network-icon
+                                                                      .id=${network.symbol}
+                                                                      width="16"
+                                                                      height="16"
+                                                                      class="networkIcon"
+                                                                  ></network-icon>
+                                                              </div>
 
-                                                    <div class="info">
-                                                        <div class="leftSection">
-                                                            <p>${token.symbol}</p>
+                                                              <div class="info">
+                                                                  <div class="leftSection">
+                                                                      <p>${token.symbol}</p>
 
-                                                            ${networkStandart
-                                                                ? html`
-                                                                      <div class="badge">
-                                                                          ${networkStandart}
-                                                                      </div>
-                                                                  `
-                                                                : ''}
-                                                        </div>
+                                                                      ${networkStandart
+                                                                          ? html`
+                                                                                <div class="badge">
+                                                                                    ${networkStandart}
+                                                                                </div>
+                                                                            `
+                                                                          : ''}
+                                                                  </div>
 
-                                                        <p>~${formatPrice} ${token.symbol}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        `;
-                                    });
-                                })}
-                            </div>
-                        </div>
-
+                                                                  <p>
+                                                                      ~${formatPrice}
+                                                                      ${token.symbol}
+                                                                  </p>
+                                                              </div>
+                                                          </div>
+                                                      </div>
+                                                  `;
+                                              });
+                                          })}
+                                      </div>
+                                  </div>
+                              `
+                            : ''}
                         ${this.otherCoins &&
                         this.otherCoins.map((token: Cryptocurrency) => {
                             return token.networks?.map((network) => {
