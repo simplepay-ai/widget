@@ -20,14 +20,6 @@ import './steps/network-icon.ts';
 export class PaymentApp extends LitElement {
     @property({
         converter: (attrValue: string | null) => {
-            if (attrValue) return attrValue;
-            else return undefined;
-        }
-    })
-    clientId: string = '';
-
-    @property({
-        converter: (attrValue: string | null) => {
             if (attrValue && parseFloat(attrValue) && parseFloat(attrValue) > 0)
                 return parseFloat(attrValue).toFixed(2);
             else return undefined;
@@ -35,6 +27,9 @@ export class PaymentApp extends LitElement {
         type: String
     })
     price: string = '';
+
+    @property({ type: String })
+    clientId: string = '';
 
     @property({ type: Boolean })
     dark: boolean = false;
@@ -44,9 +39,6 @@ export class PaymentApp extends LitElement {
 
     @property({ type: String })
     appId: string = '';
-
-    @property({ type: String })
-    serverUrl: string = '';
 
     @property({ type: String })
     invoiceId: string = '';
@@ -93,16 +85,6 @@ export class PaymentApp extends LitElement {
 
         if (this.invoiceId) {
             await this.getInvoice(this.invoiceId);
-            return;
-        }
-
-        if (!this.serverUrl) {
-            this.errorTitle = 'Empty serverUrl';
-            this.errorText =
-                'You did not pass the serverUrl. In order to continue, the serverUrl field must be filled in.';
-
-            this.goToStep('error');
-
             return;
         }
 
@@ -164,7 +146,6 @@ export class PaymentApp extends LitElement {
                     : ''}
                 ${this.appStep === 'setWallet'
                     ? html` <wallet-step
-                          .serverUrl=${this.serverUrl}
                           .dark=${this.dark}
                           .walletAddress=${this.walletAddress}
                           .price=${this.price}
@@ -229,26 +210,18 @@ export class PaymentApp extends LitElement {
     private async createInvoice() {
         const ws = new WsClient();
 
-        const response = await fetch(this.serverUrl, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                type: 'payment',
-                client_id: this.clientId,
-                from: this.walletAddress,
-                network: this.selectedNetworkSymbol,
-                cryptocurrency: this.selectedTokenSymbol,
-                currency: 'USD',
-                price: Number(this.price)
-            })
+        const invoiceWS = ws.appClientInvoice(this.appId, this.clientId);
+
+        const invoice = await this.API.invoice.create({
+            type: 'payment',
+            clientId: this.clientId,
+            from: this.walletAddress,
+            network: this.selectedNetworkSymbol,
+            cryptocurrency: this.selectedTokenSymbol,
+            currency: 'USD',
+            price: Number(this.price),
+            appId: this.appId
         });
-
-        const result: Invoice = await response.json();
-
-        const invoiceWS = ws.invoice(result.id);
 
         invoiceWS.on(InvoiceStatus.Processing, (invoice) => {
             console.log('invoice Processing', invoice);
@@ -287,7 +260,7 @@ export class PaymentApp extends LitElement {
         });
 
         setTimeout(async () => {
-            const newInvoiceData = await this.API.invoice.get(result.id);
+            const newInvoiceData = await this.API.invoice.get(invoice.id);
             this.invoice = newInvoiceData;
 
             if (newInvoiceData.status === 'processing') {
@@ -298,6 +271,9 @@ export class PaymentApp extends LitElement {
 
     private async getInvoice(invoiceId: string) {
         const ws = new WsClient();
+
+        const invoiceWS = ws.appClientInvoice(this.appId, this.clientId);
+
         let result;
         try {
             result = await this.API.invoice.get(invoiceId);
@@ -324,8 +300,6 @@ export class PaymentApp extends LitElement {
         ) {
             this.goToStep('success');
         }
-
-        const invoiceWS = ws.invoice(result.id);
 
         invoiceWS.on(InvoiceStatus.Processing, (invoice) => {
             console.log('invoice Processing', invoice);

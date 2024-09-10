@@ -3,7 +3,12 @@
     "version": "0.0.4",
     "type": "module",
     "main": "./dist/widget.js",
-    "keywords": ["crypto", "processing", "crypto-payments", "simplepay"],
+    "keywords": [
+        "crypto",
+        "processing",
+        "crypto-payments",
+        "simplepay"
+    ],
     "files": [
         "dist"
     ],
@@ -35,7 +40,7 @@
     },
     "devDependencies": {
         "@ianvs/prettier-plugin-sort-imports": "^4.3.1",
-        "@simplepay-ai/api-client": "^0.0.13",
+        "@simplepay-ai/api-client": "^0.2.0",
         "@types/node": "^22.5.0",
         "prettier": "^3.3.3",
         "terser": "^5.31.6",
