@@ -4,9 +4,14 @@ import QRCode from 'corcojs-qrcode';
 import { PropertyValues } from 'lit';
 import { css, html, LitElement, property, query } from 'lit-element';
 import { customElement } from 'lit/decorators.js';
+import {IProduct} from "../interfaces.ts";
 
 @customElement('payment-step')
 export class PaymentStep extends LitElement {
+
+    @property({ type: Array })
+    products: IProduct[] = [];
+
     @property({ type: Object })
     invoice: Invoice | null = null;
 
@@ -236,6 +241,7 @@ export class PaymentStep extends LitElement {
                     .timerTimeCurrent=${(Date.parse(this.invoice?.expireAt!) -
                         new Date().getTime()) /
                     1000}
+                    .products=${this.products}
                 ></step-footer>
             </div>
         `;

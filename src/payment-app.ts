@@ -15,18 +15,22 @@ import './steps/success-step.ts';
 import './steps/processing-step.ts';
 import './steps/token-icon.ts';
 import './steps/network-icon.ts';
+import {IProduct} from "./interfaces.ts";
 
 @customElement('payment-app')
 export class PaymentApp extends LitElement {
-    @property({
-        converter: (attrValue: string | null) => {
-            if (attrValue && parseFloat(attrValue) && parseFloat(attrValue) > 0)
-                return parseFloat(attrValue).toFixed(2);
-            else return undefined;
-        },
-        type: String
-    })
-    price: string = '';
+    // @property({
+    //     converter: (attrValue: string | null) => {
+    //         if (attrValue && parseFloat(attrValue) && parseFloat(attrValue) > 0)
+    //             return parseFloat(attrValue).toFixed(2);
+    //         else return undefined;
+    //     },
+    //     type: String
+    // })
+    // price: string = '';
+
+    @property({ type: Array })
+    products: IProduct[] = [];
 
     @property({ type: String })
     clientId: string = '';
@@ -42,6 +46,17 @@ export class PaymentApp extends LitElement {
 
     @property({ type: String })
     invoiceId: string = '';
+
+    @property({
+        attribute: false,
+        converter: (attrValue: string | null) => {
+            if (attrValue && parseFloat(attrValue) && parseFloat(attrValue) > 0)
+                return parseFloat(attrValue).toFixed(2);
+            else return undefined;
+        },
+        type: String
+    })
+    private price: string = '';
 
     @property({ attribute: false })
     private priceAvailable: boolean = false;
@@ -75,11 +90,19 @@ export class PaymentApp extends LitElement {
 
     async connectedCallback() {
         super.connectedCallback();
-
+        console.log('prod', this.products)
         this.API = new Client();
 
         this.clientId = this.clientId ? this.clientId : '';
-        this.price = this.price ? this.price : '';
+
+        let totalSum = 0;
+        if(this.products.length > 0){
+            for(let product of this.products){
+                totalSum += product.price * product.count;
+            }
+        }
+
+        this.price = totalSum ? totalSum.toString() : '';
         this.priceAvailable = Boolean(this.price);
         this.tokens = await this.getTokens();
 
@@ -136,6 +159,7 @@ export class PaymentApp extends LitElement {
                           .selectedNetworkSymbol=${this.selectedNetworkSymbol}
                           .price=${this.price}
                           .returnButtonShow=${!this.priceAvailable}
+                          .products=${this.products}
                           @updateSelectedToken=${(event: CustomEvent) => {
                               this.selectedTokenSymbol = event.detail.tokenSymbol;
                               this.selectedNetworkSymbol = event.detail.networkSymbol;
@@ -152,6 +176,7 @@ export class PaymentApp extends LitElement {
                           .tokens=${this.tokens}
                           .selectedTokenSymbol=${this.selectedTokenSymbol}
                           .selectedNetworkSymbol=${this.selectedNetworkSymbol}
+                          .products=${this.products}
                           @updateWalletAddress=${(event: CustomEvent) =>
                               (this.walletAddress = event.detail.walletAddress)}
                           @nextStep=${this.nextStep}
@@ -164,6 +189,7 @@ export class PaymentApp extends LitElement {
                           .price=${this.price}
                           .walletAddress=${this.walletAddress}
                           .invoice=${this.invoice}
+                          .products=${this.products}
                           @nextStep=${this.nextStep}
                           @returnBack=${this.prevStep}
                       ></payment-step>`
@@ -173,6 +199,7 @@ export class PaymentApp extends LitElement {
                           .dark=${this.dark}
                           .price=${this.price}
                           .invoice=${this.invoice}
+                          .products=${this.products}
                           @nextStep=${this.nextStep}
                           @returnBack=${this.prevStep}
                       ></processing-step>`
@@ -183,6 +210,7 @@ export class PaymentApp extends LitElement {
                           .price=${this.price}
                           .invoice=${this.invoice}
                           .backToStoreUrl=${this.backToStoreUrl}
+                          .products=${this.products}
                           @nextStep=${this.nextStep}
                           @returnBack=${this.prevStep}
                       ></success-step>`
@@ -405,6 +433,7 @@ export class PaymentApp extends LitElement {
         }
 
         .stepWrapper {
+            position: relative;
             display: flex;
             flex-direction: column;
             width: 100%;

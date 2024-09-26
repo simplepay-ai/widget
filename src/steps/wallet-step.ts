@@ -1,9 +1,14 @@
 import { Cryptocurrency } from '@simplepay-ai/api-client';
 import { css, html, LitElement, property } from 'lit-element';
 import { customElement } from 'lit/decorators.js';
+import {IProduct} from "../interfaces.ts";
 
 @customElement('wallet-step')
 export class WalletStep extends LitElement {
+
+    @property({ type: Array })
+    products: IProduct[] = [];
+
     @property({ type: Boolean })
     dark: boolean = false;
 
@@ -255,6 +260,7 @@ export class WalletStep extends LitElement {
                     .hasButton=${true}
                     .buttonDisabled=${this.buttonDisabled || this.creatingInvoice}
                     .buttonText=${'Confirm'}
+                    .products=${this.products}
                     @footerButtonClick=${this.dispatchNextStep}
                 ></step-footer>
             </div>

@@ -3,9 +3,14 @@ import { Invoice } from '@simplepay-ai/api-client';
 import QRCode from 'corcojs-qrcode';
 import { PropertyValues } from 'lit';
 import { css, customElement, html, LitElement, property, query } from 'lit-element';
+import {IProduct} from "../interfaces.ts";
 
 @customElement('success-step')
 export class SuccessStep extends LitElement {
+
+    @property({ type: Array })
+    products: IProduct[] = [];
+
     @property({ type: Object })
     invoice: Invoice | null = null;
 
@@ -287,6 +292,7 @@ export class SuccessStep extends LitElement {
                     .price=${this.price}
                     .hasBackButton=${true}
                     .backButtonUrl=${this.backToStoreUrl}
+                    .products=${this.products}
                 ></step-footer>
             </div>
         `;
