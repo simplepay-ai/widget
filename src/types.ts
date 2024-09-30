@@ -8,3 +8,9 @@ export type AppStep =
     | 'payment'
     | 'processing'
     | 'success';
+
+export interface INotification {
+    title?: String;
+    text?: String;
+    buttonText?: String;
+}

@@ -1,7 +1,15 @@
-import { Client, Cryptocurrency, Invoice, InvoiceStatus, WsClient } from '@simplepay-ai/api-client';
+import {
+    Client,
+    Cryptocurrency,
+    HttpError,
+    Invoice, InvoiceCreateErrors,
+    InvoiceStatus,
+    ValidationError,
+    WsClient
+} from '@simplepay-ai/api-client';
 import { css, html, LitElement, property } from 'lit-element';
 import { customElement } from 'lit/decorators.js';
-import { AppStep } from './types';
+import {AppStep, INotification} from './types';
 import './steps/step-header.ts';
 import './steps/step-footer.ts';
 import './steps/loading-step.ts';
@@ -15,6 +23,7 @@ import './steps/success-step.ts';
 import './steps/processing-step.ts';
 import './steps/token-icon.ts';
 import './steps/network-icon.ts';
+import './steps/custom-notification.ts';
 
 @customElement('payment-app')
 export class PaymentApp extends LitElement {
@@ -73,6 +82,15 @@ export class PaymentApp extends LitElement {
     @property({ attribute: false })
     private invoice: Invoice | null = null;
 
+    @property({ attribute: false })
+    private notificationShow: boolean = false;
+
+    @property({ attribute: false })
+    private notificationData: INotification | null = null;
+
+    @property({ attribute: false })
+    private creatingInvoice: Boolean = false;
+
     async connectedCallback() {
         super.connectedCallback();
 
@@ -109,6 +127,14 @@ export class PaymentApp extends LitElement {
     render() {
         return html`
             <div class=${`stepWrapper ${this.dark ? 'dark' : ''}`}>
+
+                <custom-notification
+                        .dark=${this.dark}
+                        .active=${this.notificationShow}
+                        .data=${this.notificationData}
+                        @updateNotification=${this.updateNotification}
+                ></custom-notification>
+                
                 ${this.appStep === 'loading'
                     ? html` <loading-step .dark=${this.dark}></loading-step>`
                     : ''}
@@ -152,8 +178,13 @@ export class PaymentApp extends LitElement {
                           .tokens=${this.tokens}
                           .selectedTokenSymbol=${this.selectedTokenSymbol}
                           .selectedNetworkSymbol=${this.selectedNetworkSymbol}
+                          .creatingInvoice=${this.creatingInvoice}
+                          @updateCreatingInvoice=${(event: CustomEvent) =>
+                                  (this.creatingInvoice = event.detail.creatingInvoice)}
                           @updateWalletAddress=${(event: CustomEvent) =>
                               (this.walletAddress = event.detail.walletAddress)}
+                          @updateNotification=${(event: CustomEvent) =>
+                                  this.updateNotification(event)}
                           @nextStep=${this.nextStep}
                           @returnBack=${this.prevStep}
                       ></wallet-step>`
@@ -192,6 +223,13 @@ export class PaymentApp extends LitElement {
         `;
     }
 
+    private updateNotification(event: CustomEvent) {
+        if (event.detail?.notificationData) {
+            this.notificationData = event.detail.notificationData;
+        }
+        this.notificationShow = event.detail.notificationShow;
+    }
+
     private nextStep() {
         if (this.appStep === 'setPrice' && this.price) {
             this.goToStep('setToken');
@@ -210,64 +248,126 @@ export class PaymentApp extends LitElement {
 
     private async createInvoice() {
         const ws = new WsClient();
+        let invoiceId: string = '';
+        let invoiceWS = null;
 
-        const invoiceWS = ws.appClientInvoice(this.appId, this.clientId);
+        try {
 
-        const invoice = await this.API.invoice.create({
-            type: 'payment',
-            clientId: this.clientId,
-            from: this.walletAddress,
-            network: this.selectedNetworkSymbol,
-            cryptocurrency: this.selectedTokenSymbol,
-            currency: 'USD',
-            price: Number(this.price),
-            appId: this.appId
-        });
+            invoiceWS = ws.appClientInvoice(this.appId, this.clientId);
+            const invoice = await this.API.invoice.create({
+                type: 'payment',
+                clientId: this.clientId,
+                from: this.walletAddress,
+                network: this.selectedNetworkSymbol,
+                cryptocurrency: this.selectedTokenSymbol,
+                currency: 'USD',
+                price: Number(this.price),
+                appId: this.appId
+            });
+            invoiceId = invoice.id;
 
-        invoiceWS.on(InvoiceStatus.Processing, (invoice) => {
-            console.log('invoice Processing', invoice);
-            this.invoice = invoice;
-            this.goToStep('payment');
-        });
+        } catch (error) {
+            let errorTitle: string = '';
+            let errorText: string = '';
 
-        invoiceWS.on(InvoiceStatus.Confirming, (invoice) => {
-            console.log('invoice Confirming', invoice);
-            this.invoice = invoice;
-            this.goToStep('processing');
-        });
+            if (error instanceof ValidationError) {
+                const errorObject = error as ValidationError<InvoiceCreateErrors>;
+                const fieldsError: string[] = [];
 
-        invoiceWS.on(InvoiceStatus.Rejected, (invoice) => {
-            console.log('invoice Rejected', invoice);
-            this.invoice = invoice;
-            this.goToStep('success');
-        });
+                for (const [key, value] of Object.entries(errorObject.errors)) {
+                    fieldsError.push(`${key} - ${value}`);
+                }
 
-        invoiceWS.on(InvoiceStatus.Canceled, (invoice) => {
-            console.log('invoice Cancelled', invoice);
-            this.invoice = invoice;
-            this.goToStep('success');
-        });
-
-        invoiceWS.on(InvoiceStatus.Success, (invoice) => {
-            console.log('invoice Success', invoice);
-            this.invoice = invoice;
-            this.goToStep('success');
-        });
-
-        invoiceWS.on(InvoiceStatus.Expired, (invoice) => {
-            console.log('invoice Expired', invoice);
-            this.invoice = invoice;
-            this.goToStep('success');
-        });
-
-        setTimeout(async () => {
-            const newInvoiceData = await this.API.invoice.get(invoice.id);
-            this.invoice = newInvoiceData;
-
-            if (newInvoiceData.status === 'processing') {
-                this.goToStep('payment');
+                errorTitle = 'Validation Error';
+                errorText = `Please review the following fields in your request: ${fieldsError.join(', ')}. Ensure they meet the required format and try again.`;
+            } else if (error instanceof HttpError) {
+                errorTitle = 'Request Error';
+                errorText = `An error occurred while creating the invoice. Please try again later.`;
+            } else {
+                errorTitle = 'Server Connection Error';
+                errorText = `We were unable to connect to the server. Please check your internet connection and try again.`;
             }
-        }, 1000);
+
+            this.notificationData = {
+                title: errorTitle,
+                text: errorText,
+                buttonText: 'Confirm'
+            };
+            this.notificationShow = true;
+            this.creatingInvoice = false;
+        }
+
+        if(invoiceWS){
+
+            invoiceWS.on(InvoiceStatus.Processing, (invoice) => {
+                console.log('invoice Processing', invoice);
+                this.invoice = invoice;
+                this.goToStep('payment');
+            });
+
+            invoiceWS.on(InvoiceStatus.Confirming, (invoice) => {
+                console.log('invoice Confirming', invoice);
+                this.invoice = invoice;
+                this.goToStep('processing');
+            });
+
+            invoiceWS.on(InvoiceStatus.Rejected, (invoice) => {
+                console.log('invoice Rejected', invoice);
+                this.invoice = invoice;
+                this.goToStep('success');
+            });
+
+            invoiceWS.on(InvoiceStatus.Canceled, (invoice) => {
+                console.log('invoice Cancelled', invoice);
+                this.invoice = invoice;
+                this.goToStep('success');
+            });
+
+            invoiceWS.on(InvoiceStatus.Success, (invoice) => {
+                console.log('invoice Success', invoice);
+                this.invoice = invoice;
+                this.goToStep('success');
+            });
+
+            invoiceWS.on(InvoiceStatus.Expired, (invoice) => {
+                console.log('invoice Expired', invoice);
+                this.invoice = invoice;
+                this.goToStep('success');
+            });
+
+            setTimeout(async () => {
+
+                try {
+                    const newInvoiceData = await this.API.invoice.get(invoiceId);
+                    this.invoice = newInvoiceData;
+
+                    if (newInvoiceData.status === 'processing') {
+                        this.goToStep('payment');
+                    }
+                } catch (error) {
+                    let errorTitle: string = '';
+                    let errorText: string = '';
+
+                    if (error instanceof HttpError) {
+                        errorTitle = 'Request Error';
+                        errorText = `An error occurred while creating the invoice. Please try again later.`;
+                    } else {
+                        errorTitle = 'Server Connection Error';
+                        errorText = `We were unable to connect to the server. Please check your internet connection and try again.`;
+                    }
+
+                    this.notificationData = {
+                        title: errorTitle,
+                        text: errorText,
+                        buttonText: 'Confirm'
+                    };
+                    this.notificationShow = true;
+                    this.creatingInvoice = false;
+                }
+
+            }, 1000);
+        }
+
     }
 
     private async cancelInvoice(){
@@ -373,7 +473,12 @@ export class PaymentApp extends LitElement {
 
             return result;
         } catch (error) {
-            console.log('getTokens error', error);
+
+            this.errorTitle = 'Error';
+            this.errorText =
+                'Failed to retrieve token data. Please try again later.';
+            this.goToStep('error');
+
         }
     }
 
@@ -412,13 +517,14 @@ export class PaymentApp extends LitElement {
         }
 
         .stepWrapper {
+            position: relative;
             display: flex;
             flex-direction: column;
             width: 100%;
             height: 100%;
             background: var(--sp-secondary-background);
 
-            & > * {
+            & > *:not(custom-notification) {
                 height: 100%;
             }
 

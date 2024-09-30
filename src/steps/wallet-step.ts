@@ -22,14 +22,14 @@ export class WalletStep extends LitElement {
     @property({ type: String })
     selectedNetworkSymbol: string = '';
 
+    @property({ type: Boolean })
+    creatingInvoice: boolean = false;
+
     @property({ attribute: false, type: String })
     private inputValue = '';
 
     @property({ attribute: false, type: Boolean })
     private buttonDisabled = true;
-
-    @property({ attribute: false, type: Boolean })
-    private creatingInvoice = false;
 
     connectedCallback() {
         super.connectedCallback();
@@ -299,24 +299,71 @@ export class WalletStep extends LitElement {
     }
 
     private dispatchNextStep() {
-        if (this.inputValue && this.inputValue !== '') {
-            this.creatingInvoice = true;
 
-            const updateEvent = new CustomEvent('updateWalletAddress', {
+        if (!this.inputValue || this.inputValue === '') {
+            return;
+        }
+
+        if (!this.checkWalletAddress(this.inputValue)) {
+            const options = {
                 detail: {
-                    walletAddress: this.inputValue
+                    notificationData: {
+                        title: 'Invalid Wallet Address',
+                        text: 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.',
+                        buttonText: 'Confirm'
+                    },
+                    notificationShow: true
                 },
                 bubbles: true,
                 composed: true
-            });
+            };
+            this.dispatchEvent(new CustomEvent('updateNotification', options));
 
-            const nextStepEvent = new CustomEvent('nextStep', {
-                bubbles: true,
-                composed: true
-            });
+            return;
+        }
 
-            this.dispatchEvent(updateEvent);
-            this.dispatchEvent(nextStepEvent);
+        const updateCreatingInvoiceEvent = new CustomEvent('updateCreatingInvoice', {
+            detail: {
+                creatingInvoice: true
+            },
+            bubbles: true,
+            composed: true
+        });
+        const updateWalletAddressEvent = new CustomEvent('updateWalletAddress', {
+            detail: {
+                walletAddress: this.inputValue
+            },
+            bubbles: true,
+            composed: true
+        });
+        const nextStepEvent = new CustomEvent('nextStep', {
+            bubbles: true,
+            composed: true
+        });
+
+        this.dispatchEvent(updateCreatingInvoiceEvent);
+        this.dispatchEvent(updateWalletAddressEvent);
+        this.dispatchEvent(nextStepEvent);
+    }
+
+    private checkWalletAddress(address: string) {
+        switch (this.selectedNetworkSymbol) {
+            case 'litecoin':
+                return /^(L|M)[a-km-zA-HJ-NP-Z1-9]{26,33}$|^ltc1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{39,59}$/.test(
+                    address ?? ''
+                );
+            case 'ethereum':
+                return /^0x[a-fA-F0-9]{40}$/.test(address ?? '');
+            case 'bsc':
+                return /^0x[a-fA-F0-9]{40}$/.test(address ?? '');
+            case 'bitcoin':
+                return /^(1[1-9A-HJ-NP-Za-km-z]{25,34}|3[1-9A-HJ-NP-Za-km-z]{25,34}|bc1([qpzry9x8gf2tvdw0s3jn54khce6mua7l]{39,59}|[0-9ac-hj-np-z]{8,87})|bc1p[ac-hj-np-z02-9]{58})$/.test(
+                    address ?? ''
+                );
+            case 'tron':
+                return /^T[a-zA-Z0-9]{33}$/.test(address ?? '');
+            default:
+                return false;
         }
     }
 
