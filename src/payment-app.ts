@@ -91,6 +91,9 @@ export class PaymentApp extends LitElement {
     @property({ attribute: false })
     private creatingInvoice: Boolean = false;
 
+    @property({ attribute: false })
+    private cancelingInvoice: Boolean = false;
+
     async connectedCallback() {
         super.connectedCallback();
 
@@ -195,6 +198,7 @@ export class PaymentApp extends LitElement {
                           .price=${this.price}
                           .walletAddress=${this.walletAddress}
                           .invoice=${this.invoice}
+                          .cancelingInvoice=${this.cancelingInvoice}
                           @nextStep=${this.nextStep}
                           @returnBack=${this.prevStep}
                           @cancelInvoice=${this.cancelInvoice}
@@ -372,6 +376,7 @@ export class PaymentApp extends LitElement {
 
     private async cancelInvoice(){
         if(this.invoice?.id){
+            this.cancelingInvoice = true;
             await this.API.invoice.cancel(this.invoice?.id);
         }
     }

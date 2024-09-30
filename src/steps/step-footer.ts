@@ -78,7 +78,7 @@ export class StepFooter extends LitElement {
                         this.hasCancelButton
                                 ? html`
                                     <button
-                                            class="blueButton"
+                                            class="secondaryButton"
                                             @click=${this.dispatchCancelInvoice}
                                             ?disabled=${this.buttonDisabled}
                                     >
@@ -105,7 +105,7 @@ export class StepFooter extends LitElement {
                 ${this.hasButton
                         ? html`
                             <button
-                                    class="blueButton"
+                                    class="mainButton"
                                     @click=${this.dispatchNextStep}
                                     ?disabled=${this.buttonDisabled}
                             >
@@ -116,14 +116,14 @@ export class StepFooter extends LitElement {
                 ${this.hasBackButton
                         ? html`
                             <a href=${this.backButtonUrl}>
-                                <button class="blueButton">Back to Store</button>
+                                <button class="mainButton">Back to Store</button>
                             </a>
                         `
                         : ''}
                 ${this.hasExplorerButton
                         ? html`
                             <a href=${this.explorerLink} target="_blank">
-                                <button class="blueButton withIcon">
+                                <button class="mainButton withIcon">
                                     View in explorer
                                     <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -285,7 +285,8 @@ export class StepFooter extends LitElement {
                 }
             }
 
-            a:has(.blueButton) {
+            a:has(.mainButton),
+            a:has(.secondaryButton){
                 text-decoration: none;
                 display: flex;
                 justify-content: center;
@@ -293,7 +294,7 @@ export class StepFooter extends LitElement {
                 width: 175px;
             }
 
-            .blueButton {
+            .mainButton {
                 max-width: 175px;
                 user-select: none;
                 display: flex;
@@ -335,6 +336,40 @@ export class StepFooter extends LitElement {
                         width: 15px;
                         height: 15px;
                     }
+                }
+            }
+            
+            .secondaryButton{
+                max-width: 175px;
+                user-select: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 14px;
+                line-height: 20px;
+                font-weight: 500;
+                border-radius: 6px;
+                cursor: pointer;
+                width: 100%;
+                height: 40px;
+                padding: 16px 8px;
+                color: var(--sp-primary-font);
+                background: var(--sp-secondary-background);
+                border: 1px solid var(--sp-border);
+                transition-property: color, background-color, border-color, text-decoration-color,
+                fill, stroke;
+                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                transition-duration: 150ms;
+
+                &:hover,
+                &:active {
+                    background: color-mix(in srgb, var(--sp-secondary-background) 60%, transparent);
+                }
+
+                &:disabled {
+                    pointer-events: none;
+                    touch-action: none;
+                    opacity: 0.5;
                 }
             }
 
@@ -388,7 +423,7 @@ export class StepFooter extends LitElement {
                 var(--sp-secondary-background) 15%,
                 transparent) !important;
 
-                .blueButton {
+                .mainButton {
                     color: var(--sp-primary-font) !important;
                 }
 
