@@ -371,8 +371,8 @@ export class PaymentApp extends LitElement {
     }
 
     private async cancelInvoice(){
-        console.log('pre cancelInvoice', this.invoice.id)
-        if(this.invoice.id){
+        console.log('pre cancelInvoice', this.invoice?.id)
+        if(this.invoice?.id){
             console.log('cancelInvoice')
             const result = await this.API.invoice.cancel(this.invoiceId);
             console.log('cancelInvoice result', result)
