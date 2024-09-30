@@ -371,14 +371,17 @@ export class PaymentApp extends LitElement {
     }
 
     private async cancelInvoice(){
+        console.log('pre cancelInvoice')
         if(this.invoiceId){
-            await this.API.invoice.cancel(this.invoiceId);
+            console.log('cancelInvoice')
+            const result = await this.API.invoice.cancel(this.invoiceId);
+            console.log('cancelInvoice result', result)
         }
     }
 
     private async getInvoice(invoiceId: string) {
-        const ws = new WsClient();
 
+        const ws = new WsClient();
         const invoiceWS = ws.appClientInvoice(this.appId, this.clientId);
 
         let result;
