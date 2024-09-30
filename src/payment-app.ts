@@ -375,9 +375,31 @@ export class PaymentApp extends LitElement {
     }
 
     private async cancelInvoice(){
-        if(this.invoice?.id){
+
+        if(!this.invoice?.id){
+
+            this.notificationData = {
+                title: 'Error',
+                text: 'Unable to retrieve the ID of invoice. Please try again later.',
+                buttonText: 'Confirm'
+            };
+            this.notificationShow = true;
+            return;
+        }
+
+        try {
             this.cancelingInvoice = true;
             await this.API.invoice.cancel(this.invoice?.id);
+        } catch (error) {
+
+            this.notificationData = {
+                title: 'Error',
+                text: 'Failed to cancel the invoice. Please try again later.',
+                buttonText: 'Confirm'
+            };
+            this.cancelingInvoice = false;
+            return;
+
         }
     }
 

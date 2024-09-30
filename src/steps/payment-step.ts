@@ -62,171 +62,192 @@ export class PaymentStep extends LitElement {
                     .walletAddress=${this.invoice?.from}
                 ></step-header>
 
-                <div class="stepContent">
-                    <div class="topInfo">
-                        <div class="infoItem">
-                            <p class="title">Network:</p>
-                            <div class="info">
-                                <network-icon
-                                    .id=${this.invoice?.network.symbol}
-                                    width="16"
-                                    height="16"
-                                    class="icon"
-                                ></network-icon>
-                                <p class="text">${this.invoice?.network.symbol}</p>
-                            </div>
-                        </div>
+                ${this.cancelingInvoice
+                        ? html`
+                          <div class="stepContent">
+                              <div class="spinner">
+                                  <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                  >
+                                      <circle cx="12" cy="12" r="10" stroke-width="4" />
+                                      <path
+                                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                      />
+                                  </svg>
 
-                        <div class="infoItem">
-                            <p class="title">Token:</p>
+                                  <p>Canceling invoice ...</p>
+                              </div>
+                          </div>
+                      `
+                        : html`
+                            <div class="stepContent">
+                                <div class="topInfo">
+                                    <div class="infoItem">
+                                        <p class="title">Network:</p>
+                                        <div class="info">
+                                            <network-icon
+                                                    .id=${this.invoice?.network.symbol}
+                                                    width="16"
+                                                    height="16"
+                                                    class="icon"
+                                            ></network-icon>
+                                            <p class="text">${this.invoice?.network.symbol}</p>
+                                        </div>
+                                    </div>
 
-                            <div class="info">
-                                <token-icon
-                                    .id=${this.invoice?.cryptocurrency.symbol}
-                                    width="16"
-                                    height="16"
-                                    class="icon"
-                                ></token-icon>
+                                    <div class="infoItem">
+                                        <p class="title">Token:</p>
 
-                                <p class="text">${this.invoice?.cryptocurrency.symbol}</p>
+                                        <div class="info">
+                                            <token-icon
+                                                    .id=${this.invoice?.cryptocurrency.symbol}
+                                                    width="16"
+                                                    height="16"
+                                                    class="icon"
+                                            ></token-icon>
 
-                                ${this.tokenStandart !== ''
-                                    ? html` <div class="badge">${this.tokenStandart}</div> `
-                                    : ''}
-                            </div>
-                        </div>
-                    </div>
+                                            <p class="text">${this.invoice?.cryptocurrency.symbol}</p>
 
-                    <div class="qrcodeWrapper">
-                        <div id="qrcode" class="qrcodeContainer"></div>
-                        <div class="tokenIconWrapper">
-                            <token-icon
-                                .id=${this.invoice?.cryptocurrency.symbol}
-                                width="42"
-                                height="42"
-                                class="tokenIcon"
-                            ></token-icon>
-                            <network-icon
-                                .id=${this.invoice?.network.symbol}
-                                width="20"
-                                height="20"
-                                class="networkIcon"
-                            ></network-icon>
-                        </div>
-                    </div>
+                                            ${this.tokenStandart !== ''
+                                                    ? html` <div class="badge">${this.tokenStandart}</div> `
+                                                    : ''}
+                                        </div>
+                                    </div>
+                                </div>
 
-                    <div class="separator"></div>
+                                <div class="qrcodeWrapper">
+                                    <div id="qrcode" class="qrcodeContainer"></div>
+                                    <div class="tokenIconWrapper">
+                                        <token-icon
+                                                .id=${this.invoice?.cryptocurrency.symbol}
+                                                width="42"
+                                                height="42"
+                                                class="tokenIcon"
+                                        ></token-icon>
+                                        <network-icon
+                                                .id=${this.invoice?.network.symbol}
+                                                width="20"
+                                                height="20"
+                                                class="networkIcon"
+                                        ></network-icon>
+                                    </div>
+                                </div>
 
-                    <div class="bottomInfo">
-                        <label class="inputWrapper" for="payAddress">
-                            <p class="labelText">Address to pay:</p>
+                                <div class="separator"></div>
 
-                            <input
-                                id="payAddress"
-                                type="text"
-                                .value=${this.invoice?.to}
-                                readonly
-                                disabled
-                            />
+                                <div class="bottomInfo">
+                                    <label class="inputWrapper" for="payAddress">
+                                        <p class="labelText">Address to pay:</p>
 
-                            <div
-                                class="copyButton"
-                                @click=${(event: CustomEvent) =>
-                                    this.copyData(event, this.invoice?.to || '')}
-                            >
-                                <div class="default">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="2"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                    >
-                                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                                        <path
-                                            d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                                        <input
+                                                id="payAddress"
+                                                type="text"
+                                                .value=${this.invoice?.to}
+                                                readonly
+                                                disabled
                                         />
-                                    </svg>
-                                    Copy
-                                </div>
-                                <div class="active">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="2"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                    >
-                                        <path d="M20 6 9 17l-5-5" />
-                                    </svg>
-                                    Copied
-                                </div>
-                            </div>
-                        </label>
 
-                        <label class="inputWrapper" for="payAmount">
-                            <p class="labelText">Amount:</p>
+                                        <div
+                                                class="copyButton"
+                                                @click=${(event: CustomEvent) =>
+                                                        this.copyData(event, this.invoice?.to || '')}
+                                        >
+                                            <div class="default">
+                                                <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="24"
+                                                        height="24"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        stroke-width="2"
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                >
+                                                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                                                    <path
+                                                            d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                                                    />
+                                                </svg>
+                                                Copy
+                                            </div>
+                                            <div class="active">
+                                                <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="24"
+                                                        height="24"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        stroke-width="2"
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                >
+                                                    <path d="M20 6 9 17l-5-5" />
+                                                </svg>
+                                                Copied
+                                            </div>
+                                        </div>
+                                    </label>
 
-                            <input
-                                id="payAmount"
-                                type="text"
-                                .value=${`${this.formatAmount} ${this.invoice?.cryptocurrency.symbol}`}
-                                readonly
-                                disabled
-                            />
+                                    <label class="inputWrapper" for="payAmount">
+                                        <p class="labelText">Amount:</p>
 
-                            <div
-                                class="copyButton"
-                                @click=${(event: CustomEvent) =>
-                                    this.copyData(event, this.formatAmount.toString() || '')}
-                            >
-                                <div class="default">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="2"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                    >
-                                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                                        <path
-                                            d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                                        <input
+                                                id="payAmount"
+                                                type="text"
+                                                .value=${`${this.formatAmount} ${this.invoice?.cryptocurrency.symbol}`}
+                                                readonly
+                                                disabled
                                         />
-                                    </svg>
-                                    Copy
-                                </div>
-                                <div class="active">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="2"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                    >
-                                        <path d="M20 6 9 17l-5-5" />
-                                    </svg>
-                                    Copied
+
+                                        <div
+                                                class="copyButton"
+                                                @click=${(event: CustomEvent) =>
+                                                        this.copyData(event, this.formatAmount.toString() || '')}
+                                        >
+                                            <div class="default">
+                                                <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="24"
+                                                        height="24"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        stroke-width="2"
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                >
+                                                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                                                    <path
+                                                            d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                                                    />
+                                                </svg>
+                                                Copy
+                                            </div>
+                                            <div class="active">
+                                                <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="24"
+                                                        height="24"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        stroke-width="2"
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                >
+                                                    <path d="M20 6 9 17l-5-5" />
+                                                </svg>
+                                                Copied
+                                            </div>
+                                        </div>
+                                    </label>
                                 </div>
                             </div>
-                        </label>
-                    </div>
-                </div>
+                      `}
 
                 <step-footer
                     .dark=${this.dark}
@@ -323,6 +344,38 @@ export class PaymentStep extends LitElement {
                     background: var(--sp-border);
                 }
 
+                .spinner {
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-direction: column;
+
+                    p {
+                        margin-top: 8px;
+                        font-size: 12px;
+                        font-weight: 600;
+                        color: var(--sp-primary-font);
+                    }
+
+                    svg {
+                        width: 20px;
+                        height: 20px;
+                        animation: spin 1s linear infinite;
+                    }
+
+                    circle {
+                        stroke: var(--sp-accent);
+                        opacity: 0.25;
+                    }
+
+                    path {
+                        fill: var(--sp-accent);
+                        opacity: 0.75;
+                    }
+                }
+                
                 .topInfo {
                     display: flex;
                     align-items: center;
