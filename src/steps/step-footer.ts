@@ -1,54 +1,57 @@
-import { css, html, LitElement, property } from 'lit-element';
-import { customElement } from 'lit/decorators.js';
+import {css, html, LitElement, property} from 'lit-element';
+import {customElement} from 'lit/decorators.js';
 
 @customElement('step-footer')
 export class StepFooter extends LitElement {
-    @property({ type: Boolean })
+    @property({type: Boolean})
     dark: boolean = false;
 
-    @property({ type: String })
+    @property({type: String})
     price: string = '';
 
-    @property({ type: Boolean })
+    @property({type: Boolean})
     hasButton: boolean = false;
 
-    @property({ type: Boolean })
+    @property({type: Boolean})
+    hasCancelButton: boolean = false;
+
+    @property({type: Boolean})
     hasExplorerButton: boolean = false;
 
-    @property({ type: String })
+    @property({type: String})
     explorerLink: string = '';
 
-    @property({ type: String })
+    @property({type: String})
     buttonText: string = '';
 
-    @property({ type: Boolean })
+    @property({type: Boolean})
     buttonDisabled: boolean = false;
 
-    @property({ type: Boolean })
+    @property({type: Boolean})
     hasTimer: boolean = false;
 
-    @property({ type: Boolean })
+    @property({type: Boolean})
     hasBackButton: boolean = false;
 
-    @property({ type: String })
+    @property({type: String})
     backButtonUrl: string = '';
 
-    @property({ type: Number })
+    @property({type: Number})
     timerTimeStart: number = 0;
 
-    @property({ type: Number })
+    @property({type: Number})
     timerTimeCurrent: number = 0;
 
-    @property({ attribute: false })
+    @property({attribute: false})
     timerTimeStartLocal: number = 0;
 
-    @property({ attribute: false })
+    @property({attribute: false})
     timerTimeCurrentLocal: number = 0;
 
-    @property({ attribute: false })
+    @property({attribute: false})
     progressStart: number = 252;
 
-    @property({ attribute: false })
+    @property({attribute: false})
     progressCurrent: number = 252;
 
     async connectedCallback() {
@@ -70,117 +73,132 @@ export class StepFooter extends LitElement {
     render() {
         return html`
             <div class=${`stepFooter ${this.dark ? 'dark' : ''}`}>
-                <div class="product">
-                    <div class="image">
-                        <img
-                            src="https://cdn4.iconfinder.com/data/icons/e-commerce-289/64/ecomerce_shopping_shippement_box_product-512.png"
-                            alt="product image"
-                        />
-                    </div>
 
-                    <div class="price">
-                        <p>Total price:</p>
-                        <p>${this.price ? `${this.price} USD` : 'Custom'}</p>
-                    </div>
-                </div>
+                ${
+                        this.hasCancelButton
+                                ? html`
+                                    <button
+                                            class="blueButton"
+                                            @click=${this.dispatchCancelInvoice}
+                                            ?disabled=${this.buttonDisabled}
+                                    >
+                                        Cancel payment
+                                    </button>
+                                `
+                                : html`
+                                    <div class="product">
+                                        <div class="image">
+                                            <img
+                                                    src="https://cdn4.iconfinder.com/data/icons/e-commerce-289/64/ecomerce_shopping_shippement_box_product-512.png"
+                                                    alt="product image"
+                                            />
+                                        </div>
+
+                                        <div class="price">
+                                            <p>Total price:</p>
+                                            <p>${this.price ? `${this.price} USD` : 'Custom'}</p>
+                                        </div>
+                                    </div>
+                                `
+                }
 
                 ${this.hasButton
-                    ? html`
-                          <button
-                              class="blueButton"
-                              @click=${this.dispatchNextStep}
-                              ?disabled=${this.buttonDisabled}
-                          >
-                              ${this.buttonText}
-                          </button>
-                      `
-                    : ''}
+                        ? html`
+                            <button
+                                    class="blueButton"
+                                    @click=${this.dispatchNextStep}
+                                    ?disabled=${this.buttonDisabled}
+                            >
+                                ${this.buttonText}
+                            </button>
+                        `
+                        : ''}
                 ${this.hasBackButton
-                    ? html`
-                          <a href=${this.backButtonUrl}>
-                              <button class="blueButton">Back to Store</button>
-                          </a>
-                      `
-                    : ''}
+                        ? html`
+                            <a href=${this.backButtonUrl}>
+                                <button class="blueButton">Back to Store</button>
+                            </a>
+                        `
+                        : ''}
                 ${this.hasExplorerButton
-                    ? html`
-                          <a href=${this.explorerLink} target="_blank">
-                              <button class="blueButton withIcon">
-                                  View in explorer
-                                  <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      width="24"
-                                      height="24"
-                                      viewBox="0 0 24 24"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      stroke-width="2"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                  >
-                                      <path
-                                          d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"
-                                      />
-                                      <path d="m21 3-9 9" />
-                                      <path d="M15 3h6v6" />
-                                  </svg>
-                              </button>
-                          </a>
-                      `
-                    : ''}
+                        ? html`
+                            <a href=${this.explorerLink} target="_blank">
+                                <button class="blueButton withIcon">
+                                    View in explorer
+                                    <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="24"
+                                            height="24"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                    >
+                                        <path
+                                                d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"
+                                        />
+                                        <path d="m21 3-9 9"/>
+                                        <path d="M15 3h6v6"/>
+                                    </svg>
+                                </button>
+                            </a>
+                        `
+                        : ''}
                 ${this.hasTimer
-                    ? html`
-                          <div class="timerWrapper">
-                              <div class="loader">
-                                  <svg
-                                      width="78"
-                                      height="78"
-                                      viewBox="-9.75 -9.75 97.5 97.5"
-                                      version="1.1"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      style="transform:rotate(-90deg)"
-                                  >
-                                      <circle
-                                          class="timerBg"
-                                          r="40"
-                                          cx="38"
-                                          cy="38"
-                                          fill="transparent"
-                                          stroke-width="12"
-                                          stroke-dasharray="252"
-                                          stroke-dashoffset="0"
-                                      ></circle>
-                                      <circle
-                                          class=${`
+                        ? html`
+                            <div class="timerWrapper">
+                                <div class="loader">
+                                    <svg
+                                            width="78"
+                                            height="78"
+                                            viewBox="-9.75 -9.75 97.5 97.5"
+                                            version="1.1"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            style="transform:rotate(-90deg)"
+                                    >
+                                        <circle
+                                                class="timerBg"
+                                                r="40"
+                                                cx="38"
+                                                cy="38"
+                                                fill="transparent"
+                                                stroke-width="12"
+                                                stroke-dasharray="252"
+                                                stroke-dashoffset="0"
+                                        ></circle>
+                                        <circle
+                                                class=${`
                             timerProgress
                             `}
-                                          r="40"
-                                          cx="38"
-                                          cy="38"
-                                          stroke-width="12"
-                                          stroke-linecap="round"
-                                          stroke-dashoffset=${this.progressCurrent}
-                                          fill="transparent"
-                                          stroke-dasharray="252px"
-                                      ></circle>
-                                  </svg>
-                              </div>
+                                                r="40"
+                                                cx="38"
+                                                cy="38"
+                                                stroke-width="12"
+                                                stroke-linecap="round"
+                                                stroke-dashoffset=${this.progressCurrent}
+                                                fill="transparent"
+                                                stroke-dasharray="252px"
+                                        ></circle>
+                                    </svg>
+                                </div>
 
-                              <div class="info">
-                                  <p class="title">Expiration time</p>
-                                  <p
-                                      id="timerTime"
-                                      class=${`timerLeft
+                                <div class="info">
+                                    <p class="title">Expiration time</p>
+                                    <p
+                                            id="timerTime"
+                                            class=${`timerLeft
                         `}
-                                  >
-                                      ${new Date(this.timerTimeCurrentLocal * 1000)
-                                          .toISOString()
-                                          .slice(14, 19)}
-                                  </p>
-                              </div>
-                          </div>
-                      `
-                    : ''}
+                                    >
+                                        ${new Date(this.timerTimeCurrentLocal * 1000)
+                                                .toISOString()
+                                                .slice(14, 19)}
+                                    </p>
+                                </div>
+                            </div>
+                        `
+                        : ''}
             </div>
         `;
     }
@@ -191,6 +209,15 @@ export class StepFooter extends LitElement {
             this.progressCurrent =
                 this.progressStart - (this.timerTimeStartLocal - this.timerTimeCurrentLocal) * step;
         }
+    }
+
+    private dispatchCancelInvoice(){
+        const cancelEvent = new CustomEvent('footerCancelClick', {
+            bubbles: true,
+            composed: true
+        });
+
+        this.dispatchEvent(cancelEvent);
     }
 
     private dispatchNextStep() {
@@ -284,7 +311,7 @@ export class StepFooter extends LitElement {
                 background: var(--sp-accent);
                 border: none;
                 transition-property: color, background-color, border-color, text-decoration-color,
-                    fill, stroke;
+                fill, stroke;
                 transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                 transition-duration: 150ms;
 
@@ -348,7 +375,7 @@ export class StepFooter extends LitElement {
                     font-size: 16px;
                     font-weight: 600;
                     transition-property: color, background-color, border-color,
-                        text-decoration-color, fill, stroke;
+                    text-decoration-color, fill, stroke;
                     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                     transition-duration: 350ms;
                     color: var(--sp-accent);
@@ -357,11 +384,9 @@ export class StepFooter extends LitElement {
             }
 
             &.dark {
-                background: color-mix(
-                    in srgb,
-                    var(--sp-secondary-background) 15%,
-                    transparent
-                ) !important;
+                background: color-mix(in srgb,
+                var(--sp-secondary-background) 15%,
+                transparent) !important;
 
                 .blueButton {
                     color: var(--sp-primary-font) !important;
@@ -371,11 +396,9 @@ export class StepFooter extends LitElement {
                     .loader {
                         svg {
                             .timerBg {
-                                stroke: color-mix(
-                                    in srgb,
-                                    var(--sp-secondary-background) 15%,
-                                    transparent
-                                ) !important;
+                                stroke: color-mix(in srgb,
+                                var(--sp-secondary-background) 15%,
+                                transparent) !important;
                             }
                         }
                     }

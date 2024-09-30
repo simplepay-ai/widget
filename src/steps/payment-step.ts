@@ -28,6 +28,9 @@ export class PaymentStep extends LitElement {
     @query('#qrcode')
     qrcode: any;
 
+    @property({ attribute: false, type: Boolean })
+    private buttonDisabled = false;
+
     firstUpdated(_changedProperties: PropertyValues) {
         super.firstUpdated(_changedProperties);
 
@@ -229,16 +232,30 @@ export class PaymentStep extends LitElement {
                     .dark=${this.dark}
                     .price=${this.price}
                     .hasButton=${false}
+                    .hasCancelButton=${true}
                     .hasTimer=${true}
                     .timerTimeStart=${(Date.parse(this.invoice?.expireAt!) -
-                        Date.parse(this.invoice?.createdAt!)) /
+                            Date.parse(this.invoice?.createdAt!)) /
                     1000}
                     .timerTimeCurrent=${(Date.parse(this.invoice?.expireAt!) -
-                        new Date().getTime()) /
+                            new Date().getTime()) /
                     1000}
+                    .buttonDisabled=${this.buttonDisabled}
+                    @footerCancelClick=${this.dispatchCancelInvoice}
                 ></step-footer>
             </div>
         `;
+    }
+
+    private dispatchCancelInvoice(){
+        this.buttonDisabled = true;
+
+        const cancelInvoiceEvent = new CustomEvent('cancelInvoice', {
+            bubbles: true,
+            composed: true
+        });
+
+        this.dispatchEvent(cancelInvoiceEvent);
     }
 
     private roundUp(number: string, stable: boolean) {

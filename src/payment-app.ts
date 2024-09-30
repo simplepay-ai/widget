@@ -166,6 +166,7 @@ export class PaymentApp extends LitElement {
                           .invoice=${this.invoice}
                           @nextStep=${this.nextStep}
                           @returnBack=${this.prevStep}
+                          @cancelInvoice=${this.cancelInvoice}
                       ></payment-step>`
                     : ''}
                 ${this.appStep === 'processing'
@@ -267,6 +268,12 @@ export class PaymentApp extends LitElement {
                 this.goToStep('payment');
             }
         }, 1000);
+    }
+
+    private async cancelInvoice(){
+        if(this.invoiceId){
+            await this.API.invoice.cancel(this.invoiceId);
+        }
     }
 
     private async getInvoice(invoiceId: string) {
