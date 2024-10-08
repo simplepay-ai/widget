@@ -1,4 +1,4 @@
-import {Currency} from "@simplepay-ai/api-client";
+import {Currency, Product} from "@simplepay-ai/api-client";
 
 export type AppStep =
     | 'loading'
@@ -33,3 +33,8 @@ export interface IProductPrice {
     price: number;
 }
 
+export interface IProductInvoice {
+    id?: string,
+    product?: Product,
+    count: number
+}

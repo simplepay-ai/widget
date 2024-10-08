@@ -725,7 +725,7 @@ export class StepFooter extends LitElement {
                 }
 
                 .productsList {
-                    margin-top: 16px;
+                    margin-top: 20px;
                     flex: 1;
                     overflow-y: auto;
                     overflow-x: hidden;
@@ -789,7 +789,6 @@ export class StepFooter extends LitElement {
                             }
 
                             .description {
-                                margin-top: 6px;
                                 font-size: 12px;
                                 color: var(--sp-secondary-font);
                             }
@@ -803,7 +802,6 @@ export class StepFooter extends LitElement {
                             }
 
                             .count {
-                                margin-top: 6px;
                                 font-size: 12px;
                                 color: var(--sp-secondary-font);
                                 text-align: end;

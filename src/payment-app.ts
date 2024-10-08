@@ -3,13 +3,13 @@ import {
     Cryptocurrency,
     HttpError,
     Invoice, InvoiceCreateErrors,
-    InvoiceStatus,
+    InvoiceStatus, Product,
     ValidationError,
     WsClient
 } from '@simplepay-ai/api-client';
 import { css, html, LitElement, property } from 'lit-element';
 import { customElement } from 'lit/decorators.js';
-import {AppStep, INotification, IProduct} from './types';
+import {AppStep, INotification, IProduct, IProductInvoice} from './types';
 import './steps/step-header.ts';
 import './steps/step-footer.ts';
 import './steps/loading-step.ts';
@@ -26,10 +26,7 @@ import './steps/network-icon.ts';
 import './steps/custom-notification.ts';
 import {checkWalletAddress} from "./util.ts";
 
-interface IProductInvoice {
-    id: string,
-    count: number
-}
+
 
 @customElement('payment-app')
 export class PaymentApp extends LitElement {
@@ -269,12 +266,14 @@ export class PaymentApp extends LitElement {
         for(let product of products){
 
             try{
+                const productId = product.id || product.product?.id;
+                const info = await this.API.product.get(productId);
+                const count = products.find((item) => item.id === productId)?.count || product.count;
 
-                const info = await this.API.product.get(product.id);
                 if(info){
                     result.push({
                         ...info,
-                        count: products.find((item) => item.id === product.id)?.count || 0
+                        count: count
                     });
                 }
 
