@@ -3,7 +3,7 @@ import {
     Cryptocurrency,
     HttpError,
     Invoice, InvoiceCreateErrors,
-    InvoiceStatus, Product,
+    InvoiceStatus,
     ValidationError,
     WsClient
 } from '@simplepay-ai/api-client';
