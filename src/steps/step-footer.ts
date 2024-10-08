@@ -93,6 +93,9 @@ export class StepFooter extends LitElement {
     render() {
         return html`
             <div class=${`stepFooter ${this.dark ? 'dark' : ''}`}>
+                
+                <div class="layer1"></div>
+                <div class="layer2"></div>
 
                 ${
                         this.hasCancelButton
@@ -392,9 +395,31 @@ export class StepFooter extends LitElement {
             z-index: 10;
             position: relative;
             
+            .layer1{
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -2;
+                background: white;
+            }
+
+            .layer2{
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 1;
+                background: var(--sp-primary-background);
+            }
+            
             .product {
                 display: flex;
                 gap: 7px;
+                z-index: 1;
+                position: relative;
 
                 .image {
                     display: flex;
@@ -494,6 +519,8 @@ export class StepFooter extends LitElement {
             }
 
             .mainButton {
+                z-index: 1;
+                position: relative;
                 max-width: 175px;
                 user-select: none;
                 display: flex;
@@ -539,6 +566,8 @@ export class StepFooter extends LitElement {
             }
             
             .secondaryButton{
+                z-index: 1;
+                position: relative;
                 max-width: 175px;
                 user-select: none;
                 display: flex;
@@ -573,6 +602,8 @@ export class StepFooter extends LitElement {
             }
 
             .timerWrapper {
+                z-index: 1;
+                position: relative;
                 display: flex;
                 align-items: center;
                 gap: 8px;
@@ -622,6 +653,16 @@ export class StepFooter extends LitElement {
                 var(--sp-secondary-background) 15%,
                 transparent) !important;
 
+                .layer1{
+                    background: black;
+                }
+                
+                .layer2{
+                    background: color-mix(in srgb,
+                    var(--sp-secondary-background) 15%,
+                    transparent) !important;
+                }
+
                 .mainButton {
                     color: var(--sp-primary-font) !important;
                 }
@@ -635,6 +676,12 @@ export class StepFooter extends LitElement {
                                 transparent) !important;
                             }
                         }
+                    }
+                }
+
+                .product {
+                    .productsInfo:hover {
+                        background: color-mix(in srgb, var(--sp-secondary-background) 10%, transparent) !important;
                     }
                 }
             }
@@ -716,6 +763,7 @@ export class StepFooter extends LitElement {
                     svg{
                         width: 20px;
                         height: 20px;
+                        color: var(--sp-primary-font);
                     }
 
                     &:hover,
@@ -784,6 +832,7 @@ export class StepFooter extends LitElement {
                             flex: 1;
 
                             .name {
+                                color: var(--sp-primary-font);
                                 font-size: 14px;
                                 font-weight: 500;
                             }
@@ -796,6 +845,7 @@ export class StepFooter extends LitElement {
 
                         .priceWrapper {
                             .price {
+                                color: var(--sp-primary-font);
                                 font-size: 14px;
                                 font-weight: 500;
                                 text-align: end;
@@ -810,6 +860,10 @@ export class StepFooter extends LitElement {
                     }
                 }
             }
+        }
+        
+        &.dark{
+            
         }
     `;
 }
