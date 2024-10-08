@@ -24,6 +24,7 @@ import './steps/processing-step.ts';
 import './steps/token-icon.ts';
 import './steps/network-icon.ts';
 import './steps/custom-notification.ts';
+import {checkWalletAddress} from "./util.ts";
 
 @customElement('payment-app')
 export class PaymentApp extends LitElement {
@@ -93,6 +94,16 @@ export class PaymentApp extends LitElement {
 
     @property({ attribute: false })
     private cancelingInvoice: Boolean = false;
+
+    constructor() {
+        super();
+
+        document.addEventListener('keydown',(event) => {
+            if (event.key === 'Enter') {
+                this.nextStep();
+            }
+        });
+    }
 
     async connectedCallback() {
         super.connectedCallback();
@@ -182,8 +193,6 @@ export class PaymentApp extends LitElement {
                           .selectedTokenSymbol=${this.selectedTokenSymbol}
                           .selectedNetworkSymbol=${this.selectedNetworkSymbol}
                           .creatingInvoice=${this.creatingInvoice}
-                          @updateCreatingInvoice=${(event: CustomEvent) =>
-                                  (this.creatingInvoice = event.detail.creatingInvoice)}
                           @updateWalletAddress=${(event: CustomEvent) =>
                               (this.walletAddress = event.detail.walletAddress)}
                           @updateNotification=${(event: CustomEvent) =>
@@ -235,7 +244,8 @@ export class PaymentApp extends LitElement {
     }
 
     private nextStep() {
-        if (this.appStep === 'setPrice' && this.price) {
+
+        if (this.appStep === 'setPrice' && this.price && Number(this.price) > 0) {
             this.goToStep('setToken');
             return;
         }
@@ -245,7 +255,17 @@ export class PaymentApp extends LitElement {
             return;
         }
 
-        if (this.appStep === 'setWallet' && this.walletAddress) {
+        if(this.appStep === 'setWallet' && this.walletAddress && !checkWalletAddress(this.walletAddress, this.selectedNetworkSymbol)){
+            this.notificationData = {
+                title: 'Invalid Wallet Address',
+                text: 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.',
+                buttonText: 'Confirm'
+            };
+            this.notificationShow = true;
+        }
+
+        if (this.appStep === 'setWallet' && this.walletAddress && checkWalletAddress(this.walletAddress, this.selectedNetworkSymbol)) {
+            this.creatingInvoice = true;
             this.createInvoice();
         }
     }

@@ -526,6 +526,7 @@ export class PaymentStep extends LitElement {
                 .separator {
                     margin: 8px 0;
                     height: 1px;
+                    min-height: 1px;
                     width: 100%;
                     background: var(--sp-border);
                 }

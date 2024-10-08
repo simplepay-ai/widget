@@ -78,6 +78,7 @@ export class PriceStep extends LitElement {
     private inputHandler(event: any) {
         if (event.target.value === '') {
             this.buttonDisabled = true;
+            this.updatePrice('');
             return;
         }
 
@@ -85,38 +86,44 @@ export class PriceStep extends LitElement {
         const priceFormat = parseFloat(priceString).toString();
 
         this.inputValue = priceFormat;
-
         this.buttonDisabled = Number(priceFormat) <= 0;
+        this.updatePrice(priceFormat);
     }
-
+    private updatePrice(price: string){
+        const updateEvent = new CustomEvent('updatePrice', {
+            detail: {
+                price
+            },
+            bubbles: true,
+            composed: true
+        });
+        this.dispatchEvent(updateEvent);
+    }
     private blurHandler(event: any) {
-        if (event.target.value !== '') {
-            const priceString = event.target.value
-                .toString()
-                .replaceAll(',', '.')
-                .replaceAll('-', '');
-            const priceFormat = parseFloat(priceString).toFixed(2);
-            this.inputValue = priceFormat;
-            this.buttonDisabled = Number(priceFormat) <= 0;
-        }
-    }
 
+        if(event.target.value === ''){
+            this.updatePrice('');
+            return;
+        }
+
+        const priceString = event.target.value
+            .toString()
+            .replaceAll(',', '.')
+            .replaceAll('-', '');
+        const priceFormat = parseFloat(priceString).toFixed(2);
+        this.inputValue = priceFormat;
+        this.buttonDisabled = Number(priceFormat) <= 0;
+        this.updatePrice(priceFormat);
+    }
     private dispatchNextStep() {
         if (this.inputValue && this.inputValue !== '0') {
-            const updateEvent = new CustomEvent('updatePrice', {
-                detail: {
-                    price: this.inputValue
-                },
-                bubbles: true,
-                composed: true
-            });
 
             const nextStepEvent = new CustomEvent('nextStep', {
                 bubbles: true,
                 composed: true
             });
 
-            this.dispatchEvent(updateEvent);
+            this.updatePrice(this.inputValue);
             this.dispatchEvent(nextStepEvent);
         }
     }

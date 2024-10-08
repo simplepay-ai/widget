@@ -85,7 +85,6 @@ export class CustomNotification extends LitElement {
             display: flex;
             align-items: flex-end;
             gap: 10px;
-            box-shadow: 0 5px 10px 1px #0000002e;
             transform: translateY(calc(-100% - 30px));
             transition-property: all;
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -135,8 +134,6 @@ export class CustomNotification extends LitElement {
             }
 
             &.dark {
-                box-shadow: 0 5px 10px 1px #000000;
-
                 button {
                     color: var(--sp-primary-font) !important;
                 }

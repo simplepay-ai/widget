@@ -154,26 +154,20 @@ export class SuccessStep extends LitElement {
                         <div class="infoItem">
                             <p class="title">From:</p>
 
-                            <div class="hashInfo">
+                            <div class="copyLine"
+                                 @click=${(event: CustomEvent) =>
+            this.copyData(event, this.invoice?.from || '')}
+                            >
                                 <p>
                                     ${this.invoice?.from.slice(0, 6)}
-                                    ...${this.invoice?.from.slice(
-                                        this.invoice?.from.length - 4,
-                                        this.invoice?.from.length
-                                    )}
+                                        ...${this.invoice?.from.slice(
+            this.invoice?.from.length - 4,
+            this.invoice?.from.length
+        )}
                                 </p>
 
-                                <div class="separator">
-                                    <div class="dot"></div>
-                                </div>
-
-                                <div
-                                    class="copyButton"
-                                    @click=${(event: CustomEvent) =>
-                                        this.copyData(event, this.invoice?.from || '')}
-                                >
-                                    <div class="default">
-                                        <svg
+                                <div class="defaultIcon">
+                                    <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             width="24"
                                             height="24"
@@ -183,22 +177,22 @@ export class SuccessStep extends LitElement {
                                             stroke-width="2"
                                             stroke-linecap="round"
                                             stroke-linejoin="round"
-                                        >
-                                            <rect
+                                    >
+                                        <rect
                                                 width="14"
                                                 height="14"
                                                 x="8"
                                                 y="8"
                                                 rx="2"
                                                 ry="2"
-                                            />
-                                            <path
+                                        />
+                                        <path
                                                 d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
-                                            />
-                                        </svg>
-                                    </div>
-                                    <div class="active">
-                                        <svg
+                                        />
+                                    </svg>
+                                </div>
+                                <div class="activeIcon">
+                                    <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             width="24"
                                             height="24"
@@ -208,36 +202,29 @@ export class SuccessStep extends LitElement {
                                             stroke-width="2"
                                             stroke-linecap="round"
                                             stroke-linejoin="round"
-                                        >
-                                            <path d="M20 6 9 17l-5-5" />
-                                        </svg>
-                                    </div>
+                                    >
+                                        <path d="M20 6 9 17l-5-5" />
+                                    </svg>
                                 </div>
                             </div>
                         </div>
                         <div class="infoItem">
                             <p class="title">To:</p>
 
-                            <div class="hashInfo">
+                            <div class="copyLine"
+                                 @click=${(event: CustomEvent) =>
+            this.copyData(event, this.invoice?.to || '')}
+                            >
                                 <p>
                                     ${this.invoice?.to.slice(0, 6)}
-                                    ...${this.invoice?.to.slice(
-                                        this.invoice?.to.length - 4,
-                                        this.invoice?.to.length
-                                    )}
+                                        ...${this.invoice?.to.slice(
+            this.invoice?.to.length - 4,
+            this.invoice?.to.length
+        )}
                                 </p>
 
-                                <div class="separator">
-                                    <div class="dot"></div>
-                                </div>
-
-                                <div
-                                    class="copyButton"
-                                    @click=${(event: CustomEvent) =>
-                                        this.copyData(event, this.invoice?.to || '')}
-                                >
-                                    <div class="default">
-                                        <svg
+                                <div class="defaultIcon">
+                                    <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             width="24"
                                             height="24"
@@ -247,22 +234,22 @@ export class SuccessStep extends LitElement {
                                             stroke-width="2"
                                             stroke-linecap="round"
                                             stroke-linejoin="round"
-                                        >
-                                            <rect
+                                    >
+                                        <rect
                                                 width="14"
                                                 height="14"
                                                 x="8"
                                                 y="8"
                                                 rx="2"
                                                 ry="2"
-                                            />
-                                            <path
+                                        />
+                                        <path
                                                 d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
-                                            />
-                                        </svg>
-                                    </div>
-                                    <div class="active">
-                                        <svg
+                                        />
+                                    </svg>
+                                </div>
+                                <div class="activeIcon">
+                                    <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             width="24"
                                             height="24"
@@ -272,10 +259,9 @@ export class SuccessStep extends LitElement {
                                             stroke-width="2"
                                             stroke-linecap="round"
                                             stroke-linejoin="round"
-                                        >
-                                            <path d="M20 6 9 17l-5-5" />
-                                        </svg>
-                                    </div>
+                                    >
+                                        <path d="M20 6 9 17l-5-5" />
+                                    </svg>
                                 </div>
                             </div>
                         </div>
@@ -499,7 +485,7 @@ export class SuccessStep extends LitElement {
                 .infoWrapper {
                     display: flex;
                     flex-direction: column;
-                    gap: 8px;
+                    gap: 2px;;
                     color: var(--sp-secondary-font);
 
                     & > .title {
@@ -508,6 +494,7 @@ export class SuccessStep extends LitElement {
                         color: var(--sp-primary-font);
                         font-weight: 700;
                         text-align: left;
+                        margin-bottom: 10px;
                     }
 
                     .infoItem {
@@ -515,7 +502,7 @@ export class SuccessStep extends LitElement {
                         align-items: center;
                         justify-content: space-between;
                         gap: 8px;
-                        height: 33px;
+                        height: 27px;
 
                         &.column {
                             align-items: flex-start;
@@ -525,7 +512,7 @@ export class SuccessStep extends LitElement {
                         }
 
                         .title {
-                            font-size: 13px;
+                            font-size: 12px;
                             line-height: 20px;
                             font-weight: 700;
                         }
@@ -703,6 +690,58 @@ export class SuccessStep extends LitElement {
                                 line-height: 20px;
                                 color: var(--sp-primary-font);
                                 font-weight: 700;
+                            }
+                        }
+                        .copyLine{
+                            display: flex;
+                            align-items: center;
+                            gap: 4px;
+                            cursor: pointer;
+
+                            p {
+                                font-size: 12px;
+                                line-height: 20px;
+                                color: var(--sp-primary-font);
+                                font-weight: 700;
+                            }
+
+                            svg {
+                                width: 16px;
+                                height: 16px;
+                                color: var(--sp-accent);
+                            }
+
+                            .activeIcon,
+                            .defaultIcon{
+                                align-items: center;
+                                justify-content: center;
+                            }
+
+                            .defaultIcon {
+                                display: flex;
+                            }
+
+                            .activeIcon {
+                                display: none;
+                            }
+
+                            &.active {
+                                color: var(--sp-accent);
+
+                                svg {
+                                    rect,
+                                    path {
+                                        stroke: var(--sp-accent);
+                                    }
+                                }
+
+                                .defaultIcon {
+                                    display: none;
+                                }
+
+                                .activeIcon {
+                                    display: flex;
+                                }
                             }
                         }
                     }
