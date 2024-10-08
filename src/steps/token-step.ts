@@ -3,6 +3,7 @@ import {PropertyValues} from 'lit';
 import {css, html, LitElement, property, query} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {IProduct} from "../types.ts";
+import {getTokenStandart, roundUpAmount} from "../util.ts";
 
 @customElement('token-step')
 export class TokenStep extends LitElement {
@@ -131,12 +132,12 @@ export class TokenStep extends LitElement {
                                             ${this.stableCoins &&
                                             this.stableCoins.map((token: Cryptocurrency) => {
                                                 return token.networks?.map((network) => {
-                                                    const networkStandart = this.getTokenStandart(
+                                                    const networkStandart = getTokenStandart(
                                                             network.symbol
                                                     );
                                                     //@ts-ignore
                                                     const price = this.price / token.rates['usd'];
-                                                    const formatPrice = this.roundUp(
+                                                    const formatPrice = roundUpAmount(
                                                             price.toString(),
                                                             token.stable
                                                     );
@@ -195,10 +196,10 @@ export class TokenStep extends LitElement {
                         ${this.otherCoins &&
                         this.otherCoins.map((token: Cryptocurrency) => {
                             return token.networks?.map((network) => {
-                                const networkStandart = this.getTokenStandart(network.symbol);
+                                const networkStandart = getTokenStandart(network.symbol);
                                 //@ts-ignore
                                 const price = this.price / token.rates['usd'];
-                                const formatPrice = this.roundUp(price.toString(), token.stable);
+                                const formatPrice = roundUpAmount(price.toString(), token.stable);
 
                                 return html`
                                     <div
@@ -259,24 +260,6 @@ export class TokenStep extends LitElement {
                 ></step-footer>
             </div>
         `;
-    }
-
-    private roundUp(number: string, stable: boolean) {
-        const factor = stable ? 1e2 : 1e6;
-        return Math.ceil(Number(number) * factor) / factor;
-    }
-
-    private getTokenStandart(network: string) {
-        switch (network) {
-            case 'ethereum':
-                return 'ERC20';
-            case 'bsc':
-                return 'BEP20';
-            case 'tron':
-                return 'TRC20';
-            default:
-                return '';
-        }
     }
 
     private toggleAccordion() {

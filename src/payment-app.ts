@@ -284,6 +284,8 @@ export class PaymentApp extends LitElement {
                     buttonText: 'Confirm'
                 };
                 this.notificationShow = true;
+
+                this.dispatchErrorEvent('Fetch Products Error', 'Failed to retrieve data for some products.');
             }
         }
 
@@ -316,6 +318,8 @@ export class PaymentApp extends LitElement {
                 buttonText: 'Confirm'
             };
             this.notificationShow = true;
+
+            this.dispatchErrorEvent('Invalid Wallet Address', 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.');
         }
 
         if (this.appStep === 'setWallet' && this.walletAddress && checkWalletAddress(this.walletAddress, this.selectedNetworkSymbol)) {
@@ -362,6 +366,8 @@ export class PaymentApp extends LitElement {
             const invoice = await this.API.invoice.create(params);
             invoiceId = invoice.id;
 
+            this.dispatchInvoiceChangedEvent('created', invoice);
+
         } catch (error) {
             let errorTitle: string = '';
             let errorText: string = '';
@@ -376,12 +382,15 @@ export class PaymentApp extends LitElement {
 
                 errorTitle = 'Validation Error';
                 errorText = `Please review the following fields in your request: ${fieldsError.join(', ')}. Ensure they meet the required format and try again.`;
+
             } else if (error instanceof HttpError) {
                 errorTitle = 'Request Error';
                 errorText = `An error occurred while creating the invoice. Please try again later.`;
+
             } else {
                 errorTitle = 'Server Connection Error';
                 errorText = `We were unable to connect to the server. Please check your internet connection and try again.`;
+
             }
 
             this.notificationData = {
@@ -391,6 +400,8 @@ export class PaymentApp extends LitElement {
             };
             this.notificationShow = true;
             this.creatingInvoice = false;
+
+            this.dispatchErrorEvent(`Invoice Creating ${errorTitle}`, errorText);
         }
 
         if(invoiceWS){
@@ -398,36 +409,42 @@ export class PaymentApp extends LitElement {
             invoiceWS.on(InvoiceStatus.Processing, (invoice) => {
                 console.log('invoice Processing', invoice);
                 this.invoice = invoice;
+                this.dispatchInvoiceChangedEvent(invoice.status, invoice);
                 this.goToStep('payment');
             });
 
             invoiceWS.on(InvoiceStatus.Confirming, (invoice) => {
                 console.log('invoice Confirming', invoice);
                 this.invoice = invoice;
+                this.dispatchInvoiceChangedEvent(invoice.status, invoice);
                 this.goToStep('processing');
             });
 
             invoiceWS.on(InvoiceStatus.Rejected, (invoice) => {
                 console.log('invoice Rejected', invoice);
                 this.invoice = invoice;
+                this.dispatchInvoiceChangedEvent(invoice.status, invoice);
                 this.goToStep('success');
             });
 
             invoiceWS.on(InvoiceStatus.Canceled, (invoice) => {
                 console.log('invoice Cancelled', invoice);
                 this.invoice = invoice;
+                this.dispatchInvoiceChangedEvent(invoice.status, invoice);
                 this.goToStep('success');
             });
 
             invoiceWS.on(InvoiceStatus.Success, (invoice) => {
                 console.log('invoice Success', invoice);
                 this.invoice = invoice;
+                this.dispatchInvoiceChangedEvent(invoice.status, invoice);
                 this.goToStep('success');
             });
 
             invoiceWS.on(InvoiceStatus.Expired, (invoice) => {
                 console.log('invoice Expired', invoice);
                 this.invoice = invoice;
+                this.dispatchInvoiceChangedEvent(invoice.status, invoice);
                 this.goToStep('success');
             });
 
@@ -459,6 +476,7 @@ export class PaymentApp extends LitElement {
                     };
                     this.notificationShow = true;
                     this.creatingInvoice = false;
+                    this.dispatchErrorEvent(`Invoice Creating ${errorTitle}`, errorText);
                 }
 
             }, 1000);
@@ -476,6 +494,7 @@ export class PaymentApp extends LitElement {
                 buttonText: 'Confirm'
             };
             this.notificationShow = true;
+            this.dispatchErrorEvent('Invoice Canceling Error', 'Unable to retrieve the ID of invoice. Please try again later.');
             return;
         }
 
@@ -490,6 +509,7 @@ export class PaymentApp extends LitElement {
                 buttonText: 'Confirm'
             };
             this.cancelingInvoice = false;
+            this.dispatchErrorEvent('Invoice Canceling Error', 'Failed to cancel the invoice. Please try again later.');
             return;
 
         }
@@ -508,6 +528,7 @@ export class PaymentApp extends LitElement {
             this.errorText =
                 'There was an error with creating/receiving an invoice. Please try again later.';
             this.goToStep('error');
+            this.dispatchErrorEvent('Fetch Invoice Error', 'There was an error with creating/receiving an invoice. Please try again later.');
             return;
         }
 
@@ -518,9 +539,13 @@ export class PaymentApp extends LitElement {
             this.productsInfo = await this.getProductsInfo(result.products)
         }
 
+        this.dispatchInvoiceChangedEvent(result.status, result);
+
         if (result.status === 'processing') {
+
             this.goToStep('payment');
         } else if (result.status === 'confirming') {
+
             this.goToStep('processing');
         } else if (
             result.status === 'rejected' ||
@@ -528,42 +553,49 @@ export class PaymentApp extends LitElement {
             result.status === 'success' ||
             result.status === 'expired'
         ) {
+
             this.goToStep('success');
         }
 
         invoiceWS.on(InvoiceStatus.Processing, (invoice) => {
             console.log('invoice Processing', invoice);
             this.invoice = invoice;
+            this.dispatchInvoiceChangedEvent(invoice.status, invoice);
             this.goToStep('payment');
         });
 
         invoiceWS.on(InvoiceStatus.Confirming, (invoice) => {
             console.log('invoice Confirming', invoice);
             this.invoice = invoice;
+            this.dispatchInvoiceChangedEvent(invoice.status, invoice);
             this.goToStep('processing');
         });
 
         invoiceWS.on(InvoiceStatus.Rejected, (invoice) => {
             console.log('invoice Rejected', invoice);
             this.invoice = invoice;
+            this.dispatchInvoiceChangedEvent(invoice.status, invoice);
             this.goToStep('success');
         });
 
         invoiceWS.on(InvoiceStatus.Canceled, (invoice) => {
             console.log('invoice Cancelled', invoice);
             this.invoice = invoice;
+            this.dispatchInvoiceChangedEvent(invoice.status, invoice);
             this.goToStep('success');
         });
 
         invoiceWS.on(InvoiceStatus.Expired, (invoice) => {
             console.log('invoice Expired', invoice);
             this.invoice = invoice;
+            this.dispatchInvoiceChangedEvent(invoice.status, invoice);
             this.goToStep('success');
         });
 
         invoiceWS.on(InvoiceStatus.Success, (invoice) => {
             console.log('invoice Success', invoice);
             this.invoice = invoice;
+            this.dispatchInvoiceChangedEvent(invoice.status, invoice);
             this.goToStep('success');
         });
     }
@@ -601,8 +633,29 @@ export class PaymentApp extends LitElement {
             this.errorText =
                 'Failed to retrieve token data. Please try again later.';
             this.goToStep('error');
-
+            this.dispatchErrorEvent('Fetch Tokens Error', 'Failed to retrieve token data. Please try again later.');
         }
+    }
+
+    private dispatchInvoiceChangedEvent(status: string, invoice: Invoice){
+        const updateStatusEvent = new CustomEvent(`${status}-status-changed`, {
+            detail: {
+                invoice: invoice
+            }
+        });
+        this.dispatchEvent(updateStatusEvent);
+    }
+
+    private dispatchErrorEvent(title: string, text: string){
+        const errorEvent = new CustomEvent('error-event', {
+            detail: {
+                error: {
+                    title,
+                    text
+                }
+            }
+        });
+        this.dispatchEvent(errorEvent);
     }
 
     static styles = css`

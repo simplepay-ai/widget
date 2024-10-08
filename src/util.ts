@@ -18,3 +18,21 @@ export function checkWalletAddress(address: string, networkSymbol: string) {
             return false;
     }
 }
+
+export function getTokenStandart(network: string) {
+    switch (network) {
+        case 'ethereum':
+            return 'ERC20';
+        case 'bsc':
+            return 'BEP20';
+        case 'tron':
+            return 'TRC20';
+        default:
+            return '';
+    }
+}
+
+export function roundUpAmount(number: string, stable: boolean) {
+    const factor = stable ? 1e2 : 1e6;
+    return Math.ceil(Number(number) * factor) / factor;
+}

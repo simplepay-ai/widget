@@ -4,6 +4,7 @@ import QRCode from 'corcojs-qrcode';
 import { PropertyValues } from 'lit';
 import { css, customElement, html, LitElement, property, query } from 'lit-element';
 import {IProduct} from "../types.ts";
+import {getTokenStandart, roundUpAmount} from "../util.ts";
 
 @customElement('processing-step')
 export class ProcessingStep extends LitElement {
@@ -48,11 +49,11 @@ export class ProcessingStep extends LitElement {
         super.connectedCallback();
 
         //@ts-ignore
-        this.formatAmount = this.roundUp(this.invoice?.amount, this.invoice?.cryptocurrency.stable);
+        this.formatAmount = roundUpAmount(this.invoice?.amount, this.invoice?.cryptocurrency.stable);
 
         this.progressMaxNumber = this.getBlocksCount(this.invoice?.network.symbol!);
         this.timeForBlock = this.getTimeForBlock(this.invoice?.network.symbol!);
-        this.tokenStandart = this.getTokenStandart(this.invoice?.network.symbol!);
+        this.tokenStandart = getTokenStandart(this.invoice?.network.symbol!);
         this.progressPercent = Math.round((100 * this.progressNumber) / this.progressMaxNumber);
 
         setInterval(() => this.calcProgress(), this.timeForBlock);
@@ -342,24 +343,6 @@ export class ProcessingStep extends LitElement {
             default:
                 return 0;
         }
-    }
-
-    private getTokenStandart(network: string) {
-        switch (network) {
-            case 'ethereum':
-                return 'ERC20';
-            case 'bsc':
-                return 'BEP20';
-            case 'tron':
-                return 'TRC20';
-            default:
-                return '';
-        }
-    }
-
-    private roundUp(number: string, stable: boolean) {
-        const factor = stable ? 1e2 : 1e6;
-        return Math.ceil(Number(number) * factor) / factor;
     }
 
     private calcProgress() {

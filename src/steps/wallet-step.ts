@@ -1,7 +1,7 @@
 import { Cryptocurrency } from '@simplepay-ai/api-client';
 import { css, html, LitElement, property } from 'lit-element';
 import { customElement } from 'lit/decorators.js';
-import {checkWalletAddress} from "../util.ts";
+import {checkWalletAddress, getTokenStandart} from "../util.ts";
 import {IProduct} from "../types.ts";
 
 @customElement('wallet-step')
@@ -65,7 +65,7 @@ export class WalletStep extends LitElement {
                     .showToken=${true}
                     .token="${{
                         tokenSymbol: this.selectedTokenSymbol,
-                        networkStandart: this.getTokenStandart(this.selectedNetworkSymbol),
+                        networkStandart: getTokenStandart(this.selectedNetworkSymbol),
                         networkSymbol: this.selectedNetworkSymbol
                     }}"
                     .tokens=${this.tokens}
@@ -266,19 +266,6 @@ export class WalletStep extends LitElement {
                 ></step-footer>
             </div>
         `;
-    }
-
-    private getTokenStandart(network: string) {
-        switch (network) {
-            case 'ethereum':
-                return 'ERC20';
-            case 'bsc':
-                return 'BEP20';
-            case 'tron':
-                return 'TRC20';
-            default:
-                return '';
-        }
     }
 
     private pasteData() {

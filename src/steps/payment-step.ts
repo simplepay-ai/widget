@@ -4,6 +4,7 @@ import QRCode from 'corcojs-qrcode';
 import { PropertyValues } from 'lit';
 import { css, html, LitElement, property, query } from 'lit-element';
 import { customElement } from 'lit/decorators.js';
+import {getTokenStandart, roundUpAmount} from "../util.ts";
 
 @customElement('payment-step')
 export class PaymentStep extends LitElement {
@@ -47,8 +48,8 @@ export class PaymentStep extends LitElement {
         super.connectedCallback();
 
         //@ts-ignore
-        this.formatAmount = this.roundUp(this.invoice?.amount, this.invoice?.cryptocurrency.stable);
-        this.tokenStandart = this.getTokenStandart(this.invoice?.network.symbol!);
+        this.formatAmount = roundUpAmount(this.invoice?.amount, this.invoice?.cryptocurrency.stable);
+        this.tokenStandart = getTokenStandart(this.invoice?.network.symbol!);
     }
 
     render() {
@@ -275,24 +276,6 @@ export class PaymentStep extends LitElement {
         });
 
         this.dispatchEvent(cancelInvoiceEvent);
-    }
-
-    private roundUp(number: string, stable: boolean) {
-        const factor = stable ? 1e2 : 1e6;
-        return Math.ceil(Number(number) * factor) / factor;
-    }
-
-    private getTokenStandart(network: string) {
-        switch (network) {
-            case 'ethereum':
-                return 'ERC20';
-            case 'bsc':
-                return 'BEP20';
-            case 'tron':
-                return 'TRC20';
-            default:
-                return '';
-        }
     }
 
     private copyData(event: CustomEvent, text: string) {
