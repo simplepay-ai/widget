@@ -462,8 +462,8 @@ export class PaymentStep extends LitElement {
                         align-items: center;
 
                         svg {
-                            width: 100%;
-                            height: 100%;
+                            width: 256px;
+                            height: 256px;
 
                             rect {
                                 fill: var(--sp-secondary-background);
