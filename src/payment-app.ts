@@ -653,7 +653,9 @@ export class PaymentApp extends LitElement {
                     title,
                     text
                 }
-            }
+            },
+            bubbles: true,
+            composed: true
         });
         this.dispatchEvent(errorEvent);
     }
