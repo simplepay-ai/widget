@@ -641,7 +641,9 @@ export class PaymentApp extends LitElement {
         const updateStatusEvent = new CustomEvent(`${status}-status-changed`, {
             detail: {
                 invoice: invoice
-            }
+            },
+            bubbles: true,
+            composed: true
         });
         this.dispatchEvent(updateStatusEvent);
     }
