@@ -116,11 +116,11 @@ export class StepFooter extends LitElement {
                                     >
                                         <div class="info">
                                             <div class="row">
-                                                <p>Products:</p>
+                                                <p>Items:</p>
                                                 <p>${this.products.length}</p>
                                             </div>
                                             <div class="row">
-                                                <p>Sum:</p>
+                                                <p>Total:</p>
                                                 <p>${this.totalSum} USD</p>
                                             </div>
                                         </div>
