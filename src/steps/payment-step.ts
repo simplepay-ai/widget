@@ -331,7 +331,9 @@ export class PaymentStep extends LitElement {
                 flex: 1;
                 padding: 16px;
                 overflow-y: auto;
-
+                display: flex;
+                flex-direction: column;
+                
                 &::-webkit-scrollbar {
                     width: 1px;
                 }
@@ -441,6 +443,7 @@ export class PaymentStep extends LitElement {
                 }
 
                 .qrcodeWrapper {
+                    flex: 1;
                     position: relative;
                     width: 100%;
                     max-width: 256px;
