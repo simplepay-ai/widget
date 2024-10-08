@@ -112,7 +112,7 @@ export class StepFooter extends LitElement {
                         !this.hasCancelButton && this.productsInfo.length === 0
                             ? html`
                                     <div class="product">
-                                        <div class="image">
+                                        <div class="image placeholder">
                                             <img
                                                     src="https://cdn4.iconfinder.com/data/icons/e-commerce-289/64/ecomerce_shopping_shippement_box_product-512.png"
                                                     alt="product image"

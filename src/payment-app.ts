@@ -356,7 +356,6 @@ export class PaymentApp extends LitElement {
                     cryptocurrency: this.selectedTokenSymbol,
                     currency: 'USD',
                     appId: this.appId,
-                    products: this.products,
                     price: Number(this.price)
                 }
             }
