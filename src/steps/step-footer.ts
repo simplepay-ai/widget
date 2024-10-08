@@ -418,7 +418,7 @@ export class StepFooter extends LitElement {
             .product {
                 display: flex;
                 gap: 7px;
-                z-index: 1;
+                z-index: 2;
                 position: relative;
 
                 .image {
@@ -519,7 +519,7 @@ export class StepFooter extends LitElement {
             }
 
             .mainButton {
-                z-index: 1;
+                z-index: 2;
                 position: relative;
                 max-width: 175px;
                 user-select: none;
@@ -566,7 +566,7 @@ export class StepFooter extends LitElement {
             }
             
             .secondaryButton{
-                z-index: 1;
+                z-index: 2;
                 position: relative;
                 max-width: 175px;
                 user-select: none;
@@ -602,7 +602,7 @@ export class StepFooter extends LitElement {
             }
 
             .timerWrapper {
-                z-index: 1;
+                z-index: 2;
                 position: relative;
                 display: flex;
                 align-items: center;
@@ -665,6 +665,11 @@ export class StepFooter extends LitElement {
 
                 .mainButton {
                     color: var(--sp-primary-font) !important;
+                }
+                
+                .secondaryButton{
+                    color: var(--sp-primary-background) !important;
+                    background: var(--sp-primary-font) !important;
                 }
 
                 .timerWrapper {
