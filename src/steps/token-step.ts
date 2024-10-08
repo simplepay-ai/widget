@@ -2,9 +2,14 @@ import {Cryptocurrency} from '@simplepay-ai/api-client';
 import {PropertyValues} from 'lit';
 import {css, html, LitElement, property, query} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
+import {IProduct} from "../types.ts";
 
 @customElement('token-step')
 export class TokenStep extends LitElement {
+
+    @property({ type: Array })
+    productsInfo: IProduct[] = [];
+
     @property({type: Boolean})
     dark: boolean = false;
 
@@ -249,6 +254,7 @@ export class TokenStep extends LitElement {
                         .hasButton=${true}
                         .buttonDisabled=${this.buttonDisabled}
                         .buttonText=${'Next'}
+                        .productsInfo=${this.productsInfo}
                         @footerButtonClick=${this.dispatchNextStep}
                 ></step-footer>
             </div>

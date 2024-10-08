@@ -9,7 +9,7 @@ import {
 } from '@simplepay-ai/api-client';
 import { css, html, LitElement, property } from 'lit-element';
 import { customElement } from 'lit/decorators.js';
-import {AppStep, INotification} from './types';
+import {AppStep, INotification, IProduct} from './types';
 import './steps/step-header.ts';
 import './steps/step-footer.ts';
 import './steps/loading-step.ts';
@@ -26,6 +26,11 @@ import './steps/network-icon.ts';
 import './steps/custom-notification.ts';
 import {checkWalletAddress} from "./util.ts";
 
+interface IProductInvoice {
+    id: string,
+    count: number
+}
+
 @customElement('payment-app')
 export class PaymentApp extends LitElement {
     @property({
@@ -37,6 +42,9 @@ export class PaymentApp extends LitElement {
         type: String
     })
     price: string = '';
+
+    @property({ type: Array })
+    products: IProductInvoice[] = [];
 
     @property({ type: String })
     clientId: string = '';
@@ -95,6 +103,9 @@ export class PaymentApp extends LitElement {
     @property({ attribute: false })
     private cancelingInvoice: Boolean = false;
 
+    @property({ attribute: false })
+    private productsInfo: IProduct[] = [];
+
     constructor() {
         super();
 
@@ -130,7 +141,20 @@ export class PaymentApp extends LitElement {
             return;
         }
 
-        if (!this.price) {
+        if(this.products && this.products.length > 0){
+
+            const resultProductsInfo: IProduct[] = await this.getProductsInfo(this.products);
+            this.productsInfo = resultProductsInfo;
+
+            if(resultProductsInfo.length > 0){
+                this.priceAvailable = true;
+                this.goToStep('setToken');
+                return;
+            }
+
+        }
+
+        if(!this.price){
             this.goToStep('setPrice');
             return;
         }
@@ -176,6 +200,7 @@ export class PaymentApp extends LitElement {
                           .selectedNetworkSymbol=${this.selectedNetworkSymbol}
                           .price=${this.price}
                           .returnButtonShow=${!this.priceAvailable}
+                          .productsInfo=${this.productsInfo}
                           @updateSelectedToken=${(event: CustomEvent) => {
                               this.selectedTokenSymbol = event.detail.tokenSymbol;
                               this.selectedNetworkSymbol = event.detail.networkSymbol;
@@ -193,6 +218,7 @@ export class PaymentApp extends LitElement {
                           .selectedTokenSymbol=${this.selectedTokenSymbol}
                           .selectedNetworkSymbol=${this.selectedNetworkSymbol}
                           .creatingInvoice=${this.creatingInvoice}
+                          .productsInfo=${this.productsInfo}
                           @updateWalletAddress=${(event: CustomEvent) =>
                               (this.walletAddress = event.detail.walletAddress)}
                           @updateNotification=${(event: CustomEvent) =>
@@ -218,6 +244,7 @@ export class PaymentApp extends LitElement {
                           .dark=${this.dark}
                           .price=${this.price}
                           .invoice=${this.invoice}
+                          .productsInfo=${this.productsInfo}
                           @nextStep=${this.nextStep}
                           @returnBack=${this.prevStep}
                       ></processing-step>`
@@ -228,12 +255,40 @@ export class PaymentApp extends LitElement {
                           .price=${this.price}
                           .invoice=${this.invoice}
                           .backToStoreUrl=${this.backToStoreUrl}
+                          .productsInfo=${this.productsInfo}
                           @nextStep=${this.nextStep}
                           @returnBack=${this.prevStep}
                       ></success-step>`
                     : ''}
             </div>
         `;
+    }
+
+    private async getProductsInfo(products: IProductInvoice[]){
+        const result = [];
+        for(let product of products){
+
+            try{
+
+                const info = await this.API.product.get(product.id);
+                if(info){
+                    result.push({
+                        ...info,
+                        count: products.find((item) => item.id === product.id)?.count || 0
+                    });
+                }
+
+            }catch (e){
+                this.notificationData = {
+                    title: 'Get Products Failed',
+                    text: 'Failed to retrieve data for some products.',
+                    buttonText: 'Confirm'
+                };
+                this.notificationShow = true;
+            }
+        }
+
+        return result;
     }
 
     private updateNotification(event: CustomEvent) {
@@ -278,16 +333,35 @@ export class PaymentApp extends LitElement {
         try {
 
             invoiceWS = ws.appClientInvoice(this.appId, this.clientId);
-            const invoice = await this.API.invoice.create({
-                type: 'payment',
-                clientId: this.clientId,
-                from: this.walletAddress,
-                network: this.selectedNetworkSymbol,
-                cryptocurrency: this.selectedTokenSymbol,
-                currency: 'USD',
-                price: Number(this.price),
-                appId: this.appId
-            });
+
+            let params;
+
+            if(this.products.length > 0){
+                params = {
+                    type: 'payment',
+                    clientId: this.clientId,
+                    from: this.walletAddress,
+                    network: this.selectedNetworkSymbol,
+                    cryptocurrency: this.selectedTokenSymbol,
+                    currency: 'USD',
+                    appId: this.appId,
+                    products: this.products
+                }
+            }else{
+                params = {
+                    type: 'payment',
+                    clientId: this.clientId,
+                    from: this.walletAddress,
+                    network: this.selectedNetworkSymbol,
+                    cryptocurrency: this.selectedTokenSymbol,
+                    currency: 'USD',
+                    appId: this.appId,
+                    products: this.products,
+                    price: Number(this.price)
+                }
+            }
+
+            const invoice = await this.API.invoice.create(params);
             invoiceId = invoice.id;
 
         } catch (error) {
@@ -441,6 +515,10 @@ export class PaymentApp extends LitElement {
 
         this.invoice = result;
         this.price = result.price || '';
+
+        if(result.products && result.products.length > 0){
+            this.productsInfo = await this.getProductsInfo(result.products)
+        }
 
         if (result.status === 'processing') {
             this.goToStep('payment');

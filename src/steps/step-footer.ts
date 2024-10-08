@@ -1,8 +1,13 @@
 import {css, html, LitElement, property} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
+import {IProduct} from "../types.ts";
 
 @customElement('step-footer')
 export class StepFooter extends LitElement {
+
+    @property({ type: Array })
+    productsInfo: IProduct[] = [];
+
     @property({type: Boolean})
     dark: boolean = false;
 
@@ -54,10 +59,19 @@ export class StepFooter extends LitElement {
     @property({attribute: false})
     progressCurrent: number = 252;
 
+    @property({ attribute: false })
+    totalSum: number = 0;
+
+    @property({ attribute: false })
+    productInfoOpen: boolean = false;
+
+    @property({ attribute: false })
+    productInfoOverlayActive: boolean = false;
+
     async connectedCallback() {
         super.connectedCallback();
 
-        if (this.hasTimer) {
+        if(this.hasTimer) {
             this.timerTimeStartLocal = this.timerTimeStart;
             this.timerTimeCurrentLocal = this.timerTimeCurrent;
 
@@ -67,6 +81,12 @@ export class StepFooter extends LitElement {
                 (this.timerTimeStartLocal - this.timerTimeCurrentLocal) * oneStep;
 
             setInterval(() => this.calcTimer(oneStep), 1000);
+        }
+
+        if(this.productsInfo && this.productsInfo.length > 0){
+            for(let product of this.productsInfo){
+                this.totalSum += product.count * product.prices[0].price
+            }
         }
     }
 
@@ -85,7 +105,12 @@ export class StepFooter extends LitElement {
                                         Cancel payment
                                     </button>
                                 `
-                                : html`
+                                : ''
+                }
+                
+                ${
+                        !this.hasCancelButton && this.productsInfo.length === 0
+                            ? html`
                                     <div class="product">
                                         <div class="image">
                                             <img
@@ -95,11 +120,58 @@ export class StepFooter extends LitElement {
                                         </div>
 
                                         <div class="price">
-                                            <p>Total price:</p>
+                                            <p>Total:</p>
                                             <p>${this.price ? `${this.price} USD` : 'Custom'}</p>
                                         </div>
                                     </div>
                                 `
+                                : ''
+                }
+
+                ${
+                        !this.hasCancelButton && this.productsInfo.length > 0
+                                ? html`
+                                    <div class="product">
+                                        <div class=${`image ${ (this.productsInfo.length !== 1 || !this.productsInfo[0].image) && 'placeholder' }`}>
+                                            <img
+                                                    src=${ (this.productsInfo.length === 1 && this.productsInfo[0].image) ? this.productsInfo[0].image : 'https://cdn4.iconfinder.com/data/icons/e-commerce-289/64/ecomerce_shopping_shippement_box_product-512.png' }
+                                                    alt="product image"
+                                            />
+                                        </div>
+
+                                        <div class="productsInfo"
+                                             @click=${this.toggleProductInfo}
+                                        >
+                                            <div class="info">
+                                                <div class="row">
+                                                    <p>Items:</p>
+                                                    <p>${this.productsInfo.length}</p>
+                                                </div>
+                                                <div class="row">
+                                                    <p>Total:</p>
+                                                    <p>${parseFloat(this.totalSum.toString()).toFixed(2)} USD</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="toggleButton">
+                                                <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="24"
+                                                        height="24"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        stroke-width="2"
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                >
+                                                    <path d="m6 9 6 6 6-6" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                                : ''
                 }
 
                 ${this.hasButton
@@ -200,7 +272,77 @@ export class StepFooter extends LitElement {
                         `
                         : ''}
             </div>
+
+            ${
+                    this.productsInfo.length > 0
+                            ? html`
+                                <div class="fullProductInfo ${ (this.productInfoOpen) ? 'show' : '' }">
+                                    
+                                    <div @click=${this.toggleProductInfo} class="overlay ${ (this.productInfoOverlayActive) ? 'active' : '' }"></div>
+                                    
+                                    <div class="content">
+                                        <div class="titleWrapper">
+                                            <p class="infoTitle">Products</p>
+                                            <div class="closeButton"
+                                                 @click=${this.toggleProductInfo}
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="productsList">
+                                            
+                                            ${
+                                                this.productsInfo.map((item: IProduct) => html`
+                                                    <div class="productItem">
+
+                                                        <div class=${`imageWrapper ${ (!item.image) && 'placeholder' }`}>
+                                                            <img src=${ (item.image) ? item.image : 'https://cdn4.iconfinder.com/data/icons/e-commerce-289/64/ecomerce_shopping_shippement_box_product-512.png' } alt="product image">
+                                                        </div>
+
+                                                        <div class="info">
+                                                            <p class="name">${item.name}</p>
+                                                            <p class="description">${item.description}</p>
+                                                        </div>
+
+                                                        <div class="priceWrapper">
+                                                            <p class="price">${item.prices[0].price} ${item.prices[0].currency.symbol}</p>
+                                                            <p class="count">Count: ${item.count}</p>
+                                                        </div>
+
+                                                    </div>
+                                                `)
+                            }
+
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                `
+                            : ''
+            }
         `;
+    }
+
+    private toggleProductInfo(){
+
+        if(this.productInfoOpen){
+
+            this.productInfoOverlayActive = !this.productInfoOverlayActive;
+
+            setTimeout(() => {
+                this.productInfoOpen = !this.productInfoOpen;
+            }, 150)
+
+        }else{
+            this.productInfoOpen = !this.productInfoOpen;
+
+            setTimeout(() => {
+                this.productInfoOverlayActive = !this.productInfoOverlayActive;
+            }, 150)
+        }
+
+
     }
 
     private calcTimer(step: number) {
@@ -247,10 +389,12 @@ export class StepFooter extends LitElement {
             border-top: 1px solid var(--sp-border);
             padding: 16px;
             background: var(--sp-primary-background);
-
+            z-index: 10;
+            position: relative;
+            
             .product {
                 display: flex;
-                gap: 12px;
+                gap: 7px;
 
                 .image {
                     display: flex;
@@ -261,11 +405,20 @@ export class StepFooter extends LitElement {
                     width: 40px;
                     height: 40px;
                     border-radius: 8px;
+                    overflow: hidden;
 
                     img {
-                        width: 32px;
-                        height: 32px;
+                        width: 40px;
+                        height: 40px;
                         object-fit: cover;
+                    }
+                    
+                    &.placeholder{
+                        img {
+                            width: 32px;
+                            height: 32px;
+                            object-fit: cover;
+                        }
                     }
                 }
 
@@ -274,6 +427,52 @@ export class StepFooter extends LitElement {
                     flex-direction: column;
                     justify-content: center;
                     text-align: left;
+
+                    p {
+                        white-space: nowrap;
+                        font-size: 12px;
+                        line-height: 16px;
+                        font-weight: 700;
+                        color: var(--sp-primary-font);
+                    }
+                }
+
+                .productsInfo {
+                    user-select: none;
+                    padding-left: 5px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: left;
+                    gap: 5px;
+                    cursor: pointer;
+                    border-radius: 6px;
+                    transition-property: all;
+                    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                    transition-duration: 150ms;
+
+                    &:hover,
+                    &:active {
+                        background: color-mix(in srgb,
+                        var(--sp-secondary-background) 60%,
+                        transparent);
+                    }
+
+                    .toggleButton {
+                        width: 18px;
+                        color: var(--sp-secondary-font);
+                        aspect-ratio: 1;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transform: rotate(-90deg);
+                    }
+
+                    .row {
+                        display: flex;
+                        align-items: center;
+                        gap: 4px;
+                    }
 
                     p {
                         white-space: nowrap;
@@ -434,6 +633,180 @@ export class StepFooter extends LitElement {
                                 stroke: color-mix(in srgb,
                                 var(--sp-secondary-background) 15%,
                                 transparent) !important;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .fullProductInfo {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: flex-end;
+            padding-bottom: 73px;
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 350ms;
+
+            &.show {
+                top: 0;
+            }
+
+            .overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 1;
+                background: rgba(0, 0, 0, 0);
+                transition-property: all;
+                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                transition-duration: 350ms;
+
+                &.active {
+                    background: rgba(0, 0, 0, 0.75);
+                }
+            }
+
+            .content {
+                width: 100%;
+                height: auto;
+                max-height: 50%;
+                background-color: var(--sp-primary-background);
+                z-index: 2;
+                border-radius: 25px 25px 0 0;
+                border-top: 1px solid var(--sp-border);
+                padding: 1rem 4px;
+                display: flex;
+                flex-direction: column;
+
+                .titleWrapper{
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+
+                .infoTitle {
+                    font-size: 20px;
+                    line-height: 28px;
+                    font-weight: 700;
+                    color: var(--sp-primary-font);
+                    padding: 0 8px;
+                }
+
+                .closeButton{
+                    margin-right: 8px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    cursor: pointer;
+                    user-select: none;
+                    transition-property: all;
+                    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                    transition-duration: 350ms;
+                    width: 25px;
+                    height: 25px;
+
+                    svg{
+                        width: 20px;
+                        height: 20px;
+                    }
+
+                    &:hover,
+                    &:active{
+                        opacity: 0.7;
+                    }
+                }
+
+                .productsList {
+                    margin-top: 16px;
+                    flex: 1;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 16px;
+                    width: 100%;
+                    padding: 0 4px;
+
+                    &::-webkit-scrollbar {
+                        width: 2px;
+                    }
+
+                    &::-webkit-scrollbar-track {
+                        background: transparent;
+                    }
+
+                    &::-webkit-scrollbar-thumb {
+                        background: var(--sp-border);
+                    }
+
+                    .productItem {
+                        display: flex;
+                        align-items: flex-start;
+                        gap: 12px;
+                        margin: 0 auto;
+                        width: 95%;
+
+                        .imageWrapper {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            border: 1px solid var(--sp-border);
+                            background: var(--sp-secondary-background);
+                            width: 40px;
+                            height: 40px;
+                            border-radius: 8px;
+                            overflow: hidden;
+
+                            img {
+                                width: 40px;
+                                height: 40px;
+                                object-fit: cover;
+                            }
+                            
+                            &.placeholder{
+                                img {
+                                    width: 32px;
+                                    height: 32px;
+                                    object-fit: cover;
+                                }
+                            }
+                        }
+
+                        .info {
+                            flex: 1;
+
+                            .name {
+                                font-size: 14px;
+                                font-weight: 500;
+                            }
+
+                            .description {
+                                margin-top: 6px;
+                                font-size: 12px;
+                                color: var(--sp-secondary-font);
+                            }
+                        }
+
+                        .priceWrapper {
+                            .price {
+                                font-size: 14px;
+                                font-weight: 500;
+                                text-align: end;
+                            }
+
+                            .count {
+                                margin-top: 6px;
+                                font-size: 12px;
+                                color: var(--sp-secondary-font);
+                                text-align: end;
                             }
                         }
                     }

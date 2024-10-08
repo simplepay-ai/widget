@@ -1,3 +1,5 @@
+import {Currency} from "@simplepay-ai/api-client";
+
 export type AppStep =
     | 'loading'
     | 'error'
@@ -14,3 +16,20 @@ export interface INotification {
     text?: String;
     buttonText?: String;
 }
+
+export interface IProduct {
+    id: string;
+    name: string;
+    description: string | null;
+    image: string | null;
+    createdAt: string;
+    updatedAt: string | null;
+    prices: IProductPrice[];
+    count: number;
+}
+
+export interface IProductPrice {
+    currency: Currency;
+    price: number;
+}
+
