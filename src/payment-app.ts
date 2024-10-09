@@ -276,11 +276,14 @@ export class PaymentApp extends LitElement {
     }
 
     private setTheme(theme: AppTheme){
-        const currentThemeConfig = themesConfig.themes[theme];
 
-        for(const colorName of Object.keys(currentThemeConfig)){
-            const colorValue = currentThemeConfig[colorName];
-            document.documentElement.style.setProperty(colorName, colorValue);
+        if(theme !== 'custom'){
+            const currentThemeConfig: any = themesConfig.themes[theme];
+
+            for(const colorName of Object.keys(currentThemeConfig)){
+                const colorValue = currentThemeConfig[colorName];
+                document.documentElement.style.setProperty(colorName, colorValue);
+            }
         }
 
     }

@@ -1,4 +1,4 @@
-import { css, html, LitElement, property } from 'lit-element';
+import { css, html, LitElement } from 'lit-element';
 import { customElement } from 'lit/decorators.js';
 
 @customElement('loading-step')
