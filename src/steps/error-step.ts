@@ -9,9 +9,6 @@ export class ErrorStep extends LitElement {
     @property({ type: String })
     text: string = '';
 
-    @property({ type: Boolean })
-    dark: boolean = false;
-
     render() {
         return html`
             <div class="stepContent">
@@ -43,7 +40,7 @@ export class ErrorStep extends LitElement {
             text-align: center;
             gap: 16px;
             overflow-y: auto;
-            background: var(--sp-primary-background);
+            background: var(--sp-widget-bg-color);
 
             &::-webkit-scrollbar {
                 width: 1px;
@@ -54,17 +51,17 @@ export class ErrorStep extends LitElement {
             }
 
             &::-webkit-scrollbar-thumb {
-                background: var(--sp-border);
+                background: var(--sp-widget-secondary-bg-color);
             }
 
             h2 {
-                color: var(--sp-primary-font);
+                color: var(--sp-widget-text-color);
                 font-weight: 700;
                 font-size: 20px;
             }
 
             p {
-                color: var(--sp-secondary-font);
+                color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
                 font-size: 14px;
                 line-height: 20px;
             }

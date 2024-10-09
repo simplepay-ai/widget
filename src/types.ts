@@ -1,5 +1,7 @@
 import {Currency, Product} from "@simplepay-ai/api-client";
 
+export type AppTheme = 'light' | 'dark' | 'custom';
+
 export type AppStep =
     | 'loading'
     | 'error'

@@ -4,7 +4,7 @@ import { customElement } from 'lit/decorators.js';
 @customElement('price-step')
 export class PriceStep extends LitElement {
     @property({ type: Boolean })
-    dark: boolean = false;
+    darkTheme: boolean = false;
 
     @property({ type: String })
     price: string = '';
@@ -37,9 +37,9 @@ export class PriceStep extends LitElement {
 
     render() {
         return html`
-            <div class=${`stepWrapper ${this.dark ? 'dark' : ''}`}>
+            <div class=${`stepWrapper ${this.darkTheme ? 'dark' : ''}`}>
                 <step-header
-                    .dark=${this.dark}
+                    .darkTheme=${this.darkTheme}
                     .title=${'Enter the amount'}
                     .hasBackButton=${this.returnButtonShow}
                 ></step-header>
@@ -64,7 +64,7 @@ export class PriceStep extends LitElement {
                 </div>
 
                 <step-footer
-                    .dark=${this.dark}
+                    .darkTheme=${this.darkTheme}
                     .price=${this.price}
                     .hasButton=${true}
                     .buttonDisabled=${this.buttonDisabled}
@@ -158,7 +158,7 @@ export class PriceStep extends LitElement {
                 }
 
                 &::-webkit-scrollbar-thumb {
-                    background: var(--sp-border);
+                    background: var(--sp-widget-secondary-bg-color);
                 }
 
                 label {
@@ -170,18 +170,10 @@ export class PriceStep extends LitElement {
                 .labelText {
                     font-size: 13px;
                     line-height: 20px;
-                    color: var(--sp-primary-font);
+                    color: var(--sp-widget-text-color);
                     padding-left: 8px;
                     font-weight: 500;
                     text-align: left;
-                }
-
-                .labelError {
-                    margin-top: 8px;
-                    padding-left: 16px;
-                    font-size: 12px;
-                    line-height: 20px;
-                    color: #dc2828;
                 }
 
                 input {
@@ -190,21 +182,21 @@ export class PriceStep extends LitElement {
                     height: 40px;
                     width: 100%;
                     border-radius: 6px;
-                    border: 1px solid var(--sp-border);
-                    background: var(--sp-primary-background);
+                    border: 1px solid var(--sp-widget-hint-color);
+                    background: var(--sp-widget-bg-color);
                     padding: 8px 12px;
                     font-size: 16px;
                     line-height: 20px;
-                    color: var(--sp-primary-font);
+                    color: var(--sp-widget-text-color);
 
                     &::placeholder {
                         font-size: 14px;
                         line-height: 20px;
-                        color: var(--sp-secondary-font);
+                        color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
                     }
 
                     &:focus-visible {
-                        outline: 2px solid var(--sp-accent);
+                        outline: 2px solid var(--sp-widget-link-color);
                     }
                 }
             }
@@ -213,8 +205,13 @@ export class PriceStep extends LitElement {
                 input {
                     background: color-mix(
                         in srgb,
-                        var(--sp-secondary-background) 15%,
+                        var(--sp-widget-secondary-bg-color) 15%,
                         transparent
+                    ) !important;
+                    border-color: color-mix(
+                            in srgb,
+                            var(--sp-widget-hint-color) 15%,
+                            transparent
                     ) !important;
                 }
             }

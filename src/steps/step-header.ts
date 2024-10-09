@@ -5,7 +5,7 @@ import { customElement } from 'lit/decorators.js';
 @customElement('step-header')
 export class StepHeader extends LitElement {
     @property({ type: Boolean })
-    dark: boolean = false;
+    darkTheme: boolean = false;
 
     @property({ type: String })
     title: string = '';
@@ -50,7 +50,7 @@ export class StepHeader extends LitElement {
 
     render() {
         return html`
-            <div class=${`stepHeader ${this.dark ? 'dark' : ''}`}>
+            <div class=${`stepHeader ${this.darkTheme ? 'dark' : ''}`}>
                 <div class="stepTitle">
                     <div class="leftSection">
                         ${this.hasBackButton
@@ -181,8 +181,8 @@ export class StepHeader extends LitElement {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--sp-border);
-            background: var(--sp-primary-background);
+            border-bottom: 1px solid var(--sp-widget-hint-color);
+            background: var(--sp-widget-bg-color);
             padding: 16px;
 
             .stepTitle {
@@ -204,18 +204,17 @@ export class StepHeader extends LitElement {
                         display: flex;
                         justify-content: center;
                         align-items: center;
-                        background: var(--sp-accent);
+                        background: var(--sp-widget-button-color);
                         width: 32px;
                         height: 32px;
                         border-radius: 50%;
-                        transition-property: color, background-color, border-color,
-                            text-decoration-color, fill, stroke;
+                        transition-property: all;
                         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                         transition-duration: 150ms;
 
                         &:hover,
                         &:active {
-                            background: color-mix(in srgb, var(--sp-accent) 90%, transparent);
+                            background: color-mix(in srgb, var(--sp-widget-button-color) 90%, transparent);
                         }
 
                         &:disabled {
@@ -225,7 +224,7 @@ export class StepHeader extends LitElement {
                         }
 
                         svg {
-                            stroke: var(--sp-primary-background);
+                            stroke: var(--sp-widget-button-text-color);
                             width: 16px;
                             height: 16px;
                         }
@@ -235,7 +234,7 @@ export class StepHeader extends LitElement {
                         font-size: 20px;
                         line-height: 28px;
                         font-weight: 700;
-                        color: var(--sp-primary-font);
+                        color: var(--sp-widget-text-color);
 
                         &:first-letter {
                             text-transform: capitalize;
@@ -248,7 +247,7 @@ export class StepHeader extends LitElement {
                     align-items: center;
                     gap: 4px;
                     font-weight: 700;
-                    color: var(--sp-primary-font);
+                    color: var(--sp-widget-text-color);
                     flex: 1;
                     justify-content: end;
 
@@ -257,8 +256,8 @@ export class StepHeader extends LitElement {
 
                         .tokenIcon {
                             position: relative;
-                            background: var(--sp-primary-background);
-                            border: 1px solid var(--sp-border);
+                            background: var(--sp-widget-bg-color);
+                            border: 1px solid var(--sp-widget-hint-color);
                             width: 32px;
                             height: 32px;
                             border-radius: 50%;
@@ -270,7 +269,7 @@ export class StepHeader extends LitElement {
                             svg {
                                 width: 16px;
                                 height: 16px;
-                                stroke: var(--sp-accent);
+                                stroke: var(--sp-widget-link-color);
                             }
                         }
 
@@ -278,8 +277,8 @@ export class StepHeader extends LitElement {
                             position: absolute;
                             bottom: -2px;
                             right: -3px;
-                            background: var(--sp-primary-background);
-                            border: 1px solid var(--sp-border);
+                            background: var(--sp-widget-bg-color);
+                            border: 1px solid var(--sp-widget-hint-color);
                             width: 16px;
                             height: 16px;
                             border-radius: 50%;
@@ -291,17 +290,17 @@ export class StepHeader extends LitElement {
                             svg {
                                 width: 16px;
                                 height: 16px;
-                                stroke: var(--sp-accent);
+                                stroke: var(--sp-widget-link-color);
                             }
                         }
                     }
 
                     .badge {
-                        color: var(--sp-secondary-font);
+                        color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
                         font-weight: 700;
                         padding: 2px 4px;
-                        background: var(--sp-secondary-background);
-                        border: 1px solid var(--sp-border);
+                        background: var(--sp-widget-secondary-bg-color);
+                        border: 1px solid var(--sp-widget-hint-color);
                         font-size: 10px;
                         border-radius: 4px;
 
@@ -311,12 +310,12 @@ export class StepHeader extends LitElement {
                             gap: 6px;
                             padding: 4px;
                             font-size: 12px;
-                            color: var(--sp-secondary-font);
+                            color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
                             font-weight: 700;
 
                             .network {
                                 border-radius: 50%;
-                                background-color: var(--sp-primary-background);
+                                background: var(--sp-widget-bg-color);
                                 width: 17px;
                                 aspect-ratio: 1;
                             }
@@ -324,10 +323,10 @@ export class StepHeader extends LitElement {
                     }
 
                     .shareButton {
-                        border: 1px solid var(--sp-border);
+                        border: 1px solid var(--sp-widget-hint-color);
                         border-radius: 6px;
-                        color: var(--sp-primary-font);
-                        background: var(--sp-primary-background);
+                        color: var(--sp-widget-text-color);
+                        background: var(--sp-widget-secondary-bg-color);
                         cursor: pointer;
                         display: flex;
                         align-items: center;
@@ -347,31 +346,38 @@ export class StepHeader extends LitElement {
 
             &.dark {
                 background: color-mix(
-                    in srgb,
-                    var(--sp-secondary-background) 15%,
-                    transparent
+                        in srgb,
+                        var(--sp-widget-secondary-bg-color) 15%,
+                        transparent
+                ) !important;
+                border-color: color-mix(
+                        in srgb,
+                        var(--sp-widget-hint-color) 15%,
+                        transparent
                 ) !important;
 
-                .backButton {
-                    path {
-                        stroke: var(--sp-primary-font) !important;
-                    }
-                }
-
                 .badge {
-                    color: var(--sp-primary-background) !important;
-                    background: var(--sp-primary-font) !important;
+                    color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent) !important;
+                    background: var(--sp-widget-bg-color) !important;
+                    border-color: color-mix(
+                            in srgb,
+                            var(--sp-widget-hint-color) 15%,
+                            transparent
+                    ) !important;
 
-                    &.withAddress {
-                        .network {
-                            background: var(--sp-secondary-background) !important;
-                        }
+                    .network{
+                        background: color-mix(
+                                in srgb,
+                                var(--sp-widget-secondary-bg-color) 15%,
+                                transparent
+                        ) !important;
                     }
                 }
 
                 .shareButton {
-                    color: var(--sp-primary-background) !important;
-                    background: var(--sp-primary-font) !important;
+                    color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent) !important;
+                    background: var(--sp-widget-bg-color) !important;
+                    border-color: var(--sp-widget-bg-color) !important;
                 }
             }
         }

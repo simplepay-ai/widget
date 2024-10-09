@@ -9,7 +9,7 @@ export class StepFooter extends LitElement {
     productsInfo: IProduct[] = [];
 
     @property({type: Boolean})
-    dark: boolean = false;
+    darkTheme: boolean = false;
 
     @property({type: String})
     price: string = '';
@@ -92,7 +92,7 @@ export class StepFooter extends LitElement {
 
     render() {
         return html`
-            <div class=${`stepFooter ${this.dark ? 'dark' : ''}`}>
+            <div class=${`stepFooter ${this.darkTheme ? 'dark' : ''}`}>
                 
                 <div class="layer1"></div>
                 <div class="layer2"></div>
@@ -279,24 +279,24 @@ export class StepFooter extends LitElement {
             ${
                     this.productsInfo.length > 0
                             ? html`
-                                <div class="fullProductInfo ${ (this.productInfoOpen) ? 'show' : '' }">
+                                <div class="fullProductInfo ${this.darkTheme ? 'dark' : ''} ${ (this.productInfoOpen) ? 'show' : '' }">
                                     
                                     <div @click=${this.toggleProductInfo} class="overlay ${ (this.productInfoOverlayActive) ? 'active' : '' }"></div>
-                                    
-                                    <div class="content">
-                                        <div class="titleWrapper">
-                                            <p class="infoTitle">Products</p>
-                                            <div class="closeButton"
-                                                 @click=${this.toggleProductInfo}
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+
+                                    <div class="contentWrapper">
+                                        <div class="content">
+                                            <div class="titleWrapper">
+                                                <p class="infoTitle">Products</p>
+                                                <div class="closeButton"
+                                                     @click=${this.toggleProductInfo}
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                                                </div>
                                             </div>
-                                        </div>
-                                        
-                                        <div class="productsList">
-                                            
-                                            ${
-                                                this.productsInfo.map((item: IProduct) => html`
+                                            <div class="productsList">
+
+                                                ${
+                                                        this.productsInfo.map((item: IProduct) => html`
                                                     <div class="productItem">
 
                                                         <div class=${`imageWrapper ${ (!item.image) && 'placeholder' }`}>
@@ -315,8 +315,9 @@ export class StepFooter extends LitElement {
 
                                                     </div>
                                                 `)
-                            }
+                                                }
 
+                                            </div>
                                         </div>
                                     </div>
                                     
@@ -389,9 +390,9 @@ export class StepFooter extends LitElement {
             display: flex;
             justify-content: space-between;
             gap: 16px;
-            border-top: 1px solid var(--sp-border);
+            border-top: 1px solid var(--sp-widget-hint-color);
             padding: 16px;
-            background: var(--sp-primary-background);
+            background: var(--sp-widget-bg-color);
             z-index: 10;
             position: relative;
             
@@ -412,7 +413,7 @@ export class StepFooter extends LitElement {
                 width: 100%;
                 height: 100%;
                 z-index: 1;
-                background: var(--sp-primary-background);
+                background: var(--sp-widget-bg-color);
             }
             
             .product {
@@ -425,8 +426,8 @@ export class StepFooter extends LitElement {
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    border: 1px solid var(--sp-border);
-                    background: var(--sp-secondary-background);
+                    border: 1px solid var(--sp-widget-hint-color);
+                    background: var(--sp-widget-secondary-bg-color);
                     width: 40px;
                     height: 40px;
                     border-radius: 8px;
@@ -458,7 +459,7 @@ export class StepFooter extends LitElement {
                         font-size: 12px;
                         line-height: 16px;
                         font-weight: 700;
-                        color: var(--sp-primary-font);
+                        color: var(--sp-widget-text-color);
                     }
                 }
 
@@ -479,13 +480,13 @@ export class StepFooter extends LitElement {
                     &:hover,
                     &:active {
                         background: color-mix(in srgb,
-                        var(--sp-secondary-background) 60%,
+                        var(--sp-widget-secondary-bg-color) 60%,
                         transparent);
                     }
 
                     .toggleButton {
                         width: 18px;
-                        color: var(--sp-secondary-font);
+                        color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
                         aspect-ratio: 1;
                         display: flex;
                         align-items: center;
@@ -504,7 +505,7 @@ export class StepFooter extends LitElement {
                         font-size: 12px;
                         line-height: 16px;
                         font-weight: 700;
-                        color: var(--sp-primary-font);
+                        color: var(--sp-widget-text-color);
                     }
                 }
             }
@@ -534,17 +535,16 @@ export class StepFooter extends LitElement {
                 width: 100%;
                 height: 40px;
                 padding: 16px 8px;
-                color: var(--sp-primary-background);
-                background: var(--sp-accent);
+                color: var(--sp-widget-button-text-color);
+                background: var(--sp-widget-button-color);
                 border: none;
-                transition-property: color, background-color, border-color, text-decoration-color,
-                fill, stroke;
+                transition-property: all;
                 transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                 transition-duration: 150ms;
 
                 &:hover,
                 &:active {
-                    background: color-mix(in srgb, var(--sp-accent) 90%, transparent);
+                    background: color-mix(in srgb, var(--sp-widget-button-color) 90%, transparent);
                 }
 
                 &:disabled {
@@ -581,24 +581,23 @@ export class StepFooter extends LitElement {
                 width: 100%;
                 height: 40px;
                 padding: 16px 8px;
-                color: var(--sp-primary-font);
-                background: var(--sp-secondary-background);
-                border: 1px solid var(--sp-border);
-                transition-property: color, background-color, border-color, text-decoration-color,
-                fill, stroke;
+                color: var(--sp-widget-text-color);
+                background: color-mix(in srgb, var(--sp-widget-hint-color) 60%, transparent);
+                border: 1px solid var(--sp-widget-hint-color);
+                transition-property: all;
                 transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                 transition-duration: 150ms;
-
+                
                 &:hover,
                 &:active {
-                    background: color-mix(in srgb, var(--sp-secondary-background) 60%, transparent);
+                    background: color-mix(in srgb, var(--sp-widget-hint-color) 40%, transparent);
                 }
 
-                &:disabled {
-                    pointer-events: none;
-                    touch-action: none;
-                    opacity: 0.5;
-                }
+                //&:disabled {
+                //    pointer-events: none;
+                //    touch-action: none;
+                //    opacity: 0.5;
+                //}
             }
 
             .timerWrapper {
@@ -617,21 +616,21 @@ export class StepFooter extends LitElement {
                         height: 100%;
 
                         .timerBg {
-                            stroke: var(--sp-secondary-background);
+                            stroke: var(--sp-widget-hint-color);
                         }
 
                         .timerProgress {
                             transition-property: all;
                             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                             transition-duration: 550ms;
-                            stroke: var(--sp-accent);
+                            stroke: var(--sp-widget-link-color);
                         }
                     }
                 }
 
                 .title {
                     font-size: 12px;
-                    color: var(--sp-primary-font);
+                    color: var(--sp-widget-text-color);
                     font-weight: 700;
                     text-align: left;
                 }
@@ -639,54 +638,61 @@ export class StepFooter extends LitElement {
                 .timerLeft {
                     font-size: 16px;
                     font-weight: 600;
-                    transition-property: color, background-color, border-color,
-                    text-decoration-color, fill, stroke;
+                    transition-property: all;
                     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                     transition-duration: 350ms;
-                    color: var(--sp-accent);
+                    color: var(--sp-widget-link-color);
                     text-align: left;
                 }
             }
 
             &.dark {
-                background: color-mix(in srgb,
-                var(--sp-secondary-background) 15%,
-                transparent) !important;
+                border-color: color-mix(
+                        in srgb,
+                        var(--sp-widget-hint-color) 15%,
+                        transparent
+                ) !important;
+                background: color-mix(
+                        in srgb,
+                        var(--sp-widget-secondary-bg-color) 15%,
+                        transparent
+                ) !important;
 
                 .layer1{
                     background: black;
                 }
                 
                 .layer2{
-                    background: color-mix(in srgb,
-                    var(--sp-secondary-background) 15%,
-                    transparent) !important;
-                }
-
-                .mainButton {
-                    color: var(--sp-primary-font) !important;
+                    background: color-mix(
+                            in srgb,
+                            var(--sp-widget-secondary-bg-color) 15%,
+                            transparent
+                    ) !important;
                 }
                 
-                .secondaryButton{
-                    color: var(--sp-primary-background) !important;
-                    background: var(--sp-primary-font) !important;
-                }
-
-                .timerWrapper {
-                    .loader {
-                        svg {
-                            .timerBg {
-                                stroke: color-mix(in srgb,
-                                var(--sp-secondary-background) 15%,
-                                transparent) !important;
-                            }
+                .product {
+                    .productsInfo {
+                        &:hover,
+                        &:active {
+                            background: color-mix(in srgb, var(--sp-widget-secondary-bg-color) 10%, transparent) !important;
                         }
                     }
                 }
 
-                .product {
-                    .productsInfo:hover {
-                        background: color-mix(in srgb, var(--sp-secondary-background) 10%, transparent) !important;
+                .timerWrapper {
+                    .timerBg{
+                        stroke: color-mix(in srgb, var(--sp-widget-bg-color) 40%, transparent) !important;
+                    }
+                }
+                
+                .secondaryButton{
+                    color: var(--sp-widget-text-color) !important;
+                    background: var(--sp-widget-bg-color) !important;
+                    border-color: var(--sp-widget-bg-color) !important;
+                    
+                    &:hover,
+                    &:active{
+                        background: color-mix(in srgb, var(--sp-widget-bg-color) 50%, transparent) !important;
                     }
                 }
             }
@@ -716,159 +722,207 @@ export class StepFooter extends LitElement {
                 width: 100%;
                 height: 100%;
                 z-index: 1;
-                background: rgba(0, 0, 0, 0);
+                background: color-mix(
+                        in srgb,
+                        var(--sp-widget-text-color) 0%,
+                        transparent
+                ) !important;
                 transition-property: all;
                 transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                 transition-duration: 350ms;
 
                 &.active {
-                    background: rgba(0, 0, 0, 0.75);
+                    background: color-mix(
+                            in srgb,
+                            var(--sp-widget-text-color) 75%,
+                            transparent
+                    ) !important;
                 }
             }
-
-            .content {
+            
+            .contentWrapper{
                 width: 100%;
                 height: auto;
                 max-height: 50%;
-                background-color: var(--sp-primary-background);
+                background: var(--sp-widget-bg-color);
                 z-index: 2;
                 border-radius: 25px 25px 0 0;
-                border-top: 1px solid var(--sp-border);
-                padding: 1rem 4px;
-                display: flex;
-                flex-direction: column;
+                border-top: 1px solid var(--sp-widget-hint-color);
+                overflow: hidden;
 
-                .titleWrapper{
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                }
-
-                .infoTitle {
-                    font-size: 20px;
-                    line-height: 28px;
-                    font-weight: 700;
-                    color: var(--sp-primary-font);
-                    padding: 0 8px;
-                }
-
-                .closeButton{
-                    margin-right: 8px;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    cursor: pointer;
-                    user-select: none;
-                    transition-property: all;
-                    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-                    transition-duration: 350ms;
-                    width: 25px;
-                    height: 25px;
-
-                    svg{
-                        width: 20px;
-                        height: 20px;
-                        color: var(--sp-primary-font);
-                    }
-
-                    &:hover,
-                    &:active{
-                        opacity: 0.7;
-                    }
-                }
-
-                .productsList {
-                    margin-top: 20px;
-                    flex: 1;
-                    overflow-y: auto;
-                    overflow-x: hidden;
+                .content {
+                    padding: 1rem 4px;
                     display: flex;
                     flex-direction: column;
-                    gap: 16px;
-                    width: 100%;
-                    padding: 0 4px;
 
-                    &::-webkit-scrollbar {
-                        width: 2px;
-                    }
-
-                    &::-webkit-scrollbar-track {
-                        background: transparent;
-                    }
-
-                    &::-webkit-scrollbar-thumb {
-                        background: var(--sp-border);
-                    }
-
-                    .productItem {
+                    .titleWrapper{
                         display: flex;
-                        align-items: flex-start;
-                        gap: 12px;
-                        margin: 0 auto;
-                        width: 95%;
+                        justify-content: space-between;
+                        align-items: center;
+                    }
 
-                        .imageWrapper {
+                    .infoTitle {
+                        font-size: 20px;
+                        line-height: 28px;
+                        font-weight: 700;
+                        color: var(--sp-widget-text-color);
+                        padding: 0 8px;
+                    }
+
+                    .closeButton{
+                        margin-right: 8px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        cursor: pointer;
+                        user-select: none;
+                        transition-property: all;
+                        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                        transition-duration: 350ms;
+                        width: 25px;
+                        height: 25px;
+
+                        svg{
+                            width: 20px;
+                            height: 20px;
+                            color: var(--sp-widget-text-color);
+                        }
+
+                        &:hover,
+                        &:active{
+                            opacity: 0.7;
+                        }
+                    }
+
+                    .productsList {
+                        margin-top: 20px;
+                        flex: 1;
+                        overflow-y: auto;
+                        overflow-x: hidden;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 16px;
+                        width: 100%;
+                        padding: 0 4px;
+
+                        &::-webkit-scrollbar {
+                            width: 2px;
+                        }
+
+                        &::-webkit-scrollbar-track {
+                            background: transparent;
+                        }
+
+                        &::-webkit-scrollbar-thumb {
+                            background: var(--sp-widget-secondary-bg-color);
+                        }
+
+                        .productItem {
                             display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            border: 1px solid var(--sp-border);
-                            background: var(--sp-secondary-background);
-                            width: 40px;
-                            height: 40px;
-                            border-radius: 8px;
-                            overflow: hidden;
+                            align-items: flex-start;
+                            gap: 12px;
+                            margin: 0 auto;
+                            width: 95%;
 
-                            img {
+                            .imageWrapper {
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                border: 1px solid var(--sp-widget-hint-color);
+                                background: var(--sp-widget-secondary-bg-color);
                                 width: 40px;
                                 height: 40px;
-                                object-fit: cover;
-                            }
-                            
-                            &.placeholder{
+                                border-radius: 8px;
+                                overflow: hidden;
+
                                 img {
-                                    width: 32px;
-                                    height: 32px;
+                                    width: 40px;
+                                    height: 40px;
                                     object-fit: cover;
                                 }
-                            }
-                        }
 
-                        .info {
-                            flex: 1;
-
-                            .name {
-                                color: var(--sp-primary-font);
-                                font-size: 14px;
-                                font-weight: 500;
+                                &.placeholder{
+                                    img {
+                                        width: 32px;
+                                        height: 32px;
+                                        object-fit: cover;
+                                    }
+                                }
                             }
 
-                            .description {
-                                font-size: 12px;
-                                color: var(--sp-secondary-font);
-                            }
-                        }
+                            .info {
+                                flex: 1;
 
-                        .priceWrapper {
-                            .price {
-                                color: var(--sp-primary-font);
-                                font-size: 14px;
-                                font-weight: 500;
-                                text-align: end;
+                                .name {
+                                    color: var(--sp-widget-text-color);
+                                    font-size: 14px;
+                                    font-weight: 500;
+                                }
+
+                                .description {
+                                    font-size: 12px;
+                                    color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
+                                }
                             }
 
-                            .count {
-                                font-size: 12px;
-                                color: var(--sp-secondary-font);
-                                text-align: end;
+                            .priceWrapper {
+                                .price {
+                                    color: var(--sp-widget-text-color);
+                                    font-size: 14px;
+                                    font-weight: 500;
+                                    text-align: end;
+                                }
+
+                                .count {
+                                    font-size: 12px;
+                                    color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
+                                    text-align: end;
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-        
-        &.dark{
             
+            &.dark{
+                .overlay {
+                    background: color-mix(
+                            in srgb,
+                            var(--sp-widget-bg-color) 0%,
+                            transparent
+                    ) !important;
+
+                    &.active {
+                        background: color-mix(
+                                in srgb,
+                                var(--sp-widget-bg-color) 75%,
+                                transparent
+                        ) !important;
+                    }
+                }
+
+                .contentWrapper{
+                    background: color-mix(
+                            in srgb,
+                            var(--sp-widget-hint-color) 100%,
+                            transparent
+                    ) !important;
+                    border-top: 1px solid color-mix(
+                            in srgb,
+                            var(--sp-widget-bg-color) 70%,
+                            transparent
+                    ) !important;
+                    
+                    .content{
+                        overflow: hidden;
+                        background: color-mix(
+                                in srgb,
+                                var(--sp-widget-bg-color) 85%,
+                                transparent
+                        ) !important;
+                    }
+                }
+            }
         }
     `;
 }

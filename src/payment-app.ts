@@ -9,7 +9,7 @@ import {
 } from '@simplepay-ai/api-client';
 import { css, html, LitElement, property } from 'lit-element';
 import { customElement } from 'lit/decorators.js';
-import {AppStep, INotification, IProduct, IProductInvoice} from './types';
+import {AppStep, AppTheme, INotification, IProduct, IProductInvoice} from './types';
 import './steps/step-header.ts';
 import './steps/step-footer.ts';
 import './steps/loading-step.ts';
@@ -25,8 +25,7 @@ import './steps/token-icon.ts';
 import './steps/network-icon.ts';
 import './steps/custom-notification.ts';
 import {checkWalletAddress} from "./util.ts";
-
-
+import themesConfig from '../themesConfig.json';
 
 @customElement('payment-app')
 export class PaymentApp extends LitElement {
@@ -46,8 +45,8 @@ export class PaymentApp extends LitElement {
     @property({ type: String })
     clientId: string = '';
 
-    @property({ type: Boolean })
-    dark: boolean = false;
+    @property({ type: String })
+    theme: AppTheme = 'light';
 
     @property({ type: String })
     backToStoreUrl: string = '';
@@ -57,6 +56,9 @@ export class PaymentApp extends LitElement {
 
     @property({ type: String })
     invoiceId: string = '';
+
+    @property({ attribute: false })
+    private darkTheme: boolean = false;
 
     @property({ attribute: false })
     private priceAvailable: boolean = false;
@@ -116,6 +118,19 @@ export class PaymentApp extends LitElement {
     async connectedCallback() {
         super.connectedCallback();
 
+        switch (this.theme) {
+            case "light":
+            case "dark":
+                this.setTheme(this.theme);
+                this.darkTheme = this.theme === 'dark';
+                break;
+            case "custom":
+                break;
+            default:
+                this.setTheme('light');
+                break;
+        }
+
         this.API = new Client();
 
         this.clientId = this.clientId ? this.clientId : '';
@@ -161,28 +176,27 @@ export class PaymentApp extends LitElement {
 
     render() {
         return html`
-            <div class=${`stepWrapper ${this.dark ? 'dark' : ''}`}>
+            <div class=${`stepWrapper ${this.darkTheme ? 'dark' : ''}`}>
 
                 <custom-notification
-                        .dark=${this.dark}
                         .active=${this.notificationShow}
                         .data=${this.notificationData}
+                        .darkTheme=${this.darkTheme}
                         @updateNotification=${this.updateNotification}
                 ></custom-notification>
                 
                 ${this.appStep === 'loading'
-                    ? html` <loading-step .dark=${this.dark}></loading-step>`
+                    ? html` <loading-step></loading-step>`
                     : ''}
                 ${this.appStep === 'error'
                     ? html` <error-step
-                          .dark=${this.dark}
                           .title=${this.errorTitle}
                           .text=${this.errorText}
                       ></error-step>`
                     : ''}
                 ${this.appStep === 'setPrice'
                     ? html` <price-step
-                          .dark=${this.dark}
+                          .darkTheme=${this.darkTheme}
                           .price=${this.price}
                           @updatePrice=${(event: CustomEvent) => (this.price = event.detail.price)}
                           @nextStep=${this.nextStep}
@@ -191,7 +205,7 @@ export class PaymentApp extends LitElement {
                     : ''}
                 ${this.appStep === 'setToken'
                     ? html` <token-step
-                          .dark=${this.dark}
+                          .darkTheme=${this.darkTheme}
                           .tokens=${this.tokens}
                           .selectedTokenSymbol=${this.selectedTokenSymbol}
                           .selectedNetworkSymbol=${this.selectedNetworkSymbol}
@@ -208,7 +222,7 @@ export class PaymentApp extends LitElement {
                     : ''}
                 ${this.appStep === 'setWallet'
                     ? html` <wallet-step
-                          .dark=${this.dark}
+                          .darkTheme=${this.darkTheme}
                           .walletAddress=${this.walletAddress}
                           .price=${this.price}
                           .tokens=${this.tokens}
@@ -226,7 +240,7 @@ export class PaymentApp extends LitElement {
                     : ''}
                 ${this.appStep === 'payment'
                     ? html` <payment-step
-                          .dark=${this.dark}
+                          .darkTheme=${this.darkTheme}
                           .price=${this.price}
                           .walletAddress=${this.walletAddress}
                           .invoice=${this.invoice}
@@ -238,7 +252,7 @@ export class PaymentApp extends LitElement {
                     : ''}
                 ${this.appStep === 'processing'
                     ? html` <processing-step
-                          .dark=${this.dark}
+                          .darkTheme=${this.darkTheme}
                           .price=${this.price}
                           .invoice=${this.invoice}
                           .productsInfo=${this.productsInfo}
@@ -248,7 +262,7 @@ export class PaymentApp extends LitElement {
                     : ''}
                 ${this.appStep === 'success'
                     ? html` <success-step
-                          .dark=${this.dark}
+                          .darkTheme=${this.darkTheme}
                           .price=${this.price}
                           .invoice=${this.invoice}
                           .backToStoreUrl=${this.backToStoreUrl}
@@ -261,71 +275,20 @@ export class PaymentApp extends LitElement {
         `;
     }
 
-    private async getProductsInfo(products: IProductInvoice[]){
-        const result = [];
-        for(let product of products){
+    private setTheme(theme: AppTheme){
+        const currentThemeConfig = themesConfig.themes[theme];
 
-            try{
-                const productId = product.id || product.product?.id;
-                const info = await this.API.product.get(productId);
-                const count = products.find((item) => item.id === productId)?.count || product.count;
-
-                if(info){
-                    result.push({
-                        ...info,
-                        count: count
-                    });
-                }
-
-            }catch (e){
-                this.notificationData = {
-                    title: 'Get Products Failed',
-                    text: 'Failed to retrieve data for some products.',
-                    buttonText: 'Confirm'
-                };
-                this.notificationShow = true;
-
-                this.dispatchErrorEvent('Fetch Products Error', 'Failed to retrieve data for some products.');
-            }
+        for(const colorName of Object.keys(currentThemeConfig)){
+            const colorValue = currentThemeConfig[colorName];
+            document.documentElement.style.setProperty(colorName, colorValue);
         }
 
-        return result;
     }
-
     private updateNotification(event: CustomEvent) {
         if (event.detail?.notificationData) {
             this.notificationData = event.detail.notificationData;
         }
         this.notificationShow = event.detail.notificationShow;
-    }
-
-    private nextStep() {
-
-        if (this.appStep === 'setPrice' && this.price && Number(this.price) > 0) {
-            this.goToStep('setToken');
-            return;
-        }
-
-        if (this.appStep === 'setToken' && this.selectedTokenSymbol && this.selectedNetworkSymbol) {
-            this.goToStep('setWallet');
-            return;
-        }
-
-        if(this.appStep === 'setWallet' && this.walletAddress && !checkWalletAddress(this.walletAddress, this.selectedNetworkSymbol)){
-            this.notificationData = {
-                title: 'Invalid Wallet Address',
-                text: 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.',
-                buttonText: 'Confirm'
-            };
-            this.notificationShow = true;
-
-            this.dispatchErrorEvent('Invalid Wallet Address', 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.');
-        }
-
-        if (this.appStep === 'setWallet' && this.walletAddress && checkWalletAddress(this.walletAddress, this.selectedNetworkSymbol)) {
-            this.creatingInvoice = true;
-            this.createInvoice();
-        }
     }
 
     private async createInvoice() {
@@ -483,7 +446,6 @@ export class PaymentApp extends LitElement {
         }
 
     }
-
     private async cancelInvoice(){
 
         if(!this.invoice?.id){
@@ -514,7 +476,6 @@ export class PaymentApp extends LitElement {
 
         }
     }
-
     private async getInvoice(invoiceId: string) {
 
         const ws = new WsClient();
@@ -600,6 +561,34 @@ export class PaymentApp extends LitElement {
         });
     }
 
+    private nextStep() {
+
+        if (this.appStep === 'setPrice' && this.price && Number(this.price) > 0) {
+            this.goToStep('setToken');
+            return;
+        }
+
+        if (this.appStep === 'setToken' && this.selectedTokenSymbol && this.selectedNetworkSymbol) {
+            this.goToStep('setWallet');
+            return;
+        }
+
+        if(this.appStep === 'setWallet' && this.walletAddress && !checkWalletAddress(this.walletAddress, this.selectedNetworkSymbol)){
+            this.notificationData = {
+                title: 'Invalid Wallet Address',
+                text: 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.',
+                buttonText: 'Confirm'
+            };
+            this.notificationShow = true;
+
+            this.dispatchErrorEvent('Invalid Wallet Address', 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.');
+        }
+
+        if (this.appStep === 'setWallet' && this.walletAddress && checkWalletAddress(this.walletAddress, this.selectedNetworkSymbol)) {
+            this.creatingInvoice = true;
+            this.createInvoice();
+        }
+    }
     private prevStep() {
         if (this.appStep === 'setToken') {
             if (!this.priceAvailable) {
@@ -613,7 +602,6 @@ export class PaymentApp extends LitElement {
             return;
         }
     }
-
     private goToStep(stepName: AppStep) {
         this.appStep = stepName;
     }
@@ -636,6 +624,36 @@ export class PaymentApp extends LitElement {
             this.dispatchErrorEvent('Fetch Tokens Error', 'Failed to retrieve token data. Please try again later.');
         }
     }
+    private async getProductsInfo(products: IProductInvoice[]){
+        const result = [];
+        for(let product of products){
+
+            try{
+                const productId = product.id || product.product?.id;
+                const info = await this.API.product.get(productId);
+                const count = products.find((item) => item.id === productId)?.count || product.count;
+
+                if(info){
+                    result.push({
+                        ...info,
+                        count: count
+                    });
+                }
+
+            }catch (e){
+                this.notificationData = {
+                    title: 'Get Products Failed',
+                    text: 'Failed to retrieve data for some products.',
+                    buttonText: 'Confirm'
+                };
+                this.notificationShow = true;
+
+                this.dispatchErrorEvent('Fetch Products Error', 'Failed to retrieve data for some products.');
+            }
+        }
+
+        return result;
+    }
 
     private dispatchInvoiceChangedEvent(status: string, invoice: Invoice){
         const updateStatusEvent = new CustomEvent(`${status}-status-changed`, {
@@ -647,7 +665,6 @@ export class PaymentApp extends LitElement {
         });
         this.dispatchEvent(updateStatusEvent);
     }
-
     private dispatchErrorEvent(title: string, text: string){
         const errorEvent = new CustomEvent('error-event', {
             detail: {
@@ -674,27 +691,27 @@ export class PaymentApp extends LitElement {
             box-sizing: border-box;
         }
 
-        :host {
-            --sp-primary-background: #ffffff;
-            --sp-secondary-background: #f4f4f5;
-
-            --sp-primary-font: #000000;
-            --sp-secondary-font: #71717a;
-
-            --sp-border: #e4e4e7;
-            --sp-accent: #3b82f6;
-
-            .dark {
-                --sp-primary-background: #000000 !important;
-                --sp-secondary-background: #9d9d9d !important;
-
-                --sp-primary-font: #ffffff !important;
-                --sp-secondary-font: #a1a1aaff !important;
-
-                --sp-border: #27272aff !important;
-                --sp-accent: #3b82f6 !important;
-            }
-        }
+        //:host {
+        //    --sp-primary-background: #ffffff;
+        //    --sp-secondary-background: #f4f4f5;
+        //
+        //    --sp-primary-font: #000000;
+        //    --sp-secondary-font: #71717a;
+        //
+        //    --sp-border: #e4e4e7;
+        //    --sp-accent: #3b82f6;
+        //
+        //    .darkTheme {
+        //        --sp-primary-background: #000000 !important;
+        //        --sp-secondary-background: #9d9d9d !important;
+        //
+        //        --sp-primary-font: #ffffff !important;
+        //        --sp-secondary-font: #a1a1aaff !important;
+        //
+        //        --sp-border: #27272aff !important;
+        //        --sp-accent: #3b82f6 !important;
+        //    }
+        //}
 
         .stepWrapper {
             position: relative;
@@ -702,14 +719,14 @@ export class PaymentApp extends LitElement {
             flex-direction: column;
             width: 100%;
             height: 100%;
-            background: var(--sp-secondary-background);
+            background: var(--sp-widget-secondary-bg-color);
 
             & > *:not(custom-notification) {
                 height: 100%;
             }
 
             &.dark {
-                background: var(--sp-primary-background) !important;
+                background: var(--sp-widget-bg-color) !important;
             }
         }
     `;

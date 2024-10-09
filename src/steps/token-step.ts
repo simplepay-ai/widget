@@ -12,7 +12,7 @@ export class TokenStep extends LitElement {
     productsInfo: IProduct[] = [];
 
     @property({type: Boolean})
-    dark: boolean = false;
+    darkTheme: boolean = false;
 
     @property({type: String})
     price: string = '';
@@ -67,9 +67,9 @@ export class TokenStep extends LitElement {
 
     render() {
         return html`
-            <div class=${`stepWrapper ${this.dark ? 'dark' : ''}`}>
+            <div class=${`stepWrapper ${this.darkTheme ? 'dark' : ''}`}>
                 <step-header
-                        .dark=${this.dark}
+                        .darkTheme=${this.darkTheme}
                         .title= ${'Choose token'}
                         .hasBackButton=${this.returnButtonShow}
                 ></step-header>
@@ -250,7 +250,7 @@ export class TokenStep extends LitElement {
                 </div>
 
                 <step-footer
-                        .dark=${this.dark}
+                        .darkTheme=${this.darkTheme}
                         .price=${this.price}
                         .hasButton=${true}
                         .buttonDisabled=${this.buttonDisabled}
@@ -327,7 +327,7 @@ export class TokenStep extends LitElement {
                 }
 
                 &::-webkit-scrollbar-thumb {
-                    background: var(--sp-border);
+                    background: var(--sp-widget-secondary-bg-color);
                 }
 
                 .tokensList {
@@ -344,23 +344,22 @@ export class TokenStep extends LitElement {
                         align-items: center;
                         width: 100%;
                         padding: 8px;
-                        border: 1px solid var(--sp-border);
+                        border: 1px solid var(--sp-widget-hint-color);
                         border-radius: 8px;
-                        background: var(--sp-primary-background);
-                        transition-property: color, background-color, border-color,
-                        text-decoration-color, fill, stroke;
+                        background: var(--sp-widget-bg-color);
+                        transition-property: all;
                         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                         transition-duration: 150ms;
 
                         &:hover,
                         &:active {
                             background: color-mix(in srgb,
-                            var(--sp-primary-background) 60%,
+                            var(--sp-widget-bg-color) 60%,
                             transparent);
                         }
 
                         &.selected {
-                            outline: 2px solid var(--sp-accent);
+                            outline: 2px solid var(--sp-widget-link-color);
                         }
 
                         .tokenContent {
@@ -374,8 +373,8 @@ export class TokenStep extends LitElement {
                                 height: 32px;
                                 border-radius: 50%;
                                 object-fit: cover;
-                                border: 1px solid var(--sp-border);
-                                background: var(--sp-primary-background);
+                                border: 1px solid var(--sp-widget-hint-color);
+                                background: var(--sp-widget-bg-color);
                             }
 
                             .tokenIconWrapper {
@@ -383,8 +382,8 @@ export class TokenStep extends LitElement {
 
                                 .tokenIcon {
                                     position: relative;
-                                    background: var(--sp-primary-background);
-                                    border: 1px solid var(--sp-border);
+                                    background: var(--sp-widget-bg-color);
+                                    border: 1px solid var(--sp-widget-hint-color);
                                     width: 32px;
                                     height: 32px;
                                     border-radius: 50%;
@@ -396,7 +395,7 @@ export class TokenStep extends LitElement {
                                     svg {
                                         width: 16px;
                                         height: 16px;
-                                        stroke: var(--sp-accent);
+                                        stroke: var(--sp-widget-link-color);
                                     }
                                 }
 
@@ -404,8 +403,8 @@ export class TokenStep extends LitElement {
                                     position: absolute;
                                     bottom: -2px;
                                     right: -3px;
-                                    background: var(--sp-primary-background);
-                                    border: 1px solid var(--sp-border);
+                                    background: var(--sp-widget-bg-color);
+                                    border: 1px solid var(--sp-widget-hint-color);
                                     width: 16px;
                                     height: 16px;
                                     border-radius: 50%;
@@ -417,7 +416,7 @@ export class TokenStep extends LitElement {
                                     svg {
                                         width: 16px;
                                         height: 16px;
-                                        stroke: var(--sp-accent);
+                                        stroke: var(--sp-widget-link-color);
                                     }
                                 }
                             }
@@ -435,23 +434,23 @@ export class TokenStep extends LitElement {
 
                                     p {
                                         font-weight: 700;
-                                        color: var(--sp-primary-font);
+                                        color: var(--sp-widget-text-color);
                                     }
                                 }
 
                                 p {
                                     font-size: 12px;
                                     font-weight: 700;
-                                    color: var(--sp-secondary-font);
+                                    color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
                                 }
                             }
 
                             .badge {
-                                color: var(--sp-secondary-font);
+                                color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
                                 font-weight: 700;
                                 padding: 2px 4px;
-                                background: var(--sp-secondary-background);
-                                border: 1px solid var(--sp-border);
+                                background: var(--sp-widget-secondary-bg-color);
+                                border: 1px solid var(--sp-widget-hint-color);
                                 font-size: 10px;
                                 border-radius: 4px;
                             }
@@ -462,12 +461,12 @@ export class TokenStep extends LitElement {
                 .accordion {
                     .tokenItem {
                         &.trigger {
-                            background: var(--sp-primary-background);
+                            background: var(--sp-widget-bg-color);
 
                             &:hover,
                             &:active {
                                 background: color-mix(in srgb,
-                                var(--sp-primary-background) 60%,
+                                var(--sp-widget-bg-color) 60%,
                                 transparent);
                             }
 
@@ -500,7 +499,7 @@ export class TokenStep extends LitElement {
 
                                     p {
                                         font-size: 16px;
-                                        color: var(--sp-primary-font);
+                                        color: var(--sp-widget-text-color);
                                     }
                                 }
                             }
@@ -509,7 +508,7 @@ export class TokenStep extends LitElement {
                                 display: flex;
                                 align-items: center;
                                 justify-content: center;
-                                color: var(--sp-secondary-font);
+                                color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
                                 transform: rotate(0deg);
                                 transition-property: all;
                                 transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -550,35 +549,58 @@ export class TokenStep extends LitElement {
 
             &.dark {
                 .badge {
-                    color: var(--sp-primary-background) !important;
-                    background: var(--sp-primary-font) !important;
+                    color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent) !important;
+                    background: var(--sp-widget-bg-color) !important;
+                    border-color: color-mix(
+                            in srgb,
+                            var(--sp-widget-hint-color) 15%,
+                            transparent
+                    ) !important;
                 }
 
                 .tokenItem {
-                    background: color-mix(in srgb,
-                    var(--sp-secondary-background) 10%,
-                    transparent) !important;
-
+                    background: color-mix(
+                            in srgb,
+                            var(--sp-widget-secondary-bg-color) 15%,
+                            transparent
+                    ) !important;
+                    border-color: color-mix(
+                            in srgb,
+                            var(--sp-widget-hint-color) 15%,
+                            transparent
+                    ) !important;
+                    
                     &:hover,
                     &:active {
-                        background: color-mix(in srgb,
-                        var(--sp-secondary-background) 20%,
-                        transparent) !important;
+                        background: color-mix(
+                                in srgb,
+                                var(--sp-widget-secondary-bg-color) 20%,
+                                transparent
+                        ) !important;
                     }
                 }
 
                 .accordion {
                     .tokenItem {
                         &.trigger {
-                            background: color-mix(in srgb,
-                            var(--sp-secondary-background) 10%,
-                            transparent) !important;
-
+                            background: color-mix(
+                                    in srgb,
+                                    var(--sp-widget-secondary-bg-color) 15%,
+                                    transparent
+                            ) !important;
+                            border-color: color-mix(
+                                    in srgb,
+                                    var(--sp-widget-hint-color) 15%,
+                                    transparent
+                            ) !important;
+                            
                             &:hover,
                             &:active {
-                                background: color-mix(in srgb,
-                                var(--sp-secondary-background) 20%,
-                                transparent) !important;
+                                background: color-mix(
+                                        in srgb,
+                                        var(--sp-widget-secondary-bg-color) 20%,
+                                        transparent
+                                ) !important;
                             }
                         }
                     }

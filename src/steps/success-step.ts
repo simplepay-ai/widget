@@ -16,7 +16,7 @@ export class SuccessStep extends LitElement {
     invoice: Invoice | null = null;
 
     @property({ type: Boolean })
-    dark: boolean = false;
+    darkTheme: boolean = false;
 
     @property({ type: String })
     price: string = '';
@@ -62,9 +62,9 @@ export class SuccessStep extends LitElement {
 
     render() {
         return html`
-            <div class=${`stepWrapper ${this.dark ? 'dark' : ''}`}>
+            <div class=${`stepWrapper ${this.darkTheme ? 'dark' : ''}`}>
                 <step-header
-                    .dark=${this.dark}
+                    .darkTheme=${this.darkTheme}
                     .title=${`${this.invoice?.status} transaction`}
                     .hasBackButton=${false}
                     .hasShareButton=${true}
@@ -275,7 +275,7 @@ export class SuccessStep extends LitElement {
                 </div>
 
                 <step-footer
-                    .dark=${this.dark}
+                    .darkTheme=${this.darkTheme}
                     .price=${this.price}
                     .hasBackButton=${true}
                     .backButtonUrl=${this.backToStoreUrl}
@@ -331,7 +331,7 @@ export class SuccessStep extends LitElement {
                 }
 
                 &::-webkit-scrollbar-thumb {
-                    background: var(--sp-border);
+                    background: var(--sp-widget-secondary-bg-color);
                 }
 
                 .topInfo {
@@ -351,7 +351,7 @@ export class SuccessStep extends LitElement {
 
                             .line {
                                 width: 1px;
-                                background: var(--sp-accent);
+                                background: var(--sp-widget-link-color);
                                 height: 128px;
                             }
 
@@ -360,7 +360,7 @@ export class SuccessStep extends LitElement {
                                 width: 8px;
                                 height: 8px;
                                 border-radius: 50%;
-                                background: var(--sp-accent);
+                                background: var(--sp-widget-link-color);
 
                                 &:nth-child(2) {
                                     top: 0;
@@ -401,7 +401,7 @@ export class SuccessStep extends LitElement {
                                     text-align: left;
                                     font-size: 12px;
                                     line-height: 1;
-                                    color: var(--sp-primary-font);
+                                    color: var(--sp-widget-text-color);
                                 }
 
                                 .text {
@@ -409,7 +409,7 @@ export class SuccessStep extends LitElement {
                                     text-align: left;
                                     font-size: 12px;
                                     line-height: 1;
-                                    color: var(--sp-accent);
+                                    color: var(--sp-widget-link-color);
 
                                     &.capitalize {
                                         text-transform: capitalize;
@@ -436,11 +436,11 @@ export class SuccessStep extends LitElement {
                                 height: 100%;
 
                                 rect {
-                                    fill: var(--sp-secondary-background);
+                                    fill: var(--sp-widget-secondary-bg-color);
                                 }
 
                                 path {
-                                    fill: var(--sp-primary-font);
+                                    fill: var(--sp-widget-text-color);
                                 }
                             }
                         }
@@ -468,19 +468,19 @@ export class SuccessStep extends LitElement {
                     margin: 16px 0;
                     height: 1px;
                     width: 100%;
-                    background: var(--sp-border);
+                    background: var(--sp-widget-hint-color);
                 }
 
                 .infoWrapper {
                     display: flex;
                     flex-direction: column;
                     gap: 2px;;
-                    color: var(--sp-secondary-font);
+                    color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
 
                     & > .title {
                         font-size: 16px;
                         line-height: 20px;
-                        color: var(--sp-primary-font);
+                        color: var(--sp-widget-text-color);
                         font-weight: 700;
                         text-align: left;
                         margin-bottom: 10px;
@@ -513,8 +513,8 @@ export class SuccessStep extends LitElement {
 
                             .icon {
                                 position: relative;
-                                background: var(--sp-primary-background);
-                                border: 1px solid var(--sp-border);
+                                background: var(--sp-widget-bg-color);
+                                border: 1px solid var(--sp-widget-hint-color);
                                 width: 16px;
                                 height: 16px;
                                 border-radius: 50%;
@@ -526,14 +526,14 @@ export class SuccessStep extends LitElement {
                                 svg {
                                     width: 16px;
                                     height: 16px;
-                                    stroke: var(--sp-accent);
+                                    stroke: var(--sp-widget-link-color);
                                 }
                             }
 
                             p {
                                 font-size: 12px;
                                 line-height: 20px;
-                                color: var(--sp-primary-font);
+                                color: var(--sp-widget-text-color);
                                 font-weight: 700;
                                 text-transform: capitalize;
                             }
@@ -546,8 +546,8 @@ export class SuccessStep extends LitElement {
 
                             .icon {
                                 position: relative;
-                                background: var(--sp-primary-background);
-                                border: 1px solid var(--sp-border);
+                                background: var(--sp-widget-bg-color);
+                                border: 1px solid var(--sp-widget-hint-color);
                                 width: 16px;
                                 height: 16px;
                                 border-radius: 50%;
@@ -559,23 +559,23 @@ export class SuccessStep extends LitElement {
                                 svg {
                                     width: 16px;
                                     height: 16px;
-                                    stroke: var(--sp-accent);
+                                    stroke: var(--sp-widget-link-color);
                                 }
                             }
 
                             p {
                                 font-size: 12px;
                                 line-height: 20px;
-                                color: var(--sp-primary-font);
+                                color: var(--sp-widget-text-color);
                                 font-weight: 700;
                             }
 
                             .badge {
-                                color: var(--sp-secondary-font);
+                                color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
                                 font-weight: 700;
                                 padding: 2px 4px;
-                                background: var(--sp-primary-background);
-                                border: 1px solid var(--sp-border);
+                                background: var(--sp-widget-bg-color);
+                                border: 1px solid var(--sp-widget-hint-color);
                                 font-size: 10px;
                                 border-radius: 4px;
                             }
@@ -584,7 +584,7 @@ export class SuccessStep extends LitElement {
                         .amountInfo {
                             font-size: 12px;
                             line-height: 20px;
-                            color: var(--sp-primary-font);
+                            color: var(--sp-widget-text-color);
                             font-weight: 700;
                         }
 
@@ -603,17 +603,15 @@ export class SuccessStep extends LitElement {
                                 .dot {
                                     width: 4px;
                                     aspect-ratio: 1;
-                                    background: var(--sp-secondary-font);
+                                    background: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
                                     border-radius: 50%;
                                 }
                             }
 
                             .copyButton {
                                 padding: 5px;
-                                border: 1px solid var(--sp-border);
                                 border-radius: 6px;
-                                color: var(--sp-primary-font);
-                                background: var(--sp-primary-background);
+                                color: var(--sp-widget-text-color);
                                 cursor: pointer;
 
                                 & > * {
@@ -633,12 +631,12 @@ export class SuccessStep extends LitElement {
                                 }
 
                                 &.active {
-                                    color: var(--sp-accent);
+                                    color: var(--sp-widget-link-color);
 
                                     svg {
                                         rect,
                                         path {
-                                            stroke: var(--sp-accent);
+                                            stroke: var(--sp-widget-link-color);
                                         }
                                     }
 
@@ -657,9 +655,8 @@ export class SuccessStep extends LitElement {
                                 align-items: center;
                                 gap: 4px;
                                 text-decoration: none;
-                                color: var(--sp-accent);
-                                transition-property: color, background-color, border-color,
-                                    text-decoration-color, fill, stroke;
+                                color: var(--sp-widget-link-color);
+                                transition-property: all;
                                 transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                                 transition-duration: 150ms;
 
@@ -670,14 +667,14 @@ export class SuccessStep extends LitElement {
 
                                 &:hover,
                                 &:active {
-                                    color: color-mix(in srgb, var(--sp-accent) 90%, transparent);
+                                    color: color-mix(in srgb, var(--sp-widget-link-color) 90%, transparent);
                                 }
                             }
 
                             p {
                                 font-size: 12px;
                                 line-height: 20px;
-                                color: var(--sp-primary-font);
+                                color: var(--sp-widget-text-color);
                                 font-weight: 700;
                             }
                         }
@@ -690,14 +687,14 @@ export class SuccessStep extends LitElement {
                             p {
                                 font-size: 12px;
                                 line-height: 20px;
-                                color: var(--sp-primary-font);
+                                color: var(--sp-widget-text-color);
                                 font-weight: 700;
                             }
 
                             svg {
                                 width: 16px;
                                 height: 16px;
-                                color: var(--sp-accent);
+                                color: var(--sp-widget-link-color);
                             }
 
                             .activeIcon,
@@ -715,12 +712,12 @@ export class SuccessStep extends LitElement {
                             }
 
                             &.active {
-                                color: var(--sp-accent);
+                                color: var(--sp-widget-link-color);
 
                                 svg {
                                     rect,
                                     path {
-                                        stroke: var(--sp-accent);
+                                        stroke: var(--sp-widget-link-color);
                                     }
                                 }
 
@@ -739,23 +736,44 @@ export class SuccessStep extends LitElement {
 
             &.dark {
                 .badge {
-                    color: var(--sp-primary-background) !important;
-                    background: var(--sp-primary-font) !important;
+                    color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent) !important;
+                    background: color-mix(
+                            in srgb,
+                            var(--sp-widget-secondary-bg-color) 15%,
+                            transparent
+                    ) !important;
+                    border-color: color-mix(
+                            in srgb,
+                            var(--sp-widget-hint-color) 15%,
+                            transparent
+                    ) !important;
                 }
 
-                .copyButton {
-                    color: var(--sp-primary-background) !important;
-                    background: var(--sp-primary-font) !important;
-
-                    &.active {
-                        color: var(--sp-accent) !important;
-                    }
+                .separator{
+                    background: color-mix(
+                            in srgb,
+                            var(--sp-widget-hint-color) 30%,
+                            transparent
+                    ) !important;
                 }
 
                 .qrcode {
                     rect {
-                        fill: var(--sp-primary-background) !important;
+                        fill: var(--sp-widget-bg-color) !important;
                     }
+                }
+
+                .icon{
+                    background: color-mix(
+                            in srgb,
+                            var(--sp-widget-secondary-bg-color) 15%,
+                            transparent
+                    ) !important;
+                    border-color: color-mix(
+                            in srgb,
+                            var(--sp-widget-hint-color) 15%,
+                            transparent
+                    ) !important;
                 }
             }
         }

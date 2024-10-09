@@ -3,8 +3,6 @@ import { customElement } from 'lit/decorators.js';
 
 @customElement('loading-step')
 export class LoadingStep extends LitElement {
-    @property({ type: Boolean })
-    dark: boolean = false;
 
     render() {
         return html`
@@ -37,7 +35,7 @@ export class LoadingStep extends LitElement {
             flex-direction: column;
             width: 100%;
             height: 100%;
-            background: var(--sp-primary-background);
+            background: var(--sp-widget-bg-color);
 
             .spinner {
                 width: 100%;
@@ -53,12 +51,12 @@ export class LoadingStep extends LitElement {
                 }
 
                 circle {
-                    stroke: var(--sp-accent);
+                    stroke: var(--sp-widget-link-color);
                     opacity: 0.25;
                 }
 
                 path {
-                    fill: var(--sp-accent);
+                    fill: var(--sp-widget-link-color);
                     opacity: 0.75;
                 }
             }

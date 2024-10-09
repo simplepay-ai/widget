@@ -12,7 +12,7 @@ export class PaymentStep extends LitElement {
     invoice: Invoice | null = null;
 
     @property({ type: Boolean })
-    dark: boolean = false;
+    darkTheme: boolean = false;
 
     @property({ type: String })
     price: string = '';
@@ -54,9 +54,9 @@ export class PaymentStep extends LitElement {
 
     render() {
         return html`
-            <div class=${`stepWrapper ${this.dark ? 'dark' : ''}`}>
+            <div class=${`stepWrapper ${this.darkTheme ? 'dark' : ''}`}>
                 <step-header
-                    .dark=${this.dark}
+                    .darkTheme=${this.darkTheme}
                     .title=${'Awaiting for Payment'}
                     .hasBackButton=${false}
                     .showAddress=${true}
@@ -251,7 +251,7 @@ export class PaymentStep extends LitElement {
                       `}
 
                 <step-footer
-                    .dark=${this.dark}
+                    .darkTheme=${this.darkTheme}
                     .price=${this.price}
                     .hasButton=${false}
                     .hasCancelButton=${true}
@@ -326,7 +326,7 @@ export class PaymentStep extends LitElement {
                 }
 
                 &::-webkit-scrollbar-thumb {
-                    background: var(--sp-border);
+                    background: var(--sp-widget-secondary-bg-color);
                 }
 
                 .spinner {
@@ -341,7 +341,7 @@ export class PaymentStep extends LitElement {
                         margin-top: 8px;
                         font-size: 12px;
                         font-weight: 600;
-                        color: var(--sp-primary-font);
+                        color: var(--sp-widget-text-color);
                     }
 
                     svg {
@@ -351,12 +351,12 @@ export class PaymentStep extends LitElement {
                     }
 
                     circle {
-                        stroke: var(--sp-accent);
+                        stroke: var(--sp-widget-link-color);
                         opacity: 0.25;
                     }
 
                     path {
-                        fill: var(--sp-accent);
+                        fill: var(--sp-widget-link-color);
                         opacity: 0.75;
                     }
                 }
@@ -377,7 +377,7 @@ export class PaymentStep extends LitElement {
                             font-size: 12px;
                             line-height: 1;
                             font-weight: 700;
-                            color: var(--sp-secondary-font);
+                            color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
                         }
 
                         .info {
@@ -387,8 +387,8 @@ export class PaymentStep extends LitElement {
 
                             .icon {
                                 position: relative;
-                                background: var(--sp-primary-background);
-                                border: 1px solid var(--sp-border);
+                                background: var(--sp-widget-bg-color);
+                                border: 1px solid var(--sp-widget-hint-color);
                                 width: 16px;
                                 height: 16px;
                                 border-radius: 50%;
@@ -400,24 +400,24 @@ export class PaymentStep extends LitElement {
                                 svg {
                                     width: 16px;
                                     height: 16px;
-                                    stroke: var(--sp-accent);
+                                    stroke: var(--sp-widget-link-color);
                                 }
                             }
 
                             .text {
                                 font-size: 12px;
                                 line-height: 1;
-                                color: var(--sp-primary-font);
+                                color: var(--sp-widget-text-color);
                                 font-weight: 700;
                                 text-transform: capitalize;
                             }
 
                             .badge {
-                                color: var(--sp-secondary-font);
+                                color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
                                 font-weight: 700;
                                 padding: 2px 4px;
-                                background: var(--sp-primary-background);
-                                border: 1px solid var(--sp-border);
+                                background: var(--sp-widget-bg-color);
+                                border: 1px solid var(--sp-widget-hint-color);
                                 font-size: 10px;
                                 border-radius: 4px;
                             }
@@ -449,11 +449,11 @@ export class PaymentStep extends LitElement {
                             height: 256px;
 
                             rect {
-                                fill: var(--sp-secondary-background);
+                                fill: var(--sp-widget-secondary-bg-color);
                             }
 
                             path {
-                                fill: var(--sp-primary-font);
+                                fill: var(--sp-widget-text-color);
                             }
                         }
                     }
@@ -466,8 +466,8 @@ export class PaymentStep extends LitElement {
 
                         .tokenIcon {
                             position: relative;
-                            background: var(--sp-primary-background);
-                            border: 1px solid var(--sp-border);
+                            background: var(--sp-widget-bg-color);
+                            border: 1px solid var(--sp-widget-hint-color);
                             width: 42px;
                             height: 42px;
                             border-radius: 50%;
@@ -479,7 +479,7 @@ export class PaymentStep extends LitElement {
                             svg {
                                 width: 16px;
                                 height: 16px;
-                                stroke: var(--sp-accent);
+                                stroke: var(--sp-widget-link-color);
                             }
                         }
 
@@ -487,8 +487,8 @@ export class PaymentStep extends LitElement {
                             position: absolute;
                             bottom: -2px;
                             right: -3px;
-                            background: var(--sp-primary-background);
-                            border: 1px solid var(--sp-border);
+                            background: var(--sp-widget-bg-color);
+                            border: 1px solid var(--sp-widget-hint-color);
                             width: 20px;
                             height: 20px;
                             border-radius: 50%;
@@ -500,7 +500,7 @@ export class PaymentStep extends LitElement {
                             svg {
                                 width: 16px;
                                 height: 16px;
-                                stroke: var(--sp-accent);
+                                stroke: var(--sp-widget-link-color);
                             }
                         }
                     }
@@ -511,7 +511,7 @@ export class PaymentStep extends LitElement {
                     height: 1px;
                     min-height: 1px;
                     width: 100%;
-                    background: var(--sp-border);
+                    background: var(--sp-widget-hint-color);
                 }
 
                 .inputWrapper {
@@ -525,7 +525,7 @@ export class PaymentStep extends LitElement {
                     .labelText {
                         font-size: 13px;
                         line-height: 20px;
-                        color: var(--sp-primary-font);
+                        color: var(--sp-widget-text-color);
                         padding-left: 8px;
                         font-weight: 500;
                         text-align: left;
@@ -537,23 +537,23 @@ export class PaymentStep extends LitElement {
                         height: 40px;
                         width: 100%;
                         border-radius: 6px;
-                        border: 1px solid var(--sp-border);
-                        background: var(--sp-primary-background);
+                        border: 1px solid var(--sp-widget-hint-color);
+                        background: var(--sp-widget-bg-color);
                         padding: 8px 90px 8px 12px;
                         font-size: 14px;
                         line-height: 20px;
                         user-select: none;
                         pointer-events: none;
-                        color: var(--sp-primary-font);
+                        color: var(--sp-widget-text-color);
                         text-overflow: ellipsis;
 
                         &:focus-visible {
-                            border: 1px solid var(--sp-border);
+                            border: 1px solid var(--sp-widget-hint-color);
                             outline: none;
                         }
 
                         &:disabled {
-                            color: var(--sp-primary-font);
+                            color: var(--sp-widget-text-color);
                             opacity: 1;
                         }
                     }
@@ -561,10 +561,10 @@ export class PaymentStep extends LitElement {
                     .copyButton {
                         position: absolute;
                         padding: 7px 5px;
-                        border: 1px solid var(--sp-border);
+                        border: 1px solid var(--sp-widget-hint-color);
                         border-radius: 6px;
-                        color: var(--sp-primary-font);
-                        background: var(--sp-primary-background);
+                        color: var(--sp-widget-text-color);
+                        background: var(--sp-widget-secondary-bg-color);
                         bottom: 5px;
                         right: 5px;
                         cursor: pointer;
@@ -586,12 +586,12 @@ export class PaymentStep extends LitElement {
                         }
 
                         &.active {
-                            color: var(--sp-accent);
+                            color: var(--sp-widget-link-color);
 
                             svg {
                                 rect,
                                 path {
-                                    stroke: var(--sp-accent);
+                                    stroke: var(--sp-widget-link-color);
                                 }
                             }
 
@@ -609,32 +609,83 @@ export class PaymentStep extends LitElement {
 
             &.dark {
                 .badge {
-                    color: var(--sp-primary-background) !important;
-                    background: var(--sp-primary-font) !important;
+                    color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent) !important;
+                    background: color-mix(
+                            in srgb,
+                            var(--sp-widget-secondary-bg-color) 15%,
+                            transparent
+                    ) !important;
+                    border-color: color-mix(
+                            in srgb,
+                            var(--sp-widget-hint-color) 15%,
+                            transparent
+                    ) !important;
                 }
 
-                .copyButton {
-                    color: var(--sp-primary-background) !important;
-                    background: var(--sp-primary-font) !important;
+                .icon{
+                    background: color-mix(
+                            in srgb,
+                            var(--sp-widget-secondary-bg-color) 15%,
+                            transparent
+                    ) !important;
+                    border-color: color-mix(
+                            in srgb,
+                            var(--sp-widget-hint-color) 15%,
+                            transparent
+                    ) !important;
+                }
 
-                    &.active {
-                        color: var(--sp-accent) !important;
+                .tokenIconWrapper{
+                    .tokenIcon,
+                    .networkIcon{
+                        background: var(--sp-widget-bg-color) !important;
+                        border-color: var(--sp-widget-bg-color) !important;
+                    }
+                }
+                
+                .qrcodeWrapper{
+                    rect{
+                        fill: var(--sp-widget-bg-color) !important;
                     }
                 }
 
-                .qrcodeContainer {
-                    rect {
-                        fill: var(--sp-primary-background) !important;
-                    }
+                .separator{
+                    background: color-mix(
+                            in srgb,
+                            var(--sp-widget-hint-color) 30%,
+                            transparent
+                    ) !important;
                 }
 
                 input {
                     background: color-mix(
-                        in srgb,
-                        var(--sp-secondary-background) 15%,
-                        transparent
+                            in srgb,
+                            var(--sp-widget-secondary-bg-color) 15%,
+                            transparent
+                    ) !important;
+                    border-color: color-mix(
+                            in srgb,
+                            var(--sp-widget-hint-color) 15%,
+                            transparent
                     ) !important;
                 }
+                .copyButton {
+                    background: var(--sp-widget-bg-color) !important;
+                    border-color: var(--sp-widget-bg-color) !important;
+                    color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent) !important;
+                    
+                    &.active{
+                        color: var(--sp-widget-link-color) !important;
+                    }
+                }
+
+                //.qrcodeContainer {
+                //    rect {
+                //        fill: var(--sp-primary-background) !important;
+                //    }
+                //}
+                //
+                
             }
         }
 

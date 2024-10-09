@@ -16,7 +16,7 @@ export class ProcessingStep extends LitElement {
     invoice: Invoice | null = null;
 
     @property({ type: Boolean })
-    dark: boolean = false;
+    darkTheme: boolean = false;
 
     @property({ type: String })
     price: string = '';
@@ -77,9 +77,9 @@ export class ProcessingStep extends LitElement {
 
     render() {
         return html`
-            <div class=${`stepWrapper ${this.dark ? 'dark' : ''}`}>
+            <div class=${`stepWrapper ${this.darkTheme ? 'dark' : ''}`}>
                 <step-header
-                    .dark=${this.dark}
+                    .darkTheme=${this.darkTheme}
                     .title=${'Proсessing transaction'}
                     .hasBackButton=${false}
                     .hasShareButton=${true}
@@ -301,7 +301,7 @@ export class ProcessingStep extends LitElement {
                 </div>
 
                 <step-footer
-                    .dark=${this.dark}
+                    .darkTheme=${this.darkTheme}
                     .price=${this.price}
                     .hasExplorerButton=${true}
                     .explorerLink=${this.qrCodeUrl}
@@ -400,7 +400,7 @@ export class ProcessingStep extends LitElement {
                 }
 
                 &::-webkit-scrollbar-thumb {
-                    background: var(--sp-border);
+                    background: var(--sp-widget-secondary-bg-color);
                 }
 
                 .topInfo {
@@ -426,12 +426,13 @@ export class ProcessingStep extends LitElement {
 
                                 &:nth-child(1) {
                                     top: 0;
-                                    background: var(--sp-accent);
+                                    background: var(--sp-widget-link-color);
                                 }
 
                                 &:nth-child(2) {
-                                    bottom: 0;
-                                    background: var(--sp-secondary-font);
+                                    height: 44px;
+                                    bottom: 8px;
+                                    background: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
                                 }
                             }
 
@@ -440,7 +441,7 @@ export class ProcessingStep extends LitElement {
                                 width: 8px;
                                 height: 8px;
                                 border-radius: 50%;
-                                background: var(--sp-accent);
+                                background: var(--sp-widget-link-color);
                                 left: 4px;
 
                                 &:nth-child(3) {
@@ -459,7 +460,7 @@ export class ProcessingStep extends LitElement {
                                 }
 
                                 &.notActive {
-                                    background: var(--sp-secondary-font);
+                                    background: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
                                 }
                             }
                         }
@@ -483,7 +484,7 @@ export class ProcessingStep extends LitElement {
                                     text-align: left;
                                     font-size: 12px;
                                     line-height: 1;
-                                    color: var(--sp-primary-font);
+                                    color: var(--sp-widget-text-color);
                                 }
 
                                 .text {
@@ -491,13 +492,13 @@ export class ProcessingStep extends LitElement {
                                     text-align: left;
                                     font-size: 12px;
                                     line-height: 1;
-                                    color: var(--sp-accent);
+                                    color: var(--sp-widget-link-color);
                                 }
 
                                 &.notActive {
                                     .text,
                                     .title {
-                                        color: var(--sp-secondary-font);
+                                        color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
                                     }
                                 }
                             }
@@ -521,11 +522,11 @@ export class ProcessingStep extends LitElement {
                                 height: 100%;
 
                                 rect {
-                                    fill: var(--sp-secondary-background);
+                                    fill: var(--sp-widget-secondary-bg-color);
                                 }
 
                                 path {
-                                    fill: var(--sp-primary-font);
+                                    fill: var(--sp-widget-text-color);
                                 }
                             }
                         }
@@ -554,7 +555,7 @@ export class ProcessingStep extends LitElement {
                     height: 1px;
                     min-height: 1px;
                     width: 100%;
-                    background: var(--sp-border);
+                    background: var(--sp-widget-hint-color);
                 }
 
                 .loaderWrapper {
@@ -566,14 +567,14 @@ export class ProcessingStep extends LitElement {
                     .title {
                         font-size: 16px;
                         line-height: 20px;
-                        color: var(--sp-primary-font);
+                        color: var(--sp-widget-text-color);
                         font-weight: 700;
                         text-align: left;
                     }
 
                     .text {
                         text-align: center;
-                        color: var(--sp-secondary-font);
+                        color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
                         font-weight: 500;
                         font-size: 11px;
                         margin-top: 6px;
@@ -584,7 +585,7 @@ export class ProcessingStep extends LitElement {
                         position: relative;
                         width: 100%;
                         height: 6px;
-                        border: 1px solid color-mix(in srgb, var(--sp-accent) 40%, transparent);
+                        border: 1px solid color-mix(in srgb, var(--sp-widget-link-color) 40%, transparent);
                         border-radius: 4px;
 
                         .progressLine {
@@ -594,7 +595,7 @@ export class ProcessingStep extends LitElement {
                             width: 0;
                             max-width: 99%;
                             height: 100%;
-                            background-color: var(--sp-accent);
+                            background-color: var(--sp-widget-link-color);
                             border-radius: 4px;
                             transition-property: all;
                             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -607,12 +608,12 @@ export class ProcessingStep extends LitElement {
                     display: flex;
                     flex-direction: column;
                     gap: 2px;
-                    color: var(--sp-secondary-font);
+                    color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
 
                     & > .title {
                         font-size: 16px;
                         line-height: 20px;
-                        color: var(--sp-primary-font);
+                        color: var(--sp-widget-text-color);
                         font-weight: 700;
                         text-align: left;
                         margin-bottom: 10px;
@@ -645,8 +646,8 @@ export class ProcessingStep extends LitElement {
 
                             .icon {
                                 position: relative;
-                                background: var(--sp-primary-background);
-                                border: 1px solid var(--sp-border);
+                                background: var(--sp-widget-bg-color);
+                                border: 1px solid var(--sp-widget-hint-color);
                                 width: 16px;
                                 height: 16px;
                                 border-radius: 50%;
@@ -658,14 +659,14 @@ export class ProcessingStep extends LitElement {
                                 svg {
                                     width: 16px;
                                     height: 16px;
-                                    stroke: var(--sp-accent);
+                                    stroke: var(--sp-widget-link-color);
                                 }
                             }
 
                             p {
                                 font-size: 12px;
                                 line-height: 20px;
-                                color: var(--sp-primary-font);
+                                color: var(--sp-widget-text-color);
                                 font-weight: 700;
                                 text-transform: capitalize;
                             }
@@ -678,8 +679,8 @@ export class ProcessingStep extends LitElement {
 
                             .icon {
                                 position: relative;
-                                background: var(--sp-primary-background);
-                                border: 1px solid var(--sp-border);
+                                background: var(--sp-widget-bg-color);
+                                border: 1px solid var(--sp-widget-hint-color);
                                 width: 16px;
                                 height: 16px;
                                 border-radius: 50%;
@@ -691,23 +692,23 @@ export class ProcessingStep extends LitElement {
                                 svg {
                                     width: 16px;
                                     height: 16px;
-                                    stroke: var(--sp-accent);
+                                    stroke: var(--sp-widget-link-color);
                                 }
                             }
 
                             p {
                                 font-size: 12px;
                                 line-height: 20px;
-                                color: var(--sp-primary-font);
+                                color: var(--sp-widget-text-color);
                                 font-weight: 700;
                             }
 
                             .badge {
-                                color: var(--sp-secondary-font);
+                                color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
                                 font-weight: 700;
                                 padding: 2px 4px;
-                                background: var(--sp-primary-background);
-                                border: 1px solid var(--sp-border);
+                                background: var(--sp-widget-bg-color);
+                                border: 1px solid var(--sp-widget-hint-color);
                                 font-size: 10px;
                                 border-radius: 4px;
                             }
@@ -716,7 +717,7 @@ export class ProcessingStep extends LitElement {
                         .amountInfo {
                             font-size: 12px;
                             line-height: 20px;
-                            color: var(--sp-primary-font);
+                            color: var(--sp-widget-text-color);
                             font-weight: 700;
                         }
 
@@ -735,17 +736,15 @@ export class ProcessingStep extends LitElement {
                                 .dot {
                                     width: 4px;
                                     aspect-ratio: 1;
-                                    background: var(--sp-secondary-font);
+                                    background: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
                                     border-radius: 50%;
                                 }
                             }
 
                             .copyButton {
                                 padding: 5px;
-                                border: 1px solid var(--sp-border);
                                 border-radius: 6px;
-                                color: var(--sp-primary-font);
-                                background: var(--sp-primary-background);
+                                color: var(--sp-widget-text-color);
                                 cursor: pointer;
 
                                 & > * {
@@ -765,12 +764,12 @@ export class ProcessingStep extends LitElement {
                                 }
 
                                 &.active {
-                                    color: var(--sp-accent);
+                                    color: var(--sp-widget-link-color);
 
                                     svg {
                                         rect,
                                         path {
-                                            stroke: var(--sp-accent);
+                                            stroke: var(--sp-widget-link-color);
                                         }
                                     }
 
@@ -789,9 +788,8 @@ export class ProcessingStep extends LitElement {
                                 align-items: center;
                                 gap: 4px;
                                 text-decoration: none;
-                                color: var(--sp-accent);
-                                transition-property: color, background-color, border-color,
-                                    text-decoration-color, fill, stroke;
+                                color: var(--sp-widget-link-color);
+                                transition-property: all;
                                 transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                                 transition-duration: 150ms;
 
@@ -802,14 +800,14 @@ export class ProcessingStep extends LitElement {
 
                                 &:hover,
                                 &:active {
-                                    color: color-mix(in srgb, var(--sp-accent) 90%, transparent);
+                                    color: color-mix(in srgb, var(--sp-widget-link-color) 90%, transparent);
                                 }
                             }
 
                             p {
                                 font-size: 12px;
                                 line-height: 20px;
-                                color: var(--sp-primary-font);
+                                color: var(--sp-widget-text-color);
                                 font-weight: 700;
                             }
                         }
@@ -823,14 +821,14 @@ export class ProcessingStep extends LitElement {
                             p {
                                 font-size: 12px;
                                 line-height: 20px;
-                                color: var(--sp-primary-font);
+                                color: var(--sp-widget-text-color);
                                 font-weight: 700;
                             }
                             
                             svg {
                                 width: 16px;
                                 height: 16px;
-                                color: var(--sp-accent);
+                                color: var(--sp-widget-link-color);
                             }
                             
                             .activeIcon,
@@ -848,12 +846,12 @@ export class ProcessingStep extends LitElement {
                             }
 
                             &.active {
-                                color: var(--sp-accent);
+                                color: var(--sp-widget-link-color);
 
                                 svg {
                                     rect,
                                     path {
-                                        stroke: var(--sp-accent);
+                                        stroke: var(--sp-widget-link-color);
                                     }
                                 }
 
@@ -872,23 +870,44 @@ export class ProcessingStep extends LitElement {
 
             &.dark {
                 .badge {
-                    color: var(--sp-primary-background) !important;
-                    background: var(--sp-primary-font) !important;
-                }
-
-                .copyButton {
-                    color: var(--sp-primary-background) !important;
-                    background: var(--sp-primary-font) !important;
-
-                    &.active {
-                        color: var(--sp-accent) !important;
-                    }
+                    color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent) !important;
+                    background: color-mix(
+                            in srgb,
+                            var(--sp-widget-secondary-bg-color) 15%,
+                            transparent
+                    ) !important;
+                    border-color: color-mix(
+                            in srgb,
+                            var(--sp-widget-hint-color) 15%,
+                            transparent
+                    ) !important;
                 }
 
                 .qrcode {
                     rect {
-                        fill: var(--sp-primary-background) !important;
+                        fill: var(--sp-widget-bg-color) !important;
                     }
+                }
+
+                .separator{
+                    background: color-mix(
+                            in srgb,
+                            var(--sp-widget-hint-color) 30%,
+                            transparent
+                    ) !important;
+                }
+
+                .icon{
+                    background: color-mix(
+                            in srgb,
+                            var(--sp-widget-secondary-bg-color) 15%,
+                            transparent
+                    ) !important;
+                    border-color: color-mix(
+                            in srgb,
+                            var(--sp-widget-hint-color) 15%,
+                            transparent
+                    ) !important;
                 }
             }
         }
