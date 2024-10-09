@@ -9,9 +9,6 @@ export class PriceStep extends LitElement {
     @property({ type: String })
     price: string = '';
 
-    @property({ type: Boolean })
-    returnButtonShow: boolean = false;
-
     @property({ attribute: false, type: String })
     private inputValue = '';
 
@@ -26,7 +23,6 @@ export class PriceStep extends LitElement {
             this.buttonDisabled = this.price === '0';
         }
     }
-
     updated(changedProperties: Map<string | symbol, unknown>): void {
         super.updated(changedProperties);
 
@@ -41,26 +37,63 @@ export class PriceStep extends LitElement {
                 <step-header
                     .dark=${this.dark}
                     .title=${'Enter the amount'}
-                    .hasBackButton=${this.returnButtonShow}
+                    .hasBackButton=${false}
                 ></step-header>
 
                 <div class="stepContent">
-                    <label for="price">
-                        <p class="labelText">Enter your price:</p>
+                    
+                    <div class="priceEnter">
+                        <p>${this.price} USD</p>
+                    </div>
+                    
+                    <div class="keyboardWrapper">
+                        
+                        <div class="keyboard">
+                            
+                            <div class="item">
+                                <p>1</p>
+                            </div>
+                            <div class="item">
+                                <p>2</p>
+                            </div>
+                            <div class="item">
+                                <p>3</p>
+                            </div>
 
-                        <input
-                            id="price"
-                            type="number"
-                            placeholder="Enter the amount"
-                            .value=${this.inputValue}
-                            @input=${this.inputHandler}
-                            @blur=${this.blurHandler}
-                            min="0"
-                            pattern="[0-9]*"
-                            step=".01"
-                            inputmode="decimal"
-                        />
-                    </label>
+                            <div class="item">
+                                <p>4</p>
+                            </div>
+                            <div class="item">
+                                <p>5</p>
+                            </div>
+                            <div class="item">
+                                <p>6</p>
+                            </div>
+
+                            <div class="item">
+                                <p>7</p>
+                            </div>
+                            <div class="item">
+                                <p>8</p>
+                            </div>
+                            <div class="item">
+                                <p>9</p>
+                            </div>
+
+                            <div class="item secondary">
+                                <p>.</p>
+                            </div>
+                            <div class="item">
+                                <p>0</p>
+                            </div>
+                            <div class="item secondary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5a2 2 0 0 0-1.344.519l-6.328 5.74a1 1 0 0 0 0 1.481l6.328 5.741A2 2 0 0 0 10 19h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"/><path d="m12 9 6 6"/><path d="m18 9-6 6"/></svg>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+                    
                 </div>
 
                 <step-footer
@@ -146,77 +179,91 @@ export class PriceStep extends LitElement {
 
             .stepContent {
                 flex: 1;
-                padding: 16px;
                 overflow-y: auto;
+                display: flex;
+                flex-direction: column;
 
                 &::-webkit-scrollbar {
                     width: 1px;
                 }
-
                 &::-webkit-scrollbar-track {
                     background: transparent;
                 }
-
                 &::-webkit-scrollbar-thumb {
                     background: var(--sp-border);
                 }
-
-                label {
-                    font-size: 14px;
-                    line-height: 1;
-                    font-weight: 500;
-                }
-
-                .labelText {
-                    font-size: 13px;
-                    line-height: 20px;
-                    color: var(--sp-primary-font);
-                    padding-left: 8px;
-                    font-weight: 500;
-                    text-align: left;
-                }
-
-                .labelError {
-                    margin-top: 8px;
-                    padding-left: 16px;
-                    font-size: 12px;
-                    line-height: 20px;
-                    color: #dc2828;
-                }
-
-                input {
-                    margin-top: 4px;
+                
+                .priceEnter{
+                    flex: 1;
                     display: flex;
-                    height: 40px;
-                    width: 100%;
-                    border-radius: 6px;
-                    border: 1px solid var(--sp-border);
+                    justify-content: center;
+                    align-items: center;
+                    padding: 16px;
+                }
+                
+                .keyboardWrapper{
                     background: var(--sp-primary-background);
-                    padding: 8px 12px;
-                    font-size: 16px;
-                    line-height: 20px;
-                    color: var(--sp-primary-font);
+                    border-top: 1px solid var(--sp-border);
+                    padding: 16px 8px 48px;
 
-                    &::placeholder {
-                        font-size: 14px;
-                        line-height: 20px;
-                        color: var(--sp-secondary-font);
-                    }
+                    .keyboard{
+                        display: grid;
+                        grid-template-columns: 1fr 1fr 1fr;
+                        gap: 4px;
+                        
+                        .item{
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            padding: 10px;
+                            background: var(--sp-secondary-background);
+                            border-radius: 0.5rem;
+                            cursor: pointer;
+                            transition-property: all;
+                            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                            transition-duration: 150ms;
+                            
+                            &.secondary{
+                                background: transparent;
+                                color: var(--sp-accent);
+                            }
+                            
+                            p{
+                                font-size: 20px;
+                                line-height: 28px;
+                                font-weight: 700;
+                                color: var(--sp-primary-font);
+                                transition-property: all;
+                                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                                transition-duration: 150ms;
+                            }
+                            
+                            svg{
+                                transition-property: all;
+                                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                                transition-duration: 150ms;
+                            }
 
-                    &:focus-visible {
-                        outline: 2px solid var(--sp-accent);
+                            &:hover,
+                            &:active{
+                                background: color-mix(in srgb, var(--sp-secondary-font) 15%, transparent);
+
+                                &.secondary{
+                                    background: color-mix(in srgb, var(--sp-secondary-font) 5%, transparent);
+                                }
+                                
+                                p, svg{
+                                    transform: scale(1.05);
+                                }
+                            }
+                        }
                     }
                 }
+
             }
 
             &.dark {
-                input {
-                    background: color-mix(
-                        in srgb,
-                        var(--sp-secondary-background) 15%,
-                        transparent
-                    ) !important;
-                }
+                
             }
         }
     `;

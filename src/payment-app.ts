@@ -186,7 +186,6 @@ export class PaymentApp extends LitElement {
                           .price=${this.price}
                           @updatePrice=${(event: CustomEvent) => (this.price = event.detail.price)}
                           @nextStep=${this.nextStep}
-                          @returnBack=${this.prevStep}
                       ></price-step>`
                     : ''}
                 ${this.appStep === 'setToken'
