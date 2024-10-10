@@ -30,15 +30,16 @@ import {checkWalletAddress} from "./util.ts";
 
 @customElement('payment-app')
 export class PaymentApp extends LitElement {
-    @property({
-        converter: (attrValue: string | null) => {
-            if (attrValue && parseFloat(attrValue) && parseFloat(attrValue) > 0)
-                return parseFloat(attrValue).toFixed(2);
-            else return undefined;
-        },
-        type: String
-    })
-    price: string = '';
+    // @property({
+    //     converter: (attrValue: string | null) => {
+    //         if (attrValue && parseFloat(attrValue) && parseFloat(attrValue) > 0)
+    //             return parseFloat(attrValue).toFixed(2);
+    //         else return undefined;
+    //     },
+    //     type: String
+    // })
+    @property({ type: String })
+    price: string = '0';
 
     @property({ type: Array })
     products: IProductInvoice[] = [];
@@ -119,7 +120,7 @@ export class PaymentApp extends LitElement {
         this.API = new Client();
 
         this.clientId = this.clientId ? this.clientId : '';
-        this.price = this.price ? this.price : '';
+        this.price = (this.price && this.price !== '0') ? this.price : '';
         this.priceAvailable = Boolean(this.price);
         this.tokens = await this.getTokens();
 
@@ -151,7 +152,7 @@ export class PaymentApp extends LitElement {
 
         }
 
-        if(!this.price){
+        if(!this.price || this.price === '0'){
             this.goToStep('setPrice');
             return;
         }
@@ -301,6 +302,7 @@ export class PaymentApp extends LitElement {
     private nextStep() {
 
         if (this.appStep === 'setPrice' && this.price && Number(this.price) > 0) {
+            this.price = parseFloat(this.price).toFixed(2);
             this.goToStep('setToken');
             return;
         }
