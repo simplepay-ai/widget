@@ -23,7 +23,7 @@ export class PriceStep extends LitElement {
 
         if(this.price && this.price !== '0'){
             this.priceValue = parseFloat(this.price).toFixed(2)
-            this.buttonDisabled = this.price === '0'
+            this.buttonDisabled = Number(this.price) <= 0
         }
 
         window.addEventListener('keydown', (event) => this.handleKeyDown(event));
@@ -31,7 +31,7 @@ export class PriceStep extends LitElement {
     }
     updated(changedProperties: Map<string | symbol, unknown>): void {
         super.updated(changedProperties);
-        this.buttonDisabled = !this.price || this.price === '0';
+        this.buttonDisabled = !this.price || Number(this.price) <= 0;
     }
 
     render() {
@@ -243,12 +243,20 @@ export class PriceStep extends LitElement {
                                 line-height: 28px;
                                 font-weight: 700;
                                 color: var(--sp-widget-text-color);
+                                -webkit-user-select: none;
+                                -moz-user-select: none;
+                                -ms-user-select: none;
+                                user-select: none;
                                 transition-property: all;
                                 transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                                 transition-duration: 150ms;
                             }
 
                             svg{
+                                -webkit-user-select: none;
+                                -moz-user-select: none;
+                                -ms-user-select: none;
+                                user-select: none;
                                 transition-property: all;
                                 transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                                 transition-duration: 150ms;
