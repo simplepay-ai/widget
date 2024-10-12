@@ -37,7 +37,7 @@ export class PaymentApp extends LitElement {
         },
         type: String
     })
-    price: string = '';
+    price: string = '0';
 
     @property({ type: Array })
     products: IProductInvoice[] = [];
@@ -134,7 +134,7 @@ export class PaymentApp extends LitElement {
         this.API = new Client();
 
         this.clientId = this.clientId ? this.clientId : '';
-        this.price = this.price ? this.price : '';
+        this.price = (this.price && this.price !== '0') ? this.price : '';
         this.priceAvailable = Boolean(this.price);
         this.tokens = await this.getTokens();
 
@@ -166,7 +166,7 @@ export class PaymentApp extends LitElement {
 
         }
 
-        if(!this.price){
+        if(!this.price || this.price === '0'){
             this.goToStep('setPrice');
             return;
         }
@@ -200,7 +200,6 @@ export class PaymentApp extends LitElement {
                           .price=${this.price}
                           @updatePrice=${(event: CustomEvent) => (this.price = event.detail.price)}
                           @nextStep=${this.nextStep}
-                          @returnBack=${this.prevStep}
                       ></price-step>`
                     : ''}
                 ${this.appStep === 'setToken'
@@ -565,8 +564,8 @@ export class PaymentApp extends LitElement {
     }
 
     private nextStep() {
-
         if (this.appStep === 'setPrice' && this.price && Number(this.price) > 0) {
+            this.price = parseFloat(this.price).toFixed(2);
             this.goToStep('setToken');
             return;
         }

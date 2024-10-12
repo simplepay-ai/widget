@@ -9,30 +9,29 @@ export class PriceStep extends LitElement {
     @property({ type: String })
     price: string = '';
 
-    @property({ type: Boolean })
-    returnButtonShow: boolean = false;
-
     @property({ attribute: false, type: String })
-    private inputValue = '';
+    private priceValue = '0';
 
     @property({ attribute: false, type: Boolean })
     private buttonDisabled = true;
 
+    @property({ attribute: false, type: Array })
+    private keyboardButtons = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', 'backspace'];
+
     connectedCallback() {
         super.connectedCallback();
 
-        if (this.price) {
-            this.inputValue = this.price;
-            this.buttonDisabled = this.price === '0';
+        if(this.price && this.price !== '0'){
+            this.priceValue = parseFloat(this.price).toFixed(2)
+            this.buttonDisabled = this.price === '0'
         }
-    }
 
+        window.addEventListener('keydown', (event) => this.handleKeyDown(event));
+
+    }
     updated(changedProperties: Map<string | symbol, unknown>): void {
         super.updated(changedProperties);
-
-        if (changedProperties.has('price')) {
-            this.inputValue = this.price;
-        }
+        this.buttonDisabled = !this.price || this.price === '0';
     }
 
     render() {
@@ -41,26 +40,42 @@ export class PriceStep extends LitElement {
                 <step-header
                     .darkTheme=${this.darkTheme}
                     .title=${'Enter the amount'}
-                    .hasBackButton=${this.returnButtonShow}
+                    .hasBackButton=${false}
                 ></step-header>
 
                 <div class="stepContent">
-                    <label for="price">
-                        <p class="labelText">Enter your price:</p>
-
-                        <input
-                            id="price"
-                            type="number"
-                            placeholder="Enter the amount"
-                            .value=${this.inputValue}
-                            @input=${this.inputHandler}
-                            @blur=${this.blurHandler}
-                            min="0"
-                            pattern="[0-9]*"
-                            step=".01"
-                            inputmode="decimal"
-                        />
-                    </label>
+                    
+                    <div class="priceEnter">
+                        <p>${this.priceValue} <span class="line"></span> USD</p>
+                    </div>
+                    
+                    <div class="keyboardWrapper">
+                        
+                        <div class="keyboard">
+                            
+                            ${
+                                    this.keyboardButtons.map((button) => {
+                                        
+                                        const buttonContent = (button === 'backspace')
+                                                ? html`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5a2 2 0 0 0-1.344.519l-6.328 5.74a1 1 0 0 0 0 1.481l6.328 5.741A2 2 0 0 0 10 19h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"/><path d="m12 9 6 6"/><path d="m18 9-6 6"/></svg>`
+                                                : html`<p>${button}</p>`
+                                        
+                                        const buttonSubClass = (button === 'backspace' || button === '.')
+                                                ? 'secondary'
+                                                : '';
+                                        
+                                        return html`
+                                            <div class=${`item ${buttonSubClass}`} @click=${() => this.handleKeyPress(button)}>
+                                                ${buttonContent}
+                                            </div>
+                                        `
+                                    })
+                            }
+                            
+                        </div>
+                        
+                    </div>
+                    
                 </div>
 
                 <step-footer
@@ -75,20 +90,41 @@ export class PriceStep extends LitElement {
         `;
     }
 
-    private inputHandler(event: any) {
-        if (event.target.value === '') {
-            this.buttonDisabled = true;
-            this.updatePrice('');
-            return;
+    private handleKeyDown(event: KeyboardEvent){
+        if (event.key === 'Backspace') {
+            this.handleKeyPress('backspace');
+        } else if (event.key === '.' || event.key === ',') {
+            this.handleKeyPress('.');
+        } else if (/^\d$/.test(event.key)) {
+            this.handleKeyPress(event.key);
+        }
+    }
+    private handleKeyPress(key: string) {
+        if (key === 'backspace') {
+            this.priceValue = this.priceValue.slice(0, -1) || '0'
+        } else if (key === '.') {
+            if (!this.priceValue.includes('.')) {
+                this.priceValue = this.priceValue + '.';
+            }
+        } else if (/^\d$/.test(key)) {
+            if (this.priceValue === '0' && key !== '0') {
+                this.priceValue = key;
+            } else if (this.priceValue.includes('.')) {
+                const [_integer, decimal] = this.priceValue.split('.');
+                if (decimal.length < 2) {
+                    this.priceValue = this.priceValue + key;
+                }
+            } else {
+                if(this.priceValue + key !== '00'){
+                    this.priceValue = this.priceValue + key;
+                }
+
+            }
         }
 
-        const priceString = event.target.value.toString().replaceAll(',', '.').replaceAll('-', '');
-        const priceFormat = parseFloat(priceString).toString();
-
-        this.inputValue = priceFormat;
-        this.buttonDisabled = Number(priceFormat) <= 0;
-        this.updatePrice(priceFormat);
+        this.updatePrice(this.priceValue)
     }
+
     private updatePrice(price: string){
         const updateEvent = new CustomEvent('updatePrice', {
             detail: {
@@ -99,31 +135,14 @@ export class PriceStep extends LitElement {
         });
         this.dispatchEvent(updateEvent);
     }
-    private blurHandler(event: any) {
-
-        if(event.target.value === ''){
-            this.updatePrice('');
-            return;
-        }
-
-        const priceString = event.target.value
-            .toString()
-            .replaceAll(',', '.')
-            .replaceAll('-', '');
-        const priceFormat = parseFloat(priceString).toFixed(2);
-        this.inputValue = priceFormat;
-        this.buttonDisabled = Number(priceFormat) <= 0;
-        this.updatePrice(priceFormat);
-    }
     private dispatchNextStep() {
-        if (this.inputValue && this.inputValue !== '0') {
+        if (this.priceValue && this.priceValue !== '0') {
 
             const nextStepEvent = new CustomEvent('nextStep', {
                 bubbles: true,
                 composed: true
             });
 
-            this.updatePrice(this.inputValue);
             this.dispatchEvent(nextStepEvent);
         }
     }
@@ -146,75 +165,148 @@ export class PriceStep extends LitElement {
 
             .stepContent {
                 flex: 1;
-                padding: 16px;
                 overflow-y: auto;
+                display: flex;
+                flex-direction: column;
 
                 &::-webkit-scrollbar {
                     width: 1px;
                 }
-
                 &::-webkit-scrollbar-track {
                     background: transparent;
                 }
-
                 &::-webkit-scrollbar-thumb {
                     background: var(--sp-widget-secondary-bg-color);
                 }
 
-                label {
-                    font-size: 14px;
-                    line-height: 1;
-                    font-weight: 500;
-                }
-
-                .labelText {
-                    font-size: 13px;
-                    line-height: 20px;
-                    color: var(--sp-widget-text-color);
-                    padding-left: 8px;
-                    font-weight: 500;
-                    text-align: left;
-                }
-
-                input {
-                    margin-top: 4px;
+                .priceEnter{
+                    flex: 1;
                     display: flex;
-                    height: 40px;
-                    width: 100%;
-                    border-radius: 6px;
-                    border: 1px solid var(--sp-widget-hint-color);
-                    background: var(--sp-widget-bg-color);
-                    padding: 8px 12px;
-                    font-size: 16px;
-                    line-height: 20px;
-                    color: var(--sp-widget-text-color);
+                    justify-content: center;
+                    align-items: center;
+                    padding: 16px;
 
-                    &::placeholder {
-                        font-size: 14px;
-                        line-height: 20px;
-                        color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
+                    p{
+                        font-size: 40px;
+                        line-height: 45px;
+                        font-weight: 700;
+                        color: var(--sp-widget-text-color);
+                        position: relative;
                     }
 
-                    &:focus-visible {
-                        outline: 2px solid var(--sp-widget-link-color);
+                    .line{
+                        position: absolute;
+                        top: 50%;
+                        right: 90px;
+                        height: 55px;
+                        width: 2px;
+                        background-color: var(--sp-widget-link-color);
+                        transform: translateY(-50%);
+                        border-radius: 0.5rem;
+                        animation: blink 1.5s step-end infinite;
                     }
                 }
+
+                .keyboardWrapper{
+                    background: var(--sp-widget-bg-color);
+                    border-top: 1px solid var(--sp-widget-hint-color);
+                    padding: 16px 8px 48px;
+
+                    .keyboard{
+                        display: grid;
+                        grid-template-columns: 1fr 1fr 1fr;
+                        gap: 4px;
+
+                        .item{
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            padding: 10px;
+                            background: var(--sp-widget-secondary-bg-color);
+                            border-radius: 0.5rem;
+                            cursor: pointer;
+                            user-select: none;
+                            transition-property: all;
+                            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                            transition-duration: 150ms;
+
+                            &.secondary{
+                                background: transparent;
+                                p,
+                                svg{
+                                    color: var(--sp-widget-link-color);
+                                }
+                            }
+
+                            p{
+                                font-size: 20px;
+                                line-height: 28px;
+                                font-weight: 700;
+                                color: var(--sp-widget-text-color);
+                                transition-property: all;
+                                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                                transition-duration: 150ms;
+                            }
+
+                            svg{
+                                transition-property: all;
+                                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                                transition-duration: 150ms;
+                            }
+
+                            &:hover,
+                            &:active{
+                                background: color-mix(in srgb, var(--sp-widget-secondary-bg-color) 60%, transparent);
+
+                                &.secondary{
+                                    background: color-mix(in srgb, var(--sp-widget-secondary-bg-color) 40%, transparent);
+                                }
+
+                                p, svg{
+                                    transform: scale(1.05);
+                                }
+                            }
+                        }
+                    }
+                }
+
             }
 
             &.dark {
-                input {
+                .keyboardWrapper {
                     background: color-mix(
-                        in srgb,
-                        var(--sp-widget-secondary-bg-color) 15%,
-                        transparent
-                    ) !important;
-                    border-color: color-mix(
                             in srgb,
-                            var(--sp-widget-hint-color) 15%,
+                            var(--sp-widget-secondary-bg-color) 15%,
                             transparent
                     ) !important;
+                    border-color: color-mix(in srgb, var(--sp-widget-hint-color) 15%, transparent) !important;
+                }
+
+                .item{
+                    background: var(--sp-widget-bg-color) !important;
+                    
+                    &:hover,
+                    &:active{
+                        background: color-mix(in srgb, var(--sp-widget-bg-color) 30%, transparent) !important;
+                    }
+                    
+                    &.secondary{
+                        background: color-mix(in srgb, var(--sp-widget-bg-color) 0%, transparent) !important;
+
+                        &:hover,
+                        &:active{
+                            background: color-mix(in srgb, var(--sp-widget-bg-color) 30%, transparent) !important;
+                        }
+                    }
+                    
+                    
                 }
             }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
         }
     `;
 }
