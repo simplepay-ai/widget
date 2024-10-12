@@ -192,6 +192,10 @@ export class PriceStep extends LitElement {
                         font-weight: 700;
                         color: var(--sp-widget-text-color);
                         position: relative;
+                        -webkit-user-select: none;
+                        -moz-user-select: none;
+                        -ms-user-select: none;
+                        user-select: none;
                     }
 
                     .line{
@@ -203,6 +207,10 @@ export class PriceStep extends LitElement {
                         background-color: var(--sp-widget-link-color);
                         transform: translateY(-50%);
                         border-radius: 0.5rem;
+                        -webkit-user-select: none;
+                        -moz-user-select: none;
+                        -ms-user-select: none;
+                        user-select: none;
                         animation: blink 1.5s step-end infinite;
                     }
                 }
@@ -225,6 +233,7 @@ export class PriceStep extends LitElement {
                             border-radius: 0.5rem;
                             cursor: pointer;
                             user-select: none;
+                            touch-action: manipulation;
                             transition-property: all;
                             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                             transition-duration: 150ms;
@@ -262,18 +271,20 @@ export class PriceStep extends LitElement {
                                 transition-duration: 150ms;
                             }
 
-                            &:hover,
-                            &:active{
-                                background: color-mix(in srgb, var(--sp-widget-bg-color) 60%, transparent);
+                            @media(hover: hover) and (pointer: fine){
+                                &:hover{
+                                    background: color-mix(in srgb, var(--sp-widget-bg-color) 60%, transparent);
 
-                                &.secondary{
-                                    background: color-mix(in srgb, var(--sp-widget-bg-color) 30%, transparent);
-                                }
+                                    &.secondary{
+                                        background: color-mix(in srgb, var(--sp-widget-bg-color) 30%, transparent);
+                                    }
 
-                                p, svg{
-                                    transform: scale(1.05);
+                                    p, svg{
+                                        transform: scale(1.05);
+                                    }
                                 }
                             }
+                            
                         }
                     }
                 }
@@ -289,21 +300,21 @@ export class PriceStep extends LitElement {
                                 transparent
                         ) !important;
 
-                        &:hover,
-                        &:active{
-                            background: color-mix(in srgb, var(--sp-widget-secondary-bg-color) 20%, transparent) !important;
+                        @media(hover: hover) and (pointer: fine){
+                            &:hover{
+                                background: color-mix(in srgb, var(--sp-widget-secondary-bg-color) 20%, transparent) !important;
+                            }
                         }
 
                         &.secondary{
                             background: transparent !important;
 
-                            &:hover,
-                            &:active{
-                                background: color-mix(in srgb, var(--sp-widget-secondary-bg-color) 10%, transparent) !important;
+                            @media(hover: hover) and (pointer: fine){
+                                &:hover{
+                                    background: color-mix(in srgb, var(--sp-widget-secondary-bg-color) 10%, transparent) !important;
+                                }
                             }
                         }
-
-
                     }
                 }
             }

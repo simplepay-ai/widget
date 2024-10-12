@@ -127,8 +127,10 @@ export class CustomNotification extends LitElement {
                     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                     transition-duration: 150ms;
 
-                    &:hover {
-                        background: color-mix(in srgb, var(--sp-widget-button-color) 90%, transparent);
+                    @media(hover: hover) and (pointer: fine){
+                        &:hover {
+                            background: color-mix(in srgb, var(--sp-widget-button-color) 90%, transparent);
+                        }
                     }
                 }
             }

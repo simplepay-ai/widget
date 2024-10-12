@@ -523,6 +523,9 @@ export class StepFooter extends LitElement {
                 z-index: 2;
                 position: relative;
                 max-width: 175px;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
                 user-select: none;
                 display: flex;
                 align-items: center;
@@ -569,7 +572,6 @@ export class StepFooter extends LitElement {
                 z-index: 2;
                 position: relative;
                 max-width: 175px;
-                user-select: none;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -584,6 +586,10 @@ export class StepFooter extends LitElement {
                 color: var(--sp-widget-text-color);
                 background: color-mix(in srgb, var(--sp-widget-hint-color) 60%, transparent);
                 border: 1px solid var(--sp-widget-hint-color);
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
                 transition-property: all;
                 transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                 transition-duration: 150ms;

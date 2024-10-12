@@ -351,13 +351,14 @@ export class TokenStep extends LitElement {
                         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                         transition-duration: 150ms;
 
-                        &:hover,
-                        &:active {
-                            background: color-mix(in srgb,
-                            var(--sp-widget-bg-color) 60%,
-                            transparent);
+                        @media(hover: hover) and (pointer: fine){
+                            &:hover{
+                                background: color-mix(in srgb,
+                                var(--sp-widget-bg-color) 60%,
+                                transparent);
+                            }
                         }
-
+                        
                         &.selected {
                             outline: 2px solid var(--sp-widget-link-color);
                         }
@@ -463,13 +464,14 @@ export class TokenStep extends LitElement {
                         &.trigger {
                             background: var(--sp-widget-bg-color);
 
-                            &:hover,
-                            &:active {
-                                background: color-mix(in srgb,
-                                var(--sp-widget-bg-color) 60%,
-                                transparent);
+                            @media(hover: hover) and (pointer: fine){
+                                &:hover{
+                                    background: color-mix(in srgb,
+                                    var(--sp-widget-bg-color) 60%,
+                                    transparent);
+                                }
                             }
-
+                            
                             .imagePlaceholder {
                                 position: relative;
                                 background: #4faf95;
@@ -569,14 +571,15 @@ export class TokenStep extends LitElement {
                             var(--sp-widget-hint-color) 15%,
                             transparent
                     ) !important;
-                    
-                    &:hover,
-                    &:active {
-                        background: color-mix(
-                                in srgb,
-                                var(--sp-widget-secondary-bg-color) 20%,
-                                transparent
-                        ) !important;
+
+                    @media(hover: hover) and (pointer: fine){
+                        &:hover{
+                            background: color-mix(
+                                    in srgb,
+                                    var(--sp-widget-secondary-bg-color) 20%,
+                                    transparent
+                            ) !important;
+                        }   
                     }
                 }
 
@@ -593,14 +596,15 @@ export class TokenStep extends LitElement {
                                     var(--sp-widget-hint-color) 15%,
                                     transparent
                             ) !important;
-                            
-                            &:hover,
-                            &:active {
-                                background: color-mix(
-                                        in srgb,
-                                        var(--sp-widget-secondary-bg-color) 20%,
-                                        transparent
-                                ) !important;
+
+                            @media(hover: hover) and (pointer: fine){
+                                &:hover{
+                                    background: color-mix(
+                                            in srgb,
+                                            var(--sp-widget-secondary-bg-color) 20%,
+                                            transparent
+                                    ) !important;
+                                }   
                             }
                         }
                     }

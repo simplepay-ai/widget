@@ -665,9 +665,10 @@ export class SuccessStep extends LitElement {
                                     height: 12px;
                                 }
 
-                                &:hover,
-                                &:active {
-                                    color: color-mix(in srgb, var(--sp-widget-link-color) 90%, transparent);
+                                @media(hover: hover) and (pointer: fine){
+                                    &:hover{
+                                        color: color-mix(in srgb, var(--sp-widget-link-color) 90%, transparent);
+                                    }   
                                 }
                             }
 

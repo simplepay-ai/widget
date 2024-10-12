@@ -200,6 +200,9 @@ export class StepHeader extends LitElement {
                     .backButton {
                         border: 0;
                         cursor: pointer;
+                        -webkit-user-select: none;
+                        -moz-user-select: none;
+                        -ms-user-select: none;
                         user-select: none;
                         display: flex;
                         justify-content: center;
@@ -212,11 +215,12 @@ export class StepHeader extends LitElement {
                         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                         transition-duration: 150ms;
 
-                        &:hover,
-                        &:active {
-                            background: color-mix(in srgb, var(--sp-widget-button-color) 90%, transparent);
+                        @media(hover: hover) and (pointer: fine){
+                            &:hover{
+                                background: color-mix(in srgb, var(--sp-widget-button-color) 90%, transparent);
+                            }
                         }
-
+                        
                         &:disabled {
                             pointer-events: none;
                             touch-action: none;
