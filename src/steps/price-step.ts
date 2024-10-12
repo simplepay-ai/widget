@@ -208,8 +208,7 @@ export class PriceStep extends LitElement {
                 }
 
                 .keyboardWrapper{
-                    background: var(--sp-widget-bg-color);
-                    border-top: 1px solid var(--sp-widget-hint-color);
+                    background: transparent;
                     padding: 16px 8px 48px;
 
                     .keyboard{
@@ -222,7 +221,7 @@ export class PriceStep extends LitElement {
                             justify-content: center;
                             align-items: center;
                             padding: 10px;
-                            background: var(--sp-widget-secondary-bg-color);
+                            background: var(--sp-widget-bg-color);
                             border-radius: 0.5rem;
                             cursor: pointer;
                             user-select: none;
@@ -232,6 +231,7 @@ export class PriceStep extends LitElement {
 
                             &.secondary{
                                 background: transparent;
+                                
                                 p,
                                 svg{
                                     color: var(--sp-widget-link-color);
@@ -264,10 +264,10 @@ export class PriceStep extends LitElement {
 
                             &:hover,
                             &:active{
-                                background: color-mix(in srgb, var(--sp-widget-secondary-bg-color) 60%, transparent);
+                                background: color-mix(in srgb, var(--sp-widget-bg-color) 60%, transparent);
 
                                 &.secondary{
-                                    background: color-mix(in srgb, var(--sp-widget-secondary-bg-color) 40%, transparent);
+                                    background: color-mix(in srgb, var(--sp-widget-bg-color) 30%, transparent);
                                 }
 
                                 p, svg{
@@ -282,32 +282,29 @@ export class PriceStep extends LitElement {
 
             &.dark {
                 .keyboardWrapper {
-                    background: color-mix(
-                            in srgb,
-                            var(--sp-widget-secondary-bg-color) 15%,
-                            transparent
-                    ) !important;
-                    border-color: color-mix(in srgb, var(--sp-widget-hint-color) 15%, transparent) !important;
-                }
-
-                .item{
-                    background: var(--sp-widget-bg-color) !important;
-                    
-                    &:hover,
-                    &:active{
-                        background: color-mix(in srgb, var(--sp-widget-bg-color) 30%, transparent) !important;
-                    }
-                    
-                    &.secondary{
-                        background: color-mix(in srgb, var(--sp-widget-bg-color) 0%, transparent) !important;
+                    .item{
+                        background: color-mix(
+                                in srgb,
+                                var(--sp-widget-secondary-bg-color) 15%,
+                                transparent
+                        ) !important;
 
                         &:hover,
                         &:active{
-                            background: color-mix(in srgb, var(--sp-widget-bg-color) 30%, transparent) !important;
+                            background: color-mix(in srgb, var(--sp-widget-secondary-bg-color) 20%, transparent) !important;
                         }
+
+                        &.secondary{
+                            background: transparent !important;
+
+                            &:hover,
+                            &:active{
+                                background: color-mix(in srgb, var(--sp-widget-secondary-bg-color) 10%, transparent) !important;
+                            }
+                        }
+
+
                     }
-                    
-                    
                 }
             }
         }
