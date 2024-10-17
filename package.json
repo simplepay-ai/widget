@@ -1,6 +1,6 @@
 {
     "name": "@simplepay-ai/widget",
-    "version": "0.6.7",
+    "version": "0.6.8",
     "type": "module",
     "main": "./dist/widget.js",
     "keywords": [
