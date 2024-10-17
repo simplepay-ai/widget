@@ -173,13 +173,6 @@ export class PaymentApp extends LitElement {
     render() {
         return html`
             <div class=${`stepWrapper`}>
-
-                <custom-notification
-                        .active=${this.notificationShow}
-                        .data=${this.notificationData}
-                        .dark=${this.theme === 'dark'}
-                        @updateNotification=${this.updateNotification}
-                ></custom-notification>
                 
                 ${this.appStep === 'loading'
                     ? html` <loading-step></loading-step>`
@@ -260,6 +253,13 @@ export class PaymentApp extends LitElement {
                           @returnBack=${this.prevStep}
                       ></success-step>`
                     : ''}
+
+                <custom-notification
+                        .active=${this.notificationShow}
+                        .data=${this.notificationData}
+                        .dark=${this.theme === 'dark'}
+                        @updateNotification=${this.updateNotification}
+                ></custom-notification>
             </div>
         `;
     }

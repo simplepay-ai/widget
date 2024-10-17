@@ -349,7 +349,6 @@ export class StepFooter extends LitElement {
     }
 
     private toggleProductInfo(){
-
         if(this.productInfoOpen){
 
             this.productInfoOverlayActive = !this.productInfoOverlayActive;
@@ -365,8 +364,6 @@ export class StepFooter extends LitElement {
                 this.productInfoOverlayActive = !this.productInfoOverlayActive;
             }, 150)
         }
-
-
     }
 
     private calcTimer(step: number) {
@@ -749,12 +746,13 @@ export class StepFooter extends LitElement {
                             transition-duration: 350ms;
                         }
 
-                        &:hover,
-                        &:active{
-                            background: var(--sp-widget-function-button-hover-color);
-                            
-                            svg{
-                                color: var(--sp-widget-function-button-hover-text-color);
+                        @media(hover: hover) and (pointer: fine) {
+                            &:hover{
+                                background: var(--sp-widget-function-button-hover-color);
+
+                                svg{
+                                    color: var(--sp-widget-function-button-hover-text-color);
+                                }
                             }
                         }
                     }
