@@ -221,7 +221,7 @@ export class PaymentApp extends LitElement {
                     : ''}
                 ${this.appStep === 'setWallet'
                     ? html` <wallet-step
-                          .darkTheme=${this.darkTheme}
+                          .theme=${this.theme}
                           .walletAddress=${this.walletAddress}
                           .price=${this.price}
                           .tokens=${this.tokens}
