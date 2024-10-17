@@ -8,12 +8,15 @@ export class CustomNotification extends LitElement {
     @property({ type: Boolean })
     active: boolean = false;
 
+    @property({ type: Boolean })
+    dark: boolean = false;
+
     @property({ type: Object })
     data: INotification | null = null;
 
     render() {
         return html`
-            <div class=${`notification ${this.active ? 'active' : ''}`}>
+            <div class=${`notification ${this.dark ? 'dark' : ''} ${this.active ? 'active' : ''}`}>
                 
                 <div class="content">
                     ${this.data?.title ? html` <h2>${this.data.title}</h2> ` : ''}
@@ -133,6 +136,10 @@ export class CustomNotification extends LitElement {
                         }
                     }
                 }
+            }
+            
+            &.dark{
+                background: var(--sp-widget-secondary-bg-color) !important;
             }
         }
     `;

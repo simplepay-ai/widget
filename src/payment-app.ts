@@ -177,6 +177,7 @@ export class PaymentApp extends LitElement {
                 <custom-notification
                         .active=${this.notificationShow}
                         .data=${this.notificationData}
+                        .dark=${this.theme === 'dark'}
                         @updateNotification=${this.updateNotification}
                 ></custom-notification>
                 
