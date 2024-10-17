@@ -94,9 +94,6 @@ export class StepFooter extends LitElement {
         return html`
             <div class=${`stepFooter ${this.darkTheme ? 'dark' : ''}`}>
                 
-                <div class="layer1"></div>
-                <div class="layer2"></div>
-
                 ${
                         this.hasCancelButton
                                 ? html`
@@ -390,31 +387,11 @@ export class StepFooter extends LitElement {
             display: flex;
             justify-content: space-between;
             gap: 16px;
-            border-top: 1px solid var(--sp-widget-hint-color);
+            border-top: 1px solid var(--sp-widget-separator-color);
             padding: 16px;
             background: var(--sp-widget-bg-color);
             z-index: 10;
             position: relative;
-            
-            .layer1{
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                z-index: -2;
-                background: white;
-            }
-
-            .layer2{
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                z-index: 1;
-                background: var(--sp-widget-bg-color);
-            }
             
             .product {
                 display: flex;
@@ -426,7 +403,7 @@ export class StepFooter extends LitElement {
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    border: 1px solid var(--sp-widget-hint-color);
+                    border: 1px solid var(--sp-widget-border-color);
                     background: var(--sp-widget-secondary-bg-color);
                     width: 40px;
                     height: 40px;
@@ -477,16 +454,15 @@ export class StepFooter extends LitElement {
                     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                     transition-duration: 150ms;
 
-                    &:hover,
-                    &:active {
-                        background: color-mix(in srgb,
-                        var(--sp-widget-secondary-bg-color) 60%,
-                        transparent);
+                    @media(hover: hover) and (pointer: fine){
+                        &:hover{
+                            background: var(--sp-widget-function-button-hover-color);
+                        }   
                     }
 
                     .toggleButton {
                         width: 18px;
-                        color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
+                        color: var(--sp-widget-secondary-text-color);
                         aspect-ratio: 1;
                         display: flex;
                         align-items: center;
@@ -538,16 +514,19 @@ export class StepFooter extends LitElement {
                 width: 100%;
                 height: 40px;
                 padding: 16px 8px;
-                color: var(--sp-widget-button-text-color);
-                background: var(--sp-widget-button-color);
-                border: none;
+                color: var(--sp-widget-primary-button-text-color);
+                background: var(--sp-widget-primary-button-color);
+                border: 1px solid var(--sp-widget-primary-button-border-color);
                 transition-property: all;
                 transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                 transition-duration: 150ms;
 
-                &:hover,
-                &:active {
-                    background: color-mix(in srgb, var(--sp-widget-button-color) 90%, transparent);
+                @media(hover: hover) and (pointer: fine){
+                    &:hover{
+                        color: var(--sp-widget-primary-button-hover-text-color);
+                        background: var(--sp-widget-primary-button-hover-color);
+                        border: 1px solid var(--sp-widget-primary-button-hover-border-color);
+                    }
                 }
 
                 &:disabled {
@@ -583,9 +562,9 @@ export class StepFooter extends LitElement {
                 width: 100%;
                 height: 40px;
                 padding: 16px 8px;
-                color: var(--sp-widget-text-color);
-                background: color-mix(in srgb, var(--sp-widget-hint-color) 60%, transparent);
-                border: 1px solid var(--sp-widget-hint-color);
+                color: var(--sp-widget-cancel-button-text-color);
+                background: var(--sp-widget-cancel-button-color);
+                border: 1px solid var(--sp-widget-cancel-button-border-color);
                 -webkit-user-select: none;
                 -moz-user-select: none;
                 -ms-user-select: none;
@@ -593,17 +572,13 @@ export class StepFooter extends LitElement {
                 transition-property: all;
                 transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                 transition-duration: 150ms;
-                
-                &:hover,
-                &:active {
-                    background: color-mix(in srgb, var(--sp-widget-hint-color) 40%, transparent);
-                }
 
-                //&:disabled {
-                //    pointer-events: none;
-                //    touch-action: none;
-                //    opacity: 0.5;
-                //}
+                @media(hover: hover) and (pointer: fine){
+                    &:hover{
+                        background: var(--sp-widget-cancel-button-hover-color);
+                        border: 1px solid var(--sp-widget-cancel-button-hover-border-color);
+                    }
+                }
             }
 
             .timerWrapper {
@@ -622,14 +597,14 @@ export class StepFooter extends LitElement {
                         height: 100%;
 
                         .timerBg {
-                            stroke: var(--sp-widget-hint-color);
+                            stroke: var(--sp-widget-border-color);
                         }
 
                         .timerProgress {
                             transition-property: all;
                             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                             transition-duration: 550ms;
-                            stroke: var(--sp-widget-link-color);
+                            stroke: var(--sp-widget-active-color);
                         }
                     }
                 }
@@ -647,7 +622,7 @@ export class StepFooter extends LitElement {
                     transition-property: all;
                     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                     transition-duration: 350ms;
-                    color: var(--sp-widget-link-color);
+                    color: var(--sp-widget-active-color);
                     text-align: left;
                 }
             }
@@ -730,7 +705,7 @@ export class StepFooter extends LitElement {
                 z-index: 1;
                 background: color-mix(
                         in srgb,
-                        var(--sp-widget-text-color) 0%,
+                        black 0%,
                         transparent
                 ) !important;
                 transition-property: all;
@@ -740,7 +715,7 @@ export class StepFooter extends LitElement {
                 &.active {
                     background: color-mix(
                             in srgb,
-                            var(--sp-widget-text-color) 75%,
+                            black 75%,
                             transparent
                     ) !important;
                 }
@@ -753,7 +728,6 @@ export class StepFooter extends LitElement {
                 background: var(--sp-widget-bg-color);
                 z-index: 2;
                 border-radius: 25px 25px 0 0;
-                border-top: 1px solid var(--sp-widget-hint-color);
                 overflow: hidden;
 
                 .content {
@@ -787,16 +761,25 @@ export class StepFooter extends LitElement {
                         transition-duration: 350ms;
                         width: 25px;
                         height: 25px;
+                        background: var(--sp-widget-function-button-color);
+                        border-radius: 6px;
 
                         svg{
                             width: 20px;
                             height: 20px;
-                            color: var(--sp-widget-text-color);
+                            color: var(--sp-widget-function-button-text-color);
+                            transition-property: all;
+                            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                            transition-duration: 350ms;
                         }
 
                         &:hover,
                         &:active{
-                            opacity: 0.7;
+                            background: var(--sp-widget-function-button-hover-color);
+                            
+                            svg{
+                                color: var(--sp-widget-function-button-hover-text-color);
+                            }
                         }
                     }
 
@@ -834,7 +817,7 @@ export class StepFooter extends LitElement {
                                 display: flex;
                                 justify-content: center;
                                 align-items: center;
-                                border: 1px solid var(--sp-widget-hint-color);
+                                border: 1px solid var(--sp-widget-border-color);
                                 background: var(--sp-widget-secondary-bg-color);
                                 width: 40px;
                                 height: 40px;
@@ -867,7 +850,7 @@ export class StepFooter extends LitElement {
 
                                 .description {
                                     font-size: 12px;
-                                    color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
+                                    color: var(--sp-widget-secondary-text-color);
                                 }
                             }
 
@@ -881,7 +864,7 @@ export class StepFooter extends LitElement {
 
                                 .count {
                                     font-size: 12px;
-                                    color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
+                                    color: var(--sp-widget-secondary-text-color);
                                     text-align: end;
                                 }
                             }

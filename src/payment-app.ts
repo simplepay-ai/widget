@@ -693,28 +693,6 @@ export class PaymentApp extends LitElement {
             box-sizing: border-box;
         }
 
-        //:host {
-        //    --sp-primary-background: #ffffff;
-        //    --sp-secondary-background: #f4f4f5;
-        //
-        //    --sp-primary-font: #000000;
-        //    --sp-secondary-font: #71717a;
-        //
-        //    --sp-border: #e4e4e7;
-        //    --sp-accent: #3b82f6;
-        //
-        //    .darkTheme {
-        //        --sp-primary-background: #000000 !important;
-        //        --sp-secondary-background: #9d9d9d !important;
-        //
-        //        --sp-primary-font: #ffffff !important;
-        //        --sp-secondary-font: #a1a1aaff !important;
-        //
-        //        --sp-border: #27272aff !important;
-        //        --sp-accent: #3b82f6 !important;
-        //    }
-        //}
-
         .stepWrapper {
             position: relative;
             display: flex;
@@ -722,6 +700,7 @@ export class PaymentApp extends LitElement {
             width: 100%;
             height: 100%;
             background: var(--sp-widget-secondary-bg-color);
+            overflow: hidden;
 
             & > *:not(custom-notification) {
                 height: 100%;

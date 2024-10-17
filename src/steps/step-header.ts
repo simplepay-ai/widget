@@ -181,7 +181,7 @@ export class StepHeader extends LitElement {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--sp-widget-hint-color);
+            border-bottom: 1px solid var(--sp-widget-separator-color);
             background: var(--sp-widget-bg-color);
             padding: 16px;
 
@@ -198,7 +198,6 @@ export class StepHeader extends LitElement {
                     gap: 12px;
 
                     .backButton {
-                        border: 0;
                         cursor: pointer;
                         -webkit-user-select: none;
                         -moz-user-select: none;
@@ -207,7 +206,8 @@ export class StepHeader extends LitElement {
                         display: flex;
                         justify-content: center;
                         align-items: center;
-                        background: var(--sp-widget-button-color);
+                        background: var(--sp-widget-back-button-color);
+                        border: 1px solid var(--sp-widget-back-button-border-color);
                         width: 32px;
                         height: 32px;
                         border-radius: 50%;
@@ -215,9 +215,23 @@ export class StepHeader extends LitElement {
                         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                         transition-duration: 150ms;
 
+                        svg {
+                            stroke: var(--sp-widget-back-button-text-color);
+                            width: 16px;
+                            height: 16px;
+                            transition-property: all;
+                            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                            transition-duration: 150ms;
+                        }
+
                         @media(hover: hover) and (pointer: fine){
                             &:hover{
-                                background: color-mix(in srgb, var(--sp-widget-button-color) 90%, transparent);
+                                background: var(--sp-widget-back-button-hover-color);
+                                border: 1px solid var(--sp-widget-back-button-hover-border-color);
+
+                                svg {
+                                    stroke: var(--sp-widget-back-button-hover-text-color);
+                                }
                             }
                         }
                         
@@ -225,12 +239,6 @@ export class StepHeader extends LitElement {
                             pointer-events: none;
                             touch-action: none;
                             opacity: 0.5;
-                        }
-
-                        svg {
-                            stroke: var(--sp-widget-button-text-color);
-                            width: 16px;
-                            height: 16px;
                         }
                     }
 
@@ -261,7 +269,7 @@ export class StepHeader extends LitElement {
                         .tokenIcon {
                             position: relative;
                             background: var(--sp-widget-bg-color);
-                            border: 1px solid var(--sp-widget-hint-color);
+                            border: 1px solid var(--sp-widget-border-color);
                             width: 32px;
                             height: 32px;
                             border-radius: 50%;
@@ -273,7 +281,7 @@ export class StepHeader extends LitElement {
                             svg {
                                 width: 16px;
                                 height: 16px;
-                                stroke: var(--sp-widget-link-color);
+                                stroke: var(--sp-widget-active-color);
                             }
                         }
 
@@ -282,7 +290,7 @@ export class StepHeader extends LitElement {
                             bottom: -2px;
                             right: -3px;
                             background: var(--sp-widget-bg-color);
-                            border: 1px solid var(--sp-widget-hint-color);
+                            border: 1px solid var(--sp-widget-border-color);
                             width: 16px;
                             height: 16px;
                             border-radius: 50%;
@@ -294,17 +302,17 @@ export class StepHeader extends LitElement {
                             svg {
                                 width: 16px;
                                 height: 16px;
-                                stroke: var(--sp-widget-link-color);
+                                stroke: var(--sp-widget-active-color);
                             }
                         }
                     }
 
                     .badge {
-                        color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
+                        color: var(--sp-widget-badge-text-color);
                         font-weight: 700;
                         padding: 2px 4px;
-                        background: var(--sp-widget-secondary-bg-color);
-                        border: 1px solid var(--sp-widget-hint-color);
+                        background: var(--sp-widget-badge-bg-color);
+                        border: 1px solid var(--sp-widget-badge-border-color);
                         font-size: 10px;
                         border-radius: 4px;
 
@@ -314,23 +322,24 @@ export class StepHeader extends LitElement {
                             gap: 6px;
                             padding: 4px;
                             font-size: 12px;
-                            color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
                             font-weight: 700;
 
                             .network {
                                 border-radius: 50%;
-                                background: var(--sp-widget-bg-color);
                                 width: 17px;
                                 aspect-ratio: 1;
+                                background: var(--sp-widget-bg-color);
                             }
+
+                            //color: var(--sp-widget-secondary-bg-color);
                         }
                     }
 
                     .shareButton {
-                        border: 1px solid var(--sp-widget-hint-color);
+                        border: 1px solid var(--sp-widget-function-button-border-color);
                         border-radius: 6px;
-                        color: var(--sp-widget-text-color);
-                        background: var(--sp-widget-secondary-bg-color);
+                        color: var(--sp-widget-function-button-text-color);
+                        background: var(--sp-widget-function-button-color);
                         cursor: pointer;
                         display: flex;
                         align-items: center;
@@ -339,10 +348,21 @@ export class StepHeader extends LitElement {
                         font-size: 12px;
                         aspect-ratio: 1;
                         width: 32px;
-
+                        transition-property: all;
+                        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                        transition-duration: 150ms;
+                        
                         svg {
                             width: 14px;
                             height: 14px;
+                        }
+
+                        @media(hover: hover) and (pointer: fine){
+                            &:hover{
+                                background: var(--sp-widget-function-button-hover-color);
+                                border: 1px solid var(--sp-widget-function-button-hover-border-color);
+                                color: var(--sp-widget-function-button-hover-text-color);
+                            }
                         }
                     }
                 }
@@ -361,7 +381,7 @@ export class StepHeader extends LitElement {
                 ) !important;
 
                 .badge {
-                    color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent) !important;
+                    color: var(--sp-widget-secondary-bg-color) !important;
                     background: var(--sp-widget-bg-color) !important;
                     border-color: color-mix(
                             in srgb,

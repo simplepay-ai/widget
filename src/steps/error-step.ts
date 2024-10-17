@@ -61,7 +61,7 @@ export class ErrorStep extends LitElement {
             }
 
             p {
-                color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
+                color: var(--sp-widget-secondary-text-color);
                 font-size: 14px;
                 line-height: 20px;
             }

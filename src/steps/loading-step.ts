@@ -51,12 +51,12 @@ export class LoadingStep extends LitElement {
                 }
 
                 circle {
-                    stroke: var(--sp-widget-link-color);
+                    stroke: var(--sp-widget-active-color);
                     opacity: 0.25;
                 }
 
                 path {
-                    fill: var(--sp-widget-link-color);
+                    fill: var(--sp-widget-active-color);
                     opacity: 0.75;
                 }
             }

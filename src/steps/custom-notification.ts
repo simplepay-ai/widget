@@ -17,6 +17,7 @@ export class CustomNotification extends LitElement {
     render() {
         return html`
             <div class=${`notification ${this.darkTheme ? 'dark' : ''} ${this.active ? 'active' : ''}`}>
+                
                 <div class="content">
                     ${this.data?.title ? html` <h2>${this.data.title}</h2> ` : ''}
                     ${this.data?.text ? html` <p>${this.data.text}</p> ` : ''}
@@ -78,7 +79,7 @@ export class CustomNotification extends LitElement {
             left: 5px;
             right: 5px;
             min-height: 50px;
-            border: 1px solid var(--sp-widget-hint-color);
+            border: 1px solid var(--sp-widget-border-color);
             border-radius: 8px;
             background: var(--sp-widget-bg-color);
             padding: 15px 10px;
@@ -107,16 +108,16 @@ export class CustomNotification extends LitElement {
                 p {
                     font-size: 13px;
                     font-weight: 400;
-                    color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
+                    color: var(--sp-widget-secondary-text-color);
                     margin-top: 8px;
                 }
             }
 
             .buttonWrapper {
                 button {
-                    color: var(--sp-widget-button-text-color);
-                    background: var(--sp-widget-button-color);
-                    border: 0;
+                    color: var(--sp-widget-primary-button-text-color);
+                    background: var(--sp-widget-primary-button-color);
+                    border: 1px solid var(--sp-widget-primary-button-border-color);
                     cursor: pointer;
                     border-radius: 6px;
                     font-size: 13px;
@@ -129,7 +130,9 @@ export class CustomNotification extends LitElement {
 
                     @media(hover: hover) and (pointer: fine){
                         &:hover {
-                            background: color-mix(in srgb, var(--sp-widget-button-color) 90%, transparent);
+                            color: var(--sp-widget-primary-button-hover-text-color);
+                            background: var(--sp-widget-primary-button-hover-color);
+                            border: 1px solid var(--sp-widget-primary-button-hover-border-color);
                         }
                     }
                 }

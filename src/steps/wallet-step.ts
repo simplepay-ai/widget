@@ -95,7 +95,7 @@ export class WalletStep extends LitElement {
 
                               <div class="inputWrapper">
                                   <label for="address">
-                                      <p class="labelText">Enter your wallet address:</p>
+                                      <p class="labelText">Address:</p>
 
                                       <div class="input">
                                           <input
@@ -284,12 +284,12 @@ export class WalletStep extends LitElement {
                     }
 
                     circle {
-                        stroke: var(--sp-widget-link-color);
+                        stroke: var(--sp-widget-active-color);
                         opacity: 0.25;
                     }
 
                     path {
-                        fill: var(--sp-widget-link-color);
+                        fill: var(--sp-widget-active-color);
                         opacity: 0.75;
                     }
                 }
@@ -315,21 +315,25 @@ export class WalletStep extends LitElement {
                         height: 40px;
                         width: 100%;
                         border-radius: 6px;
-                        border: 1px solid var(--sp-widget-hint-color);
-                        background: var(--sp-widget-bg-color);
+                        border: 1px solid var(--sp-widget-input-border-color);
+                        background: var(--sp-widget-input-bg-color);
                         padding: 8px 12px;
                         font-size: 16px;
                         line-height: 20px;
-                        color: var(--sp-widget-text-color);
-
+                        color: var(--sp-widget-input-color);
+                        outline: none;
+                        transition-property: all;
+                        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                        transition-duration: 50ms;
+                        
                         &::placeholder {
                             font-size: 14px;
                             line-height: 20px;
-                            color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
+                            color: var(--sp-widget-input-placeholder-color);
                         }
 
                         &:focus-visible {
-                            outline: 2px solid var(--sp-widget-link-color);
+                            border: 1px solid var(--sp-widget-input-active-border-color);
                         }
                     }
 
@@ -343,20 +347,31 @@ export class WalletStep extends LitElement {
                             padding: 11px;
                             width: 42px;
                             aspect-ratio: 1;
-                            border: 1px solid var(--sp-widget-hint-color);
+                            border: 1px solid var(--sp-widget-function-button-border-color);
                             border-radius: 6px;
-                            color: var(--sp-widget-text-color);
-                            background: var(--sp-widget-bg-color);
+                            color: var(--sp-widget-function-button-text-color);
+                            background: var(--sp-widget-function-button-color);
                             cursor: pointer;
                             display: flex;
                             align-items: center;
                             justify-content: center;
                             gap: 4px;
                             font-size: 12px;
-
+                            transition-property: all;
+                            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                            transition-duration: 150ms;
+                            
                             svg {
                                 width: 16px;
                                 height: 16px;
+                            }
+
+                            @media(hover: hover) and (pointer: fine) {
+                                &:hover {
+                                    border: 1px solid var(--sp-widget-function-button-hover-border-color);
+                                    color: var(--sp-widget-function-button-hover-text-color);
+                                    background: var(--sp-widget-function-button-hover-color);
+                                }
                             }
                         }
                     }
@@ -366,7 +381,7 @@ export class WalletStep extends LitElement {
                         margin-top: 8px;
                         font-size: 12px;
                         line-height: 16px;
-                        color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
+                        color: var(--sp-widget-secondary-text-color);
                         text-align: left;
                     }
                 }

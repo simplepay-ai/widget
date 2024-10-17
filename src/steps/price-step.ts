@@ -204,7 +204,7 @@ export class PriceStep extends LitElement {
                         right: 90px;
                         height: 55px;
                         width: 2px;
-                        background-color: var(--sp-widget-link-color);
+                        background-color: var(--sp-widget-active-color);
                         transform: translateY(-50%);
                         border-radius: 0.5rem;
                         -webkit-user-select: none;
@@ -229,7 +229,7 @@ export class PriceStep extends LitElement {
                             justify-content: center;
                             align-items: center;
                             padding: 10px;
-                            background: var(--sp-widget-bg-color);
+                            background: var(--sp-widget-function-button-color);
                             border-radius: 0.5rem;
                             cursor: pointer;
                             user-select: none;
@@ -240,18 +240,13 @@ export class PriceStep extends LitElement {
 
                             &.secondary{
                                 background: transparent;
-                                
-                                p,
-                                svg{
-                                    color: var(--sp-widget-link-color);
-                                }
                             }
 
                             p{
                                 font-size: 20px;
                                 line-height: 28px;
                                 font-weight: 700;
-                                color: var(--sp-widget-text-color);
+                                color: var(--sp-widget-function-button-text-color);
                                 -webkit-user-select: none;
                                 -moz-user-select: none;
                                 -ms-user-select: none;
@@ -262,6 +257,7 @@ export class PriceStep extends LitElement {
                             }
 
                             svg{
+                                color: var(--sp-widget-function-button-text-color);
                                 -webkit-user-select: none;
                                 -moz-user-select: none;
                                 -ms-user-select: none;
@@ -273,11 +269,7 @@ export class PriceStep extends LitElement {
 
                             @media(hover: hover) and (pointer: fine){
                                 &:hover{
-                                    background: color-mix(in srgb, var(--sp-widget-bg-color) 60%, transparent);
-
-                                    &.secondary{
-                                        background: color-mix(in srgb, var(--sp-widget-bg-color) 30%, transparent);
-                                    }
+                                    background: var(--sp-widget-function-button-hover-color);
 
                                     p, svg{
                                         transform: scale(1.05);

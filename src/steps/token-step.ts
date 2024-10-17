@@ -75,6 +75,7 @@ export class TokenStep extends LitElement {
                 ></step-header>
 
                 <div class="stepContent">
+                    
                     <div class="tokensList">
 
                         ${this.stableCoins && this.stableCoins.length > 0
@@ -130,22 +131,22 @@ export class TokenStep extends LitElement {
 
                                         <div id="accordionContent" class="content">
                                             ${this.stableCoins &&
-                                            this.stableCoins.map((token: Cryptocurrency) => {
-                                                return token.networks?.map((network) => {
-                                                    const networkStandart = getTokenStandart(
-                                                            network.symbol
-                                                    );
-                                                    //@ts-ignore
-                                                    const price = this.price / token.rates['usd'];
-                                                    const formatPrice = roundUpAmount(
-                                                            price.toString(),
-                                                            token.stable
-                                                    );
+                                this.stableCoins.map((token: Cryptocurrency) => {
+                                    return token.networks?.map((network) => {
+                                        const networkStandart = getTokenStandart(
+                                                network.symbol
+                                        );
+                                        //@ts-ignore
+                                        const price = this.price / token.rates['usd'];
+                                        const formatPrice = roundUpAmount(
+                                                price.toString(),
+                                                token.stable
+                                        );
 
-                                                    return html`
+                                        return html`
                                             <div
                                                     @click=${() =>
-                                                            this.selectToken(token.symbol, network.symbol)}
+                                                this.selectToken(token.symbol, network.symbol)}
                                                     class=${`tokenItem
                                                 ${this.selectedTokenSymbol === token.symbol && this.selectedNetworkSymbol === network.symbol ? 'selected' : ''}
                                                 `}
@@ -172,12 +173,12 @@ export class TokenStep extends LitElement {
                                                             <p>${token.symbol}</p>
 
                                                             ${networkStandart
-                                                            ? html`
+                                                ? html`
                                                                         <div class="badge">
                                                                             ${networkStandart}
                                                                         </div>
                                                                     `
-                                                            : ''}
+                                                : ''}
                                                         </div>
 
                                                         <p>~${formatPrice} ${token.symbol}</p>
@@ -185,8 +186,8 @@ export class TokenStep extends LitElement {
                                                 </div>
                                             </div>
                                         `;
-                                                });
-                                            })}
+                                    });
+                                })}
                                         </div>
                                     </div>
                                 `
@@ -344,23 +345,16 @@ export class TokenStep extends LitElement {
                         align-items: center;
                         width: 100%;
                         padding: 8px;
-                        border: 1px solid var(--sp-widget-hint-color);
+                        border: 1px solid var(--sp-widget-border-color);
                         border-radius: 8px;
                         background: var(--sp-widget-bg-color);
+                        outline: 2px solid transparent;
                         transition-property: all;
                         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-                        transition-duration: 150ms;
-
-                        @media(hover: hover) and (pointer: fine){
-                            &:hover{
-                                background: color-mix(in srgb,
-                                var(--sp-widget-bg-color) 60%,
-                                transparent);
-                            }
-                        }
+                        transition-duration: 50ms;
                         
                         &.selected {
-                            outline: 2px solid var(--sp-widget-link-color);
+                            border: 1px solid var(--sp-widget-active-color);
                         }
 
                         .tokenContent {
@@ -374,7 +368,7 @@ export class TokenStep extends LitElement {
                                 height: 32px;
                                 border-radius: 50%;
                                 object-fit: cover;
-                                border: 1px solid var(--sp-widget-hint-color);
+                                border: 1px solid var(--sp-widget-border-color);
                                 background: var(--sp-widget-bg-color);
                             }
 
@@ -384,7 +378,7 @@ export class TokenStep extends LitElement {
                                 .tokenIcon {
                                     position: relative;
                                     background: var(--sp-widget-bg-color);
-                                    border: 1px solid var(--sp-widget-hint-color);
+                                    border: 1px solid var(--sp-widget-border-color);
                                     width: 32px;
                                     height: 32px;
                                     border-radius: 50%;
@@ -396,7 +390,7 @@ export class TokenStep extends LitElement {
                                     svg {
                                         width: 16px;
                                         height: 16px;
-                                        stroke: var(--sp-widget-link-color);
+                                        stroke: var(--sp-widget-active-color);
                                     }
                                 }
 
@@ -405,7 +399,7 @@ export class TokenStep extends LitElement {
                                     bottom: -2px;
                                     right: -3px;
                                     background: var(--sp-widget-bg-color);
-                                    border: 1px solid var(--sp-widget-hint-color);
+                                    border: 1px solid var(--sp-widget-border-color);
                                     width: 16px;
                                     height: 16px;
                                     border-radius: 50%;
@@ -417,7 +411,7 @@ export class TokenStep extends LitElement {
                                     svg {
                                         width: 16px;
                                         height: 16px;
-                                        stroke: var(--sp-widget-link-color);
+                                        stroke: var(--sp-widget-active-color);
                                     }
                                 }
                             }
@@ -442,16 +436,16 @@ export class TokenStep extends LitElement {
                                 p {
                                     font-size: 12px;
                                     font-weight: 700;
-                                    color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
+                                    color: var(--sp-widget-secondary-text-color);
                                 }
                             }
 
                             .badge {
-                                color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
+                                color: var(--sp-widget-badge-text-color);
                                 font-weight: 700;
                                 padding: 2px 4px;
-                                background: var(--sp-widget-secondary-bg-color);
-                                border: 1px solid var(--sp-widget-hint-color);
+                                background: var(--sp-widget-badge-bg-color);
+                                border: 1px solid var(--sp-widget-badge-border-color);
                                 font-size: 10px;
                                 border-radius: 4px;
                             }
@@ -464,14 +458,6 @@ export class TokenStep extends LitElement {
                         &.trigger {
                             background: var(--sp-widget-bg-color);
 
-                            @media(hover: hover) and (pointer: fine){
-                                &:hover{
-                                    background: color-mix(in srgb,
-                                    var(--sp-widget-bg-color) 60%,
-                                    transparent);
-                                }
-                            }
-                            
                             .imagePlaceholder {
                                 position: relative;
                                 background: #4faf95;
@@ -510,7 +496,7 @@ export class TokenStep extends LitElement {
                                 display: flex;
                                 align-items: center;
                                 justify-content: center;
-                                color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
+                                color: var(--sp-widget-secondary-text-color);
                                 transform: rotate(0deg);
                                 transition-property: all;
                                 transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -540,10 +526,6 @@ export class TokenStep extends LitElement {
                             &:first-child {
                                 margin-top: 8px;
                             }
-
-                            &:last-child {
-                                margin-bottom: 4px;
-                            }
                         }
                     }
                 }
@@ -551,7 +533,7 @@ export class TokenStep extends LitElement {
 
             &.dark {
                 .badge {
-                    color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent) !important;
+                    color: var(--sp-widget-secondary-bg-color) !important;
                     background: var(--sp-widget-bg-color) !important;
                     border-color: color-mix(
                             in srgb,

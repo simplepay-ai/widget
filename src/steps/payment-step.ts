@@ -142,53 +142,55 @@ export class PaymentStep extends LitElement {
                                     <label class="inputWrapper" for="payAddress">
                                         <p class="labelText">Address to pay:</p>
 
-                                        <input
-                                                id="payAddress"
-                                                type="text"
-                                                .value=${this.invoice?.to}
-                                                readonly
-                                                disabled
-                                        />
+                                        <div class="input">
+                                            <input
+                                                    id="payAddress"
+                                                    type="text"
+                                                    .value=${this.invoice?.to}
+                                                    readonly
+                                                    disabled
+                                            />
 
-                                        <div
-                                                class="copyButton"
-                                                @click=${(event: CustomEvent) =>
-                                                        this.copyData(event, this.invoice?.to || '')}
-                                        >
-                                            <div class="default">
-                                                <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="24"
-                                                        height="24"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        stroke-width="2"
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                >
-                                                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                                                    <path
-                                                            d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
-                                                    />
-                                                </svg>
-                                                Copy
-                                            </div>
-                                            <div class="active">
-                                                <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="24"
-                                                        height="24"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        stroke-width="2"
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                >
-                                                    <path d="M20 6 9 17l-5-5" />
-                                                </svg>
-                                                Copied
+                                            <div
+                                                    class="copyButton"
+                                                    @click=${(event: CustomEvent) =>
+                                                            this.copyData(event, this.invoice?.to || '')}
+                                            >
+                                                <div class="default">
+                                                    <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="24"
+                                                            height="24"
+                                                            viewBox="0 0 24 24"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            stroke-width="2"
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                    >
+                                                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                                                        <path
+                                                                d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                                                        />
+                                                    </svg>
+                                                    Copy
+                                                </div>
+                                                <div class="active">
+                                                    <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="24"
+                                                            height="24"
+                                                            viewBox="0 0 24 24"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            stroke-width="2"
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                    >
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                    Copied
+                                                </div>
                                             </div>
                                         </div>
                                     </label>
@@ -196,53 +198,55 @@ export class PaymentStep extends LitElement {
                                     <label class="inputWrapper" for="payAmount">
                                         <p class="labelText">Amount:</p>
 
-                                        <input
-                                                id="payAmount"
-                                                type="text"
-                                                .value=${`${this.formatAmount} ${this.invoice?.cryptocurrency.symbol}`}
-                                                readonly
-                                                disabled
-                                        />
+                                        <div class="input">
+                                            <input
+                                                    id="payAmount"
+                                                    type="text"
+                                                    .value=${`${this.formatAmount} ${this.invoice?.cryptocurrency.symbol}`}
+                                                    readonly
+                                                    disabled
+                                            />
 
-                                        <div
-                                                class="copyButton"
-                                                @click=${(event: CustomEvent) =>
-                                                        this.copyData(event, this.formatAmount.toString() || '')}
-                                        >
-                                            <div class="default">
-                                                <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="24"
-                                                        height="24"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        stroke-width="2"
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                >
-                                                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                                                    <path
-                                                            d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
-                                                    />
-                                                </svg>
-                                                Copy
-                                            </div>
-                                            <div class="active">
-                                                <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="24"
-                                                        height="24"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        stroke-width="2"
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                >
-                                                    <path d="M20 6 9 17l-5-5" />
-                                                </svg>
-                                                Copied
+                                            <div
+                                                    class="copyButton"
+                                                    @click=${(event: CustomEvent) =>
+                                                            this.copyData(event, this.formatAmount.toString() || '')}
+                                            >
+                                                <div class="default">
+                                                    <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="24"
+                                                            height="24"
+                                                            viewBox="0 0 24 24"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            stroke-width="2"
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                    >
+                                                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                                                        <path
+                                                                d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                                                        />
+                                                    </svg>
+                                                    Copy
+                                                </div>
+                                                <div class="active">
+                                                    <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="24"
+                                                            height="24"
+                                                            viewBox="0 0 24 24"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            stroke-width="2"
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                    >
+                                                        <path d="M20 6 9 17l-5-5" />
+                                                    </svg>
+                                                    Copied
+                                                </div>
                                             </div>
                                         </div>
                                     </label>
@@ -351,12 +355,12 @@ export class PaymentStep extends LitElement {
                     }
 
                     circle {
-                        stroke: var(--sp-widget-link-color);
+                        stroke: var(--sp-widget-active-color);
                         opacity: 0.25;
                     }
 
                     path {
-                        fill: var(--sp-widget-link-color);
+                        fill: var(--sp-widget-active-color);
                         opacity: 0.75;
                     }
                 }
@@ -377,7 +381,7 @@ export class PaymentStep extends LitElement {
                             font-size: 12px;
                             line-height: 1;
                             font-weight: 700;
-                            color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
+                            color: var(--sp-widget-secondary-text-color);
                         }
 
                         .info {
@@ -388,7 +392,7 @@ export class PaymentStep extends LitElement {
                             .icon {
                                 position: relative;
                                 background: var(--sp-widget-bg-color);
-                                border: 1px solid var(--sp-widget-hint-color);
+                                border: 1px solid var(--sp-widget-border-color);
                                 width: 16px;
                                 height: 16px;
                                 border-radius: 50%;
@@ -400,7 +404,7 @@ export class PaymentStep extends LitElement {
                                 svg {
                                     width: 16px;
                                     height: 16px;
-                                    stroke: var(--sp-widget-link-color);
+                                    stroke: var(--sp-widget-active-color);
                                 }
                             }
 
@@ -413,11 +417,11 @@ export class PaymentStep extends LitElement {
                             }
 
                             .badge {
-                                color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent);
+                                color: var(--sp-widget-badge-text-color);
                                 font-weight: 700;
                                 padding: 2px 4px;
-                                background: var(--sp-widget-bg-color);
-                                border: 1px solid var(--sp-widget-hint-color);
+                                background: var(--sp-widget-badge-bg-color);
+                                border: 1px solid var(--sp-widget-badge-border-color);
                                 font-size: 10px;
                                 border-radius: 4px;
                             }
@@ -479,7 +483,7 @@ export class PaymentStep extends LitElement {
                             svg {
                                 width: 16px;
                                 height: 16px;
-                                stroke: var(--sp-widget-link-color);
+                                stroke: var(--sp-widget-active-color);
                             }
                         }
 
@@ -488,7 +492,7 @@ export class PaymentStep extends LitElement {
                             bottom: -2px;
                             right: -3px;
                             background: var(--sp-widget-bg-color);
-                            border: 1px solid var(--sp-widget-hint-color);
+                            border: 1px solid var(--sp-widget-border-color);
                             width: 20px;
                             height: 20px;
                             border-radius: 50%;
@@ -500,7 +504,7 @@ export class PaymentStep extends LitElement {
                             svg {
                                 width: 16px;
                                 height: 16px;
-                                stroke: var(--sp-widget-link-color);
+                                stroke: var(--sp-widget-active-color);
                             }
                         }
                     }
@@ -511,7 +515,7 @@ export class PaymentStep extends LitElement {
                     height: 1px;
                     min-height: 1px;
                     width: 100%;
-                    background: var(--sp-widget-hint-color);
+                    background: var(--sp-widget-separator-color);
                 }
 
                 .inputWrapper {
@@ -530,86 +534,96 @@ export class PaymentStep extends LitElement {
                         font-weight: 500;
                         text-align: left;
                     }
-
-                    input {
+                    
+                    .input{
                         margin-top: 4px;
                         display: flex;
-                        height: 40px;
-                        width: 100%;
-                        border-radius: 6px;
-                        border: 1px solid var(--sp-widget-hint-color);
-                        background: var(--sp-widget-bg-color);
-                        padding: 8px 90px 8px 12px;
-                        font-size: 14px;
-                        line-height: 20px;
-                        user-select: none;
-                        pointer-events: none;
-                        color: var(--sp-widget-text-color);
-                        text-overflow: ellipsis;
-
-                        &:focus-visible {
-                            border: 1px solid var(--sp-widget-hint-color);
-                            outline: none;
-                        }
-
-                        &:disabled {
-                            color: var(--sp-widget-text-color);
-                            opacity: 1;
-                        }
-                    }
-
-                    .copyButton {
-                        position: absolute;
-                        padding: 7px 5px;
-                        border: 1px solid var(--sp-widget-hint-color);
-                        border-radius: 6px;
-                        color: var(--sp-widget-text-color);
-                        background: var(--sp-widget-secondary-bg-color);
-                        bottom: 5px;
-                        right: 5px;
-                        cursor: pointer;
-
-                        & > * {
+                        align-items: center;
+                        gap: 4px;
+                        
+                        input {
                             display: flex;
+                            height: 40px;
+                            width: 100%;
+                            border-radius: 6px;
+                            border: 1px solid var(--sp-widget-input-border-color);
+                            background: var(--sp-widget-input-bg-color);
+                            padding: 8px 90px 8px 12px;
+                            font-size: 14px;
+                            line-height: 20px;
+                            user-select: none;
+                            pointer-events: none;
+                            color: var(--sp-widget-input-color);
+                            text-overflow: ellipsis;
+                        }
+
+                        .copyButton {
+                            height: 40px;
+                            min-width: 70px;
+                            max-width: 70px;
+                            display: flex;
+                            justify-content: center;
                             align-items: center;
-                            gap: 4px;
-                            font-size: 12px;
+                            padding: 7px 10px;
+                            border: 1px solid var(--sp-widget-function-button-border-color);
+                            border-radius: 6px;
+                            color: var(--sp-widget-function-button-text-color);
+                            background: var(--sp-widget-function-button-color);
+                            cursor: pointer;
+                            transition-property: all;
+                            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                            transition-duration: 150ms;
 
-                            svg {
-                                width: 15px;
-                                height: 15px;
+                            @media(hover: hover) and (pointer: fine) {
+                                &:hover {
+                                    border: 1px solid var(--sp-widget-function-button-hover-border-color);
+                                    color: var(--sp-widget-function-button-hover-text-color);
+                                    background: var(--sp-widget-function-button-hover-color);
+                                }
                             }
-                        }
+                            
+                            & > * {
+                                display: flex;
+                                align-items: center;
+                                gap: 2px;
+                                font-size: 12px;
 
-                        .active {
-                            display: none;
-                        }
-
-                        &.active {
-                            color: var(--sp-widget-link-color);
-
-                            svg {
-                                rect,
-                                path {
-                                    stroke: var(--sp-widget-link-color);
+                                svg {
+                                    width: 15px;
+                                    height: 15px;
                                 }
                             }
 
-                            .default {
+                            .active {
                                 display: none;
                             }
 
-                            .active {
-                                display: flex;
+                            &.active {
+                                color: var(--sp-widget-function-button-hover-text-color);
+
+                                svg {
+                                    rect,
+                                    path {
+                                        stroke: var(--sp-widget-function-button-hover-text-color);
+                                    }
+                                }
+
+                                .default {
+                                    display: none;
+                                }
+
+                                .active {
+                                    display: flex;
+                                }
                             }
-                        }
+                        }   
                     }
                 }
             }
 
             &.dark {
                 .badge {
-                    color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent) !important;
+                    color: var(--sp-widget-secondary-bg-color) !important;
                     background: color-mix(
                             in srgb,
                             var(--sp-widget-secondary-bg-color) 15%,
@@ -675,7 +689,7 @@ export class PaymentStep extends LitElement {
                     color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent) !important;
                     
                     &.active{
-                        color: var(--sp-widget-link-color) !important;
+                        color: var(--sp-widget-active-color) !important;
                     }
                 }
 
