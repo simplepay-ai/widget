@@ -12,9 +12,9 @@
 
       "--sp-widget-active-color": "rgb(59 130 246)",
 
-      "--sp-widget-badge-bg-color": "rgb(244 244 245)",
-      "--sp-widget-badge-text-color": "rgb(133 133 133)",
-      "--sp-widget-badge-border-color": "rgb(228 228 231)",
+      "--sp-widget-badge-bg-color": "rgb(59 130 246)",
+      "--sp-widget-badge-text-color": "rgb(255 255 255)",
+      "--sp-widget-badge-border-color": "rgb(59 130 246)",
 
       "--sp-widget-primary-button-color": "rgb(59 130 246)",
       "--sp-widget-primary-button-text-color": "rgb(255 255 255)",
