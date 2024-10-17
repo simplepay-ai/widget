@@ -119,8 +119,7 @@ export class PaymentApp extends LitElement {
         super.connectedCallback();
 
         switch (this.theme) {
-            case "light":
-            case "dark":
+            case "light"://case "dark":
                 this.setTheme(this.theme);
                 this.darkTheme = this.theme === 'dark';
                 break;
