@@ -6,9 +6,6 @@ import { INotification } from '../types.ts';
 export class CustomNotification extends LitElement {
 
     @property({ type: Boolean })
-    darkTheme: boolean = false;
-
-    @property({ type: Boolean })
     active: boolean = false;
 
     @property({ type: Object })
@@ -16,7 +13,7 @@ export class CustomNotification extends LitElement {
 
     render() {
         return html`
-            <div class=${`notification ${this.darkTheme ? 'dark' : ''} ${this.active ? 'active' : ''}`}>
+            <div class=${`notification ${this.active ? 'active' : ''}`}>
                 
                 <div class="content">
                     ${this.data?.title ? html` <h2>${this.data.title}</h2> ` : ''}
@@ -136,19 +133,6 @@ export class CustomNotification extends LitElement {
                         }
                     }
                 }
-            }
-
-            &.dark {
-                background: color-mix(
-                        in srgb,
-                        var(--sp-widget-secondary-bg-color) 15%,
-                        transparent
-                ) !important;
-                border-color: color-mix(
-                        in srgb,
-                        var(--sp-widget-hint-color) 15%,
-                        transparent
-                ) !important;
             }
         }
     `;

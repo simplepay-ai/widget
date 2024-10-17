@@ -4,9 +4,6 @@ import { customElement } from 'lit/decorators.js';
 
 @customElement('step-header')
 export class StepHeader extends LitElement {
-    @property({ type: Boolean })
-    darkTheme: boolean = false;
-
     @property({ type: String })
     title: string = '';
 
@@ -50,7 +47,7 @@ export class StepHeader extends LitElement {
 
     render() {
         return html`
-            <div class=${`stepHeader ${this.darkTheme ? 'dark' : ''}`}>
+            <div class=${`stepHeader`}>
                 <div class="stepTitle">
                     <div class="leftSection">
                         ${this.hasBackButton
@@ -365,43 +362,6 @@ export class StepHeader extends LitElement {
                             }
                         }
                     }
-                }
-            }
-
-            &.dark {
-                background: color-mix(
-                        in srgb,
-                        var(--sp-widget-secondary-bg-color) 15%,
-                        transparent
-                ) !important;
-                border-color: color-mix(
-                        in srgb,
-                        var(--sp-widget-hint-color) 15%,
-                        transparent
-                ) !important;
-
-                .badge {
-                    color: var(--sp-widget-secondary-bg-color) !important;
-                    background: var(--sp-widget-bg-color) !important;
-                    border-color: color-mix(
-                            in srgb,
-                            var(--sp-widget-hint-color) 15%,
-                            transparent
-                    ) !important;
-
-                    .network{
-                        background: color-mix(
-                                in srgb,
-                                var(--sp-widget-secondary-bg-color) 15%,
-                                transparent
-                        ) !important;
-                    }
-                }
-
-                .shareButton {
-                    color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent) !important;
-                    background: var(--sp-widget-bg-color) !important;
-                    border-color: var(--sp-widget-bg-color) !important;
                 }
             }
         }

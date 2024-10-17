@@ -11,9 +11,6 @@ export class TokenStep extends LitElement {
     @property({ type: Array })
     productsInfo: IProduct[] = [];
 
-    @property({type: Boolean})
-    darkTheme: boolean = false;
-
     @property({type: String})
     price: string = '';
 
@@ -67,9 +64,8 @@ export class TokenStep extends LitElement {
 
     render() {
         return html`
-            <div class=${`stepWrapper ${this.darkTheme ? 'dark' : ''}`}>
+            <div class=${`stepWrapper`}>
                 <step-header
-                        .darkTheme=${this.darkTheme}
                         .title= ${'Choose token'}
                         .hasBackButton=${this.returnButtonShow}
                 ></step-header>
@@ -251,7 +247,6 @@ export class TokenStep extends LitElement {
                 </div>
 
                 <step-footer
-                        .darkTheme=${this.darkTheme}
                         .price=${this.price}
                         .hasButton=${true}
                         .buttonDisabled=${this.buttonDisabled}
@@ -525,68 +520,6 @@ export class TokenStep extends LitElement {
 
                             &:first-child {
                                 margin-top: 8px;
-                            }
-                        }
-                    }
-                }
-            }
-
-            &.dark {
-                .badge {
-                    color: var(--sp-widget-secondary-bg-color) !important;
-                    background: var(--sp-widget-bg-color) !important;
-                    border-color: color-mix(
-                            in srgb,
-                            var(--sp-widget-hint-color) 15%,
-                            transparent
-                    ) !important;
-                }
-
-                .tokenItem {
-                    background: color-mix(
-                            in srgb,
-                            var(--sp-widget-secondary-bg-color) 15%,
-                            transparent
-                    ) !important;
-                    border-color: color-mix(
-                            in srgb,
-                            var(--sp-widget-hint-color) 15%,
-                            transparent
-                    ) !important;
-
-                    @media(hover: hover) and (pointer: fine){
-                        &:hover{
-                            background: color-mix(
-                                    in srgb,
-                                    var(--sp-widget-secondary-bg-color) 20%,
-                                    transparent
-                            ) !important;
-                        }   
-                    }
-                }
-
-                .accordion {
-                    .tokenItem {
-                        &.trigger {
-                            background: color-mix(
-                                    in srgb,
-                                    var(--sp-widget-secondary-bg-color) 15%,
-                                    transparent
-                            ) !important;
-                            border-color: color-mix(
-                                    in srgb,
-                                    var(--sp-widget-hint-color) 15%,
-                                    transparent
-                            ) !important;
-
-                            @media(hover: hover) and (pointer: fine){
-                                &:hover{
-                                    background: color-mix(
-                                            in srgb,
-                                            var(--sp-widget-secondary-bg-color) 20%,
-                                            transparent
-                                    ) !important;
-                                }   
                             }
                         }
                     }

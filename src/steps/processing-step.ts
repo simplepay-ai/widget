@@ -15,9 +15,6 @@ export class ProcessingStep extends LitElement {
     @property({ type: Object })
     invoice: Invoice | null = null;
 
-    @property({ type: Boolean })
-    darkTheme: boolean = false;
-
     @property({ type: String })
     price: string = '';
 
@@ -77,9 +74,8 @@ export class ProcessingStep extends LitElement {
 
     render() {
         return html`
-            <div class=${`stepWrapper ${this.darkTheme ? 'dark' : ''}`}>
+            <div class=${`stepWrapper`}>
                 <step-header
-                    .darkTheme=${this.darkTheme}
                     .title=${'Proсessing transaction'}
                     .hasBackButton=${false}
                     .hasShareButton=${true}
@@ -301,7 +297,6 @@ export class ProcessingStep extends LitElement {
                 </div>
 
                 <step-footer
-                    .darkTheme=${this.darkTheme}
                     .price=${this.price}
                     .hasExplorerButton=${true}
                     .explorerLink=${this.qrCodeUrl}
@@ -873,49 +868,6 @@ export class ProcessingStep extends LitElement {
                             }
                         }
                     }
-                }
-            }
-
-            &.dark {
-                .badge {
-                    color: var(--sp-widget-secondary-bg-color) !important;
-                    background: color-mix(
-                            in srgb,
-                            var(--sp-widget-secondary-bg-color) 15%,
-                            transparent
-                    ) !important;
-                    border-color: color-mix(
-                            in srgb,
-                            var(--sp-widget-hint-color) 15%,
-                            transparent
-                    ) !important;
-                }
-
-                .qrcode {
-                    rect {
-                        fill: var(--sp-widget-bg-color) !important;
-                    }
-                }
-
-                .separator{
-                    background: color-mix(
-                            in srgb,
-                            var(--sp-widget-hint-color) 30%,
-                            transparent
-                    ) !important;
-                }
-
-                .icon{
-                    background: color-mix(
-                            in srgb,
-                            var(--sp-widget-secondary-bg-color) 15%,
-                            transparent
-                    ) !important;
-                    border-color: color-mix(
-                            in srgb,
-                            var(--sp-widget-hint-color) 15%,
-                            transparent
-                    ) !important;
                 }
             }
         }

@@ -58,9 +58,6 @@ export class PaymentApp extends LitElement {
     invoiceId: string = '';
 
     @property({ attribute: false })
-    private darkTheme: boolean = false;
-
-    @property({ attribute: false })
     private priceAvailable: boolean = false;
 
     @property({ attribute: false })
@@ -119,9 +116,9 @@ export class PaymentApp extends LitElement {
         super.connectedCallback();
 
         switch (this.theme) {
-            case "light"://case "dark":
+            case "light":
+                case "dark":
                 this.setTheme(this.theme);
-                this.darkTheme = false;//this.theme === 'dark';
                 break;
             case "custom":
                 break;
@@ -175,12 +172,11 @@ export class PaymentApp extends LitElement {
 
     render() {
         return html`
-            <div class=${`stepWrapper ${this.darkTheme ? 'dark' : ''}`}>
+            <div class=${`stepWrapper`}>
 
                 <custom-notification
                         .active=${this.notificationShow}
                         .data=${this.notificationData}
-                        .darkTheme=${this.darkTheme}
                         @updateNotification=${this.updateNotification}
                 ></custom-notification>
                 
@@ -195,7 +191,6 @@ export class PaymentApp extends LitElement {
                     : ''}
                 ${this.appStep === 'setPrice'
                     ? html` <price-step
-                          .darkTheme=${this.darkTheme}
                           .price=${this.price}
                           @updatePrice=${(event: CustomEvent) => (this.price = event.detail.price)}
                           @nextStep=${this.nextStep}
@@ -203,7 +198,6 @@ export class PaymentApp extends LitElement {
                     : ''}
                 ${this.appStep === 'setToken'
                     ? html` <token-step
-                          .darkTheme=${this.darkTheme}
                           .tokens=${this.tokens}
                           .selectedTokenSymbol=${this.selectedTokenSymbol}
                           .selectedNetworkSymbol=${this.selectedNetworkSymbol}
@@ -220,7 +214,6 @@ export class PaymentApp extends LitElement {
                     : ''}
                 ${this.appStep === 'setWallet'
                     ? html` <wallet-step
-                          .darkTheme=${this.darkTheme}
                           .walletAddress=${this.walletAddress}
                           .price=${this.price}
                           .tokens=${this.tokens}
@@ -238,7 +231,6 @@ export class PaymentApp extends LitElement {
                     : ''}
                 ${this.appStep === 'payment'
                     ? html` <payment-step
-                          .darkTheme=${this.darkTheme}
                           .price=${this.price}
                           .walletAddress=${this.walletAddress}
                           .invoice=${this.invoice}
@@ -250,7 +242,6 @@ export class PaymentApp extends LitElement {
                     : ''}
                 ${this.appStep === 'processing'
                     ? html` <processing-step
-                          .darkTheme=${this.darkTheme}
                           .price=${this.price}
                           .invoice=${this.invoice}
                           .productsInfo=${this.productsInfo}
@@ -260,7 +251,6 @@ export class PaymentApp extends LitElement {
                     : ''}
                 ${this.appStep === 'success'
                     ? html` <success-step
-                          .darkTheme=${this.darkTheme}
                           .price=${this.price}
                           .invoice=${this.invoice}
                           .backToStoreUrl=${this.backToStoreUrl}
@@ -703,10 +693,6 @@ export class PaymentApp extends LitElement {
 
             & > *:not(custom-notification) {
                 height: 100%;
-            }
-
-            &.dark {
-                background: var(--sp-widget-bg-color) !important;
             }
         }
     `;

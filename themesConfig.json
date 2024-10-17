@@ -51,13 +51,54 @@
       "--sp-widget-input-active-border-color": "rgb(59 130 246)"
     },
     "dark": {
-      "--sp-widget-bg-color": "rgb(0 0 0)",
-      "--sp-widget-secondary-bg-color": "rgb(157 157 157)",
+      "--sp-widget-bg-color": "rgb(34 34 34)",
+      "--sp-widget-secondary-bg-color": "rgb(17 17 17)",
+
       "--sp-widget-text-color": "rgb(255 255 255)",
-      "--sp-widget-hint-color": "rgb(157 157 157)",
-      "--sp-widget-link-color": "rgb(59 130 246)",
-      "--sp-widget-button-color": "rgb(59 130 246)",
-      "--sp-widget-button-text-color": "rgb(255 255 255)"
+      "--sp-widget-secondary-text-color": "rgb(160 160 160)",
+
+      "--sp-widget-separator-color": "rgb(62 62 62)",
+      "--sp-widget-border-color": "rgb(42 42 42)",
+
+      "--sp-widget-active-color": "rgb(59 130 246)",
+
+      "--sp-widget-badge-bg-color": "rgb(228 228 231)",
+      "--sp-widget-badge-text-color": "rgb(0 0 0)",
+      "--sp-widget-badge-border-color": "rgb(228 228 231)",
+
+      "--sp-widget-primary-button-color": "rgb(59 130 246)",
+      "--sp-widget-primary-button-text-color": "rgb(255 255 255)",
+      "--sp-widget-primary-button-border-color": "rgb(59 130 246)",
+      "--sp-widget-primary-button-hover-color": "rgb(88 151 255)",
+      "--sp-widget-primary-button-hover-text-color": "rgb(255 255 255)",
+      "--sp-widget-primary-button-hover-border-color": "rgb(88 151 255)",
+
+      "--sp-widget-cancel-button-color": "rgb(45 45 45)",
+      "--sp-widget-cancel-button-text-color": "rgb(255 255 255)",
+      "--sp-widget-cancel-button-border-color": "rgb(85 85 85)",
+      "--sp-widget-cancel-button-hover-color": "rgb(55 55 55)",
+      "--sp-widget-cancel-button-hover-text-color": "rgb(255 255 255)",
+      "--sp-widget-cancel-button-hover-border-color": "rgb(85 85 85)",
+
+      "--sp-widget-back-button-color": "rgb(59 130 246)",
+      "--sp-widget-back-button-text-color": "rgb(255 255 255)",
+      "--sp-widget-back-button-border-color": "rgb(59 130 246)",
+      "--sp-widget-back-button-hover-color": "rgb(88 151 255)",
+      "--sp-widget-back-button-hover-text-color": "rgb(255 255 255)",
+      "--sp-widget-back-button-hover-border-color": "rgb(88 151 255)",
+
+      "--sp-widget-function-button-color": "rgb(34 34 34)",
+      "--sp-widget-function-button-text-color": "rgb(255 255 255)",
+      "--sp-widget-function-button-border-color": "rgb(85 85 85)",
+      "--sp-widget-function-button-hover-color": "rgb(45 45 45)",
+      "--sp-widget-function-button-hover-text-color": "rgb(59 130 246)",
+      "--sp-widget-function-button-hover-border-color": "rgb(85 85 85)",
+
+      "--sp-widget-input-bg-color": "rgb(34 34 34)",
+      "--sp-widget-input-color": "rgb(255 255 255)",
+      "--sp-widget-input-placeholder-color": "rgb(160 160 160)",
+      "--sp-widget-input-border-color": "rgb(85 85 85)",
+      "--sp-widget-input-active-border-color": "rgb(59 130 246)"
     }
   }
 }

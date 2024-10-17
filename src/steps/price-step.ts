@@ -3,9 +3,6 @@ import { customElement } from 'lit/decorators.js';
 
 @customElement('price-step')
 export class PriceStep extends LitElement {
-    @property({ type: Boolean })
-    darkTheme: boolean = false;
-
     @property({ type: String })
     price: string = '';
 
@@ -36,9 +33,8 @@ export class PriceStep extends LitElement {
 
     render() {
         return html`
-            <div class=${`stepWrapper ${this.darkTheme ? 'dark' : ''}`}>
+            <div class=${`stepWrapper`}>
                 <step-header
-                    .darkTheme=${this.darkTheme}
                     .title=${'Enter the amount'}
                     .hasBackButton=${false}
                 ></step-header>
@@ -79,7 +75,6 @@ export class PriceStep extends LitElement {
                 </div>
 
                 <step-footer
-                    .darkTheme=${this.darkTheme}
                     .price=${this.price}
                     .hasButton=${true}
                     .buttonDisabled=${this.buttonDisabled}
@@ -281,34 +276,6 @@ export class PriceStep extends LitElement {
                     }
                 }
 
-            }
-
-            &.dark {
-                .keyboardWrapper {
-                    .item{
-                        background: color-mix(
-                                in srgb,
-                                var(--sp-widget-secondary-bg-color) 15%,
-                                transparent
-                        ) !important;
-
-                        @media(hover: hover) and (pointer: fine){
-                            &:hover{
-                                background: color-mix(in srgb, var(--sp-widget-secondary-bg-color) 20%, transparent) !important;
-                            }
-                        }
-
-                        &.secondary{
-                            background: transparent !important;
-
-                            @media(hover: hover) and (pointer: fine){
-                                &:hover{
-                                    background: color-mix(in srgb, var(--sp-widget-secondary-bg-color) 10%, transparent) !important;
-                                }
-                            }
-                        }
-                    }
-                }
             }
         }
 

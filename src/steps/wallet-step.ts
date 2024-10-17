@@ -10,9 +10,6 @@ export class WalletStep extends LitElement {
     @property({ type: Array })
     productsInfo: IProduct[] = [];
 
-    @property({ type: Boolean })
-    darkTheme: boolean = false;
-
     @property({ type: Array })
     tokens: Cryptocurrency[] = [];
 
@@ -56,9 +53,8 @@ export class WalletStep extends LitElement {
 
     render() {
         return html`
-            <div class=${`stepWrapper ${this.darkTheme ? 'dark' : ''}`}>
+            <div class=${`stepWrapper`}>
                 <step-header
-                    .darkTheme=${this.darkTheme}
                     .title=${'Connect wallet'}
                     .hasBackButton=${true}
                     .backButtonDisabled=${this.creatingInvoice}
@@ -147,7 +143,6 @@ export class WalletStep extends LitElement {
                       `}
 
                 <step-footer
-                    .darkTheme=${this.darkTheme}
                     .price=${this.price}
                     .hasButton=${true}
                     .buttonDisabled=${this.buttonDisabled || this.creatingInvoice}
@@ -384,35 +379,6 @@ export class WalletStep extends LitElement {
                         color: var(--sp-widget-secondary-text-color);
                         text-align: left;
                     }
-                }
-            }
-
-            &.dark {
-                input {
-                    background: color-mix(
-                            in srgb,
-                            var(--sp-widget-secondary-bg-color) 15%,
-                            transparent
-                    ) !important;
-                    border-color: color-mix(
-                            in srgb,
-                            var(--sp-widget-hint-color) 15%,
-                            transparent
-                    ) !important;
-                }
-                
-                .pasteButton {
-                    background: color-mix(
-                            in srgb,
-                            var(--sp-widget-secondary-bg-color) 15%,
-                            transparent
-                    ) !important;
-                    border-color: color-mix(
-                            in srgb,
-                            var(--sp-widget-hint-color) 15%,
-                            transparent
-                    ) !important;
-                    color: color-mix(in srgb, var(--sp-widget-text-color) 50%, transparent) !important;
                 }
             }
         }

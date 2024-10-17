@@ -8,9 +8,6 @@ export class StepFooter extends LitElement {
     @property({ type: Array })
     productsInfo: IProduct[] = [];
 
-    @property({type: Boolean})
-    darkTheme: boolean = false;
-
     @property({type: String})
     price: string = '';
 
@@ -92,7 +89,7 @@ export class StepFooter extends LitElement {
 
     render() {
         return html`
-            <div class=${`stepFooter ${this.darkTheme ? 'dark' : ''}`}>
+            <div class=${`stepFooter`}>
                 
                 ${
                         this.hasCancelButton
@@ -288,7 +285,7 @@ export class StepFooter extends LitElement {
             ${
                     this.productsInfo.length > 0
                             ? html`
-                                <div class="fullProductInfo ${this.darkTheme ? 'dark' : ''} ${ (this.productInfoOpen) ? 'show' : '' }">
+                                <div class="fullProductInfo ${ (this.productInfoOpen) ? 'show' : '' }">
                                     
                                     <div @click=${this.toggleProductInfo} class="overlay ${ (this.productInfoOverlayActive) ? 'active' : '' }"></div>
 
