@@ -19,9 +19,6 @@ export class StepHeader extends LitElement {
     @property({ type: Object })
     token: any = null;
 
-    @property({ type: Array })
-    tokens: Cryptocurrency[] = [];
-
     @property({ type: Boolean })
     showAddress: boolean = false;
 

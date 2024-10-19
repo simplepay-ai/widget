@@ -5,13 +5,15 @@ export type AppTheme = 'light' | 'dark' | 'custom';
 export type AppStep =
     | 'loading'
     | 'error'
-    | 'setToken'
     | 'setPrice'
-    | 'setSubscription'
+    | 'setToken'
     | 'setWallet'
+    | 'connectorPayment'
     | 'payment'
     | 'processing'
     | 'success';
+
+export type WalletType = 'MetaMask' | 'WalletConnect' | 'Injected' | 'Custom'
 
 export interface INotification {
     title?: String;

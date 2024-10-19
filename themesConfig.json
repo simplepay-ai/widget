@@ -6,6 +6,7 @@
 
       "--sp-widget-text-color": "rgb(0 0 0)",
       "--sp-widget-secondary-text-color": "rgb(133 133 133)",
+      "--sp-widget-destructive-text-color": "rgb(255 105 105)",
 
       "--sp-widget-separator-color": "rgb(228 228 231)",
       "--sp-widget-border-color": "rgb(239 239 239)",
@@ -56,6 +57,7 @@
 
       "--sp-widget-text-color": "rgb(255 255 255)",
       "--sp-widget-secondary-text-color": "rgb(160 160 160)",
+      "--sp-widget-destructive-text-color": "rgb(255 105 105)",
 
       "--sp-widget-separator-color": "rgb(62 62 62)",
       "--sp-widget-border-color": "rgb(42 42 42)",

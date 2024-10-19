@@ -9,7 +9,7 @@ import {
 } from '@simplepay-ai/api-client';
 import { css, html, LitElement, property } from 'lit-element';
 import { customElement } from 'lit/decorators.js';
-import {AppStep, AppTheme, INotification, IProduct, IProductInvoice} from './types';
+import {AppStep, AppTheme, INotification, IProduct, IProductInvoice, WalletType} from './types';
 import './steps/step-header.ts';
 import './steps/step-footer.ts';
 import './steps/loading-step.ts';
@@ -101,6 +101,9 @@ export class PaymentApp extends LitElement {
 
     @property({ attribute: false })
     private productsInfo: IProduct[] = [];
+
+    @property({ attribute: false })
+    private walletType: WalletType | '' = '';
 
     constructor() {
         super();
@@ -208,19 +211,23 @@ export class PaymentApp extends LitElement {
                     : ''}
                 ${this.appStep === 'setWallet'
                     ? html` <wallet-step
-                          .walletAddress=${this.walletAddress}
-                          .price=${this.price}
-                          .tokens=${this.tokens}
-                          .selectedTokenSymbol=${this.selectedTokenSymbol}
-                          .selectedNetworkSymbol=${this.selectedNetworkSymbol}
+                                .walletAddress=${this.walletAddress}
+                                .price=${this.price}
+                                .productsInfo=${this.productsInfo}
+                                .selectedTokenSymbol=${this.selectedTokenSymbol}
+                                .selectedNetworkSymbol=${this.selectedNetworkSymbol}
+                                .selectedWalletType=${this.walletType}
+                                @returnBack=${this.prevStep}
+                                @updateNotification=${(event: CustomEvent) =>
+                                        this.updateNotification(event)}
+                                @updateWalletType=${(event: CustomEvent) =>
+                                        (this.walletType = event.detail.walletType)}
+                                @updateWalletAddress=${(event: CustomEvent) =>
+                                        (this.walletAddress = event.detail.walletAddress)}
+                          
                           .creatingInvoice=${this.creatingInvoice}
-                          .productsInfo=${this.productsInfo}
-                          @updateWalletAddress=${(event: CustomEvent) =>
-                              (this.walletAddress = event.detail.walletAddress)}
-                          @updateNotification=${(event: CustomEvent) =>
-                                  this.updateNotification(event)}
                           @nextStep=${this.nextStep}
-                          @returnBack=${this.prevStep}
+                          
                       ></wallet-step>`
                     : ''}
                 ${this.appStep === 'payment'
