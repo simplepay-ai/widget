@@ -26,9 +26,6 @@ import './steps/network-icon.ts';
 import './steps/custom-notification.ts';
 import {checkWalletAddress} from "./util.ts";
 import themesConfig from '../themesConfig.json';
-import {Config, connect, createConfig, disconnect, fallback, http} from "@wagmi/core";
-import {bsc, mainnet} from "@wagmi/core/chains";
-import {metaMask} from "@wagmi/connectors";
 
 @customElement('payment-app')
 export class PaymentApp extends LitElement {
@@ -64,7 +61,7 @@ export class PaymentApp extends LitElement {
     private priceAvailable: boolean = false;
 
     @property({ attribute: false })
-    private appStep: AppStep = 'payment';
+    private appStep: AppStep = 'loading';
 
     @property({ attribute: false })
     private tokens: Cryptocurrency[] | undefined = [];
@@ -141,85 +138,6 @@ export class PaymentApp extends LitElement {
 
         this.API = new Client();
 
-        this.invoice = {
-            "id": "4b22e925-fa09-42a0-9aaf-f769fd90412d",
-            "parentId": null,
-            "clientId": "707533d2-971d-4cd6-a2a5-9c6dd44c0fe5",
-            "from": "0x60e0DfB972a14d10B3089b39dCF1a305Fc79d084",
-            "to": "0x4519171925483bd4dCF5c88F1EA2559195b3951B",
-            "amount": "1.700000000000000000",
-            "price": "1.70",
-            "type": "payment",
-            "status": "processing",
-            "txHash": null,
-            "txBlock": null,
-            "createdAt": "2024-10-19T22:41:07Z",
-            "updatedAt": "2024-10-19T22:41:09.298644178Z",
-            "expireAt": "2024-10-19T23:11:07Z",
-            "cryptocurrency": {
-                "id": "4967cf90-ce74-4edf-9b4e-f6392de1c95a",
-                "symbol": "USDT",
-                "name": "Tether",
-                "decimals": 18,
-                "stable": true
-            },
-            "network": {
-                "id": "7639e9e4-6306-46a9-9acc-cc943d0d0c60",
-                "symbol": "ethereum",
-                "name": "Ethereum",
-                "type": "EVM"
-            },
-            "currency": {
-                "id": "5e091838-d7bb-4365-a395-84d82d1ac7c2",
-                "symbol": "USD",
-                "code": 840
-            },
-            "products": [
-                {
-                    "count": 1,
-                    "product": {
-                        "id": "15f46a4c-be9d-48c3-a1ba-343f654e7f1e",
-                        "name": "Main product 2",
-                        "description": "Main product 2 description",
-                        "image": "https://img.simplepay.ai/F2VhkbRvkKUxp7pe5NRvB5OJYz60fW6NOtL_GxI7NdI/resize:fit:300/czM6Ly9zaW1wbGVwYXkvaW1hZ2UvcHJvZHVjdC8yN2Y5MzYwYi04NjYyLTRmN2ItYWQyOS04OWM4MDFhNGEzMzIucG5n.webp",
-                        "createdAt": "2024-10-08T18:04:52Z",
-                        "updatedAt": "2024-10-08T20:09:58Z",
-                        "prices": [
-                            {
-                                "price": 0.8,
-                                "currency": {
-                                    "id": "5e091838-d7bb-4365-a395-84d82d1ac7c2",
-                                    "symbol": "USD",
-                                    "code": 840
-                                }
-                            }
-                        ]
-                    }
-                },
-                {
-                    "count": 1,
-                    "product": {
-                        "id": "6d946778-cbca-4297-b0d2-19aa3f26a6ae",
-                        "name": "Main product 1",
-                        "description": "Main product 1 description",
-                        "image": "https://img.simplepay.ai/-yPhRoP2w49Zz9pH1BxIZYm9ezaI2_dzNULBcaG_Cc8/resize:fit:300/czM6Ly9zaW1wbGVwYXkvaW1hZ2UvcHJvZHVjdC84ZTRjZGNiMS0wMTFkLTRlN2QtOTNhOC05YjM0Y2Q4Y2Y5OTMuanBn.webp",
-                        "createdAt": "2024-10-08T18:04:37Z",
-                        "updatedAt": "2024-10-09T13:46:30Z",
-                        "prices": [
-                            {
-                                "price": 0.9,
-                                "currency": {
-                                    "id": "5e091838-d7bb-4365-a395-84d82d1ac7c2",
-                                    "symbol": "USD",
-                                    "code": 840
-                                }
-                            }
-                        ]
-                    }
-                }
-            ]
-        }
-
         this.clientId = this.clientId ? this.clientId : '';
         this.price = (this.price && this.price !== '0') ? this.price : '';
         this.priceAvailable = Boolean(this.price);
@@ -240,32 +158,32 @@ export class PaymentApp extends LitElement {
             return;
         }
 
-        // if(this.products && this.products.length > 0){
-        //
-        //     const resultProductsInfo: IProduct[] = await this.getProductsInfo(this.products);
-        //     this.productsInfo = resultProductsInfo;
-        //
-        //     if(resultProductsInfo.length > 0){
-        //
-        //         for(let product of resultProductsInfo){
-        //             const currentPrice = Number(this.price);
-        //             const productSum = currentPrice + (product.count * product?.prices[0].price);
-        //             this.price = parseFloat(productSum.toString()).toFixed(2)
-        //         }
-        //
-        //         this.priceAvailable = true;
-        //         this.goToStep('setToken');
-        //         return;
-        //     }
-        //
-        // }
-        //
-        // if(!this.price || this.price === '0'){
-        //     this.goToStep('setPrice');
-        //     return;
-        // }
-        //
-        // this.goToStep('setToken');
+        if(this.products && this.products.length > 0){
+
+            const resultProductsInfo: IProduct[] = await this.getProductsInfo(this.products);
+            this.productsInfo = resultProductsInfo;
+
+            if(resultProductsInfo.length > 0){
+
+                for(let product of resultProductsInfo){
+                    const currentPrice = Number(this.price);
+                    const productSum = currentPrice + (product.count * product?.prices[0].price);
+                    this.price = parseFloat(productSum.toString()).toFixed(2)
+                }
+
+                this.priceAvailable = true;
+                this.goToStep('setToken');
+                return;
+            }
+
+        }
+
+        if(!this.price || this.price === '0'){
+            this.goToStep('setPrice');
+            return;
+        }
+
+        this.goToStep('setToken');
     }
 
     render() {
@@ -312,6 +230,7 @@ export class PaymentApp extends LitElement {
                                 .selectedTokenSymbol=${this.selectedTokenSymbol}
                                 .selectedNetworkSymbol=${this.selectedNetworkSymbol}
                                 .selectedWalletType=${this.walletType}
+                                .walletConnectorConfig=${this.walletConnectorConfig}
                                 @returnBack=${this.prevStep}
                                 @updateNotification=${(event: CustomEvent) =>
                                         this.updateNotification(event)}
@@ -319,8 +238,9 @@ export class PaymentApp extends LitElement {
                                         (this.walletType = event.detail.walletType)}
                                 @updateWalletAddress=${(event: CustomEvent) =>
                                         (this.walletAddress = event.detail.walletAddress)}
-                                @updateWalletConnectorConfig=${(event: CustomEvent) =>
-                                        (this.walletConnectorConfig = event.detail.walletConnectorConfig)}
+                                @updateWalletConnectorConfig=${(event: CustomEvent) => {
+                                    this.walletConnectorConfig = event.detail.walletConnectorConfig
+                                }}
                           
                           .creatingInvoice=${this.creatingInvoice}
                           @nextStep=${this.nextStep}
@@ -703,12 +623,8 @@ export class PaymentApp extends LitElement {
 
         if (this.appStep === 'setWallet') {
 
-            if(this.walletConnectorConfig){
-                await disconnect(this.walletConnectorConfig);
-                this.walletConnectorConfig = null;
-                this.walletAddress = '';
-                this.walletType = '';
-            }
+            this.walletAddress = '';
+            this.walletType = '';
 
             this.goToStep('setToken');
 
@@ -816,6 +732,7 @@ export class PaymentApp extends LitElement {
             & > *:not(custom-notification) {
                 height: 100%;
             }
+
         }
     `;
 }

@@ -1,4 +1,3 @@
-import {Cryptocurrency} from '@simplepay-ai/api-client';
 import {css, html, LitElement, property} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {checkWalletAddress, getTokenStandart} from "../util.ts";
@@ -8,15 +7,10 @@ import {
     http,
     fallback,
     connect,
-    type Config,
-    call,
-    getClient,
-    getPublicClient,
-    getBalance, getConnections, watchAccount, watchClient, watchPublicClient, getAccount
+    getAccount,
 } from "@wagmi/core";
 import { mainnet, bsc } from '@wagmi/core/chains'
-import {metaMask} from "@wagmi/connectors";
-import {createPublicClient, createWalletClient, PublicClient} from 'viem'
+import {metaMask, walletConnect} from "@wagmi/connectors";
 
 @customElement('wallet-step')
 export class WalletStep extends LitElement {
@@ -42,6 +36,9 @@ export class WalletStep extends LitElement {
     @property({type: Boolean})
     creatingInvoice: boolean = false;
 
+    @property({type: Object})
+    walletConnectorConfig: any;
+
     @property({attribute: false, type: String})
     private inputValue = '';
 
@@ -63,27 +60,11 @@ export class WalletStep extends LitElement {
     @property({attribute: false, type: String})
     private walletModalErrorText: string = '';
 
-    connectedCallback() {
+    async connectedCallback() {
         super.connectedCallback();
 
-        // if (this.walletAddress) {
-        //     this.inputValue = this.walletAddress;
-        //     this.buttonDisabled = this.walletAddress === '';
-        // }
+        await this.checkConnectorConfig();
 
-        // this.updateWalletConnectorConfig(null);
-        // this.updateWalletAddress('');
-        // this.updateWalletType('');
-        // this.buttonDisabled = true;
-
-    }
-
-    updated(changedProperties: Map<string | symbol, unknown>): void {
-        super.updated(changedProperties);
-
-        // if (changedProperties.has('walletAddress')) {
-        //     this.inputValue = this.walletAddress;
-        // }
     }
 
     render() {
@@ -164,6 +145,16 @@ export class WalletStep extends LitElement {
                                                             <path d="M19.8241 17.9876L20.2658 10.3943L22.2664 4.99097H13.3545L15.3551 10.3943L15.7968 17.9876L15.9657 20.3718L15.9787 26.2676H19.6422L19.6552 20.3718L19.8241 17.9876Z" fill="#F5841F" stroke="#F5841F" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
                                                         </svg>
                                                         <p>MetaMask</p>
+                                                    </div>
+
+                                                    <div @click=${() => this.selectWalletType('WalletConnect')}
+                                                         class=${`
+                                                         walletType
+                                                         ${(this.selectedWalletType === 'WalletConnect') ? 'selected' : ''}
+                                                         `}
+                                                    >
+                                                        
+                                                        <p>WalletConnect</p>
                                                     </div>
                                                 `
                                                 : ''
@@ -288,6 +279,40 @@ export class WalletStep extends LitElement {
         `;
     }
 
+    private async checkConnectorConfig(){
+        if(this.selectedNetworkSymbol !== 'bsc' && this.selectedNetworkSymbol !== 'ethereum'){
+            return;
+        }
+
+        if(!this.walletConnectorConfig){
+            this.createNewConnectorConfig();
+            return;
+        }
+    }
+    private createNewConnectorConfig(){
+
+        const config = createConfig({
+            chains: [mainnet, bsc],
+            transports: {
+                [mainnet.id]: fallback([
+                    http('https://rpc.ankr.com/eth'),
+                    http('https://eth-pokt.nodies.app'),
+                    http('https://ethereum.callstaticrpc.com'),
+                    http('https://eth.drpc.org'),
+                    http('https://rpc.mevblocker.io'),
+                ]),
+                [bsc.id]: fallback([
+                    http('https://bsc-rpc.publicnode.com'),
+                    http('https://bsc.callstaticrpc.com'),
+                    http('https://bsc-pokt.nodies.app'),
+                    http('https://1rpc.io/bnb'),
+                    http('https://binance.llamarpc.com'),
+                ])
+            }
+        })
+        this.updateWalletConnectorConfig(config);
+    }
+
     private async selectWalletType(type: WalletType){
 
         if(type === this.selectedWalletType){
@@ -296,73 +321,77 @@ export class WalletStep extends LitElement {
 
         this.buttonDisabled = true;
 
-        this.updateWalletConnectorConfig(null);
         this.updateWalletAddress('');
         this.updateWalletType('');
 
-        const chains = [];
-        const transports = {};
-        switch (this.selectedNetworkSymbol) {
-            case 'bsc':
-                chains.push(bsc);
-                transports[[bsc.id]] = fallback([
-                    http('wss://bsc-rpc.publicnode.com'),
-                    http('wss://bsc.callstaticrpc.com'),
-                    http('https://bsc-pokt.nodies.app'),
-                    http('https://1rpc.io/bnb'),
-                    http('https://binance.llamarpc.com'),
-                ]);
-                break;
-            case 'ethereum':
-                chains.push(mainnet);
-                transports[[mainnet.id]] = fallback([
-                    http('https://eth.llamarpc.com'),
-                    http('https://eth-pokt.nodies.app'),
-                    http('wss://ethereum.callstaticrpc.com'),
-                    http('https://eth.drpc.org'),
-                    http('https://rpc.mevblocker.io'),
-                ]);
-                break;
-            default:
-                break;
-        }
+        const account = getAccount(this.walletConnectorConfig)
+        if(account && account.connector){
 
-        if(chains.length === 0 || Object.keys(transports).length === 0){
+            switch (type) {
+                case "MetaMask":
 
-            const options = {
-                detail: {
-                    notificationData: {
-                        title: 'Wallet Connection Error',
-                        text: 'An error occurred while initializing wallet connectors. Please try again later.',
-                        buttonText: 'Confirm'
-                    },
-                    notificationShow: true
-                },
-                bubbles: true,
-                composed: true
-            };
-            this.dispatchEvent(new CustomEvent('updateNotification', options));
+                    if((account.connector as any).name && (account.connector as any).type! === 'metaMask'){
 
-            return;
+                        if(account.addresses && account.addresses?.length > 0){
+                            console.log('address', account.addresses[0])
+                            this.updateWalletAddress(account.addresses[0]);
+                            this.updateWalletType(type);
+
+                            this.dispatchNextStep();
+
+                            return;
+                        }
+
+                    }
+
+                    break;
+                default:
+                    break;
+            }
 
         }
-
-        const config = createConfig({
-            chains,
-            transports
-        })
 
         let connectResult = null;
         switch (type) {
             case "MetaMask":
                 try {
-                    connectResult = await connect(config, {
+                    connectResult = await connect(this.walletConnectorConfig, {
                         connector: metaMask({
                             dappMetadata: {
                                 name: "SimplePay",
                                 url: 'https://console.simplepay.ai/',
                             },
-                            infuraAPIKey: '1dc97819720049b09ecda474e5e208dd',
+                        })
+                    });
+                }catch (e) {
+
+                    const options = {
+                        detail: {
+                            notificationData: {
+                                title: 'Wallet Connection Not Confirmed',
+                                text: 'The wallet connection was not confirmed. Please try again for continue.',
+                                buttonText: 'Confirm'
+                            },
+                            notificationShow: true
+                        },
+                        bubbles: true,
+                        composed: true
+                    };
+                    this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                    return;
+                }
+                break;
+            case "WalletConnect":
+                try {
+                    connectResult = await connect(this.walletConnectorConfig, {
+                        connector: walletConnect({
+                            //@ts-ignore
+                            dappMetadata: {
+                                name: "SimplePay",
+                                url: 'https://console.simplepay.ai/',
+                            },
+                            projectId: 'b385e1eebef135dccafa0f1efaf09e85',
                         })
                     });
                 }catch (e) {
@@ -408,7 +437,7 @@ export class WalletStep extends LitElement {
 
         }
 
-        if(!connectResult.accounts.length === 0){
+        if(connectResult.accounts.length === 0){
 
             const options = {
                 detail: {
@@ -428,16 +457,10 @@ export class WalletStep extends LitElement {
 
         }
 
-        // const balance = await getBalance(config, {
-        //     address: connectResult.accounts[0]
-        // });
-        // console.log('balance', balance)
-
-        this.updateWalletConnectorConfig(config);
         this.updateWalletAddress(connectResult.accounts[0]);
         this.updateWalletType(type);
 
-        this.buttonDisabled = false;
+        this.dispatchNextStep();
 
     }
 
@@ -479,8 +502,7 @@ export class WalletStep extends LitElement {
         this.updateWalletType('Custom');
 
         this.hideWalletModal();
-
-        this.buttonDisabled = false;
+        this.dispatchNextStep();
     }
 
     private pasteData() {
@@ -537,7 +559,7 @@ export class WalletStep extends LitElement {
         });
         this.dispatchEvent(updateWalletTypeEvent);
     }
-    private updateWalletConnectorConfig(config) {
+    private updateWalletConnectorConfig(config: any) {
         const updateWalletConnectorConfigEvent = new CustomEvent('updateWalletConnectorConfig', {
             detail: {
                 walletConnectorConfig: config
@@ -545,6 +567,7 @@ export class WalletStep extends LitElement {
             bubbles: true,
             composed: true
         });
+
         this.dispatchEvent(updateWalletConnectorConfigEvent);
     }
 

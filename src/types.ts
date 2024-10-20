@@ -8,7 +8,6 @@ export type AppStep =
     | 'setPrice'
     | 'setToken'
     | 'setWallet'
-    | 'connectorPayment'
     | 'payment'
     | 'processing'
     | 'success';

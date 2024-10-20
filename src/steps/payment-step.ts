@@ -6,12 +6,16 @@ import {css, html, LitElement, property, query} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {getTokenStandart, roundUpAmount} from "../util.ts";
 import {WalletType} from "../types.ts";
-import {connect, createConfig, fallback, getBalance, getEnsAvatar, getToken, http, sendTransaction} from "@wagmi/core";
-import {mainnet} from "@wagmi/core/chains";
-import {metaMask} from "@wagmi/connectors";
-import {normalize} from "viem/ens";
-import {parseEther, TransactionExecutionError} from "viem";
+import {
+    getGasPrice,
+    sendTransaction, SendTransactionErrorType, switchChain,
+    writeContract, WriteContractErrorType
+} from "@wagmi/core";
+import {bsc, mainnet} from "@wagmi/core/chains";
+import {parseEther, parseUnits} from "viem";
 
+const ABI_USDT_BSC = [{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"constant":true,"inputs":[],"name":"_decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"_name","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"_symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"burn","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mint","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"renounceOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]
+const ABI_USDT_ETH = [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_upgradedAddress","type":"address"}],"name":"deprecate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"deprecated","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_evilUser","type":"address"}],"name":"addBlackList","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transferFrom","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"upgradedAddress","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"balances","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"maximumFee","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"_totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"unpause","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_maker","type":"address"}],"name":"getBlackListStatus","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"},{"name":"","type":"address"}],"name":"allowed","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"paused","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"who","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"pause","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"newBasisPoints","type":"uint256"},{"name":"newMaxFee","type":"uint256"}],"name":"setParams","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"amount","type":"uint256"}],"name":"issue","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"amount","type":"uint256"}],"name":"redeem","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"basisPointsRate","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"isBlackListed","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_clearedUser","type":"address"}],"name":"removeBlackList","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"MAX_UINT","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_blackListedUser","type":"address"}],"name":"destroyBlackFunds","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"_initialSupply","type":"uint256"},{"name":"_name","type":"string"},{"name":"_symbol","type":"string"},{"name":"_decimals","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"amount","type":"uint256"}],"name":"Issue","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"amount","type":"uint256"}],"name":"Redeem","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"newAddress","type":"address"}],"name":"Deprecate","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"feeBasisPoints","type":"uint256"},{"indexed":false,"name":"maxFee","type":"uint256"}],"name":"Params","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_blackListedUser","type":"address"},{"indexed":false,"name":"_balance","type":"uint256"}],"name":"DestroyedBlackFunds","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_user","type":"address"}],"name":"AddedBlackList","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_user","type":"address"}],"name":"RemovedBlackList","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[],"name":"Pause","type":"event"},{"anonymous":false,"inputs":[],"name":"Unpause","type":"event"}]
 @customElement('payment-step')
 export class PaymentStep extends LitElement {
     @property({type: Object})
@@ -27,13 +31,16 @@ export class PaymentStep extends LitElement {
     cancelingInvoice: boolean = false;
 
     @property({type: Boolean})
+    checkingTransaction: boolean = false;
+
+    @property({type: Boolean})
     connectorPaymentAwaiting: boolean = false;
 
     @property({type: String})
     walletType: WalletType | '' = '';
 
     @property({type: Object})
-    walletConnectorConfig = null;
+    walletConnectorConfig: any;
 
     @property({attribute: false})
     tokenStandart: string = '';
@@ -98,7 +105,7 @@ export class PaymentStep extends LitElement {
                 }
 
                 ${
-                        (this.connectorPaymentAwaiting)
+                        (this.checkingTransaction)
                                 ? html`
                                     <div class="stepContent">
                                         <div class="spinner">
@@ -113,7 +120,7 @@ export class PaymentStep extends LitElement {
                                                 />
                                             </svg>
 
-                                            <p>Waiting for payment ...</p>
+                                            <p>Checking transaction ...</p>
                                         </div>
                                     </div>
                                 `
@@ -121,7 +128,7 @@ export class PaymentStep extends LitElement {
                 }
 
                 ${
-                        (!this.cancelingInvoice && !this.connectorPaymentAwaiting && (!this.walletType || this.walletType === 'Custom'))
+                        (!this.cancelingInvoice && !this.checkingTransaction && (!this.walletType || this.walletType === 'Custom'))
                                 ? html`
                                     <div class="stepContent">
                                         <div class="topInfo">
@@ -298,7 +305,7 @@ export class PaymentStep extends LitElement {
                 }
 
                 ${
-                        (!this.cancelingInvoice && !this.connectorPaymentAwaiting && (this.walletType && this.walletType !== 'Custom'))
+                        (!this.cancelingInvoice && !this.checkingTransaction && (this.walletType && this.walletType !== 'Custom'))
                                 ? html`
                                     <div class="stepContent">
 
@@ -334,24 +341,6 @@ export class PaymentStep extends LitElement {
                                                                 <div class="badge">${this.tokenStandart}</div> `
                                                             : ''}
                                                 </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="qrcodeWrapper">
-                                            <div id="qrcode" class="qrcodeContainer"></div>
-                                            <div class="tokenIconWrapper">
-                                                <token-icon
-                                                        .id=${this.invoice?.cryptocurrency.symbol}
-                                                        width="42"
-                                                        height="42"
-                                                        class="tokenIcon"
-                                                ></token-icon>
-                                                <network-icon
-                                                        .id=${this.invoice?.network.symbol}
-                                                        width="20"
-                                                        height="20"
-                                                        class="networkIcon"
-                                                ></network-icon>
                                             </div>
                                         </div>
 
@@ -416,17 +405,32 @@ export class PaymentStep extends LitElement {
                                                         : ''
                                         }
 
-                                        <button class="mainButton"
-                                                @click=${this.connectorPay}
+                                        <button class=${`mainButton ${(this.connectorPaymentAwaiting) ? 'active' : ''} `}
+                                                @click=${this.triggerTransaction}
+                                                .disabled=${this.connectorPaymentAwaiting}
                                         >
-                                            Pay
+                                            ${
+                                                (this.connectorPaymentAwaiting) 
+                                                    ? html`
+                                                            <div class="spinner">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                                    <circle cx="12" cy="12" r="10" stroke-width="4" />
+                                                                    <path
+                                                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                                    />
+                                                                </svg>
+                                                            </div>
+                                                        ` 
+                                                    : 'Pay'
+                                            }
+                                            
                                         </button>
 
                                     </div>
-
                                 `
                                 : ''
                 }
+
                 <step-footer
                         .price=${this.price}
                         .hasButton=${false}
@@ -438,95 +442,213 @@ export class PaymentStep extends LitElement {
                         .timerTimeCurrent=${(Date.parse(this.invoice?.expireAt!) -
                                 new Date().getTime()) /
                         1000}
-                        .buttonDisabled=${this.cancelingInvoice || this.connectorPaymentAwaiting}
+                        .buttonDisabled=${this.cancelingInvoice || this.connectorPaymentAwaiting || this.checkingTransaction}
                         @footerCancelClick=${this.dispatchCancelInvoice}
                 ></step-footer>
             </div>
         `;
     }
 
-    private async connectorPay() {
+    private async triggerTransaction(){
 
-        const config = createConfig({
-            chains: [mainnet],
-            transports: {
-                [mainnet.id]: fallback([
-                    http('https://eth.llamarpc.com'),
-                    http('https://eth-pokt.nodies.app'),
-                    http('wss://ethereum.callstaticrpc.com'),
-                    http('https://eth.drpc.org'),
-                    http('https://rpc.mevblocker.io'),
-                ])
-            }
-        })
-        const connectResult = await connect(config, {
-            connector: metaMask({
-                dappMetadata: {
-                    name: "SimplePay",
-                    url: 'https://console.simplepay.ai/',
-                },
-                infuraAPIKey: '1dc97819720049b09ecda474e5e208dd',
-            })
-        });
+        this.updatePaymentAwaiting(true);
 
-        const balance = await this.checkBalance(config);
+        switch (this.invoice?.network.symbol){
+            case 'bsc':
 
-        if(!balance){
-            return;
-        }
+                await switchChain(this.walletConnectorConfig, { chainId: bsc.id })
 
-        try{
-            const transactionResult = await sendTransaction(config, {
-                account: '0x609D841cC708b41bC996A494B27FE085007dee7E',
-                to: '0xd2135CfB216b74109775236E36d4b433F1DF507B',
-                value: parseEther('0.00031'),
-            })
+                if(this.invoice?.cryptocurrency.symbol === 'USDT'){
 
-            console.log('transactionResult', transactionResult)
+                    try {
+                        const hashTransaction = await writeContract(this.walletConnectorConfig, {
+                            abi: ABI_USDT_BSC,
+                            address: '0x55d398326f99059ff775485246999027b3197955',
+                            functionName: 'transfer',
+                            args: [
+                                this.invoice?.to,
+                                parseEther( this.invoice?.amount! )
+                            ],
+                            chainId: bsc.id,
+                        })
 
-        }catch (e) {
-            const error = e as TransactionExecutionError;
-            console.log('transactionResult shortMessage', error.shortMessage)
-            console.log('transactionResult cause', error.cause)
-            console.log('transactionResult details', error.details)
-            console.log('transactionResult metaMessages', error.metaMessages)
-        }
-    }
-    private async checkBalance(config){
+                        if(hashTransaction){
+                            this.checkingTransaction = true;
+                            this.updatePaymentAwaiting(false);
+                        }
 
-        let tokenAddress = '';
-        const tokenSymbol = this.invoice?.cryptocurrency.symbol;
-        const networkSymbol = this.invoice?.network.symbol;
+                        return;
 
-        switch (tokenSymbol){
-            case 'USDT':
-                if(networkSymbol === 'bsc'){
-                    tokenAddress = '0x55d398326f99059ff775485246999027b3197955';
+                    }catch (e) {
+
+                        const error = e as WriteContractErrorType;
+                        console.log('writeContract error', error)
+                        console.log('writeContract error message', error.message)
+
+                        let messageTitle = '';
+                        let messageText = '';
+
+                        if(error.message.indexOf('User rejected') !== -1){
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+
+                        }else if(error.message.indexOf('exceeds the balance of the account') !== -1){
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+
+                        }else{
+
+                            messageTitle = 'Transaction Canceled';
+                            messageText = 'Something went wrong with the transaction. Please try again later.'
+
+                        }
+
+                        const options = {
+                            detail: {
+                                notificationData: {
+                                    title: messageTitle,
+                                    text: messageText,
+                                    buttonText: 'Confirm'
+                                },
+                                notificationShow: true
+                            },
+                            bubbles: true,
+                            composed: true
+                        };
+                        this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                        this.checkingTransaction = false;
+                        this.updatePaymentAwaiting(false);
+                        return;
+
+                    }
+
                 }
-                if(networkSymbol === 'ethereum'){
-                    tokenAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
-                }
+
                 break;
-            case 'BNB':
-                if(networkSymbol === 'bsc'){
-                    tokenAddress = '0xC6dB5746aD94B1ABF08fc2ffaAC47F9BF1C4b2E8';
+            case 'ethereum':
+
+                await switchChain(this.walletConnectorConfig, { chainId: mainnet.id })
+
+                if(this.invoice?.cryptocurrency.symbol === 'USDT'){
+                    try {
+
+                        const gasPrice = await getGasPrice(this.walletConnectorConfig)
+                        const hashTransaction = await writeContract(this.walletConnectorConfig, {
+                            abi: ABI_USDT_ETH,
+                            address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
+                            functionName: 'transfer',
+                            args: [
+                                this.invoice?.to,
+                                parseUnits( this.invoice?.amount!, 6 )
+                            ],
+                            chainId: mainnet.id,
+                            gasPrice: gasPrice,
+                        })
+
+                        if(hashTransaction){
+                            this.checkingTransaction = true;
+                            this.updatePaymentAwaiting(false);
+                        }
+
+                        return;
+
+                    }catch (e) {
+
+                        const error = e as WriteContractErrorType;
+                        console.log('writeContract error', error)
+                        console.log('writeContract error message', error.message)
+
+                        let messageTitle = '';
+                        let messageText = '';
+
+                        if(error.message.indexOf('User rejected') !== -1){
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+
+                        }else if(error.message.indexOf('exceeds the balance of the account') !== -1){
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+
+                        }else{
+
+                            messageTitle = 'Transaction Canceled';
+                            messageText = 'Something went wrong with the transaction. Please try again later.'
+
+                        }
+
+                        const options = {
+                            detail: {
+                                notificationData: {
+                                    title: messageTitle,
+                                    text: messageText,
+                                    buttonText: 'Confirm'
+                                },
+                                notificationShow: true
+                            },
+                            bubbles: true,
+                            composed: true
+                        };
+                        this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                        this.checkingTransaction = false;
+                        this.updatePaymentAwaiting(false);
+                        return;
+
+                    }
+
                 }
-                break;
-            case 'ETH':
-                if(networkSymbol === 'ethereum'){
-                    tokenAddress = '0x2170Ed0880ac9A755fd29B2688956BD959F933F8';
-                }
+
                 break;
             default:
-                return false;
+                break;
         }
 
-        if(!tokenAddress){
+        try {
+            const hashTransaction = await sendTransaction(this.walletConnectorConfig, {
+                //@ts-ignore
+                to: this.invoice?.to,
+                value: parseEther( this.invoice?.amount! ),
+                chainId: (this.invoice?.network.symbol === 'bsc') ? bsc.id : mainnet.id
+            })
+
+            if(hashTransaction){
+                this.checkingTransaction = true;
+                this.updatePaymentAwaiting(false);
+            }
+        }catch (e) {
+            const error = e as SendTransactionErrorType;
+            console.log('sendTransaction error message', error.message)
+
+            let messageTitle = '';
+            let messageText = '';
+
+            if(error.message.indexOf('User rejected') !== -1){
+
+                messageTitle = 'Transaction Canceled'
+                messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+
+            }else if(error.message.indexOf('exceeds the balance of the account') !== -1){
+
+                messageTitle = 'Transaction Canceled'
+                messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+
+            }else{
+
+                messageTitle = 'Transaction Canceled';
+                messageText = 'Something went wrong with the transaction. Please try again later.'
+
+            }
+
             const options = {
                 detail: {
                     notificationData: {
-                        title: 'Balance Check Failed',
-                        text: 'We were unable to retrieve the token address to check your balance. Please try again later.',
+                        title: messageTitle,
+                        text: messageText,
                         buttonText: 'Confirm'
                     },
                     notificationShow: true
@@ -536,16 +658,11 @@ export class PaymentStep extends LitElement {
             };
             this.dispatchEvent(new CustomEvent('updateNotification', options));
 
-            return false;
+            this.checkingTransaction = false;
+            this.updatePaymentAwaiting(false);
+            return;
+
         }
-
-        const balance = await getBalance(config, {
-            address: '0x1c882720dfBAc8Af87b9BB835eea177340Eb4581',
-            token: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8'
-        })
-        console.log('balance', balance)
-
-        return false;
     }
 
     private dispatchCancelInvoice() {
@@ -557,10 +674,10 @@ export class PaymentStep extends LitElement {
         this.dispatchEvent(cancelInvoiceEvent);
     }
 
-    private updatePaymentAwaiting() {
+    private updatePaymentAwaiting(state: boolean) {
         const updatePaymentAwaitingEvent = new CustomEvent('updatePaymentAwaiting', {
             detail: {
-                connectorPaymentAwaiting: true
+                connectorPaymentAwaiting: state
             },
             bubbles: true,
             composed: true
@@ -1027,7 +1144,7 @@ export class PaymentStep extends LitElement {
                     border-radius: 6px;
                     cursor: pointer;
                     height: 40px;
-                    padding: 16px 8px;
+                    padding: 10px 8px;
                     color: var(--sp-widget-primary-button-text-color);
                     background: var(--sp-widget-primary-button-color);
                     border: 1px solid var(--sp-widget-primary-button-border-color);
@@ -1046,7 +1163,30 @@ export class PaymentStep extends LitElement {
                     &:disabled {
                         pointer-events: none;
                         touch-action: none;
-                        opacity: 0.5;
+                    }
+
+                    .spinner {
+                        width: 100%;
+                        height: 100%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+
+                        svg {
+                            width: 20px;
+                            height: 20px;
+                            animation: spin 1s linear infinite;
+                        }
+
+                        circle {
+                            stroke: var(--sp-widget-primary-button-text-color);
+                            opacity: 0.25;
+                        }
+
+                        path {
+                            fill: var(--sp-widget-primary-button-text-color);
+                            opacity: 0.75;
+                        }
                     }
                 }
             }

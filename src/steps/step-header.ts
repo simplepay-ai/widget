@@ -1,4 +1,3 @@
-import { Cryptocurrency } from '@simplepay-ai/api-client';
 import { css, html, LitElement, property } from 'lit-element';
 import { customElement } from 'lit/decorators.js';
 
@@ -325,7 +324,6 @@ export class StepHeader extends LitElement {
                                 background: var(--sp-widget-bg-color);
                             }
 
-                            //color: var(--sp-widget-secondary-bg-color);
                         }
                     }
 

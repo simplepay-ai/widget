@@ -603,6 +603,11 @@ export class StepFooter extends LitElement {
                         border: 1px solid var(--sp-widget-cancel-button-hover-border-color);
                     }
                 }
+
+                &:disabled {
+                    pointer-events: none;
+                    touch-action: none;
+                }
             }
 
             .timerWrapper {
