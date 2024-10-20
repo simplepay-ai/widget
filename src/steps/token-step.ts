@@ -194,6 +194,7 @@ export class TokenStep extends LitElement {
                         this.otherCoins.map((token: Cryptocurrency) => {
                             return token.networks?.map((network) => {
                                 const networkStandart = getTokenStandart(network.symbol);
+                                
                                 //@ts-ignore
                                 const price = this.price / token.rates['usd'];
                                 const formatPrice = roundUpAmount(price.toString(), token.stable);

@@ -3,6 +3,20 @@ import {css, html, LitElement, property} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {checkWalletAddress, getTokenStandart} from "../util.ts";
 import {IProduct, WalletType} from "../types.ts";
+import {
+    createConfig,
+    http,
+    fallback,
+    connect,
+    type Config,
+    call,
+    getClient,
+    getPublicClient,
+    getBalance, getConnections, watchAccount, watchClient, watchPublicClient, getAccount
+} from "@wagmi/core";
+import { mainnet, bsc } from '@wagmi/core/chains'
+import {metaMask} from "@wagmi/connectors";
+import {createPublicClient, createWalletClient, PublicClient} from 'viem'
 
 @customElement('wallet-step')
 export class WalletStep extends LitElement {
@@ -52,18 +66,24 @@ export class WalletStep extends LitElement {
     connectedCallback() {
         super.connectedCallback();
 
-        if (this.walletAddress) {
-            this.inputValue = this.walletAddress;
-            this.buttonDisabled = this.walletAddress === '';
-        }
+        // if (this.walletAddress) {
+        //     this.inputValue = this.walletAddress;
+        //     this.buttonDisabled = this.walletAddress === '';
+        // }
+
+        // this.updateWalletConnectorConfig(null);
+        // this.updateWalletAddress('');
+        // this.updateWalletType('');
+        // this.buttonDisabled = true;
+
     }
 
     updated(changedProperties: Map<string | symbol, unknown>): void {
         super.updated(changedProperties);
 
-        if (changedProperties.has('walletAddress')) {
-            this.inputValue = this.walletAddress;
-        }
+        // if (changedProperties.has('walletAddress')) {
+        //     this.inputValue = this.walletAddress;
+        // }
     }
 
     render() {
@@ -103,24 +123,55 @@ export class WalletStep extends LitElement {
                         : html`
                             <div class="stepContent">
 
-                                <div @click=${() => this.selectWalletType('MetaMask')}
-                                     class=${`
-                                     walletType
-                                     ${(this.selectedWalletType === 'MetaMask') ? 'selected' : ''}
-                                     `}
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                         stroke-linejoin="round">
-                                        <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/>
-                                        <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>
-                                    </svg>
-                                    <p>By wallet address</p>
-                                </div>
+                                ${
+                                        (['bsc', 'ethereum'].includes(this.selectedNetworkSymbol))
+                                                ? html`
+                                                    <div @click=${() => this.selectWalletType('MetaMask')}
+                                                         class=${`
+                                                         walletType
+                                                         ${(this.selectedWalletType === 'MetaMask') ? 'selected' : ''}
+                                                         `}
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="30" viewBox="0 0 36 30" fill="none">
+                                                            <path d="M32.9583 1L19.8242 10.7183L22.2666 4.99099L32.9583 1Z" fill="#E17726" stroke="#E17726" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M2.66284 1L15.68 10.809L13.3546 4.99098L2.66284 1Z" fill="#E27625" stroke="#E27625" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M28.2292 23.5334L24.7346 28.872L32.2175 30.9323L34.3611 23.6501L28.2292 23.5334Z" fill="#E27625" stroke="#E27625" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M1.27271 23.6501L3.40325 30.9323L10.8732 28.872L7.39154 23.5334L1.27271 23.6501Z" fill="#E27625" stroke="#E27625" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M10.4704 14.5149L8.39185 17.6507L15.7968 17.9876L15.55 10.0186L10.4704 14.5149Z" fill="#E27625" stroke="#E27625" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M25.1503 14.515L19.9929 9.92798L19.824 17.9877L27.2289 17.6508L25.1503 14.515Z" fill="#E27625" stroke="#E27625" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M10.8733 28.872L15.3552 26.7081L11.4969 23.7019L10.8733 28.872Z" fill="#E27625" stroke="#E27625" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M20.2659 26.7081L24.7348 28.872L24.1242 23.7019L20.2659 26.7081Z" fill="#E27625" stroke="#E27625" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M24.7348 28.8722L20.2659 26.7083L20.6296 29.6108L20.5906 30.8418L24.7348 28.8722Z" fill="#D5BFB2" stroke="#D5BFB2" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M10.8733 28.8722L15.0305 30.8418L15.0045 29.6108L15.3552 26.7083L10.8733 28.8722Z" fill="#D5BFB2" stroke="#D5BFB2" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M15.1083 21.7842L11.3928 20.6958L14.017 19.4907L15.1083 21.7842Z" fill="#233447" stroke="#233447" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M20.5127 21.7842L21.604 19.4907L24.2412 20.6958L20.5127 21.7842Z" fill="#233447" stroke="#233447" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M10.8732 28.872L11.5228 23.5334L7.3916 23.6501L10.8732 28.872Z" fill="#CC6228" stroke="#CC6228" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M24.0981 23.5334L24.7347 28.872L28.2293 23.6501L24.0981 23.5334Z" fill="#CC6228" stroke="#CC6228" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M27.2289 17.6506L19.824 17.9875L20.5125 21.7842L21.6038 19.4906L24.241 20.6957L27.2289 17.6506Z" fill="#CC6228" stroke="#CC6228" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M11.3928 20.6957L14.017 19.4906L15.1083 21.7842L15.7968 17.9875L8.39185 17.6506L11.3928 20.6957Z" fill="#CC6228" stroke="#CC6228" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M8.39209 17.6506L11.497 23.7019L11.393 20.6957L8.39209 17.6506Z" fill="#E27525" stroke="#E27525" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M24.2412 20.6957L24.1243 23.7019L27.2292 17.6506L24.2412 20.6957Z" fill="#E27525" stroke="#E27525" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M15.7972 17.9875L15.1086 21.7842L15.979 26.2675L16.1739 20.3588L15.7972 17.9875Z" fill="#E27525" stroke="#E27525" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M19.8242 17.9875L19.4604 20.3459L19.6423 26.2675L20.5127 21.7842L19.8242 17.9875Z" fill="#E27525" stroke="#E27525" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M20.5127 21.7843L19.6423 26.2676L20.2659 26.7082L24.1243 23.702L24.2412 20.6958L20.5127 21.7843Z" fill="#F5841F" stroke="#F5841F" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M11.3928 20.6958L11.4968 23.702L15.3551 26.7082L15.9787 26.2676L15.1083 21.7843L11.3928 20.6958Z" fill="#F5841F" stroke="#F5841F" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M20.5907 30.8417L20.6296 29.6107L20.2919 29.3256H15.3293L15.0045 29.6107L15.0305 30.8417L10.8733 28.8721L12.3283 30.0642L15.2773 32.0986H20.3308L23.2928 30.0642L24.7348 28.8721L20.5907 30.8417Z" fill="#C0AC9D" stroke="#C0AC9D" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M20.2658 26.7081L19.6422 26.2676H15.9787L15.3552 26.7081L15.0044 29.6107L15.3292 29.3256H20.2918L20.6296 29.6107L20.2658 26.7081Z" fill="#161616" stroke="#161616" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M33.5168 11.3532L34.6211 5.98873L32.9582 1L20.2659 10.3944L25.1505 14.5149L32.0488 16.5234L33.5688 14.7482L32.9063 14.2687L33.9585 13.3099L33.1531 12.6879L34.2054 11.8845L33.5168 11.3532Z" fill="#763E1A" stroke="#763E1A" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M1 5.98873L2.11724 11.3532L1.40273 11.8845L2.468 12.6879L1.66255 13.3099L2.71483 14.2687L2.05228 14.7482L3.57225 16.5234L10.4706 14.5149L15.3552 10.3944L2.66287 1L1 5.98873Z" fill="#763E1A" stroke="#763E1A" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M32.0489 16.5233L25.1506 14.5149L27.2292 17.6507L24.1243 23.7019L28.2295 23.6501H34.3613L32.0489 16.5233Z" fill="#F5841F" stroke="#F5841F" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M10.4704 14.5149L3.57214 16.5233L1.27271 23.6501H7.39154L11.4967 23.7019L8.39186 17.6507L10.4704 14.5149Z" fill="#F5841F" stroke="#F5841F" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M19.8241 17.9876L20.2658 10.3943L22.2664 4.99097H13.3545L15.3551 10.3943L15.7968 17.9876L15.9657 20.3718L15.9787 26.2676H19.6422L19.6552 20.3718L19.8241 17.9876Z" fill="#F5841F" stroke="#F5841F" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+                                                        </svg>
+                                                        <p>MetaMask</p>
+                                                    </div>
+                                                `
+                                                : ''
+                                }
 
                                 <div @click=${this.openWalletModal}
                                      class=${`
-                                     walletType
+                                     walletType custom
                                      ${(this.selectedWalletType === 'Custom') ? 'selected' : ''}
                                      `}
                                 >
@@ -132,7 +183,6 @@ export class WalletStep extends LitElement {
                                     </svg>
                                     <p>By wallet address</p>
                                 </div>
-
                                 <div class="walletModal ${(this.showWalletModal) ? 'show' : ''}">
 
                                     <div @click=${this.hideWalletModal}
@@ -238,7 +288,156 @@ export class WalletStep extends LitElement {
         `;
     }
 
-    private selectWalletType(type: WalletType){
+    private async selectWalletType(type: WalletType){
+
+        if(type === this.selectedWalletType){
+            return;
+        }
+
+        this.buttonDisabled = true;
+
+        this.updateWalletConnectorConfig(null);
+        this.updateWalletAddress('');
+        this.updateWalletType('');
+
+        const chains = [];
+        const transports = {};
+        switch (this.selectedNetworkSymbol) {
+            case 'bsc':
+                chains.push(bsc);
+                transports[[bsc.id]] = fallback([
+                    http('wss://bsc-rpc.publicnode.com'),
+                    http('wss://bsc.callstaticrpc.com'),
+                    http('https://bsc-pokt.nodies.app'),
+                    http('https://1rpc.io/bnb'),
+                    http('https://binance.llamarpc.com'),
+                ]);
+                break;
+            case 'ethereum':
+                chains.push(mainnet);
+                transports[[mainnet.id]] = fallback([
+                    http('https://eth.llamarpc.com'),
+                    http('https://eth-pokt.nodies.app'),
+                    http('wss://ethereum.callstaticrpc.com'),
+                    http('https://eth.drpc.org'),
+                    http('https://rpc.mevblocker.io'),
+                ]);
+                break;
+            default:
+                break;
+        }
+
+        if(chains.length === 0 || Object.keys(transports).length === 0){
+
+            const options = {
+                detail: {
+                    notificationData: {
+                        title: 'Wallet Connection Error',
+                        text: 'An error occurred while initializing wallet connectors. Please try again later.',
+                        buttonText: 'Confirm'
+                    },
+                    notificationShow: true
+                },
+                bubbles: true,
+                composed: true
+            };
+            this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+            return;
+
+        }
+
+        const config = createConfig({
+            chains,
+            transports
+        })
+
+        let connectResult = null;
+        switch (type) {
+            case "MetaMask":
+                try {
+                    connectResult = await connect(config, {
+                        connector: metaMask({
+                            dappMetadata: {
+                                name: "SimplePay",
+                                url: 'https://console.simplepay.ai/',
+                            },
+                            infuraAPIKey: '1dc97819720049b09ecda474e5e208dd',
+                        })
+                    });
+                }catch (e) {
+
+                    const options = {
+                        detail: {
+                            notificationData: {
+                                title: 'Wallet Connection Not Confirmed',
+                                text: 'The wallet connection was not confirmed. Please try again for continue.',
+                                buttonText: 'Confirm'
+                            },
+                            notificationShow: true
+                        },
+                        bubbles: true,
+                        composed: true
+                    };
+                    this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                    return;
+                }
+                break;
+            default:
+                break;
+        }
+
+        if(!connectResult){
+
+            const options = {
+                detail: {
+                    notificationData: {
+                        title: 'Connection Failed',
+                        text: 'Unable to establish a connection with the wallet connector. Please check your wallet and try again.',
+                        buttonText: 'Confirm'
+                    },
+                    notificationShow: true
+                },
+                bubbles: true,
+                composed: true
+            };
+            this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+            return;
+
+        }
+
+        if(!connectResult.accounts.length === 0){
+
+            const options = {
+                detail: {
+                    notificationData: {
+                        title: 'No Wallet Addresses Found',
+                        text: 'No addresses were found in your wallet. Please add an address or try connecting a different wallet.',
+                        buttonText: 'Confirm'
+                    },
+                    notificationShow: true
+                },
+                bubbles: true,
+                composed: true
+            };
+            this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+            return;
+
+        }
+
+        // const balance = await getBalance(config, {
+        //     address: connectResult.accounts[0]
+        // });
+        // console.log('balance', balance)
+
+        this.updateWalletConnectorConfig(config);
+        this.updateWalletAddress(connectResult.accounts[0]);
+        this.updateWalletType(type);
+
+        this.buttonDisabled = false;
 
     }
 
@@ -275,6 +474,7 @@ export class WalletStep extends LitElement {
             return;
         }
 
+        this.updateWalletConnectorConfig(null);
         this.updateWalletAddress(this.inputValue.trim());
         this.updateWalletType('Custom');
 
@@ -287,7 +487,7 @@ export class WalletStep extends LitElement {
         try {
             navigator.clipboard.readText().then((clipText) => {
                 this.inputValue = clipText;
-                this.updateWalletAddress(clipText);
+                // this.updateWalletAddress(clipText);
             });
         } catch (error) {
             console.log('Paste data error', error);
@@ -300,45 +500,20 @@ export class WalletStep extends LitElement {
         this.showWalletModalError = false;
         this.walletModalErrorText = '';
 
-        if (address === '') {
-            this.updateWalletAddress('');
-            return;
-        }
+        // if (address === '') {
+        //     this.updateWalletAddress('');
+        //     return;
+        // }
 
         this.inputValue = address;
-        this.updateWalletAddress(address);
+        // this.updateWalletAddress(address);
     }
 
     private dispatchNextStep() {
-
-        if (!this.inputValue || this.inputValue === '') {
-            return;
-        }
-
-        if (!checkWalletAddress(this.inputValue, this.selectedNetworkSymbol)) {
-            const options = {
-                detail: {
-                    notificationData: {
-                        title: 'Invalid Wallet Address',
-                        text: 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.',
-                        buttonText: 'Confirm'
-                    },
-                    notificationShow: true
-                },
-                bubbles: true,
-                composed: true
-            };
-            this.dispatchEvent(new CustomEvent('updateNotification', options));
-
-            return;
-        }
-
         const nextStepEvent = new CustomEvent('nextStep', {
             bubbles: true,
             composed: true
         });
-
-        this.updateWalletAddress(this.inputValue);
         this.dispatchEvent(nextStepEvent);
     }
 
@@ -352,7 +527,7 @@ export class WalletStep extends LitElement {
         });
         this.dispatchEvent(updateWalletAddressEvent);
     }
-    private updateWalletType(type: WalletType) {
+    private updateWalletType(type: WalletType | '') {
         const updateWalletTypeEvent = new CustomEvent('updateWalletType', {
             detail: {
                 walletType: type
@@ -361,6 +536,16 @@ export class WalletStep extends LitElement {
             composed: true
         });
         this.dispatchEvent(updateWalletTypeEvent);
+    }
+    private updateWalletConnectorConfig(config) {
+        const updateWalletConnectorConfigEvent = new CustomEvent('updateWalletConnectorConfig', {
+            detail: {
+                walletConnectorConfig: config
+            },
+            bubbles: true,
+            composed: true
+        });
+        this.dispatchEvent(updateWalletConnectorConfigEvent);
     }
 
     static styles = css`
@@ -436,6 +621,7 @@ export class WalletStep extends LitElement {
                     align-items: center;
                     gap: 8px;
                     width: 100%;
+                    height: 50px;
                     padding: 10px;
                     border: 1px solid var(--sp-widget-function-button-border-color);
                     border-radius: 8px;
@@ -443,22 +629,31 @@ export class WalletStep extends LitElement {
                     transition-property: all;
                     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                     transition-duration: 150ms;
+                    
+                    &:not(:last-child){
+                        margin-bottom: 8px;
+                    }
 
                     &.selected {
                         border: 1px solid var(--sp-widget-active-color);
                     }
 
                     svg {
-                        color: var(--sp-widget-active-color);
                         width: 24px;
                         aspect-ratio: 1;
                     }
-
+                    
+                    &.custom{
+                        svg {
+                            color: var(--sp-widget-active-color);
+                        }
+                    }
+                    
                     p {
                         display: block;
                         flex: 1;
-                        font-size: 13px;
-                        font-weight: 700;
+                        font-size: 14px;
+                        font-weight: 400;
                         color: var(--sp-widget-function-button-text-color);
                     }
 
@@ -466,6 +661,10 @@ export class WalletStep extends LitElement {
                         &:hover {
                             border: 1px solid var(--sp-widget-function-button-hover-border-color);
                             background: var(--sp-widget-function-button-hover-color);
+
+                            &.selected {
+                                border: 1px solid var(--sp-widget-active-color);
+                            }
                         }
                     }
                 }

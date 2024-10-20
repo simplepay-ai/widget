@@ -1,29 +1,44 @@
-import { Invoice } from '@simplepay-ai/api-client';
+import {Invoice, InvoiceProduct} from '@simplepay-ai/api-client';
 //@ts-ignore
 import QRCode from 'corcojs-qrcode';
-import { PropertyValues } from 'lit';
-import { css, html, LitElement, property, query } from 'lit-element';
-import { customElement } from 'lit/decorators.js';
+import {PropertyValues} from 'lit';
+import {css, html, LitElement, property, query} from 'lit-element';
+import {customElement} from 'lit/decorators.js';
 import {getTokenStandart, roundUpAmount} from "../util.ts";
+import {WalletType} from "../types.ts";
+import {connect, createConfig, fallback, getBalance, getEnsAvatar, getToken, http, sendTransaction} from "@wagmi/core";
+import {mainnet} from "@wagmi/core/chains";
+import {metaMask} from "@wagmi/connectors";
+import {normalize} from "viem/ens";
+import {parseEther, TransactionExecutionError} from "viem";
 
 @customElement('payment-step')
 export class PaymentStep extends LitElement {
-    @property({ type: Object })
+    @property({type: Object})
     invoice: Invoice | null = null;
 
-    @property({ type: String })
+    @property({type: String})
     price: string = '';
 
-    @property({ type: String })
+    @property({type: String})
     walletAddress: string = '';
 
-    @property({ type: Boolean })
+    @property({type: Boolean})
     cancelingInvoice: boolean = false;
 
-    @property({ attribute: false })
+    @property({type: Boolean})
+    connectorPaymentAwaiting: boolean = false;
+
+    @property({type: String})
+    walletType: WalletType | '' = '';
+
+    @property({type: Object})
+    walletConnectorConfig = null;
+
+    @property({attribute: false})
     tokenStandart: string = '';
 
-    @property({ attribute: false })
+    @property({attribute: false})
     formatAmount: string = '';
 
     @query('#qrcode')
@@ -41,7 +56,7 @@ export class PaymentStep extends LitElement {
         }
     }
 
-    connectedCallback() {
+    async connectedCallback() {
         super.connectedCallback();
 
         //@ts-ignore
@@ -53,228 +68,505 @@ export class PaymentStep extends LitElement {
         return html`
             <div class=${`stepWrapper`}>
                 <step-header
-                    .title=${'Awaiting for Payment'}
-                    .hasBackButton=${false}
-                    .showAddress=${true}
-                    .walletAddress=${this.invoice?.from}
+                        .title= ${'Awaiting for Payment'}
+                        .hasBackButton=${false}
+                        .showAddress=${true}
+                        .walletAddress=${this.invoice?.from}
                 ></step-header>
 
-                ${this.cancelingInvoice
-                        ? html`
-                          <div class="stepContent">
-                              <div class="spinner">
-                                  <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      fill="none"
-                                      viewBox="0 0 24 24"
-                                  >
-                                      <circle cx="12" cy="12" r="10" stroke-width="4" />
-                                      <path
-                                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                      />
-                                  </svg>
-
-                                  <p>Canceling invoice ...</p>
-                              </div>
-                          </div>
-                      `
-                        : html`
-                            <div class="stepContent">
-                                <div class="topInfo">
-                                    <div class="infoItem">
-                                        <p class="title">Network:</p>
-                                        <div class="info">
-                                            <network-icon
-                                                    .id=${this.invoice?.network.symbol}
-                                                    width="16"
-                                                    height="16"
-                                                    class="icon"
-                                            ></network-icon>
-                                            <p class="text">${this.invoice?.network.symbol}</p>
-                                        </div>
-                                    </div>
-
-                                    <div class="infoItem">
-                                        <p class="title">Token:</p>
-
-                                        <div class="info">
-                                            <token-icon
-                                                    .id=${this.invoice?.cryptocurrency.symbol}
-                                                    width="16"
-                                                    height="16"
-                                                    class="icon"
-                                            ></token-icon>
-
-                                            <p class="text">${this.invoice?.cryptocurrency.symbol}</p>
-
-                                            ${this.tokenStandart !== ''
-                                                    ? html` <div class="badge">${this.tokenStandart}</div> `
-                                                    : ''}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="qrcodeWrapper">
-                                    <div id="qrcode" class="qrcodeContainer"></div>
-                                    <div class="tokenIconWrapper">
-                                        <token-icon
-                                                .id=${this.invoice?.cryptocurrency.symbol}
-                                                width="42"
-                                                height="42"
-                                                class="tokenIcon"
-                                        ></token-icon>
-                                        <network-icon
-                                                .id=${this.invoice?.network.symbol}
-                                                width="20"
-                                                height="20"
-                                                class="networkIcon"
-                                        ></network-icon>
-                                    </div>
-                                </div>
-
-                                <div class="separator"></div>
-
-                                <div class="bottomInfo">
-                                    <label class="inputWrapper" for="payAddress">
-                                        <p class="labelText">Address to pay:</p>
-
-                                        <div class="input">
-                                            <input
-                                                    id="payAddress"
-                                                    type="text"
-                                                    .value=${this.invoice?.to}
-                                                    readonly
-                                                    disabled
-                                            />
-
-                                            <div
-                                                    class="copyButton"
-                                                    @click=${(event: CustomEvent) =>
-                                                            this.copyData(event, this.invoice?.to || '')}
+                ${
+                        (this.cancelingInvoice)
+                                ? html`
+                                    <div class="stepContent">
+                                        <div class="spinner">
+                                            <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
                                             >
-                                                <div class="default">
-                                                    <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            width="24"
-                                                            height="24"
-                                                            viewBox="0 0 24 24"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            stroke-width="2"
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                    >
-                                                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                                                        <path
-                                                                d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
-                                                        />
-                                                    </svg>
-                                                    Copy
+                                                <circle cx="12" cy="12" r="10" stroke-width="4"/>
+                                                <path
+                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                />
+                                            </svg>
+
+                                            <p>Canceling invoice ...</p>
+                                        </div>
+                                    </div>
+                                `
+                                : ''
+                }
+
+                ${
+                        (this.connectorPaymentAwaiting)
+                                ? html`
+                                    <div class="stepContent">
+                                        <div class="spinner">
+                                            <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                            >
+                                                <circle cx="12" cy="12" r="10" stroke-width="4"/>
+                                                <path
+                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                />
+                                            </svg>
+
+                                            <p>Waiting for payment ...</p>
+                                        </div>
+                                    </div>
+                                `
+                                : ''
+                }
+
+                ${
+                        (!this.cancelingInvoice && !this.connectorPaymentAwaiting && (!this.walletType || this.walletType === 'Custom'))
+                                ? html`
+                                    <div class="stepContent">
+                                        <div class="topInfo">
+                                            <div class="infoItem">
+                                                <p class="title">Network:</p>
+                                                <div class="info">
+                                                    <network-icon
+                                                            .id=${this.invoice?.network.symbol}
+                                                            width="16"
+                                                            height="16"
+                                                            class="icon"
+                                                    ></network-icon>
+                                                    <p class="text">${this.invoice?.network.symbol}</p>
                                                 </div>
-                                                <div class="active">
-                                                    <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            width="24"
-                                                            height="24"
-                                                            viewBox="0 0 24 24"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            stroke-width="2"
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                    >
-                                                        <path d="M20 6 9 17l-5-5" />
-                                                    </svg>
-                                                    Copied
+                                            </div>
+
+                                            <div class="infoItem">
+                                                <p class="title">Token:</p>
+
+                                                <div class="info">
+                                                    <token-icon
+                                                            .id=${this.invoice?.cryptocurrency.symbol}
+                                                            width="16"
+                                                            height="16"
+                                                            class="icon"
+                                                    ></token-icon>
+
+                                                    <p class="text">${this.invoice?.cryptocurrency.symbol}</p>
+
+                                                    ${this.tokenStandart !== ''
+                                                            ? html`
+                                                                <div class="badge">${this.tokenStandart}</div> `
+                                                            : ''}
                                                 </div>
                                             </div>
                                         </div>
-                                    </label>
 
-                                    <label class="inputWrapper" for="payAmount">
-                                        <p class="labelText">Amount:</p>
+                                        <div class="qrcodeWrapper">
+                                            <div id="qrcode" class="qrcodeContainer"></div>
+                                            <div class="tokenIconWrapper">
+                                                <token-icon
+                                                        .id=${this.invoice?.cryptocurrency.symbol}
+                                                        width="42"
+                                                        height="42"
+                                                        class="tokenIcon"
+                                                ></token-icon>
+                                                <network-icon
+                                                        .id=${this.invoice?.network.symbol}
+                                                        width="20"
+                                                        height="20"
+                                                        class="networkIcon"
+                                                ></network-icon>
+                                            </div>
+                                        </div>
 
-                                        <div class="input">
-                                            <input
-                                                    id="payAmount"
-                                                    type="text"
-                                                    .value=${`${this.formatAmount} ${this.invoice?.cryptocurrency.symbol}`}
-                                                    readonly
-                                                    disabled
-                                            />
+                                        <div class="separator"></div>
 
-                                            <div
-                                                    class="copyButton"
-                                                    @click=${(event: CustomEvent) =>
-                                                            this.copyData(event, this.formatAmount.toString() || '')}
-                                            >
-                                                <div class="default">
-                                                    <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            width="24"
-                                                            height="24"
-                                                            viewBox="0 0 24 24"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            stroke-width="2"
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
+                                        <div class="bottomInfo">
+                                            <label class="inputWrapper" for="payAddress">
+                                                <p class="labelText">Address to pay:</p>
+
+                                                <div class="input">
+                                                    <input
+                                                            id="payAddress"
+                                                            type="text"
+                                                            .value=${this.invoice?.to}
+                                                            readonly
+                                                            disabled
+                                                    />
+
+                                                    <div
+                                                            class="copyButton"
+                                                            @click=${(event: CustomEvent) =>
+                                                                    this.copyData(event, this.invoice?.to || '')}
                                                     >
-                                                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                                                        <path
-                                                                d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
-                                                        />
-                                                    </svg>
-                                                    Copy
+                                                        <div class="default">
+                                                            <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    width="24"
+                                                                    height="24"
+                                                                    viewBox="0 0 24 24"
+                                                                    fill="none"
+                                                                    stroke="currentColor"
+                                                                    stroke-width="2"
+                                                                    stroke-linecap="round"
+                                                                    stroke-linejoin="round"
+                                                            >
+                                                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                                                <path
+                                                                        d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                                                                />
+                                                            </svg>
+                                                            Copy
+                                                        </div>
+                                                        <div class="active">
+                                                            <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    width="24"
+                                                                    height="24"
+                                                                    viewBox="0 0 24 24"
+                                                                    fill="none"
+                                                                    stroke="currentColor"
+                                                                    stroke-width="2"
+                                                                    stroke-linecap="round"
+                                                                    stroke-linejoin="round"
+                                                            >
+                                                                <path d="M20 6 9 17l-5-5"/>
+                                                            </svg>
+                                                            Copied
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="active">
-                                                    <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            width="24"
-                                                            height="24"
-                                                            viewBox="0 0 24 24"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            stroke-width="2"
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
+                                            </label>
+
+                                            <label class="inputWrapper" for="payAmount">
+                                                <p class="labelText">Amount:</p>
+
+                                                <div class="input">
+                                                    <input
+                                                            id="payAmount"
+                                                            type="text"
+                                                            .value=${`${this.formatAmount} ${this.invoice?.cryptocurrency.symbol}`}
+                                                            readonly
+                                                            disabled
+                                                    />
+
+                                                    <div
+                                                            class="copyButton"
+                                                            @click=${(event: CustomEvent) =>
+                                                                    this.copyData(event, this.formatAmount.toString() || '')}
                                                     >
-                                                        <path d="M20 6 9 17l-5-5" />
-                                                    </svg>
-                                                    Copied
+                                                        <div class="default">
+                                                            <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    width="24"
+                                                                    height="24"
+                                                                    viewBox="0 0 24 24"
+                                                                    fill="none"
+                                                                    stroke="currentColor"
+                                                                    stroke-width="2"
+                                                                    stroke-linecap="round"
+                                                                    stroke-linejoin="round"
+                                                            >
+                                                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                                                <path
+                                                                        d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                                                                />
+                                                            </svg>
+                                                            Copy
+                                                        </div>
+                                                        <div class="active">
+                                                            <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    width="24"
+                                                                    height="24"
+                                                                    viewBox="0 0 24 24"
+                                                                    fill="none"
+                                                                    stroke="currentColor"
+                                                                    stroke-width="2"
+                                                                    stroke-linecap="round"
+                                                                    stroke-linejoin="round"
+                                                            >
+                                                                <path d="M20 6 9 17l-5-5"/>
+                                                            </svg>
+                                                            Copied
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                `
+                                : ''
+                }
+
+                ${
+                        (!this.cancelingInvoice && !this.connectorPaymentAwaiting && (this.walletType && this.walletType !== 'Custom'))
+                                ? html`
+                                    <div class="stepContent">
+
+                                        <div class="topInfo">
+                                            <div class="infoItem">
+                                                <p class="title">Network:</p>
+                                                <div class="info">
+                                                    <network-icon
+                                                            .id=${this.invoice?.network.symbol}
+                                                            width="16"
+                                                            height="16"
+                                                            class="icon"
+                                                    ></network-icon>
+                                                    <p class="text">${this.invoice?.network.symbol}</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="infoItem">
+                                                <p class="title">Token:</p>
+
+                                                <div class="info">
+                                                    <token-icon
+                                                            .id=${this.invoice?.cryptocurrency.symbol}
+                                                            width="16"
+                                                            height="16"
+                                                            class="icon"
+                                                    ></token-icon>
+
+                                                    <p class="text">${this.invoice?.cryptocurrency.symbol}</p>
+
+                                                    ${this.tokenStandart !== ''
+                                                            ? html`
+                                                                <div class="badge">${this.tokenStandart}</div> `
+                                                            : ''}
                                                 </div>
                                             </div>
                                         </div>
-                                    </label>
-                                </div>
-                            </div>
-                      `}
 
+                                        <div class="qrcodeWrapper">
+                                            <div id="qrcode" class="qrcodeContainer"></div>
+                                            <div class="tokenIconWrapper">
+                                                <token-icon
+                                                        .id=${this.invoice?.cryptocurrency.symbol}
+                                                        width="42"
+                                                        height="42"
+                                                        class="tokenIcon"
+                                                ></token-icon>
+                                                <network-icon
+                                                        .id=${this.invoice?.network.symbol}
+                                                        width="20"
+                                                        height="20"
+                                                        class="networkIcon"
+                                                ></network-icon>
+                                            </div>
+                                        </div>
+
+                                        ${
+                                                (this.invoice?.products && this.invoice.products.length > 0)
+                                                        ? html`
+                                                            <div class="products">
+                                                                <p class="title">Products</p>
+
+                                                                <div class="productsList">
+
+                                                                    ${
+                                                                            this.invoice.products.map((item: InvoiceProduct) => html`
+                                                                                <div class="productItem">
+
+                                                                                    <div class=${`imageWrapper ${(!item.product.image) && 'placeholder'}`}>
+
+                                                                                        ${
+                                                                                                (item.product.image)
+                                                                                                        ? html`
+                                                                                                            <img src=${item.product.image}
+                                                                                                                 alt="product image">
+                                                                                                        `
+                                                                                                        : html`
+                                                                                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                                                 width="800px" height="800px"
+                                                                                                                 viewBox="0 0 24 24"
+                                                                                                                 fill="none">
+                                                                                                                <path d="M15.5777 3.38197L17.5777 4.43152C19.7294 5.56066 20.8052 6.12523 21.4026 7.13974C22 8.15425 22 9.41667 22 11.9415V12.0585C22 14.5833 22 15.8458 21.4026 16.8603C20.8052 17.8748 19.7294 18.4393 17.5777 19.5685L15.5777 20.618C13.8221 21.5393 12.9443 22 12 22C11.0557 22 10.1779 21.5393 8.42229 20.618L6.42229 19.5685C4.27063 18.4393 3.19479 17.8748 2.5974 16.8603C2 15.8458 2 14.5833 2 12.0585V11.9415C2 9.41667 2 8.15425 2.5974 7.13974C3.19479 6.12523 4.27063 5.56066 6.42229 4.43152L8.42229 3.38197C10.1779 2.46066 11.0557 2 12 2C12.9443 2 13.8221 2.46066 15.5777 3.38197Z"
+                                                                                                                      stroke="#1C274C"
+                                                                                                                      stroke-width="1"
+                                                                                                                      stroke-linecap="round"/>
+                                                                                                                <path d="M21 7.5L17 9.5M12 12L3 7.5M12 12V21.5M12 12C12 12 14.7426 10.6287 16.5 9.75C16.6953 9.65237 17 9.5 17 9.5M17 9.5V13M17 9.5L7.5 4.5"
+                                                                                                                      stroke="#1C274C"
+                                                                                                                      stroke-width="1"
+                                                                                                                      stroke-linecap="round"/>
+                                                                                                            </svg>
+                                                                                                        `
+                                                                                        }
+
+
+                                                                                    </div>
+
+                                                                                    <div class="info">
+                                                                                        <p class="name">${item.product.name}</p>
+                                                                                        <p class="description">${item.product.description}</p>
+                                                                                    </div>
+
+                                                                                    <div class="priceWrapper">
+                                                                                        <p class="price">${item.product.prices[0].price}
+                                                                                            ${item.product.prices[0].currency.symbol}</p>
+                                                                                        <p class="count">Count: ${item.count}</p>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            `)
+                                                                    }
+
+                                                                </div>
+                                                            </div>
+                                                        `
+                                                        : ''
+                                        }
+
+                                        <button class="mainButton"
+                                                @click=${this.connectorPay}
+                                        >
+                                            Pay
+                                        </button>
+
+                                    </div>
+
+                                `
+                                : ''
+                }
                 <step-footer
-                    .price=${this.price}
-                    .hasButton=${false}
-                    .hasCancelButton=${true}
-                    .hasTimer=${true}
-                    .timerTimeStart=${(Date.parse(this.invoice?.expireAt!) -
-                            Date.parse(this.invoice?.createdAt!)) /
-                    1000}
-                    .timerTimeCurrent=${(Date.parse(this.invoice?.expireAt!) -
-                            new Date().getTime()) /
-                    1000}
-                    .buttonDisabled=${this.cancelingInvoice}
-                    @footerCancelClick=${this.dispatchCancelInvoice}
+                        .price=${this.price}
+                        .hasButton=${false}
+                        .hasCancelButton=${true}
+                        .hasTimer=${true}
+                        .timerTimeStart=${(Date.parse(this.invoice?.expireAt!) -
+                                Date.parse(this.invoice?.createdAt!)) /
+                        1000}
+                        .timerTimeCurrent=${(Date.parse(this.invoice?.expireAt!) -
+                                new Date().getTime()) /
+                        1000}
+                        .buttonDisabled=${this.cancelingInvoice || this.connectorPaymentAwaiting}
+                        @footerCancelClick=${this.dispatchCancelInvoice}
                 ></step-footer>
             </div>
         `;
     }
 
-    private dispatchCancelInvoice(){
+    private async connectorPay() {
+
+        const config = createConfig({
+            chains: [mainnet],
+            transports: {
+                [mainnet.id]: fallback([
+                    http('https://eth.llamarpc.com'),
+                    http('https://eth-pokt.nodies.app'),
+                    http('wss://ethereum.callstaticrpc.com'),
+                    http('https://eth.drpc.org'),
+                    http('https://rpc.mevblocker.io'),
+                ])
+            }
+        })
+        const connectResult = await connect(config, {
+            connector: metaMask({
+                dappMetadata: {
+                    name: "SimplePay",
+                    url: 'https://console.simplepay.ai/',
+                },
+                infuraAPIKey: '1dc97819720049b09ecda474e5e208dd',
+            })
+        });
+
+        const balance = await this.checkBalance(config);
+
+        if(!balance){
+            return;
+        }
+
+        try{
+            const transactionResult = await sendTransaction(config, {
+                account: '0x609D841cC708b41bC996A494B27FE085007dee7E',
+                to: '0xd2135CfB216b74109775236E36d4b433F1DF507B',
+                value: parseEther('0.00031'),
+            })
+
+            console.log('transactionResult', transactionResult)
+
+        }catch (e) {
+            const error = e as TransactionExecutionError;
+            console.log('transactionResult shortMessage', error.shortMessage)
+            console.log('transactionResult cause', error.cause)
+            console.log('transactionResult details', error.details)
+            console.log('transactionResult metaMessages', error.metaMessages)
+        }
+    }
+    private async checkBalance(config){
+
+        let tokenAddress = '';
+        const tokenSymbol = this.invoice?.cryptocurrency.symbol;
+        const networkSymbol = this.invoice?.network.symbol;
+
+        switch (tokenSymbol){
+            case 'USDT':
+                if(networkSymbol === 'bsc'){
+                    tokenAddress = '0x55d398326f99059ff775485246999027b3197955';
+                }
+                if(networkSymbol === 'ethereum'){
+                    tokenAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+                }
+                break;
+            case 'BNB':
+                if(networkSymbol === 'bsc'){
+                    tokenAddress = '0xC6dB5746aD94B1ABF08fc2ffaAC47F9BF1C4b2E8';
+                }
+                break;
+            case 'ETH':
+                if(networkSymbol === 'ethereum'){
+                    tokenAddress = '0x2170Ed0880ac9A755fd29B2688956BD959F933F8';
+                }
+                break;
+            default:
+                return false;
+        }
+
+        if(!tokenAddress){
+            const options = {
+                detail: {
+                    notificationData: {
+                        title: 'Balance Check Failed',
+                        text: 'We were unable to retrieve the token address to check your balance. Please try again later.',
+                        buttonText: 'Confirm'
+                    },
+                    notificationShow: true
+                },
+                bubbles: true,
+                composed: true
+            };
+            this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+            return false;
+        }
+
+        const balance = await getBalance(config, {
+            address: '0x1c882720dfBAc8Af87b9BB835eea177340Eb4581',
+            token: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8'
+        })
+        console.log('balance', balance)
+
+        return false;
+    }
+
+    private dispatchCancelInvoice() {
         const cancelInvoiceEvent = new CustomEvent('cancelInvoice', {
             bubbles: true,
             composed: true
         });
 
         this.dispatchEvent(cancelInvoiceEvent);
+    }
+
+    private updatePaymentAwaiting() {
+        const updatePaymentAwaitingEvent = new CustomEvent('updatePaymentAwaiting', {
+            detail: {
+                connectorPaymentAwaiting: true
+            },
+            bubbles: true,
+            composed: true
+        });
+
+        this.dispatchEvent(updatePaymentAwaitingEvent);
     }
 
     private copyData(event: CustomEvent, text: string) {
@@ -315,7 +607,7 @@ export class PaymentStep extends LitElement {
                 overflow-y: auto;
                 display: flex;
                 flex-direction: column;
-                
+
                 &::-webkit-scrollbar {
                     width: 1px;
                 }
@@ -359,7 +651,7 @@ export class PaymentStep extends LitElement {
                         opacity: 0.75;
                     }
                 }
-                
+
                 .topInfo {
                     display: flex;
                     align-items: center;
@@ -529,13 +821,13 @@ export class PaymentStep extends LitElement {
                         font-weight: 500;
                         text-align: left;
                     }
-                    
-                    .input{
+
+                    .input {
                         margin-top: 4px;
                         display: flex;
                         align-items: center;
                         gap: 4px;
-                        
+
                         input {
                             display: flex;
                             height: 40px;
@@ -569,14 +861,14 @@ export class PaymentStep extends LitElement {
                             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                             transition-duration: 150ms;
 
-                            @media(hover: hover) and (pointer: fine) {
+                            @media (hover: hover) and (pointer: fine) {
                                 &:hover {
                                     border: 1px solid var(--sp-widget-function-button-hover-border-color);
                                     color: var(--sp-widget-function-button-hover-text-color);
                                     background: var(--sp-widget-function-button-hover-color);
                                 }
                             }
-                            
+
                             & > * {
                                 display: flex;
                                 align-items: center;
@@ -611,11 +903,154 @@ export class PaymentStep extends LitElement {
                                     display: flex;
                                 }
                             }
-                        }   
+                        }
+                    }
+                }
+                
+                .products{
+                    flex: 1;
+                    height: auto;
+                    overflow-y: auto;
+
+                    &::-webkit-scrollbar {
+                        width: 3px;
+                    }
+
+                    &::-webkit-scrollbar-track {
+                        background: transparent;
+                    }
+
+                    &::-webkit-scrollbar-thumb {
+                        background: var(--sp-widget-bg-color);
+                    }
+                    
+                    .title{
+                        font-size: 18px;
+                        line-height: 28px;
+                        font-weight: 700;
+                        color: var(--sp-widget-text-color);
+                    }
+                    
+                    .productsList{
+                        margin-top: 20px;
+                        flex: 1;
+                        overflow-y: auto;
+                        overflow-x: hidden;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 16px;
+                        width: 100%;
+                        
+                        .productItem{
+                            display: flex;
+                            align-items: flex-start;
+                            gap: 12px;
+                            margin: 0 auto;
+                            width: 95%;
+
+                            .imageWrapper {
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                border: 1px solid var(--sp-widget-border-color);
+                                background: var(--sp-widget-secondary-bg-color);
+                                width: 40px;
+                                height: 40px;
+                                border-radius: 8px;
+                                overflow: hidden;
+
+                                img {
+                                    width: 40px;
+                                    height: 40px;
+                                    object-fit: cover;
+                                }
+
+                                &.placeholder{
+                                    svg {
+                                        width: 32px;
+                                        height: 32px;
+                                        object-fit: cover;
+
+                                        path{
+                                            stroke: var(--sp-widget-text-color);
+                                        }
+                                    }
+                                }
+                            }
+
+                            .info {
+                                flex: 1;
+
+                                .name {
+                                    color: var(--sp-widget-text-color);
+                                    font-size: 14px;
+                                    font-weight: 500;
+                                }
+
+                                .description {
+                                    font-size: 12px;
+                                    color: var(--sp-widget-secondary-text-color);
+                                }
+                            }
+
+                            .priceWrapper {
+                                .price {
+                                    color: var(--sp-widget-text-color);
+                                    font-size: 14px;
+                                    font-weight: 500;
+                                    text-align: end;
+                                }
+
+                                .count {
+                                    font-size: 12px;
+                                    color: var(--sp-widget-secondary-text-color);
+                                    text-align: end;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .mainButton {
+                    margin-top: 2rem;
+                    width: 100%;
+                    -webkit-user-select: none;
+                    -moz-user-select: none;
+                    -ms-user-select: none;
+                    user-select: none;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 14px;
+                    line-height: 20px;
+                    font-weight: 500;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    height: 40px;
+                    padding: 16px 8px;
+                    color: var(--sp-widget-primary-button-text-color);
+                    background: var(--sp-widget-primary-button-color);
+                    border: 1px solid var(--sp-widget-primary-button-border-color);
+                    transition-property: all;
+                    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                    transition-duration: 150ms;
+
+                    @media (hover: hover) and (pointer: fine) {
+                        &:hover {
+                            color: var(--sp-widget-primary-button-hover-text-color);
+                            background: var(--sp-widget-primary-button-hover-color);
+                            border: 1px solid var(--sp-widget-primary-button-hover-border-color);
+                        }
+                    }
+
+                    &:disabled {
+                        pointer-events: none;
+                        touch-action: none;
+                        opacity: 0.5;
                     }
                 }
             }
-            
+
         }
 
         @keyframes spin {

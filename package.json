@@ -34,9 +34,12 @@
         "format": "prettier --write ."
     },
     "dependencies": {
+        "@wagmi/connectors": "^5.2.2",
+        "@wagmi/core": "^2.13.9",
         "corcojs-qrcode": "^1.0.0",
         "lit": "^3.2.0",
-        "lit-element": "^2.5.1"
+        "lit-element": "^2.5.1",
+        "viem": "^2.21.29"
     },
     "devDependencies": {
         "@ianvs/prettier-plugin-sort-imports": "^4.3.1",
