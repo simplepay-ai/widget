@@ -229,7 +229,6 @@ export class PaymentApp extends LitElement {
                                 .productsInfo=${this.productsInfo}
                                 .selectedTokenSymbol=${this.selectedTokenSymbol}
                                 .selectedNetworkSymbol=${this.selectedNetworkSymbol}
-                                .selectedWalletType=${this.walletType}
                                 .walletConnectorConfig=${this.walletConnectorConfig}
                                 @returnBack=${this.prevStep}
                                 @updateNotification=${(event: CustomEvent) =>
