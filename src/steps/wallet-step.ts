@@ -7,7 +7,7 @@ import {
     http,
     fallback,
     connect,
-    getAccount,
+    injected,
 } from "@wagmi/core";
 import {mainnet, bsc} from '@wagmi/core/chains'
 import {metaMask, walletConnect} from "@wagmi/connectors";
@@ -64,7 +64,6 @@ export class WalletStep extends LitElement {
         super.connectedCallback();
 
         await this.checkConnectorConfig();
-
     }
 
     render() {
@@ -217,6 +216,13 @@ export class WalletStep extends LitElement {
                                                             </g>
                                                         </svg>
                                                     </div>
+
+                                                    <div @click=${() => this.selectWalletType('Injected')}
+                                                         class="walletType"
+                                                    >
+                                                        <p>Injected</p>
+                                                        
+                                                    </div>
                                                 `
                                                 : ''
                                 }
@@ -360,14 +366,15 @@ export class WalletStep extends LitElement {
                     http('https://rpc.mevblocker.io'),
                 ]),
                 [bsc.id]: fallback([
-                    http('https://bsc-rpc.publicnode.com'),
+                    http('https://binance.llamarpc.com'),
+                    http('https://1rpc.io/bnb'),
                     http('https://bsc.callstaticrpc.com'),
                     http('https://bsc-pokt.nodies.app'),
-                    http('https://1rpc.io/bnb'),
-                    http('https://binance.llamarpc.com'),
+                    http('https://bsc-rpc.publicnode.com'),
                 ])
             }
         })
+
         this.updateWalletConnectorConfig(config);
     }
 
@@ -382,32 +389,31 @@ export class WalletStep extends LitElement {
         this.updateWalletAddress('');
         this.updateWalletType('');
 
-        const account = getAccount(this.walletConnectorConfig)
-        if (account && account.connector) {
-
-            switch (type) {
-                case "MetaMask":
-
-                    if ((account.connector as any).name && (account.connector as any).type! === 'metaMask') {
-
-                        if (account.addresses && account.addresses?.length > 0) {
-                            console.log('address', account.addresses[0])
-                            this.updateWalletAddress(account.addresses[0]);
-                            this.updateWalletType(type);
-
-                            this.dispatchNextStep();
-
-                            return;
-                        }
-
-                    }
-
-                    break;
-                default:
-                    break;
-            }
-
-        }
+        // const account = getAccount(this.walletConnectorConfig)
+        // if (account && account.connector) {
+        //
+        //     switch (type) {
+        //         case "MetaMask":
+        //
+        //             if ((account.connector as any).name && (account.connector as any).type! === 'metaMask') {
+        //
+        //                 if (account.addresses && account.addresses?.length > 0) {
+        //                     this.updateWalletAddress(account.addresses[0]);
+        //                     this.updateWalletType(type);
+        //
+        //                     this.dispatchNextStep();
+        //
+        //                     return;
+        //                 }
+        //
+        //             }
+        //
+        //             break;
+        //         default:
+        //             break;
+        //     }
+        //
+        // }
 
         let connectResult = null;
         switch (type) {
@@ -452,6 +458,30 @@ export class WalletStep extends LitElement {
                             projectId: 'b385e1eebef135dccafa0f1efaf09e85',
                         })
                     });
+                } catch (e) {
+
+                    const options = {
+                        detail: {
+                            notificationData: {
+                                title: 'Wallet Connection Not Confirmed',
+                                text: 'The wallet connection was not confirmed. Please try again for continue.',
+                                buttonText: 'Confirm'
+                            },
+                            notificationShow: true
+                        },
+                        bubbles: true,
+                        composed: true
+                    };
+                    this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                    return;
+                }
+                break;
+            case "Injected":
+                try {
+                    connectResult = await connect(this.walletConnectorConfig, {
+                        connector: injected()
+                    })
                 } catch (e) {
 
                     const options = {

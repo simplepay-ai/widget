@@ -459,21 +459,41 @@ export class PaymentStep extends LitElement {
 
         this.updatePaymentAwaiting(true);
 
+        try {
+            await switchChain(this.walletConnectorConfig, { chainId: (this.invoice?.network.symbol === 'bsc') ? bsc.id : mainnet.id })
+        }catch (e) {
+
+            const options = {
+                detail: {
+                    notificationData: {
+                        title: 'Network Change Failed',
+                        text: 'Unable to automatically switch the wallet network. Please change the network manually in your wallet settings and try again.',
+                        buttonText: 'Confirm'
+                    },
+                    notificationShow: true
+                },
+                bubbles: true,
+                composed: true
+            };
+            this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+            this.updatePaymentAwaiting(false);
+            return;
+        }
+
         switch (this.invoice?.network.symbol){
             case 'bsc':
-
-                await switchChain(this.walletConnectorConfig, { chainId: bsc.id })
 
                 if(this.invoice?.cryptocurrency.symbol === 'USDT'){
 
                     try {
                         const hashTransaction = await writeContract(this.walletConnectorConfig, {
                             abi: ABI_USDT_BSC,
-                            address: '0x55d398326f99059ff775485246999027b3197955',
+                            address: '0x55d398326f99059fF775485246999027B3197955',
                             functionName: 'transfer',
                             args: [
                                 this.invoice?.to,
-                                parseEther( this.invoice?.amount! )
+                                parseEther(this.invoice?.amount!)
                             ],
                             chainId: bsc.id,
                         })
@@ -494,7 +514,7 @@ export class PaymentStep extends LitElement {
                         let messageTitle = '';
                         let messageText = '';
 
-                        if(error.message.indexOf('User rejected') !== -1){
+                        if(error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1){
 
                             messageTitle = 'Transaction Canceled'
                             messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
@@ -536,12 +556,9 @@ export class PaymentStep extends LitElement {
                 break;
             case 'ethereum':
 
-                await switchChain(this.walletConnectorConfig, { chainId: mainnet.id })
-
                 if(this.invoice?.cryptocurrency.symbol === 'USDT'){
                     try {
 
-                        // const gasPrice = await getGasPrice(this.walletConnectorConfig)
                         const feesPerGas = await estimateFeesPerGas(this.walletConnectorConfig);
 
                         const hashTransaction = await writeContract(this.walletConnectorConfig, {
@@ -553,7 +570,6 @@ export class PaymentStep extends LitElement {
                                 parseUnits( this.invoice?.amount!, 6 )
                             ],
                             chainId: mainnet.id,
-                            // gasPrice: gasPrice,
                             maxFeePerGas: (feesPerGas as any).maxFeePerGas
                         })
 
@@ -573,7 +589,7 @@ export class PaymentStep extends LitElement {
                         let messageTitle = '';
                         let messageText = '';
 
-                        if(error.message.indexOf('User rejected') !== -1){
+                        if(error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1){
 
                             messageTitle = 'Transaction Canceled'
                             messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
@@ -636,7 +652,7 @@ export class PaymentStep extends LitElement {
             let messageTitle = '';
             let messageText = '';
 
-            if(error.message.indexOf('User rejected') !== -1){
+            if(error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1){
 
                 messageTitle = 'Transaction Canceled'
                 messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
