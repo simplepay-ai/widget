@@ -221,7 +221,7 @@ export class WalletStep extends LitElement {
                                                          class="walletType"
                                                     >
                                                         <p>Injected</p>
-                                                        
+
                                                     </div>
                                                 `
                                                 : ''
@@ -262,58 +262,55 @@ export class WalletStep extends LitElement {
                                             </div>
 
                                             <div class="inputWrapper">
-                                                <label for="address">
-                                                    <div class="input">
-                                                        <input
-                                                                id="address"
-                                                                type="text"
-                                                                value=${this.inputValue}
-                                                                @input=${this.inputHandler}
-                                                                placeholder=${`Enter your ${this.selectedNetworkSymbol} address`}
-                                                        />
+                                                <div class="input">
+                                                    <input
+                                                            id="address"
+                                                            type="text"
+                                                            value=${this.inputValue}
+                                                            @input=${this.inputHandler}
+                                                            placeholder=${`Enter your ${this.selectedNetworkSymbol} address`}
+                                                    />
 
-                                                        <div class="pasteButton" @click=${() => this.pasteData()}>
-                                                            <svg
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    width="24"
-                                                                    height="24"
-                                                                    viewBox="0 0 24 24"
-                                                                    fill="none"
-                                                                    stroke="currentColor"
-                                                                    stroke-width="2"
-                                                                    stroke-linecap="round"
-                                                                    stroke-linejoin="round"
-                                                            >
-                                                                <rect
-                                                                        width="8"
-                                                                        height="4"
-                                                                        x="8"
-                                                                        y="2"
-                                                                        rx="1"
-                                                                        ry="1"
-                                                                />
-                                                                <path
-                                                                        d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"
-                                                                />
-                                                                <path d="M16 4h2a2 2 0 0 1 2 2v4"/>
-                                                                <path d="M21 14H11"/>
-                                                                <path d="m15 10-4 4 4 4"/>
-                                                            </svg>
-                                                        </div>
+                                                    <div class="pasteButton" @click=${() => this.pasteData()}>
+                                                        <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                width="24"
+                                                                height="24"
+                                                                viewBox="0 0 24 24"
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                stroke-width="2"
+                                                                stroke-linecap="round"
+                                                                stroke-linejoin="round"
+                                                        >
+                                                            <rect
+                                                                    width="8"
+                                                                    height="4"
+                                                                    x="8"
+                                                                    y="2"
+                                                                    rx="1"
+                                                                    ry="1"
+                                                            />
+                                                            <path
+                                                                    d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"
+                                                            />
+                                                            <path d="M16 4h2a2 2 0 0 1 2 2v4"/>
+                                                            <path d="M21 14H11"/>
+                                                            <path d="m15 10-4 4 4 4"/>
+                                                        </svg>
                                                     </div>
+                                                </div>
 
-                                                    <p class=${`
+                                                <p class=${`
                                         descriptionText
                                         ${(this.showWalletModalError) ? 'error' : ''}
                                         `}>
-                                                        ${
-                                                                (this.showWalletModalError)
-                                                                        ? this.walletModalErrorText
-                                                                        : 'Enter the address of the wallet you will use to complete the payment. We need this to track and verify the on-chain transaction as our service is fully decentralized'
-                                                        }
-                                                    </p>
-
-                                                </label>
+                                                    ${
+                                                            (this.showWalletModalError)
+                                                                    ? this.walletModalErrorText
+                                                                    : 'Enter the address of the wallet you will use to complete the payment. We need this to track and verify the on-chain transaction as our service is fully decentralized'
+                                                    }
+                                                </p>
                                             </div>
 
                                             <button class="mainButton"
@@ -353,6 +350,7 @@ export class WalletStep extends LitElement {
             return;
         }
     }
+
     private createNewConnectorConfig() {
 
         const config = createConfig({
@@ -551,6 +549,7 @@ export class WalletStep extends LitElement {
         this.dispatchNextStep();
 
     }
+
     private selectCustomWallet() {
 
         if (!checkWalletAddress(this.inputValue, this.selectedNetworkSymbol)) {
@@ -581,6 +580,7 @@ export class WalletStep extends LitElement {
             }, 200)
         }, 200)
     }
+
     private hideWalletModal() {
         this.showWalletModalContent = false;
 
@@ -603,6 +603,7 @@ export class WalletStep extends LitElement {
             console.log('Paste data error', error);
         }
     }
+
     private inputHandler(event: CustomEvent | any) {
 
         const address = event.target.value;
@@ -637,6 +638,7 @@ export class WalletStep extends LitElement {
         });
         this.dispatchEvent(updateWalletAddressEvent);
     }
+
     private updateWalletType(type: WalletType | '') {
         const updateWalletTypeEvent = new CustomEvent('updateWalletType', {
             detail: {
@@ -647,6 +649,7 @@ export class WalletStep extends LitElement {
         });
         this.dispatchEvent(updateWalletTypeEvent);
     }
+
     private updateWalletConnectorConfig(config: any) {
         const updateWalletConnectorConfigEvent = new CustomEvent('updateWalletConnectorConfig', {
             detail: {
@@ -755,10 +758,10 @@ export class WalletStep extends LitElement {
                             color: var(--sp-widget-active-color);
                         }
                     }
-                    
-                    &.walletConnect{
-                        svg{
-                            path{
+
+                    &.walletConnect {
+                        svg {
+                            path {
                                 fill: var(--sp-widget-active-color);
                             }
                         }
@@ -890,12 +893,6 @@ export class WalletStep extends LitElement {
 
                             .inputWrapper {
                                 margin-top: 1rem;
-
-                                label {
-                                    font-size: 14px;
-                                    line-height: 1;
-                                    font-weight: 500;
-                                }
 
                                 input {
                                     display: flex;

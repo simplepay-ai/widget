@@ -406,7 +406,7 @@ export class StepFooter extends LitElement {
         .stepFooter {
             display: flex;
             justify-content: space-between;
-            gap: 16px;
+            gap: 8px;
             border-top: 1px solid var(--sp-widget-separator-color);
             padding: 16px;
             background: var(--sp-widget-bg-color);

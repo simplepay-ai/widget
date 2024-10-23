@@ -177,7 +177,8 @@ export class StepHeader extends LitElement {
             border-bottom: 1px solid var(--sp-widget-separator-color);
             background: var(--sp-widget-bg-color);
             padding: 16px;
-
+            container-type: inline-size;
+            
             .stepTitle {
                 display: flex;
                 gap: 16px;
@@ -316,6 +317,12 @@ export class StepHeader extends LitElement {
                             padding: 4px;
                             font-size: 12px;
                             font-weight: 700;
+                            
+                            @container(width < 350px){
+                                font-size: 10px;
+                                gap: 4px;
+                                font-weight: 600;
+                            }
 
                             .network {
                                 border-radius: 50%;
