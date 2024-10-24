@@ -99,13 +99,20 @@ export class PriceStep extends LitElement {
                     </div>
 
                 </div>
-
+                
                 <div class="stepContent">
                     ${
                             (this.currentPriceStep === 'priceEnter')
                                     ? html`
-                                        <div class="priceEnter">
-                                            <p>${this.priceValue} <span class="line"></span> USD</p>
+                                        <div class=${`priceEnter
+                                            ${ (this.priceValue.toString().length >= 9 ? 'medium' : '') }
+                                            ${ (this.priceValue.toString().length >= 12 ? 'small' : '') }
+                                            ${ (this.priceValue.toString().length >= 15 ? 'xSmall' : '') }
+                                            `}>
+                                            <p>
+                                                ${this.priceValue} <span class="line"></span>
+                                            </p>
+                                            <span>USD</span>
                                         </div>
                                     `
                                     : html`
@@ -490,7 +497,8 @@ export class PriceStep extends LitElement {
                     display: flex;
                     justify-content: center;
                     align-items: center;
-
+                    gap: 8px;
+                    
                     p {
                         font-size: 40px;
                         line-height: 1.2;
@@ -501,22 +509,47 @@ export class PriceStep extends LitElement {
                         -moz-user-select: none;
                         -ms-user-select: none;
                         user-select: none;
+
+                        .line {
+                            position: absolute;
+                            top: 50%;
+                            right: -2px;
+                            height: 55px;
+                            width: 2px;
+                            background-color: var(--sp-widget-active-color);
+                            transform: translateY(-50%);
+                            border-radius: 0.5rem;
+                            -webkit-user-select: none;
+                            -moz-user-select: none;
+                            -ms-user-select: none;
+                            user-select: none;
+                            animation: blink 1.5s step-end infinite;
+                        }
                     }
 
-                    .line {
-                        position: absolute;
-                        top: 50%;
-                        right: 90px;
-                        height: 55px;
-                        width: 2px;
-                        background-color: var(--sp-widget-active-color);
-                        transform: translateY(-50%);
-                        border-radius: 0.5rem;
-                        -webkit-user-select: none;
-                        -moz-user-select: none;
-                        -ms-user-select: none;
-                        user-select: none;
-                        animation: blink 1.5s step-end infinite;
+                    span{
+                        font-size: 40px;
+                        line-height: 1.2;
+                        font-weight: 700;
+                        color: var(--sp-widget-text-color);
+                    }
+                    
+                    &.medium{
+                        p, span{
+                            font-size: 33px;
+                        }
+                    }
+
+                    &.small{
+                        p, span{
+                            font-size: 26px;
+                        }
+                    }
+
+                    &.xSmall{
+                        p, span{
+                            font-size: 19px;
+                        }
                     }
                 }
 
