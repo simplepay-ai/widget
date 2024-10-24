@@ -12,6 +12,8 @@ export type AppStep =
     | 'processing'
     | 'success';
 
+export type CurrentPriceStep = 'priceEnter' | 'messageEnter';
+
 export type WalletType = 'MetaMask' | 'WalletConnect' | 'Injected' | 'Custom'
 
 export interface INotification {

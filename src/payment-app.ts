@@ -9,7 +9,7 @@ import {
 } from '@simplepay-ai/api-client';
 import { css, html, LitElement, property } from 'lit-element';
 import { customElement } from 'lit/decorators.js';
-import {AppStep, AppTheme, INotification, IProduct, IProductInvoice, WalletType} from './types';
+import {AppStep, AppTheme, CurrentPriceStep, INotification, IProduct, IProductInvoice, WalletType} from './types';
 import './steps/step-header.ts';
 import './steps/step-footer.ts';
 import './steps/loading-step.ts';
@@ -38,6 +38,9 @@ export class PaymentApp extends LitElement {
         type: String
     })
     price: string = '0';
+
+    @property({ type: String })
+    payload: string = '';
 
     @property({ type: Array })
     products: IProductInvoice[] = [];
@@ -110,6 +113,12 @@ export class PaymentApp extends LitElement {
 
     @property({attribute: false})
     private walletConnectorConfig = null;
+
+    @property({attribute: false})
+    private invoiceMessage = '';
+
+    @property({attribute: false})
+    private priceStep: CurrentPriceStep = 'priceEnter';
 
     constructor() {
         super();
@@ -202,10 +211,16 @@ export class PaymentApp extends LitElement {
                 ${this.appStep === 'setPrice'
                     ? html` <price-step
                           .price=${this.price}
+                          .payload=${this.payload === 'true'}
+                          .invoiceMessage=${this.invoiceMessage}
+                          .currentPriceStep=${this.priceStep}
                           @updatePrice=${(event: CustomEvent) => (this.price = event.detail.price)}
+                          @updateInvoiceMessage=${(event: CustomEvent) => (this.invoiceMessage = event.detail.invoiceMessage)}
+                          @updateCurrentPriceStep=${(event: CustomEvent) => (this.priceStep = event.detail.currentPriceStep)}
                           @nextStep=${this.nextStep}
                       ></price-step>`
                     : ''}
+                
                 ${this.appStep === 'setToken'
                     ? html` <token-step
                           .tokens=${this.tokens}
@@ -583,11 +598,38 @@ export class PaymentApp extends LitElement {
     }
 
     private nextStep() {
-        if (this.appStep === 'setPrice' && this.price && Number(this.price) > 0) {
-            this.price = parseFloat(this.price).toFixed(2);
-            this.goToStep('setToken');
-            return;
+
+        if(this.appStep === 'setPrice' && this.payload === 'true'){
+
+            if (this.price && Number(this.price) > 0 && this.priceStep === 'priceEnter') {
+                this.price = parseFloat(this.price).toFixed(2);
+
+                this.priceStep = 'messageEnter';
+                return;
+            }
+
+            if (this.invoiceMessage.trim() !== '' && this.invoiceMessage.length <= 124 && this.priceStep === 'messageEnter') {
+                this.goToStep('setToken');
+                return;
+            }
+
         }
+
+        if(this.appStep === 'setPrice' && this.payload !== 'true'){
+            if (this.price && Number(this.price) > 0) {
+                this.price = parseFloat(this.price).toFixed(2);
+
+                this.goToStep('setToken');
+                return;
+            }
+        }
+
+        // if (this.appStep === 'setPrice' && this.price && Number(this.price) > 0) {
+        //     this.price = parseFloat(this.price).toFixed(2);
+        //
+        //     this.goToStep('setToken');
+        //     return;
+        // }
 
         if (this.appStep === 'setToken' && this.selectedTokenSymbol && this.selectedNetworkSymbol) {
             this.goToStep('setWallet');
@@ -613,11 +655,11 @@ export class PaymentApp extends LitElement {
         }
     }
     private async prevStep() {
-        if (this.appStep === 'setToken') {
-            if (!this.priceAvailable) {
-                this.goToStep('setPrice');
-                return;
-            }
+
+        if (this.appStep === 'setToken' && !this.priceAvailable) {
+
+            this.goToStep('setPrice');
+            return;
         }
 
         if (this.appStep === 'setWallet') {
