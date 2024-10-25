@@ -31,6 +31,12 @@ export class PriceStep extends LitElement {
     @query('#messageInput')
     messageInput: any;
 
+    @property({attribute: false, type: Number})
+    startVisualViewportHeight = 0;
+
+    @property({attribute: false, type: Number})
+    currentVisualViewportHeight = 0;
+
     connectedCallback() {
         super.connectedCallback();
 
@@ -43,6 +49,12 @@ export class PriceStep extends LitElement {
             this.updateCurrentPriceStep('messageEnter');
         }
 
+        this.startVisualViewportHeight = visualViewport?.height;
+        this.currentVisualViewportHeight = visualViewport?.height;
+        visualViewport.addEventListener('resize', (event) => {
+            this.currentVisualViewportHeight = ( event.target.height < 500 ) ? event.target.height : event.target.height;
+        });
+
         window.addEventListener('keydown', (event) => this.handleKeyDown(event));
     }
 
@@ -54,7 +66,6 @@ export class PriceStep extends LitElement {
         }
 
         if (changedProperties.has('currentPriceStep')) {
-
             if(this.currentPriceStep === 'messageEnter'){
                 this.messageInput.focus();
 
@@ -75,8 +86,12 @@ export class PriceStep extends LitElement {
 
     render() {
         return html`
-            <div class=${`stepWrapper`}>
-
+            <div class=${`
+                 stepWrapper
+                 `}
+                 style=${`height: ${this.currentVisualViewportHeight}px;`}
+            >
+                
                 <div class="header">
 
                     <p>Invoice to:</p>
@@ -135,7 +150,7 @@ export class PriceStep extends LitElement {
                                                         ${this.invoiceMessage.length} / 124
                                                     </p>
                                                 </div>
-
+                                                
                                                 <textarea id="messageInput"
                                                           .value=${this.invoiceMessage}
                                                           @input=${(event: any) => {
@@ -146,9 +161,18 @@ export class PriceStep extends LitElement {
 
                                                               this.updateInvoiceMessage(event.target.value);
                                                           }}
+                                                          @focus=${() => {
+                                                              setTimeout(() => {
+                                                                  window.scrollTo({
+                                                                      top: -1,
+                                                                      left: 0,
+                                                                      behavior: "smooth",
+                                                                  });
+                                                              }, 150)
+                                                          }}
                                                 >
                                                 </textarea>
-
+                                                
                                                 ${
                                                         (this.invoiceMessage.length > 124)
                                                                 ? html`
@@ -177,7 +201,6 @@ export class PriceStep extends LitElement {
                                     `
                     }
                 </div>
-
                 <div class="footer">
 
                     ${
@@ -193,7 +216,7 @@ export class PriceStep extends LitElement {
                                                                             this.updateCurrentPriceStep('priceEnter')
                                                                         }}
                                                                 >
-                                                                    Edit price
+                                                                    Edit amount
                                                                 </button>
                                                             `
                                                             : ''
@@ -203,7 +226,7 @@ export class PriceStep extends LitElement {
                                                     @click=${this.nextWithPayload}
                                                     .disabled=${this.nextButtonDisabled}
                                             >
-                                                PAY
+                                                Next
                                             </button>
                                         </div>
                                     `
@@ -239,7 +262,7 @@ export class PriceStep extends LitElement {
                                                     @click=${this.dispatchNextStep}
                                                     .disabled=${this.nextButtonDisabled}
                                             >
-                                                PAY
+                                                Next
                                             </button>
                                         </div>
                                     `
@@ -415,10 +438,12 @@ export class PriceStep extends LitElement {
         }
 
         .stepWrapper {
-            height: 100%;
             display: flex;
             flex-direction: column;
-
+            transition-property: all;
+            transition-timing-function: ease-out;
+            transition-duration: 380ms;
+            
             .header {
                 padding: 16px;
 
@@ -623,6 +648,10 @@ export class PriceStep extends LitElement {
                                 outline: 2px solid var(--sp-widget-input-active-border-color);
                             }
                         }
+                        
+                        input{
+                            font-size: 16px;
+                        }
 
                         .messageError {
                             padding-left: 8px;
@@ -641,7 +670,7 @@ export class PriceStep extends LitElement {
                 border-radius: 40px 40px 0 0;
                 padding: 24px 16px;
                 background-color: var(--sp-widget-bg-color);
-
+                
                 .buttonsWrapper {
                     display: flex;
                     align-items: center;
