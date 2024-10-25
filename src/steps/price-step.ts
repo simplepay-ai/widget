@@ -32,10 +32,10 @@ export class PriceStep extends LitElement {
     messageInput: any;
 
     @property({attribute: false, type: Number})
-    startVisualViewportHeight = 0;
+    startVisualViewportHeight: any = 0;
 
     @property({attribute: false, type: Number})
-    currentVisualViewportHeight = 0;
+    currentVisualViewportHeight: any = 0;
 
     connectedCallback() {
         super.connectedCallback();
@@ -51,7 +51,7 @@ export class PriceStep extends LitElement {
 
         this.startVisualViewportHeight = visualViewport?.height;
         this.currentVisualViewportHeight = visualViewport?.height;
-        visualViewport.addEventListener('resize', (event) => {
+        visualViewport?.addEventListener('resize', (event: any) => {
             this.currentVisualViewportHeight = ( event.target.height < 500 ) ? event.target.height : event.target.height;
         });
 
