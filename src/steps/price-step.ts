@@ -79,7 +79,7 @@ export class PriceStep extends LitElement {
         }
 
         if (changedProperties.has('invoiceMessage') && this.payload && this.currentPriceStep === 'messageEnter') {
-            this.nextButtonDisabled = (this.invoiceMessage === '');
+            this.nextButtonDisabled = (this.invoiceMessage.trim() === '');
         }
 
     }
@@ -89,12 +89,12 @@ export class PriceStep extends LitElement {
             <div class=${`
                  stepWrapper
                  `}
-                 style=${`height: ${this.currentVisualViewportHeight}px;`}
+                 style=${ (window.innerWidth <= 768) ? `height: ${this.currentVisualViewportHeight}px;` : 'height: 100%;'}
             >
                 
                 <div class="header">
 
-                    <p>Invoice to:</p>
+                    <p>Invoice from:</p>
                     <div class="merchantInfo">
 
                         <div class="image placeholder">
@@ -168,7 +168,7 @@ export class PriceStep extends LitElement {
                                                                       left: 0,
                                                                       behavior: "smooth",
                                                                   });
-                                                              }, 150)
+                                                              }, 100)
                                                           }}
                                                 >
                                                 </textarea>
@@ -441,8 +441,8 @@ export class PriceStep extends LitElement {
             display: flex;
             flex-direction: column;
             transition-property: all;
-            transition-timing-function: ease-out;
-            transition-duration: 380ms;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 350ms;
             
             .header {
                 padding: 16px;
@@ -667,8 +667,8 @@ export class PriceStep extends LitElement {
             }
 
             .footer {
-                border-radius: 40px 40px 0 0;
-                padding: 24px 16px;
+                border-radius: 12px 12px 0 0;
+                padding: 8px;
                 background-color: var(--sp-widget-bg-color);
                 
                 .buttonsWrapper {
@@ -734,6 +734,7 @@ export class PriceStep extends LitElement {
 
                 .keyboardWrapper {
                     margin-top: 24px;
+                    padding-bottom: 16px;
 
                     .keyboard {
                         display: grid;

@@ -167,7 +167,7 @@ export class CustomNotification extends LitElement {
                 width: 100%;
                 background: var(--sp-widget-bg-color);
                 z-index: 11;
-                border-radius: 25px 25px 0 0;
+                border-radius: 12px 12px 0 0;
                 overflow: hidden;
                 max-height: 50%;
                 transform: translateY(100%);

@@ -406,9 +406,9 @@ export class StepFooter extends LitElement {
         .stepFooter {
             display: flex;
             justify-content: space-between;
-            gap: 8px;
+            gap: 16px;
             border-top: 1px solid var(--sp-widget-separator-color);
-            padding: 16px;
+            padding: 8px;
             background: var(--sp-widget-bg-color);
             z-index: 10;
             position: relative;
@@ -665,7 +665,7 @@ export class StepFooter extends LitElement {
             height: 100%;
             display: flex;
             align-items: flex-end;
-            padding-bottom: 73px;
+            padding-bottom: 57px;
             transition-property: all;
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
             transition-duration: 350ms;
@@ -705,7 +705,7 @@ export class StepFooter extends LitElement {
                 max-height: 50%;
                 background: var(--sp-widget-bg-color);
                 z-index: 2;
-                border-radius: 25px 25px 0 0;
+                border-radius: 12px 12px 0 0;
                 overflow: hidden;
 
                 .content {
