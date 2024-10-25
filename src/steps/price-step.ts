@@ -25,9 +25,6 @@ export class PriceStep extends LitElement {
     @property({attribute: false, type: Boolean})
     private nextButtonDisabled: boolean = true;
 
-    @property({attribute: false, type: String})
-    private message = '';
-
     @property({attribute: false, type: Boolean})
     private showMessageEmptyError = false;
 
@@ -141,7 +138,7 @@ export class PriceStep extends LitElement {
 
                                                 <textarea id="messageInput"
                                                           .value=${this.invoiceMessage}
-                                                          @input=${(event) => {
+                                                          @input=${(event: any) => {
 
                                                               if (event.target.value.length > 0 && this.showMessageEmptyError) {
                                                                   this.showMessageEmptyError = false;

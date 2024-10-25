@@ -336,30 +336,26 @@ export class PaymentApp extends LitElement {
 
             invoiceWS = ws.appClientInvoice(this.appId, this.clientId);
 
-            let params;
+            let params: any = {
+                type: 'payment',
+                clientId: this.clientId,
+                from: this.walletAddress,
+                network: this.selectedNetworkSymbol,
+                cryptocurrency: this.selectedTokenSymbol,
+                currency: 'USD',
+                appId: this.appId,
+            }
 
             if(this.products.length > 0){
-                params = {
-                    type: 'payment',
-                    clientId: this.clientId,
-                    from: this.walletAddress,
-                    network: this.selectedNetworkSymbol,
-                    cryptocurrency: this.selectedTokenSymbol,
-                    currency: 'USD',
-                    appId: this.appId,
-                    products: this.products
-                }
+                params['products'] = this.products;
             }else{
-                params = {
-                    type: 'payment',
-                    clientId: this.clientId,
-                    from: this.walletAddress,
-                    network: this.selectedNetworkSymbol,
-                    cryptocurrency: this.selectedTokenSymbol,
-                    currency: 'USD',
-                    appId: this.appId,
-                    price: Number(this.price)
-                }
+                params['price'] = Number(this.price);
+            }
+
+            if(this.invoiceMessage !== ''){
+                params['payload'] = {
+                    message: this.invoiceMessage
+                };
             }
 
             const invoice = await this.API.invoice.create(params);
