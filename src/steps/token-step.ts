@@ -57,7 +57,7 @@ export class TokenStep extends LitElement {
     firstUpdated(_changedProperties: PropertyValues) {
         super.firstUpdated(_changedProperties);
 
-        this.accordionHeight = this.accordionContentElement.offsetHeight;
+        this.accordionHeight = this.accordionContentElement?.offsetHeight;
         this.accordionActive = true;
         this.accordionContentElement.style.maxHeight = `${this.accordionHeight}px`;
     }
