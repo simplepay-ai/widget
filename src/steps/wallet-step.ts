@@ -11,7 +11,6 @@ import {
 } from "@wagmi/core";
 import {mainnet, bsc} from '@wagmi/core/chains'
 import {metaMask, walletConnect} from "@wagmi/connectors";
-import {b} from "vite/dist/node/types.d-aGj9QkWt";
 
 @customElement('wallet-step')
 export class WalletStep extends LitElement {
