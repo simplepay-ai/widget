@@ -4,6 +4,7 @@ import {CurrentPriceStep} from "../types.ts";
 
 @customElement('price-step')
 export class PriceStep extends LitElement {
+
     @property({type: String})
     price: string = '';
 
@@ -21,6 +22,9 @@ export class PriceStep extends LitElement {
 
     @property({attribute: false, type: Array})
     private numpadButtons = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', 'backspace'];
+
+    @property({attribute: false, type: Boolean})
+    private numpadButtonsActive = false;
 
     @property({attribute: false, type: Boolean})
     private nextButtonDisabled: boolean = true;
@@ -55,6 +59,7 @@ export class PriceStep extends LitElement {
             this.currentVisualViewportHeight = ( event.target.height < 500 ) ? event.target.height : event.target.height;
         });
 
+        this.numpadButtonsActive = true;
         window.addEventListener('keydown', (event) => this.handleKeyDown(event));
     }
 
@@ -317,8 +322,7 @@ export class PriceStep extends LitElement {
     }
 
     private handleKeyDown(event: KeyboardEvent) {
-
-        if(this.currentPriceStep !== 'priceEnter'){
+        if(!this.numpadButtonsActive){
             return;
         }
 
@@ -390,7 +394,7 @@ export class PriceStep extends LitElement {
     private dispatchNextStep() {
 
         if (this.priceValue && this.priceValue !== '0') {
-
+            this.numpadButtonsActive = false;
             const nextStepEvent = new CustomEvent('nextStep', {
                 bubbles: true,
                 composed: true

@@ -240,6 +240,7 @@ export class PaymentApp extends LitElement {
                 ${this.appStep === 'setWallet'
                     ? html` <wallet-step
                                 .walletAddress=${this.walletAddress}
+                                .walletType=${this.walletType}
                                 .price=${this.price}
                                 .productsInfo=${this.productsInfo}
                                 .selectedTokenSymbol=${this.selectedTokenSymbol}
