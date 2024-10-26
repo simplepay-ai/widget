@@ -7,7 +7,6 @@ import {customElement} from 'lit/decorators.js';
 import {getTokenStandart, roundUpAmount} from "../util.ts";
 import {WalletType} from "../types.ts";
 import {
-    estimateFeesPerGas,
     sendTransaction,
     SendTransactionErrorType,
     switchChain,
@@ -559,8 +558,12 @@ export class PaymentStep extends LitElement {
                 if(this.invoice?.cryptocurrency.symbol === 'USDT'){
                     try {
 
-                        const feesPerGas = await estimateFeesPerGas(this.walletConnectorConfig);
-
+                        // const feesPerGas = await estimateFeesPerGas(this.walletConnectorConfig);
+                        // const gas = await estimateGas(this.walletConnectorConfig, {
+                        //     to: this.invoice?.to,
+                        //     value: parseUnits( this.invoice?.amount!, 6 )
+                        // })
+                        // const gasPrice = await getGasPrice(config)
                         const hashTransaction = await writeContract(this.walletConnectorConfig, {
                             abi: ABI_USDT_ETH,
                             address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
@@ -570,7 +573,9 @@ export class PaymentStep extends LitElement {
                                 parseUnits( this.invoice?.amount!, 6 )
                             ],
                             chainId: mainnet.id,
-                            maxFeePerGas: (feesPerGas as any).maxFeePerGas
+                            // gas: gas,
+                            // maxFeePerGas: (feesPerGas as any).maxFeePerGas,
+                            // maxPriorityFeePerGas: (feesPerGas as any).maxPriorityFeePerGas,
                         })
 
                         if(hashTransaction){

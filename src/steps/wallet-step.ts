@@ -457,11 +457,6 @@ export class WalletStep extends LitElement {
                 try {
                     connectResult = await connect(this.walletConnectorConfig, {
                         connector: walletConnect({
-                            //@ts-ignore
-                            metadata: {
-                                name: "SimplePay",
-                                url: 'https://www.simplepay.ai/',
-                            },
                             projectId: 'b385e1eebef135dccafa0f1efaf09e85',
                         })
                     });
