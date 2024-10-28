@@ -120,6 +120,9 @@ export class PaymentApp extends LitElement {
     @property({attribute: false})
     private priceStep: CurrentPriceStep = 'priceEnter';
 
+    @property({attribute: false})
+    private numpadButtonsActive: boolean = false;
+
     constructor() {
         super();
 
@@ -167,6 +170,26 @@ export class PaymentApp extends LitElement {
             return;
         }
 
+        if (!this.appId) {
+            this.errorTitle = 'Empty appId';
+            this.errorText =
+                'You did not pass the appId. In order to continue, the appId field must be filled in.';
+
+            this.goToStep('error');
+
+            return;
+        }
+
+        if (this.priceAvailable && Number(this.price) < 1) {
+            this.errorTitle = 'Amount Too Low';
+            this.errorText =
+                'The entered amount is below the minimum limit of 1 USD. Please increase the amount to proceed with the transaction.';
+
+            this.goToStep('error');
+
+            return;
+        }
+
         if(this.products && this.products.length > 0){
 
             const resultProductsInfo: IProduct[] = await this.getProductsInfo(this.products);
@@ -195,6 +218,12 @@ export class PaymentApp extends LitElement {
         this.goToStep('setToken');
     }
 
+    updated(changedProperties: Map<string | symbol, unknown>): void {
+        super.updated(changedProperties);
+
+        this.numpadButtonsActive = this.appStep === 'setPrice' && this.priceStep === 'priceEnter';
+    }
+
     render() {
         return html`
             <div class=${`stepWrapper`}>
@@ -210,6 +239,7 @@ export class PaymentApp extends LitElement {
                     : ''}
                 ${this.appStep === 'setPrice'
                     ? html` <price-step
+                                .numpadButtonsActive=${this.numpadButtonsActive}
                           .price=${this.price}
                           .payload=${this.payload === 'true'}
                           .invoiceMessage=${this.invoiceMessage}
@@ -598,7 +628,7 @@ export class PaymentApp extends LitElement {
 
         if(this.appStep === 'setPrice' && this.payload === 'true'){
 
-            if (this.price && Number(this.price) > 0 && this.priceStep === 'priceEnter') {
+            if (this.price && Number(this.price) >= 1 && this.priceStep === 'priceEnter') {
                 this.price = parseFloat(this.price).toFixed(2);
 
                 this.priceStep = 'messageEnter';
@@ -613,7 +643,7 @@ export class PaymentApp extends LitElement {
         }
 
         if(this.appStep === 'setPrice' && this.payload !== 'true'){
-            if (this.price && Number(this.price) > 0) {
+            if (this.price && Number(this.price) >= 1 && this.invoiceMessage.length <= 124) {
                 this.price = parseFloat(this.price).toFixed(2);
 
                 this.goToStep('setToken');

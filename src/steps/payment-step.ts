@@ -1,4 +1,4 @@
-import {Invoice, InvoiceProduct} from '@simplepay-ai/api-client';
+import {Invoice, InvoiceProduct, Network} from '@simplepay-ai/api-client';
 //@ts-ignore
 import QRCode from 'corcojs-qrcode';
 import {PropertyValues} from 'lit';
@@ -458,27 +458,33 @@ export class PaymentStep extends LitElement {
 
         this.updatePaymentAwaiting(true);
 
-        try {
-            await switchChain(this.walletConnectorConfig, { chainId: (this.invoice?.network.symbol === 'bsc') ? bsc.id : mainnet.id })
-        }catch (e) {
+        if(this.walletType !== 'MetaMask'){
+            try {
+                await switchChain(this.walletConnectorConfig, { chainId: (this.invoice?.network.symbol === 'bsc') ? bsc.id : mainnet.id })
+            }catch (e) {
 
-            const options = {
-                detail: {
-                    notificationData: {
-                        title: 'Network Change Failed',
-                        text: 'Unable to automatically switch the wallet network. Please change the network manually in your wallet settings and try again.',
-                        buttonText: 'Confirm'
+                const options = {
+                    detail: {
+                        notificationData: {
+                            title: 'Network Change Failed',
+                            text: 'Unable to automatically switch the wallet network. Please change the network manually in your wallet settings and try again.',
+                            buttonText: 'Confirm'
+                        },
+                        notificationShow: true
                     },
-                    notificationShow: true
-                },
-                bubbles: true,
-                composed: true
-            };
-            this.dispatchEvent(new CustomEvent('updateNotification', options));
+                    bubbles: true,
+                    composed: true
+                };
+                this.dispatchEvent(new CustomEvent('updateNotification', options));
 
-            this.updatePaymentAwaiting(false);
-            return;
+                this.updatePaymentAwaiting(false);
+                return;
+            }
         }
+
+        const timer = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Timeout error')), 40000)
+        );
 
         switch (this.invoice?.network.symbol){
             case 'bsc':
@@ -486,16 +492,31 @@ export class PaymentStep extends LitElement {
                 if(this.invoice?.cryptocurrency.symbol === 'USDT'){
 
                     try {
-                        const hashTransaction = await writeContract(this.walletConnectorConfig, {
-                            abi: ABI_USDT_BSC,
-                            address: '0x55d398326f99059fF775485246999027B3197955',
-                            functionName: 'transfer',
-                            args: [
-                                this.invoice?.to,
-                                parseEther(this.invoice?.amount!)
-                            ],
-                            chainId: bsc.id,
-                        })
+
+                        const hashTransaction = await Promise.race([
+                            writeContract(this.walletConnectorConfig, {
+                                abi: ABI_USDT_BSC,
+                                address: '0x55d398326f99059fF775485246999027B3197955',
+                                functionName: 'transfer',
+                                args: [
+                                    this.invoice?.to,
+                                    parseEther(this.invoice?.amount!)
+                                ],
+                                chainId: bsc.id,
+                            }),
+                            timer,
+                        ]);
+
+                        // const hashTransaction = await writeContract(this.walletConnectorConfig, {
+                        //     abi: ABI_USDT_BSC,
+                        //     address: '0x55d398326f99059fF775485246999027B3197955',
+                        //     functionName: 'transfer',
+                        //     args: [
+                        //         this.invoice?.to,
+                        //         parseEther(this.invoice?.amount!)
+                        //     ],
+                        //     chainId: bsc.id,
+                        // })
 
                         if(hashTransaction){
                             this.checkingTransaction = true;
@@ -505,6 +526,8 @@ export class PaymentStep extends LitElement {
                         return;
 
                     }catch (e) {
+
+                        console.log(e)
 
                         const error = e as WriteContractErrorType;
                         console.log('writeContract error', error)
@@ -522,6 +545,16 @@ export class PaymentStep extends LitElement {
 
                             messageTitle = 'Transaction Canceled'
                             messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+
+                        }else if(error.message.indexOf('not match the target chain') !== -1){
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the ${ (this.invoice.network.symbol === 'bsc') ? 'BNB' : 'Ethereum Mainnet' } network manually and try again.`
+
+                        }else if(error.message.indexOf('Timeout error') !== -1){
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
 
                         }else{
 
@@ -564,19 +597,37 @@ export class PaymentStep extends LitElement {
                         //     value: parseUnits( this.invoice?.amount!, 6 )
                         // })
                         // const gasPrice = await getGasPrice(config)
-                        const hashTransaction = await writeContract(this.walletConnectorConfig, {
-                            abi: ABI_USDT_ETH,
-                            address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
-                            functionName: 'transfer',
-                            args: [
-                                this.invoice?.to,
-                                parseUnits( this.invoice?.amount!, 6 )
-                            ],
-                            chainId: mainnet.id,
-                            // gas: gas,
-                            // maxFeePerGas: (feesPerGas as any).maxFeePerGas,
-                            // maxPriorityFeePerGas: (feesPerGas as any).maxPriorityFeePerGas,
-                        })
+
+                        const hashTransaction = await Promise.race([
+                            writeContract(this.walletConnectorConfig, {
+                                abi: ABI_USDT_ETH,
+                                address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
+                                functionName: 'transfer',
+                                args: [
+                                    this.invoice?.to,
+                                    parseUnits( this.invoice?.amount!, 6 )
+                                ],
+                                chainId: mainnet.id,
+                                // gas: gas,
+                                // maxFeePerGas: (feesPerGas as any).maxFeePerGas,
+                                // maxPriorityFeePerGas: (feesPerGas as any).maxPriorityFeePerGas,
+                            }),
+                            timer,
+                        ]);
+
+                        // const hashTransaction = await writeContract(this.walletConnectorConfig, {
+                        //     abi: ABI_USDT_ETH,
+                        //     address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
+                        //     functionName: 'transfer',
+                        //     args: [
+                        //         this.invoice?.to,
+                        //         parseUnits( this.invoice?.amount!, 6 )
+                        //     ],
+                        //     chainId: mainnet.id,
+                        //     // gas: gas,
+                        //     // maxFeePerGas: (feesPerGas as any).maxFeePerGas,
+                        //     // maxPriorityFeePerGas: (feesPerGas as any).maxPriorityFeePerGas,
+                        // })
 
                         if(hashTransaction){
                             this.checkingTransaction = true;
@@ -603,6 +654,19 @@ export class PaymentStep extends LitElement {
 
                             messageTitle = 'Transaction Canceled'
                             messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+
+                        }else if(error.message.indexOf('not match the target chain') !== -1){
+
+                            const network: Network = this.invoice.network;
+                            const networkName: any = (network && network.symbol === 'bsc') ? 'BNB' : 'Ethereum Mainnet'
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the ${networkName} network manually and try again.`
+
+                        }else if(error.message.indexOf('Timeout error') !== -1){
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
 
                         }else{
 
@@ -639,12 +703,23 @@ export class PaymentStep extends LitElement {
         }
 
         try {
-            const hashTransaction = await sendTransaction(this.walletConnectorConfig, {
-                //@ts-ignore
-                to: this.invoice?.to,
-                value: parseEther( this.invoice?.amount! ),
-                chainId: (this.invoice?.network.symbol === 'bsc') ? bsc.id : mainnet.id
-            })
+
+            const hashTransaction = await Promise.race([
+                sendTransaction(this.walletConnectorConfig, {
+                    //@ts-ignore
+                    to: this.invoice?.to,
+                    value: parseEther( this.invoice?.amount! ),
+                    chainId: (this.invoice?.network.symbol === 'bsc') ? bsc.id : mainnet.id
+                }),
+                timer,
+            ]);
+
+            // const hashTransaction = await sendTransaction(this.walletConnectorConfig, {
+            //     //@ts-ignore
+            //     to: this.invoice?.to,
+            //     value: parseEther( this.invoice?.amount! ),
+            //     chainId: (this.invoice?.network.symbol === 'bsc') ? bsc.id : mainnet.id
+            // })
 
             if(hashTransaction){
                 this.checkingTransaction = true;
@@ -666,6 +741,16 @@ export class PaymentStep extends LitElement {
 
                 messageTitle = 'Transaction Canceled'
                 messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+
+            }else if(error.message.indexOf('not match the target chain') !== -1){
+
+                messageTitle = 'Transaction Canceled'
+                messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the ${ (this.invoice?.network.symbol === 'bsc') ? 'BNB' : 'Ethereum Mainnet' } network manually and try again.`
+
+            }else if(error.message.indexOf('Timeout error') !== -1){
+
+                messageTitle = 'Transaction Canceled'
+                messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
 
             }else{
 

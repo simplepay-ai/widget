@@ -17,14 +17,14 @@ export class PriceStep extends LitElement {
     @property({type: String})
     currentPriceStep: CurrentPriceStep = 'priceEnter';
 
+    @property({type: Boolean})
+    private numpadButtonsActive = false;
+
     @property({attribute: false, type: String})
     private priceValue = '0';
 
     @property({attribute: false, type: Array})
     private numpadButtons = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', 'backspace'];
-
-    @property({attribute: false, type: Boolean})
-    private numpadButtonsActive = false;
 
     @property({attribute: false, type: Boolean})
     private nextButtonDisabled: boolean = true;
@@ -46,7 +46,7 @@ export class PriceStep extends LitElement {
 
         if (this.price && this.price !== '0') {
             this.priceValue = parseFloat(this.price).toFixed(2)
-            this.nextButtonDisabled = Number(this.price) <= 0
+            this.nextButtonDisabled = Number(this.price) < 1
         }
 
         if (this.invoiceMessage !== '') {
@@ -59,33 +59,52 @@ export class PriceStep extends LitElement {
             this.currentVisualViewportHeight = ( event.target.height < 500 ) ? event.target.height : event.target.height;
         });
 
-        this.numpadButtonsActive = true;
         window.addEventListener('keydown', (event) => this.handleKeyDown(event));
     }
 
     updated(changedProperties: Map<string | symbol, unknown>): void {
         super.updated(changedProperties);
 
-        if(changedProperties.has('price') && this.currentPriceStep === 'priceEnter'){
-            this.nextButtonDisabled = !this.price || Number(this.price) <= 0;
-        }
+        if(this.currentPriceStep === 'priceEnter'){
 
-        if (changedProperties.has('currentPriceStep')) {
-            if(this.currentPriceStep === 'messageEnter'){
-                this.messageInput.focus();
+            this.nextButtonDisabled = !this.price || Number(this.price) < 1
 
-                if (this.payload && this.invoiceMessage === '') {
-                    this.nextButtonDisabled = true;
-                }
+        }else{
+
+            if(this.payload){
+                this.nextButtonDisabled = this.invoiceMessage.trim() === '' || this.invoiceMessage.length > 124;
             }else{
-                this.nextButtonDisabled = !this.price || Number(this.price) <= 0;
+                this.nextButtonDisabled = this.invoiceMessage.length > 124;
             }
 
         }
 
-        if (changedProperties.has('invoiceMessage') && this.payload && this.currentPriceStep === 'messageEnter') {
-            this.nextButtonDisabled = (this.invoiceMessage.trim() === '');
+        if(changedProperties.has('currentPriceStep') && this.currentPriceStep === 'messageEnter') {
+            this.messageInput.focus();
         }
+
+        // if(changedProperties.has('price') && this.currentPriceStep === 'priceEnter'){
+        //     this.nextButtonDisabled = !this.price || Number(this.price) <= 0;
+        // }
+
+        // if(changedProperties.has('currentPriceStep')) {
+        //     if(this.currentPriceStep === 'messageEnter'){
+        //         // this.numpadButtonsActive = false;
+        //         this.messageInput.focus();
+        //
+        //         // if (this.payload && this.invoiceMessage === '') {
+        //         //     this.nextButtonDisabled = true;
+        //         // }
+        //     }else{
+        //         // this.numpadButtonsActive = true;
+        //         // this.nextButtonDisabled = !this.price || Number(this.price) <= 0;
+        //     }
+        //
+        // }
+
+        // if (changedProperties.has('invoiceMessage') && this.payload && this.currentPriceStep === 'messageEnter') {
+        //     this.nextButtonDisabled = (this.invoiceMessage.trim() === '' || this.invoiceMessage.length > 124);
+        // }
 
     }
 
@@ -393,8 +412,7 @@ export class PriceStep extends LitElement {
 
     private dispatchNextStep() {
 
-        if (this.priceValue && this.priceValue !== '0') {
-            this.numpadButtonsActive = false;
+        if (this.priceValue && Number(this.priceValue) >= 1) {
             const nextStepEvent = new CustomEvent('nextStep', {
                 bubbles: true,
                 composed: true
@@ -404,10 +422,9 @@ export class PriceStep extends LitElement {
         }
     }
     private nextWithPayload() {
-
         if (this.currentPriceStep === 'priceEnter') {
 
-            if (!this.priceValue || this.priceValue === '0') {
+            if (!this.priceValue || Number(this.priceValue) < 1) {
                 return;
             } else {
                 this.priceValue = parseFloat(this.priceValue).toFixed(2);
