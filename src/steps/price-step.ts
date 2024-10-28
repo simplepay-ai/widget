@@ -17,8 +17,8 @@ export class PriceStep extends LitElement {
     @property({type: String})
     currentPriceStep: CurrentPriceStep = 'priceEnter';
 
-    @property({type: Boolean})
-    private numpadButtonsActive = false;
+    @property({attribute: false, type: Boolean})
+    numpadButtonsActive = false;
 
     @property({attribute: false, type: String})
     private priceValue = '0';
@@ -65,6 +65,8 @@ export class PriceStep extends LitElement {
     updated(changedProperties: Map<string | symbol, unknown>): void {
         super.updated(changedProperties);
 
+        this.numpadButtonsActive = this.currentPriceStep === 'priceEnter';
+
         if(this.currentPriceStep === 'priceEnter'){
 
             this.nextButtonDisabled = !this.price || Number(this.price) < 1
@@ -106,6 +108,11 @@ export class PriceStep extends LitElement {
         //     this.nextButtonDisabled = (this.invoiceMessage.trim() === '' || this.invoiceMessage.length > 124);
         // }
 
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback()
+        this.numpadButtonsActive = false
     }
 
     render() {

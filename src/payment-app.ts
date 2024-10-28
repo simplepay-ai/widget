@@ -120,9 +120,6 @@ export class PaymentApp extends LitElement {
     @property({attribute: false})
     private priceStep: CurrentPriceStep = 'priceEnter';
 
-    @property({attribute: false})
-    private numpadButtonsActive: boolean = false;
-
     constructor() {
         super();
 
@@ -218,12 +215,6 @@ export class PaymentApp extends LitElement {
         this.goToStep('setToken');
     }
 
-    updated(changedProperties: Map<string | symbol, unknown>): void {
-        super.updated(changedProperties);
-
-        this.numpadButtonsActive = this.appStep === 'setPrice' && this.priceStep === 'priceEnter';
-    }
-
     render() {
         return html`
             <div class=${`stepWrapper`}>
@@ -239,7 +230,6 @@ export class PaymentApp extends LitElement {
                     : ''}
                 ${this.appStep === 'setPrice'
                     ? html` <price-step
-                                .numpadButtonsActive=${this.numpadButtonsActive}
                           .price=${this.price}
                           .payload=${this.payload === 'true'}
                           .invoiceMessage=${this.invoiceMessage}
