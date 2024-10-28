@@ -65,8 +65,6 @@ export class PriceStep extends LitElement {
     updated(changedProperties: Map<string | symbol, unknown>): void {
         super.updated(changedProperties);
 
-        this.numpadButtonsActive = this.currentPriceStep === 'priceEnter';
-
         if(this.currentPriceStep === 'priceEnter'){
 
             this.nextButtonDisabled = !this.price || Number(this.price) < 1
@@ -81,8 +79,15 @@ export class PriceStep extends LitElement {
 
         }
 
-        if(changedProperties.has('currentPriceStep') && this.currentPriceStep === 'messageEnter') {
-            this.messageInput.focus();
+        if(changedProperties.has('currentPriceStep')){
+            if(this.currentPriceStep === 'priceEnter'){
+                this.numpadButtonsActive = true;
+            }
+
+            if(this.currentPriceStep === 'messageEnter'){
+                this.messageInput.focus();
+                this.numpadButtonsActive = false;
+            }
         }
 
         // if(changedProperties.has('price') && this.currentPriceStep === 'priceEnter'){
@@ -112,7 +117,7 @@ export class PriceStep extends LitElement {
 
     disconnectedCallback() {
         super.disconnectedCallback()
-        this.numpadButtonsActive = false
+        this.numpadButtonsActive = false;
     }
 
     render() {
