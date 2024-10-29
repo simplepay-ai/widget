@@ -573,9 +573,7 @@ export class WalletStep extends LitElement {
                     const reconnectResult: any = await Promise.race([
                         reconnect(this.walletConnectorConfig, {
                             connectors: [
-                                metaMask({
-                                    preferDesktop: true
-                                })
+                                metaMask()
                             ]
                         }),
                         timer,
@@ -598,6 +596,8 @@ export class WalletStep extends LitElement {
                     }
 
                 } catch (e) {
+                    console.log('metaMask connection error', e)
+
                     this.connectingType = '';
                     this.connectingInProcess = false;
 
@@ -666,7 +666,7 @@ export class WalletStep extends LitElement {
                     }
 
                 } catch (e) {
-
+                    console.log('walletConnect connection error', e)
                     const walletConnectModal = document.querySelector('wcm-modal');
 
                     if(walletConnectModal){
@@ -696,36 +696,22 @@ export class WalletStep extends LitElement {
             case "Injected":
                 try {
 
-                    let injectedConnector = null;
-                    for (let connection of connections.values()) {
-                        if (connection.connector.type === 'injected' && connection.connector['connect'] !== undefined) {
-                            injectedConnector = connection.connector;
-                        }
+                    const reconnectResult: any = await Promise.race([
+                        reconnect(this.walletConnectorConfig, {
+                            connectors: [
+                                injected()
+                            ]
+                        }),
+                        timer,
+                        cancelChecker
+                    ]);
+
+                    if(reconnectResult && reconnectResult.length > 0){
+                        connectResult = reconnectResult[0];
                     }
 
-                    console.log('injectedConnector', injectedConnector)
+                    if(!connectResult){
 
-                    if (injectedConnector) {
-
-                        const reconnectResult: any = await Promise.race([
-                            await reconnect(this.walletConnectorConfig, {
-                                connectors: [
-                                    injected(),
-                                ]
-                            }),
-                            timer,
-                            cancelChecker
-                        ]);
-
-                        console.log('reconnectResult', reconnectResult)
-
-                        if(reconnectResult && reconnectResult.length > 0){
-                            connectResult = reconnectResult[0];
-                        }
-
-                    }
-
-                    if(!injectedConnector || !connectResult){
                         connectResult = await Promise.race([
                             connect(this.walletConnectorConfig, {
                                 connector: injected()
@@ -733,16 +719,49 @@ export class WalletStep extends LitElement {
                             timer,
                             cancelChecker
                         ]);
-
-                        console.log('connectResult', connectResult)
-
-                        // connectResult = await connect(this.walletConnectorConfig, {
-                        //     connector: injected()
-                        // })
                     }
 
-                } catch (e) {
+                    // let injectedConnector = null;
+                    // for (let connection of connections.values()) {
+                    //     if (connection.connector.type === 'injected' && connection.connector['connect'] !== undefined) {
+                    //         injectedConnector = connection.connector;
+                    //     }
+                    // }
+                    //
+                    // if (injectedConnector) {
+                    //
+                    //     const reconnectResult: any = await Promise.race([
+                    //         await reconnect(this.walletConnectorConfig, {
+                    //             connectors: [
+                    //                 injected(),
+                    //             ]
+                    //         }),
+                    //         timer,
+                    //         cancelChecker
+                    //     ]);
+                    //
+                    //     if(reconnectResult && reconnectResult.length > 0){
+                    //         connectResult = reconnectResult[0];
+                    //     }
+                    //
+                    // }
+                    //
+                    // if(!injectedConnector || !connectResult){
+                    //     connectResult = await Promise.race([
+                    //         connect(this.walletConnectorConfig, {
+                    //             connector: injected()
+                    //         }),
+                    //         timer,
+                    //         cancelChecker
+                    //     ]);
+                    //
+                    //     // connectResult = await connect(this.walletConnectorConfig, {
+                    //     //     connector: injected()
+                    //     // })
+                    // }
 
+                } catch (e) {
+                    console.log('injected connection error', e)
                     this.connectingType = '';
                     this.connectingInProcess = false;
 
