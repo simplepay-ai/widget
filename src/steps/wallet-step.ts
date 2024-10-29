@@ -563,27 +563,20 @@ export class WalletStep extends LitElement {
             case "MetaMask":
                 try {
 
-                    let metaMaskConnector = null;
-                    for (let connection of connections.values()) {
-                        if ((connection.connector.type === 'injected' || connection.connector.type === 'metaMask') && connection.connector.name === 'MetaMask') {
-                            metaMaskConnector = connection.connector;
-                        }
-                    }
+                    const reconnectResult: any = await Promise.race([
+                        reconnect(this.walletConnectorConfig, {
+                            connectors: [
+                                metaMask({
+                                    preferDesktop: true
+                                })
+                            ]
+                        }),
+                        timer,
+                        cancelChecker
+                    ]);
 
-                    if (metaMaskConnector) {
-                        const reconnectResult: any = await Promise.race([
-                            reconnect(this.walletConnectorConfig, {
-                                connectors: [
-                                    metaMask()
-                                ]
-                            }),
-                            timer,
-                            cancelChecker
-                        ]);
-                        if(reconnectResult && reconnectResult.length > 0){
-                            connectResult = reconnectResult[0];
-                        }
-
+                    if(reconnectResult && reconnectResult.length > 0){
+                        connectResult = reconnectResult[0];
                     }
 
                     if(!connectResult){
@@ -708,7 +701,7 @@ export class WalletStep extends LitElement {
                         const reconnectResult: any = await Promise.race([
                             await reconnect(this.walletConnectorConfig, {
                                 connectors: [
-                                    injected()
+                                    injected(),
                                 ]
                             }),
                             timer,
@@ -760,8 +753,6 @@ export class WalletStep extends LitElement {
             default:
                 break;
         }
-
-        console.log('connectResult', connectResult)
 
         if (!connectResult) {
 

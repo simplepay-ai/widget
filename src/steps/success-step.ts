@@ -64,10 +64,10 @@ export class SuccessStep extends LitElement {
                     .title=${`${this.invoice?.status} transaction`}
                     .hasBackButton=${false}
                     .hasShareButton=${true}
-                    .sharedData=${{
+                    .sharedData=${ (this.invoice?.txHash) ? {
                         title: 'New Invoice',
                         url: this.qrCodeUrl
-                    }}
+                    } : null}
                 ></step-header>
 
                 <div class="stepContent">
@@ -104,14 +104,20 @@ export class SuccessStep extends LitElement {
                             </div>
                         </div>
                         <div class="rightSection">
-                            <div id="qrcode" class="qrcode"></div>
+                            ${
+                                    (this.invoice?.txHash)
+                                        ? html`
+                                                <div id="qrcode" class="qrcode"></div>
 
-                            <div class="icon">
-                                <img
-                                    src="https://loutre.blockchair.io/assets/kit/blockchair.cube.svg"
-                                    alt="blockchair icon"
-                                />
-                            </div>
+                                                <div class="icon">
+                                                    <img
+                                                            src="https://loutre.blockchair.io/assets/kit/blockchair.cube.svg"
+                                                            alt="blockchair icon"
+                                                    />
+                                                </div>
+                                            `
+                                            : ''
+                            }
                         </div>
                     </div>
 

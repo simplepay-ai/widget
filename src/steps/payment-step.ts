@@ -1308,6 +1308,11 @@ export class PaymentStep extends LitElement {
                             opacity: 0.75;
                         }
                     }
+                    
+                    &.active{
+                        touch-action: none;
+                        pointer-events: none;
+                    }
                 }
             }
 
