@@ -7,7 +7,7 @@ import {
     http,
     fallback,
     connect,
-    injected, createStorage, reconnect,
+    injected, createStorage, reconnect, getAccount, disconnect,
 } from "@wagmi/core";
 import {mainnet, bsc} from '@wagmi/core/chains'
 import {metaMask, walletConnect} from "@wagmi/connectors";
@@ -841,36 +841,43 @@ export class WalletStep extends LitElement {
 
     private async disconnectWallet() {
 
-        if (this.walletType === 'MetaMask') {
-
-            let metaMaskConnectorMobile = null;
-            for (let connection of this.walletConnectorConfig.state.connections.values()) {
-                if (connection.connector.type === 'metaMask' && connection.connector['disconnect'] !== undefined) {
-                    metaMaskConnectorMobile = connection.connector;
-                }
-            }
-
-            const connectors = this.walletConnectorConfig.connectors;
-            const metaMaskConnectorDesk = connectors?.find((item: any) => item.id === 'io.metamask' && item.type === 'injected');
-
-            if (metaMaskConnectorMobile && metaMaskConnectorMobile['disconnect']) {
-                await metaMaskConnectorMobile.disconnect();
-            }
-
-            if (metaMaskConnectorDesk && metaMaskConnectorDesk['disconnect']) {
-                await metaMaskConnectorDesk.disconnect();
-            }
-        } else {
-            const state = this.walletConnectorConfig.state;
-            const currentConnection = state.connections.get(state.current);
-            const connector = currentConnection.connector;
-
-            if (connector && connector['disconnect']) {
-                await connector.disconnect();
-            }
-        }
+        const { connector } = getAccount(this.walletConnectorConfig)
+        await disconnect(this.walletConnectorConfig, {
+            connector,
+        })
 
         this.hideApproveAddressModal();
+
+        // if (this.walletType === 'MetaMask') {
+        //
+        //     let metaMaskConnectorMobile = null;
+        //     for (let connection of this.walletConnectorConfig.state.connections.values()) {
+        //         if (connection.connector.type === 'metaMask' && connection.connector['disconnect'] !== undefined) {
+        //             metaMaskConnectorMobile = connection.connector;
+        //         }
+        //     }
+        //
+        //     const connectors = this.walletConnectorConfig.connectors;
+        //     const metaMaskConnectorDesk = connectors?.find((item: any) => item.id === 'io.metamask' && item.type === 'injected');
+        //
+        //     if (metaMaskConnectorMobile && metaMaskConnectorMobile['disconnect']) {
+        //         await metaMaskConnectorMobile.disconnect();
+        //     }
+        //
+        //     if (metaMaskConnectorDesk && metaMaskConnectorDesk['disconnect']) {
+        //         await metaMaskConnectorDesk.disconnect();
+        //     }
+        // } else {
+        //     const state = this.walletConnectorConfig.state;
+        //     const currentConnection = state.connections.get(state.current);
+        //     const connector = currentConnection.connector;
+        //
+        //     if (connector && connector['disconnect']) {
+        //         await connector.disconnect();
+        //     }
+        // }
+        //
+        // this.hideApproveAddressModal();
 
         // const connectors = this.walletConnectorConfig.connectors;
         // await connectors[0].disconnect();
