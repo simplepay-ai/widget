@@ -509,6 +509,13 @@ export class WalletStep extends LitElement {
 
         const config = createConfig({
             chains: [mainnet, bsc],
+            connectors: [
+                injected(),
+                metaMask(),
+                walletConnect({
+                    projectId: 'b385e1eebef135dccafa0f1efaf09e85',
+                })
+            ],
             storage: createStorage({ storage: window.localStorage }),
             transports: {
                 [mainnet.id]: fallback([
