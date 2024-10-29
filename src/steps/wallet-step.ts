@@ -703,6 +703,8 @@ export class WalletStep extends LitElement {
                         }
                     }
 
+                    console.log('injectedConnector', injectedConnector)
+
                     if (injectedConnector) {
 
                         const reconnectResult: any = await Promise.race([
@@ -714,6 +716,8 @@ export class WalletStep extends LitElement {
                             timer,
                             cancelChecker
                         ]);
+
+                        console.log('reconnectResult', reconnectResult)
 
                         if(reconnectResult && reconnectResult.length > 0){
                             connectResult = reconnectResult[0];
@@ -729,6 +733,8 @@ export class WalletStep extends LitElement {
                             timer,
                             cancelChecker
                         ]);
+
+                        console.log('connectResult', connectResult)
 
                         // connectResult = await connect(this.walletConnectorConfig, {
                         //     connector: injected()
