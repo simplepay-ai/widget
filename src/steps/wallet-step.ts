@@ -75,6 +75,9 @@ export class WalletStep extends LitElement {
     @property({attribute: false, type: String})
     private connectingType: WalletType | '' = '';
 
+    // @property({attribute: false, type: Object})
+    // private providerInfo: IProviderInfo | null = null;
+
     async connectedCallback() {
         super.connectedCallback();
 
@@ -834,6 +837,29 @@ export class WalletStep extends LitElement {
             return;
 
         }
+
+        // console.log('walletConnectorConfig', this.walletConnectorConfig)
+        //
+        // switch (type) {
+        //     case "MetaMask":
+        //
+        //         const {connector}: any = getAccount(this.walletConnectorConfig);
+        //         const provider = await connector.getProvider();
+        //         console.log('provider', provider)
+        //
+        //         this.providerInfo = {
+        //             name: 'MetaMask',
+        //             image: ''
+        //         };
+        //         break;
+        //     case "WalletConnect":
+        //         break;
+        //     case "Injected":
+        //         break;
+        //     default:
+        //         this.providerInfo = null;
+        //         break;
+        // }
 
         this.updateWalletAddress(connectResult.accounts[0]);
         this.updateWalletType(type);

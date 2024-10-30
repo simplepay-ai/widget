@@ -709,17 +709,19 @@ export class PaymentStep extends LitElement {
                     //@ts-ignore
                     to: this.invoice?.to,
                     value: parseEther( this.invoice?.amount! ),
-                    chainId: (this.invoice?.network.symbol === 'bsc') ? bsc.id : mainnet.id
+                    chainId: (this.invoice?.network.symbol === 'bsc') ? bsc.id : mainnet.id,
+                    data: '0x'
                 }),
                 timer,
             ]);
 
             // const hashTransaction = await sendTransaction(this.walletConnectorConfig, {
-            //     //@ts-ignore
             //     to: this.invoice?.to,
             //     value: parseEther( this.invoice?.amount! ),
-            //     chainId: (this.invoice?.network.symbol === 'bsc') ? bsc.id : mainnet.id
+            //     chainId: (this.invoice?.network.symbol === 'bsc') ? bsc.id : mainnet.id,
+            //     data: '0x'
             // })
+            //
 
             if(hashTransaction){
                 this.checkingTransaction = true;

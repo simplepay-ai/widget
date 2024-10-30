@@ -16,6 +16,11 @@ export type CurrentPriceStep = 'priceEnter' | 'messageEnter';
 
 export type WalletType = 'MetaMask' | 'WalletConnect' | 'Injected' | 'Custom'
 
+export interface IProviderInfo{
+    name: string;
+    image: string;
+}
+
 export interface INotification {
     title?: String;
     text?: String;
