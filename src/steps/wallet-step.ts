@@ -707,13 +707,23 @@ export class WalletStep extends LitElement {
                             connectors: [
                                 injected({
                                     target() {
+                                        //@ts-ignore
                                         return {
                                             id: 'windowProvider',
                                             name: 'Window Provider',
-                                            provider: window.ethereum,
+                                            provider: (window as any).okxwallet || window.ethereum,//ethereum
                                         }
                                     },
                                 })
+                                // injected({
+                                //     target() {
+                                //         return {
+                                //             id: 'windowProvider',
+                                //             name: 'Window Provider',
+                                //             provider: window.ethereum,
+                                //         }
+                                //     },
+                                // })
                             ]
                         }),
                         timer,
@@ -730,10 +740,11 @@ export class WalletStep extends LitElement {
                             connect(this.walletConnectorConfig, {
                                 connector: injected({
                                     target() {
+                                        //@ts-ignore
                                         return {
                                             id: 'windowProvider',
                                             name: 'Window Provider',
-                                            provider: window.ethereum,
+                                            provider: (window as any).okxwallet || window.ethereum,//ethereum
                                         }
                                     },
                                 })
