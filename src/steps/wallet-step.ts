@@ -10,7 +10,7 @@ import {
     injected, createStorage, reconnect, getAccount, disconnect,
 } from "@wagmi/core";
 import {mainnet, bsc} from '@wagmi/core/chains'
-import {metaMask, walletConnect} from "@wagmi/connectors";
+import {coinbaseWallet, metaMask, walletConnect} from "@wagmi/connectors";
 
 @customElement('wallet-step')
 export class WalletStep extends LitElement {
@@ -222,6 +222,36 @@ export class WalletStep extends LitElement {
                                                             <path d="M19.8241 17.9876L20.2658 10.3943L22.2664 4.99097H13.3545L15.3551 10.3943L15.7968 17.9876L15.9657 20.3718L15.9787 26.2676H19.6422L19.6552 20.3718L19.8241 17.9876Z"
                                                                   fill="#F5841F" stroke="#F5841F" stroke-width="0.25"
                                                                   stroke-linecap="round" stroke-linejoin="round"/>
+                                                        </svg>
+
+                                                        <div class="spinner">
+                                                            <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    fill="none"
+                                                                    viewBox="0 0 24 24"
+                                                            >
+                                                                <circle cx="12" cy="12" r="10" stroke-width="4"/>
+                                                                <path
+                                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                                />
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+
+                                                    <div @click=${() => this.selectWalletType('Coinbase')}
+                                                         class=${`
+                                                         walletType custom coinbase
+                                                         ${(this.connectingInProcess && this.connectingType === 'Coinbase') ? 'inProcess' : ''}
+                                                         ${(this.connectingInProcess && this.connectingType !== 'Coinbase') ? 'waiting' : ''}
+                                                         `}
+                                                    >
+                                                        <p>Coinbase</p>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" role="img"
+                                                             aria-label="Coinbase Wallet Logo" viewBox="0 0 32 32" width="32"
+                                                             height="32" class="typeIcon" data-testid="wallet-logo" fill="none">
+                                                            <path d="M0 16C0 24.8356 7.16444 32 16 32C24.8356 32 32 24.8356 32 16C32 7.16444 24.8356 0 16 0C7.16444 0 0 7.16444 0 16ZM11.9111 10.8444C11.32 10.8444 10.8444 11.32 10.8444 11.9111V20.0889C10.8444 20.68 11.32 21.1556 11.9111 21.1556H20.0889C20.68 21.1556 21.1556 20.68 21.1556 20.0889V11.9111C21.1556 11.32 20.68 10.8444 20.0889 10.8444H11.9111Z"
+                                                                  fill="#3773f5" fill-rule="evenodd"
+                                                                  clip-rule="evenodd"></path>
                                                         </svg>
 
                                                         <div class="spinner">
@@ -515,11 +545,12 @@ export class WalletStep extends LitElement {
             connectors: [
                 injected(),
                 metaMask(),
+                coinbaseWallet(),
                 walletConnect({
                     projectId: 'b385e1eebef135dccafa0f1efaf09e85',
                 })
             ],
-            storage: createStorage({ storage: window.localStorage }),
+            storage: createStorage({storage: window.localStorage}),
             transports: {
                 [mainnet.id]: fallback([
                     http('https://rpc.ankr.com/eth'),
@@ -543,7 +574,7 @@ export class WalletStep extends LitElement {
 
     private async selectWalletType(type: WalletType) {
 
-        if(this.connectingInProcess && type === this.connectingType){
+        if (this.connectingInProcess && type === this.connectingType) {
             this.connectingInProcess = false;
             return;
         }
@@ -583,11 +614,11 @@ export class WalletStep extends LitElement {
                         cancelChecker
                     ]);
 
-                    if(reconnectResult && reconnectResult.length > 0){
+                    if (reconnectResult && reconnectResult.length > 0) {
                         connectResult = reconnectResult[0];
                     }
 
-                    if(!connectResult){
+                    if (!connectResult) {
 
                         connectResult = await Promise.race([
                             connect(this.walletConnectorConfig, {
@@ -600,6 +631,61 @@ export class WalletStep extends LitElement {
 
                 } catch (e) {
                     console.log('metaMask connection error', e)
+
+                    this.connectingType = '';
+                    this.connectingInProcess = false;
+
+                    const options = {
+                        detail: {
+                            notificationData: {
+                                title: 'Wallet Connection Not Confirmed',
+                                text: 'The wallet connection was not confirmed. Please try again for continue.',
+                                buttonText: 'Confirm'
+                            },
+                            notificationShow: true
+                        },
+                        bubbles: true,
+                        composed: true
+                    };
+                    this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                    return;
+                }
+                break;
+            case "Coinbase":
+                try {
+
+                    const reconnectResult: any = await Promise.race([
+                        reconnect(this.walletConnectorConfig, {
+                            connectors: [
+                                coinbaseWallet({
+                                    version: '3',
+                                })
+                            ]
+                        }),
+                        timer,
+                        cancelChecker
+                    ]);
+
+                    if (reconnectResult && reconnectResult.length > 0) {
+                        connectResult = reconnectResult[0];
+                    }
+
+                    if (!connectResult) {
+
+                        connectResult = await Promise.race([
+                            connect(this.walletConnectorConfig, {
+                                connector: coinbaseWallet({
+                                    version: '3',
+                                })
+                            }),
+                            timer,
+                            cancelChecker
+                        ]);
+                    }
+
+                } catch (e) {
+                    console.log('coinbaseWallet connection error', e)
 
                     this.connectingType = '';
                     this.connectingInProcess = false;
@@ -645,12 +731,12 @@ export class WalletStep extends LitElement {
                             cancelChecker
                         ]);
 
-                        if(reconnectResult && reconnectResult.length > 0){
+                        if (reconnectResult && reconnectResult.length > 0) {
                             connectResult = reconnectResult[0];
                         }
                     }
 
-                    if(!walletConnectConnector || !connectResult){
+                    if (!walletConnectConnector || !connectResult) {
                         connectResult = await Promise.race([
                             connect(this.walletConnectorConfig, {
                                 connector: walletConnect({
@@ -673,8 +759,8 @@ export class WalletStep extends LitElement {
 
                     const walletConnectModals = document.querySelectorAll('wcm-modal');
 
-                    if(walletConnectModals && walletConnectModals.length > 0){
-                        for(let modal of walletConnectModals){
+                    if (walletConnectModals && walletConnectModals.length > 0) {
+                        for (let modal of walletConnectModals) {
                             modal?.remove();
                         }
                     }
@@ -730,11 +816,11 @@ export class WalletStep extends LitElement {
                         cancelChecker
                     ]);
 
-                    if(reconnectResult && reconnectResult.length > 0){
+                    if (reconnectResult && reconnectResult.length > 0) {
                         connectResult = reconnectResult[0];
                     }
 
-                    if(!connectResult){
+                    if (!connectResult) {
 
                         connectResult = await Promise.race([
                             connect(this.walletConnectorConfig, {
@@ -929,7 +1015,7 @@ export class WalletStep extends LitElement {
 
     private async disconnectWallet() {
 
-        const { connector } = getAccount(this.walletConnectorConfig)
+        const {connector} = getAccount(this.walletConnectorConfig)
         await disconnect(this.walletConnectorConfig, {
             connector,
         })
@@ -1203,6 +1289,13 @@ export class WalletStep extends LitElement {
                             path {
                                 fill: var(--sp-widget-active-color);
                             }
+                        }
+                    }
+
+                    &.coinbase {
+                        svg.typeIcon {
+                            width: 25px;
+                            margin: 0 2.5px;
                         }
                     }
 

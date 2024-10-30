@@ -14,7 +14,7 @@ export type AppStep =
 
 export type CurrentPriceStep = 'priceEnter' | 'messageEnter';
 
-export type WalletType = 'MetaMask' | 'WalletConnect' | 'Injected' | 'Custom'
+export type WalletType = 'MetaMask' | 'Coinbase' | 'WalletConnect' | 'Injected' | 'Custom'
 
 export interface IProviderInfo{
     name: string;
