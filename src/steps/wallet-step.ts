@@ -705,7 +705,15 @@ export class WalletStep extends LitElement {
                     const reconnectResult: any = await Promise.race([
                         reconnect(this.walletConnectorConfig, {
                             connectors: [
-                                injected()
+                                injected({
+                                    target() {
+                                        return {
+                                            id: 'windowProvider',
+                                            name: 'Window Provider',
+                                            provider: window.ethereum,
+                                        }
+                                    },
+                                })
                             ]
                         }),
                         timer,
@@ -720,7 +728,15 @@ export class WalletStep extends LitElement {
 
                         connectResult = await Promise.race([
                             connect(this.walletConnectorConfig, {
-                                connector: injected()
+                                connector: injected({
+                                    target() {
+                                        return {
+                                            id: 'windowProvider',
+                                            name: 'Window Provider',
+                                            provider: window.ethereum,
+                                        }
+                                    },
+                                })
                             }),
                             timer,
                             cancelChecker
