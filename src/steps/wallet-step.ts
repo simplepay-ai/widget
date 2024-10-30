@@ -659,6 +659,7 @@ export class WalletStep extends LitElement {
                         reconnect(this.walletConnectorConfig, {
                             connectors: [
                                 coinbaseWallet({
+                                    appName: 'Simple Widget',
                                     version: '3',
                                 })
                             ]
@@ -676,6 +677,7 @@ export class WalletStep extends LitElement {
                         connectResult = await Promise.race([
                             connect(this.walletConnectorConfig, {
                                 connector: coinbaseWallet({
+                                    appName: 'Simple Widget',
                                     version: '3',
                                 })
                             }),
