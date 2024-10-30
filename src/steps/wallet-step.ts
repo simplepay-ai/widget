@@ -667,10 +667,13 @@ export class WalletStep extends LitElement {
 
                 } catch (e) {
                     console.log('walletConnect connection error', e)
-                    const walletConnectModal = document.querySelector('wcm-modal');
 
-                    if(walletConnectModal){
-                        walletConnectModal.remove();
+                    const walletConnectModals = document.querySelectorAll('wcm-modal');
+
+                    if(walletConnectModals && walletConnectModals.length > 0){
+                        for(let modal of walletConnectModals){
+                            modal?.remove();
+                        }
                     }
 
                     this.connectingType = '';
