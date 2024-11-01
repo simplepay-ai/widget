@@ -149,29 +149,6 @@ export class PriceStep extends LitElement {
 
         }
 
-        // if(changedProperties.has('price') && this.currentPriceStep === 'priceEnter'){
-        //     this.nextButtonDisabled = !this.price || Number(this.price) <= 0;
-        // }
-
-        // if(changedProperties.has('currentPriceStep')) {
-        //     if(this.currentPriceStep === 'messageEnter'){
-        //         // this.numpadButtonsActive = false;
-        //         this.messageInput.focus();
-        //
-        //         // if (this.payload && this.invoiceMessage === '') {
-        //         //     this.nextButtonDisabled = true;
-        //         // }
-        //     }else{
-        //         // this.numpadButtonsActive = true;
-        //         // this.nextButtonDisabled = !this.price || Number(this.price) <= 0;
-        //     }
-        //
-        // }
-
-        // if (changedProperties.has('invoiceMessage') && this.payload && this.currentPriceStep === 'messageEnter') {
-        //     this.nextButtonDisabled = (this.invoiceMessage.trim() === '' || this.invoiceMessage.length > 124);
-        // }
-
     }
 
     disconnectedCallback() {
@@ -192,16 +169,19 @@ export class PriceStep extends LitElement {
                     <p>Invoice from:</p>
                     <div class="merchantInfo">
 
-                        <div class="image placeholder">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                 fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                                 stroke-linejoin="round">
-                                <circle cx="12" cy="8" r="5"/>
-                                <path d="M20 21a8 8 0 0 0-16 0"/>
-                            </svg>
+                        <div class="image">
+                            <img src="https://img.simplepay.ai/-yPhRoP2w49Zz9pH1BxIZYm9ezaI2_dzNULBcaG_Cc8/resize:fit:300/czM6Ly9zaW1wbGVwYXkvaW1hZ2UvcHJvZHVjdC84ZTRjZGNiMS0wMTFkLTRlN2QtOTNhOC05YjM0Y2Q4Y2Y5OTMuanBn.webp" alt="merchant image">
                         </div>
+<!--                        <div class="image placeholder">-->
+<!--                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"-->
+<!--                                 fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"-->
+<!--                                 stroke-linejoin="round">-->
+<!--                                <circle cx="12" cy="8" r="5"/>-->
+<!--                                <path d="M20 21a8 8 0 0 0-16 0"/>-->
+<!--                            </svg>-->
+<!--                        </div>-->
 
-                        <p>Merchant Name</p>
+                        <p>Demo app</p>
 
                     </div>
 

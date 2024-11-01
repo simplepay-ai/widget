@@ -245,18 +245,11 @@ export class PaymentApp extends LitElement {
                     const productSum = product.count * product?.prices[0].price;
                     resultPrice += productSum;
 
-                    // const currentPrice = Number(this.price);
-                    // const productSum = currentPrice + (product.count * product?.prices[0].price);
-                    // console.log('productSum', productSum)
-                    // this.price = parseFloat(productSum.toString()).toFixed(2);
                 }
 
                 this.price = parseFloat(resultPrice.toString()).toFixed(2);
                 this.priceAvailable = true;
 
-                // this.priceAvailable = true;
-                // this.goToStep('setToken');
-                // return;
             }
 
         }
@@ -723,15 +716,6 @@ export class PaymentApp extends LitElement {
             this.goToStep('setPrice');
             return;
 
-            // if(this.priceAvailable && this.payload !== 'true'){
-            //     this.goToStep('setWallet');
-            //     return;
-            // }else{
-            //     this.priceStep = (!this.priceAvailable) ? 'priceEnter' : 'messageEnter'
-            //     this.goToStep('setPrice');
-            //     return;
-            // }
-
         }
 
         if(this.appStep === 'setPrice'){
@@ -759,16 +743,6 @@ export class PaymentApp extends LitElement {
                     return;
                 }
 
-                // if(!this.tokenAvailable){
-                //     this.goToStep('setToken');
-                //     return;
-                // }
-
-                // if(!this.tokenAvailable !this.selectedTokenSymbol || !this.selectedNetworkSymbol){
-                //     this.goToStep('setToken');
-                //     return;
-                // }
-
                 this.goToStep('setWallet');
                 return;
             }
@@ -783,76 +757,9 @@ export class PaymentApp extends LitElement {
                 this.goToStep('setWallet');
                 return;
 
-                // if(this.selectedTokenSymbol && this.selectedNetworkSymbol){
-                //     this.goToStep('setWallet');
-                //     return;
-                // }else{
-                //     this.goToStep('setToken');
-                //     return;
-                // }
-
             }
 
-            // if (this.price && Number(this.price) >= 1 && this.priceStep === 'priceEnter') {
-            //     this.price = parseFloat(this.price).toFixed(2);
-            //
-            //     this.priceStep = 'messageEnter';
-            //     return;
-            // }
-
-            // if (this.invoiceMessage.trim() !== '' && this.invoiceMessage.length <= 124 && this.priceStep === 'messageEnter') {
-            //     if(this.selectedTokenSymbol && this.selectedNetworkSymbol){
-            //         this.goToStep('setWallet');
-            //         return;
-            //     }else{
-            //         this.goToStep('setToken');
-            //         return;
-            //     }
-            // }
-
         }
-
-        // if(this.appStep === 'setPrice' && this.payload === 'true'){
-        //
-        //     if (this.price && Number(this.price) >= 1 && this.priceStep === 'priceEnter') {
-        //         this.price = parseFloat(this.price).toFixed(2);
-        //
-        //         this.priceStep = 'messageEnter';
-        //         return;
-        //     }
-        //
-        //     if (this.invoiceMessage.trim() !== '' && this.invoiceMessage.length <= 124 && this.priceStep === 'messageEnter') {
-        //         if(this.selectedTokenSymbol && this.selectedNetworkSymbol){
-        //             this.goToStep('setWallet');
-        //             return;
-        //         }else{
-        //             this.goToStep('setToken');
-        //             return;
-        //         }
-        //     }
-        //
-        // }
-
-        // if(this.appStep === 'setPrice' && this.payload !== 'true'){
-        //     if (this.price && Number(this.price) >= 1 && this.invoiceMessage.length <= 124) {
-        //         this.price = parseFloat(this.price).toFixed(2);
-        //
-        //         if(this.tokenAvailable && this.selectedNetworkSymbol){
-        //             this.goToStep('setWallet');
-        //             return;
-        //         }else{
-        //             this.goToStep('setToken');
-        //             return;
-        //         }
-        //     }
-        // }
-
-        // if (this.appStep === 'setPrice' && this.price && Number(this.price) > 0) {
-        //     this.price = parseFloat(this.price).toFixed(2);
-        //
-        //     this.goToStep('setToken');
-        //     return;
-        // }
 
         if (this.appStep === 'setToken' && this.selectedTokenSymbol && this.selectedNetworkSymbol) {
             this.goToStep('setWallet');
@@ -909,26 +816,6 @@ export class PaymentApp extends LitElement {
             this.goToStep('preview');
             return;
 
-            // if(this.noPreview === 'true'){
-            //     this.goToStep('setPrice');
-            //     return;
-            // }else{
-            //
-            // }
-
-            // if(this.payload === 'true' && (this.priceAvailable || this.productsInfo.length > 0)){
-            //     this.priceStep = 'messageEnter';
-            //     this.goToStep('setPrice');
-            //     return;
-            // }
-            //
-            // if(this.priceAvailable || this.productsInfo.length > 0){
-            //     this.goToStep('preview');
-            //     return;
-            // }
-            //
-            // this.goToStep('setPrice');
-            // return;
         }
     }
     private goToStep(stepName: AppStep) {
