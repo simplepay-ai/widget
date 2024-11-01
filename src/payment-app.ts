@@ -232,6 +232,35 @@ export class PaymentApp extends LitElement {
 
         }
 
+        if(this.products && this.products.length > 0){
+
+            const resultProductsInfo: IProduct[] = await this.getProductsInfo(this.products);
+            this.productsInfo = resultProductsInfo;
+
+            if(resultProductsInfo.length > 0){
+
+                let resultPrice = 0
+                for(let product of resultProductsInfo){
+
+                    const productSum = product.count * product?.prices[0].price;
+                    resultPrice += productSum;
+
+                    // const currentPrice = Number(this.price);
+                    // const productSum = currentPrice + (product.count * product?.prices[0].price);
+                    // console.log('productSum', productSum)
+                    // this.price = parseFloat(productSum.toString()).toFixed(2);
+                }
+
+                this.price = parseFloat(resultPrice.toString()).toFixed(2);
+                this.priceAvailable = true;
+
+                // this.priceAvailable = true;
+                // this.goToStep('setToken');
+                // return;
+            }
+
+        }
+
         if (this.priceAvailable && Number(this.price) < 1) {
             this.errorTitle = 'Amount Too Low';
             this.errorText =
@@ -242,34 +271,17 @@ export class PaymentApp extends LitElement {
             return;
         }
 
-        if(this.products && this.products.length > 0){
-
-            const resultProductsInfo: IProduct[] = await this.getProductsInfo(this.products);
-            this.productsInfo = resultProductsInfo;
-
-            if(resultProductsInfo.length > 0){
-
-                for(let product of resultProductsInfo){
-                    const currentPrice = Number(this.price);
-                    const productSum = currentPrice + (product.count * product?.prices[0].price);
-                    this.price = parseFloat(productSum.toString()).toFixed(2);
-                }
-
-                this.priceAvailable = true;
-
-                // this.priceAvailable = true;
-                // this.goToStep('setToken');
-                // return;
-            }
-
-        }
-
         if(this.noPreview !== 'true'){
             this.goToStep('preview');
             return;
         }
 
         if(!this.price || this.price === '0' || this.payload){
+
+            if(this.priceAvailable){
+                this.priceStep = 'messageEnter';
+            }
+
             this.goToStep('setPrice');
             return;
         }
@@ -310,6 +322,7 @@ export class PaymentApp extends LitElement {
                     ? html` <price-step
                           .price=${this.price}
                           .priceAvailable=${this.priceAvailable}
+                          .tokenAvailable=${this.tokenAvailable}
                           .payload=${this.payload === 'true'}
                           .invoiceMessage=${this.invoiceMessage}
                           .currentPriceStep=${this.priceStep}
@@ -333,7 +346,7 @@ export class PaymentApp extends LitElement {
                           .selectedTokenSymbol=${this.selectedTokenSymbol}
                           .selectedNetworkSymbol=${this.selectedNetworkSymbol}
                           .price=${this.price}
-                          .returnButtonShow=${!this.priceAvailable}
+                          .returnButtonShow=${!this.priceAvailable || this.priceAvailable && this.noPreview === 'true'}
                           .productsInfo=${this.productsInfo}
                           @updateSelectedToken=${(event: CustomEvent) => {
                               this.selectedTokenSymbol = event.detail.tokenSymbol;
@@ -700,53 +713,139 @@ export class PaymentApp extends LitElement {
 
     private nextStep() {
 
-        if(this.appStep === 'preview' && this.selectedTokenSymbol && this.selectedNetworkSymbol){
+        if(this.appStep === 'preview'){
+            if(!this.selectedTokenSymbol || !this.selectedNetworkSymbol){
+                return;
+            }
 
-            if((this.priceAvailable || this.productsInfo.length > 0) && this.payload !== 'true'){
+            this.priceStep = (this.priceAvailable) ? 'messageEnter' : 'priceEnter'
+
+            this.goToStep('setPrice');
+            return;
+
+            // if(this.priceAvailable && this.payload !== 'true'){
+            //     this.goToStep('setWallet');
+            //     return;
+            // }else{
+            //     this.priceStep = (!this.priceAvailable) ? 'priceEnter' : 'messageEnter'
+            //     this.goToStep('setPrice');
+            //     return;
+            // }
+
+        }
+
+        if(this.appStep === 'setPrice'){
+
+            if(this.priceStep === 'priceEnter' && (!this.price || Number(this.price) < 1)){
+                return;
+            }
+            if(this.priceStep === 'messageEnter' && this.payload === 'true' && (this.invoiceMessage.trim() === '' || this.invoiceMessage.length > 124)){
+                return;
+            }
+            if(this.priceStep === 'messageEnter' && this.payload !== 'true' && this.invoiceMessage.length > 124){
+                return;
+            }
+
+            if(this.priceStep === 'priceEnter'){
+                this.price = parseFloat(this.price).toFixed(2);
+
+                if(this.payload === 'true'){
+                    this.priceStep = 'messageEnter';
+                    return;
+                }
+
+                if(this.noPreview === 'true' && !this.tokenAvailable){
+                    this.goToStep('setToken');
+                    return;
+                }
+
+                // if(!this.tokenAvailable){
+                //     this.goToStep('setToken');
+                //     return;
+                // }
+
+                // if(!this.tokenAvailable !this.selectedTokenSymbol || !this.selectedNetworkSymbol){
+                //     this.goToStep('setToken');
+                //     return;
+                // }
+
                 this.goToStep('setWallet');
                 return;
-            }else{
-                this.priceStep = (!this.priceAvailable) ? 'priceEnter' : 'messageEnter'
-                this.goToStep('setPrice');
-                return;
             }
 
-        }
+            if(this.priceStep === 'messageEnter'){
 
-        if(this.appStep === 'setPrice' && this.payload === 'true'){
-
-            if (this.price && Number(this.price) >= 1 && this.priceStep === 'priceEnter') {
-                this.price = parseFloat(this.price).toFixed(2);
-
-                this.priceStep = 'messageEnter';
-                return;
-            }
-
-            if (this.invoiceMessage.trim() !== '' && this.invoiceMessage.length <= 124 && this.priceStep === 'messageEnter') {
-                if(this.selectedTokenSymbol && this.selectedNetworkSymbol){
-                    this.goToStep('setWallet');
-                    return;
-                }else{
+                if(this.noPreview === 'true' && !this.tokenAvailable){
                     this.goToStep('setToken');
                     return;
                 }
+
+                this.goToStep('setWallet');
+                return;
+
+                // if(this.selectedTokenSymbol && this.selectedNetworkSymbol){
+                //     this.goToStep('setWallet');
+                //     return;
+                // }else{
+                //     this.goToStep('setToken');
+                //     return;
+                // }
+
             }
+
+            // if (this.price && Number(this.price) >= 1 && this.priceStep === 'priceEnter') {
+            //     this.price = parseFloat(this.price).toFixed(2);
+            //
+            //     this.priceStep = 'messageEnter';
+            //     return;
+            // }
+
+            // if (this.invoiceMessage.trim() !== '' && this.invoiceMessage.length <= 124 && this.priceStep === 'messageEnter') {
+            //     if(this.selectedTokenSymbol && this.selectedNetworkSymbol){
+            //         this.goToStep('setWallet');
+            //         return;
+            //     }else{
+            //         this.goToStep('setToken');
+            //         return;
+            //     }
+            // }
 
         }
 
-        if(this.appStep === 'setPrice' && this.payload !== 'true'){
-            if (this.price && Number(this.price) >= 1 && this.invoiceMessage.length <= 124) {
-                this.price = parseFloat(this.price).toFixed(2);
+        // if(this.appStep === 'setPrice' && this.payload === 'true'){
+        //
+        //     if (this.price && Number(this.price) >= 1 && this.priceStep === 'priceEnter') {
+        //         this.price = parseFloat(this.price).toFixed(2);
+        //
+        //         this.priceStep = 'messageEnter';
+        //         return;
+        //     }
+        //
+        //     if (this.invoiceMessage.trim() !== '' && this.invoiceMessage.length <= 124 && this.priceStep === 'messageEnter') {
+        //         if(this.selectedTokenSymbol && this.selectedNetworkSymbol){
+        //             this.goToStep('setWallet');
+        //             return;
+        //         }else{
+        //             this.goToStep('setToken');
+        //             return;
+        //         }
+        //     }
+        //
+        // }
 
-                if(this.selectedTokenSymbol && this.selectedNetworkSymbol){
-                    this.goToStep('setWallet');
-                    return;
-                }else{
-                    this.goToStep('setToken');
-                    return;
-                }
-            }
-        }
+        // if(this.appStep === 'setPrice' && this.payload !== 'true'){
+        //     if (this.price && Number(this.price) >= 1 && this.invoiceMessage.length <= 124) {
+        //         this.price = parseFloat(this.price).toFixed(2);
+        //
+        //         if(this.tokenAvailable && this.selectedNetworkSymbol){
+        //             this.goToStep('setWallet');
+        //             return;
+        //         }else{
+        //             this.goToStep('setToken');
+        //             return;
+        //         }
+        //     }
+        // }
 
         // if (this.appStep === 'setPrice' && this.price && Number(this.price) > 0) {
         //     this.price = parseFloat(this.price).toFixed(2);
@@ -780,10 +879,16 @@ export class PaymentApp extends LitElement {
     }
     private async prevStep() {
 
-        if (this.appStep === 'setToken' && !this.priceAvailable) {
+        if (this.appStep === 'setToken') {
+
+            if(this.priceAvailable && this.noPreview === 'true'){
+                this.goToStep('setPrice');
+                return;
+            }
 
             this.goToStep('setPrice');
             return;
+
         }
 
         if (this.appStep === 'setWallet') {
@@ -791,24 +896,39 @@ export class PaymentApp extends LitElement {
             this.walletAddress = '';
             this.walletType = '';
 
-            if(this.noPreview === 'true'){
-                this.goToStep('setToken');
-                return;
-            }
-
-            if(this.payload === 'true' && (this.priceAvailable || this.productsInfo.length > 0)){
-                this.priceStep = 'messageEnter';
+            if(this.noPreview === 'true' && this.tokenAvailable){
                 this.goToStep('setPrice');
                 return;
             }
 
-            if(this.priceAvailable || this.productsInfo.length > 0){
-                this.goToStep('preview');
+            if(this.noPreview === 'true' && !this.tokenAvailable){
+                this.goToStep('setToken');
                 return;
             }
 
-            this.goToStep('setPrice');
+            this.goToStep('preview');
             return;
+
+            // if(this.noPreview === 'true'){
+            //     this.goToStep('setPrice');
+            //     return;
+            // }else{
+            //
+            // }
+
+            // if(this.payload === 'true' && (this.priceAvailable || this.productsInfo.length > 0)){
+            //     this.priceStep = 'messageEnter';
+            //     this.goToStep('setPrice');
+            //     return;
+            // }
+            //
+            // if(this.priceAvailable || this.productsInfo.length > 0){
+            //     this.goToStep('preview');
+            //     return;
+            // }
+            //
+            // this.goToStep('setPrice');
+            // return;
         }
     }
     private goToStep(stepName: AppStep) {

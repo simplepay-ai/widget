@@ -22,6 +22,9 @@ export class PriceStep extends LitElement {
     @property({type: Boolean})
     priceAvailable: boolean = false;
 
+    @property({type: Boolean})
+    tokenAvailable: boolean = false;
+
     @property({type: String})
     selectedTokenSymbol: string = '';
 
@@ -219,7 +222,12 @@ export class PriceStep extends LitElement {
                                             <span>USD</span>
                                         </div>
 
-                                        <div class="tokenInfo" @click=${() => this.openTokenModal()}>
+                                        <div class=${`
+                                        tokenInfo
+                                        ${(this.tokenAvailable) ? 'disabled' : ''}
+                                        `}
+                                             @click=${() => this.openTokenModal()}
+                                        >
 
                                             ${
                                                     (this.selectedTokenSymbol && this.selectedNetworkSymbol)
@@ -248,7 +256,7 @@ export class PriceStep extends LitElement {
                                                     Amount to pay
                                                 </p>
                                                 <div class="price">
-                                                    <p>${this.priceValue}</p>
+                                                    <p>${this.price}</p>
                                                     <span>USD</span>
                                                 </div>
                                             </div>
@@ -359,16 +367,22 @@ export class PriceStep extends LitElement {
                                                                     + Message
                                                                 </button>
                                                             `
-                                                            : html`
+                                                            : ''
+                                            }
+
+                                            ${
+                                                    (this.currentPriceStep === 'messageEnter' && !this.priceAvailable)
+                                                            ? html`
                                                                 <button class="secondaryButton"
                                                                         @click=${() => {
                                                                             this.updateCurrentPriceStep('priceEnter')
                                                                             this.updateInvoiceMessage('');
                                                                         }}
                                                                 >
-                                                                    Remove
+                                                                    Edit amount
                                                                 </button>
                                                             `
+                                                            : ''
                                             }
 
                                             <button class="mainButton"
@@ -636,7 +650,6 @@ export class PriceStep extends LitElement {
     }
 
     private dispatchNextStep() {
-
         if (this.priceValue && Number(this.priceValue) >= 1) {
             const nextStepEvent = new CustomEvent('nextStep', {
                 bubbles: true,
@@ -932,6 +945,11 @@ export class PriceStep extends LitElement {
                         &:hover {
                             background: var(--sp-widget-function-button-hover-color);
                         }
+                    }
+
+                    &.disabled {
+                        touch-action: none;
+                        pointer-events: none;
                     }
 
                     .selectText {
@@ -1263,6 +1281,10 @@ export class PriceStep extends LitElement {
                             &:hover {
                                 background: var(--sp-widget-function-button-hover-color);
                                 border: 1px solid var(--sp-widget-function-button-hover-border-color);
+
+                                &.selected {
+                                    border: 1px solid var(--sp-widget-active-color);
+                                }
                             }
                         }
 

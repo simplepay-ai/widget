@@ -49,6 +49,9 @@ export class PreviewStep extends LitElement {
     @property({attribute: false, type: String})
     tokenPrice: string = '';
 
+    @property({attribute: false, type: String})
+    tokenStandart: string = '';
+
     connectedCallback() {
         super.connectedCallback();
 
@@ -93,6 +96,10 @@ export class PreviewStep extends LitElement {
             }
 
 
+        }
+
+        if(changedProperties.has('selectedTokenSymbol') || changedProperties.has('selectedNetworkSymbol')){
+            this.tokenStandart = getTokenStandart(this.selectedNetworkSymbol);
         }
     }
 
@@ -240,10 +247,16 @@ export class PreviewStep extends LitElement {
 
                                             ${this.selectedNetworkSymbol}
 
-                                            <div class="badge">
-                                                ${getTokenStandart(this.selectedNetworkSymbol)}
-                                            </div>
-
+                                            ${
+                                                    (this.tokenStandart)
+                                                     ? html`
+                                                                <div class="badge">
+                                                                    ${this.tokenStandart}
+                                                                </div>
+                                                            `
+                                                            : ''
+                                            }
+                                            
                                         </div>
                                     `
                                     : ''
@@ -253,16 +266,19 @@ export class PreviewStep extends LitElement {
 
                 <div class="footer">
 
-                    <div class="tokenInfo">
-                        <p class="label">
-                            Token:
-                        </p>
+                    ${
+                            (!this.tokenAvailable)
+                            ? html`
+                                        <div class="tokenInfo">
+                                            <p class="label">
+                                                Token:
+                                            </p>
 
-                        <div class="tokenCard" @click=${() => this.openTokenModal()}>
+                                            <div class="tokenCard" @click=${() => this.openTokenModal()}>
 
-                            ${
-                                    (this.selectedTokenSymbol)
-                                            ? html`
+                                                ${
+                                                        (this.selectedTokenSymbol)
+                                                                ? html`
                                                 <p><span>${this.tokenPrice}</span> ${this.selectedTokenSymbol}</p>
 
                                                 <token-icon
@@ -272,7 +288,7 @@ export class PreviewStep extends LitElement {
                                                         class="tokenIcon"
                                                 ></token-icon>
                                             `
-                                            : html`
+                                                                : html`
                                                 <p>Choose token</p>
 
                                                 <div class="image placeholder">
@@ -283,12 +299,12 @@ export class PreviewStep extends LitElement {
                                                     </svg>
                                                 </div>
                                             `
-                            }
-                        </div>
+                                                }
+                                            </div>
 
-                        ${
-                                (this.selectedNetworkSymbol)
-                                        ? html`
+                                            ${
+                                                    (this.selectedNetworkSymbol)
+                                                            ? html`
                                             <div class=${`
                                             networkInfo
                                             ${(this.selectedNetworkSymbol === 'bsc') ? 'uppercase' : 'capitalize'}
@@ -306,16 +322,25 @@ export class PreviewStep extends LitElement {
                                                     ></network-icon>
 
                                                     ${this.selectedNetworkSymbol}
-
-                                                    <div class="badge">
-                                                        ${getTokenStandart(this.selectedNetworkSymbol)}
-                                                    </div>
+                                                    
+                                                    ${
+                                                                    (this.tokenStandart)
+                                                                            ? html`
+                                                                <div class="badge">
+                                                                    ${this.tokenStandart}
+                                                                </div>
+                                                            `
+                                                                            : ''
+                                                            }
                                                 </div>
                                             </div>
                                         `
-                                        : ''
-                        }
-                    </div>
+                                                            : ''
+                                            }
+                                        </div>
+                                    `
+                                    : ''
+                    }
 
                     <button class="mainButton"
                             @click=${this.dispatchNextStep}
@@ -1411,6 +1436,10 @@ export class PreviewStep extends LitElement {
                             &:hover {
                                 background: var(--sp-widget-function-button-hover-color);
                                 border: 1px solid var(--sp-widget-function-button-hover-border-color);
+
+                                &.selected {
+                                    border: 1px solid var(--sp-widget-active-color);
+                                }
                             }
                         }
 
