@@ -8,7 +8,7 @@ import {getTokenStandart, roundUpAmount} from "../util.ts";
 @customElement('token-step')
 export class TokenStep extends LitElement {
 
-    @property({ type: Array })
+    @property({type: Array})
     productsInfo: IProduct[] = [];
 
     @property({type: String})
@@ -71,7 +71,7 @@ export class TokenStep extends LitElement {
                 ></step-header>
 
                 <div class="stepContent">
-                    
+
                     <div class="tokensList">
 
                         ${this.stableCoins && this.stableCoins.length > 0
@@ -127,74 +127,74 @@ export class TokenStep extends LitElement {
 
                                         <div id="accordionContent" class="content">
                                             ${this.stableCoins &&
-                                this.stableCoins.map((token: Cryptocurrency) => {
-                                    return token.networks?.map((network) => {
-                                        const networkStandart = getTokenStandart(
-                                                network.symbol
-                                        );
-                                        //@ts-ignore
-                                        const price = this.price / token.rates['usd'];
-                                        const formatPrice = roundUpAmount(
-                                                price.toString(),
-                                                token.stable
-                                        );
+                                            this.stableCoins.map((token: Cryptocurrency) => {
+                                                return token.networks?.map((network) => {
+                                                    const networkStandart = getTokenStandart(
+                                                            network.symbol
+                                                    );
+                                                    //@ts-ignore
+                                                    const price = this.price / token.rates['usd'];
+                                                    const formatPrice = roundUpAmount(
+                                                            price.toString(),
+                                                            token.stable
+                                                    );
 
-                                        return html`
-                                            <div
-                                                    @click=${() =>
-                                                this.selectToken(token.symbol, network.symbol)}
-                                                    class=${`tokenItem
+                                                    return html`
+                                                        <div
+                                                                @click=${() =>
+                                                                        this.selectToken(token.symbol, network.symbol)}
+                                                                class=${`tokenItem
                                                 ${this.selectedTokenSymbol === token.symbol && this.selectedNetworkSymbol === network.symbol ? 'selected' : ''}
                                                 `}
-                                            >
-                                                <div class="tokenContent">
-                                                    <div class="tokenIconWrapper">
-                                                        <token-icon
-                                                                .id=${token.symbol}
-                                                                width="32"
-                                                                height="32"
-                                                                class="tokenIcon"
-                                                        ></token-icon>
+                                                        >
+                                                            <div class="tokenContent">
+                                                                <div class="tokenIconWrapper">
+                                                                    <token-icon
+                                                                            .id=${token.symbol}
+                                                                            width="32"
+                                                                            height="32"
+                                                                            class="tokenIcon"
+                                                                    ></token-icon>
 
-                                                        <network-icon
-                                                                .id=${network.symbol}
-                                                                width="16"
-                                                                height="16"
-                                                                class="networkIcon"
-                                                        ></network-icon>
-                                                    </div>
+                                                                    <network-icon
+                                                                            .id=${network.symbol}
+                                                                            width="16"
+                                                                            height="16"
+                                                                            class="networkIcon"
+                                                                    ></network-icon>
+                                                                </div>
 
-                                                    <div class="info">
-                                                        <div class="leftSection">
-                                                            <p>${token.symbol}</p>
+                                                                <div class="info">
+                                                                    <div class="leftSection">
+                                                                        <p>${token.symbol}</p>
 
-                                                            ${networkStandart
-                                                ? html`
-                                                                        <div class="badge">
-                                                                            ${networkStandart}
-                                                                        </div>
-                                                                    `
-                                                : ''}
+                                                                        ${networkStandart
+                                                                                ? html`
+                                                                                    <div class="badge">
+                                                                                        ${networkStandart}
+                                                                                    </div>
+                                                                                `
+                                                                                : ''}
+                                                                    </div>
+
+                                                                    <p>~${formatPrice} ${token.symbol}</p>
+                                                                </div>
+                                                            </div>
                                                         </div>
-
-                                                        <p>~${formatPrice} ${token.symbol}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        `;
-                                    });
-                                })}
+                                                    `;
+                                                });
+                                            })}
                                         </div>
                                     </div>
                                 `
                                 : ''
                         }
-                        
+
                         ${this.otherCoins &&
                         this.otherCoins.map((token: Cryptocurrency) => {
                             return token.networks?.map((network) => {
                                 const networkStandart = getTokenStandart(network.symbol);
-                                
+
                                 //@ts-ignore
                                 const price = this.price / token.rates['usd'];
                                 const formatPrice = roundUpAmount(price.toString(), token.stable);
@@ -348,7 +348,7 @@ export class TokenStep extends LitElement {
                         transition-property: all;
                         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                         transition-duration: 50ms;
-                        
+
                         &.selected {
                             border: 1px solid var(--sp-widget-active-color);
                         }

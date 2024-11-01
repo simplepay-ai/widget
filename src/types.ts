@@ -5,6 +5,7 @@ export type AppTheme = 'light' | 'dark' | 'custom';
 export type AppStep =
     | 'loading'
     | 'error'
+    | 'preview'
     | 'setPrice'
     | 'setToken'
     | 'setWallet'

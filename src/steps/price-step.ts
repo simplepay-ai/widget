@@ -1,6 +1,8 @@
 import {css, html, LitElement, property, query} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {CurrentPriceStep} from "../types.ts";
+import {Cryptocurrency} from "@simplepay-ai/api-client";
+import {getTokenStandart, roundUpAmount} from "../util.ts";
 
 @customElement('price-step')
 export class PriceStep extends LitElement {
@@ -16,6 +18,18 @@ export class PriceStep extends LitElement {
 
     @property({type: String})
     currentPriceStep: CurrentPriceStep = 'priceEnter';
+
+    @property({type: Boolean})
+    priceAvailable: boolean = false;
+
+    @property({type: String})
+    selectedTokenSymbol: string = '';
+
+    @property({type: String})
+    selectedNetworkSymbol: string = '';
+
+    @property({type: Array})
+    tokens: Cryptocurrency[] = [];
 
     @property({attribute: false, type: Boolean})
     numpadButtonsActive = false;
@@ -41,6 +55,18 @@ export class PriceStep extends LitElement {
     @property({attribute: false, type: Number})
     currentVisualViewportHeight: any = 0;
 
+    @property({attribute: false, type: Boolean})
+    showTokenModal: boolean = false;
+
+    @property({attribute: false, type: Boolean})
+    showTokenModalOverlay: boolean = false;
+
+    @property({attribute: false, type: Boolean})
+    showTokenModalContent: boolean = false;
+
+    @property({attribute: false, type: String})
+    tokenPrice: string = '';
+
     connectedCallback() {
         super.connectedCallback();
 
@@ -56,7 +82,7 @@ export class PriceStep extends LitElement {
         this.startVisualViewportHeight = visualViewport?.height;
         this.currentVisualViewportHeight = visualViewport?.height;
         visualViewport?.addEventListener('resize', (event: any) => {
-            this.currentVisualViewportHeight = ( event.target.height < 500 ) ? event.target.height : event.target.height;
+            this.currentVisualViewportHeight = (event.target.height < 500) ? event.target.height : event.target.height;
         });
 
         window.addEventListener('keydown', (event) => this.handleKeyDown(event));
@@ -65,29 +91,59 @@ export class PriceStep extends LitElement {
     updated(changedProperties: Map<string | symbol, unknown>): void {
         super.updated(changedProperties);
 
-        if(this.currentPriceStep === 'priceEnter'){
+        if (this.currentPriceStep === 'priceEnter') {
 
             this.nextButtonDisabled = !this.price || Number(this.price) < 1
 
-        }else{
+        } else {
 
-            if(this.payload){
+            if (this.payload) {
                 this.nextButtonDisabled = this.invoiceMessage.trim() === '' || this.invoiceMessage.length > 124;
-            }else{
+            } else {
                 this.nextButtonDisabled = this.invoiceMessage.length > 124;
             }
 
         }
 
-        if(changedProperties.has('currentPriceStep')){
-            if(this.currentPriceStep === 'priceEnter'){
+        if (changedProperties.has('currentPriceStep')) {
+            if (this.currentPriceStep === 'priceEnter') {
                 this.numpadButtonsActive = true;
             }
 
-            if(this.currentPriceStep === 'messageEnter'){
+            if (this.currentPriceStep === 'messageEnter') {
                 this.messageInput.focus();
                 this.numpadButtonsActive = false;
             }
+        }
+
+        if ((changedProperties.has('selectedTokenSymbol') || changedProperties.has('selectedNetworkSymbol') || changedProperties.has('price')) && this.price) {
+
+            const currentToken = this.tokens.find((item) => {
+                return item.symbol === this.selectedTokenSymbol && item.networks;
+            })
+
+            if (currentToken?.networks && currentToken.rates) {
+
+                const currentNetwork = currentToken.networks.find((item) => item.symbol === this.selectedNetworkSymbol);
+
+                if (currentNetwork) {
+
+                    //@ts-ignore
+                    const priceInToken = this.price / currentToken.rates['usd'];
+                    this.tokenPrice = '~' + roundUpAmount(
+                        priceInToken.toString(),
+                        currentToken.stable
+                    );
+
+                } else {
+                    this.tokenPrice = '';
+                }
+
+            } else {
+
+            }
+
+
         }
 
         // if(changedProperties.has('price') && this.currentPriceStep === 'priceEnter'){
@@ -125,9 +181,9 @@ export class PriceStep extends LitElement {
             <div class=${`
                  stepWrapper
                  `}
-                 style=${ (window.innerWidth <= 768) ? `height: ${this.currentVisualViewportHeight}px;` : 'height: 100%;'}
+                 style=${(window.innerWidth <= 768) ? `height: ${this.currentVisualViewportHeight}px;` : 'height: 100%;'}
             >
-                
+
                 <div class="header">
 
                     <p>Invoice from:</p>
@@ -147,20 +203,41 @@ export class PriceStep extends LitElement {
                     </div>
 
                 </div>
-                
+
                 <div class="stepContent">
                     ${
                             (this.currentPriceStep === 'priceEnter')
                                     ? html`
                                         <div class=${`priceEnter
-                                            ${ (this.priceValue.toString().length >= 9 ? 'medium' : '') }
-                                            ${ (this.priceValue.toString().length >= 12 ? 'small' : '') }
-                                            ${ (this.priceValue.toString().length >= 15 ? 'xSmall' : '') }
+                                            ${(this.priceValue.toString().length >= 9 ? 'medium' : '')}
+                                            ${(this.priceValue.toString().length >= 12 ? 'small' : '')}
+                                            ${(this.priceValue.toString().length >= 15 ? 'xSmall' : '')}
                                             `}>
                                             <p>
                                                 ${this.priceValue} <span class="line"></span>
                                             </p>
                                             <span>USD</span>
+                                        </div>
+
+                                        <div class="tokenInfo" @click=${() => this.openTokenModal()}>
+
+                                            ${
+                                                    (this.selectedTokenSymbol && this.selectedNetworkSymbol)
+                                                            ? html`
+                                                                <p>${this.tokenPrice} <span>${this.selectedTokenSymbol}</span></p>
+
+                                                                <token-icon
+                                                                        .id=${this.selectedTokenSymbol}
+                                                                        width="25"
+                                                                        height="25"
+                                                                        class="tokenIcon"
+                                                                ></token-icon>
+                                                            `
+                                                            : html`
+                                                                <p class="selectText">Choose token</p>
+                                                            `
+                                            }
+
                                         </div>
                                     `
                                     : html`
@@ -186,7 +263,7 @@ export class PriceStep extends LitElement {
                                                         ${this.invoiceMessage.length} / 124
                                                     </p>
                                                 </div>
-                                                
+
                                                 <textarea id="messageInput"
                                                           .value=${this.invoiceMessage}
                                                           @input=${(event: any) => {
@@ -208,7 +285,7 @@ export class PriceStep extends LitElement {
                                                           }}
                                                 >
                                                 </textarea>
-                                                
+
                                                 ${
                                                         (this.invoiceMessage.length > 124)
                                                                 ? html`
@@ -245,7 +322,7 @@ export class PriceStep extends LitElement {
                                         <div class="buttonsWrapper">
 
                                             ${
-                                                    (this.currentPriceStep === 'messageEnter')
+                                                    (this.currentPriceStep === 'messageEnter' && !this.priceAvailable)
                                                             ? html`
                                                                 <button class="secondaryButton"
                                                                         @click=${() => {
@@ -348,12 +425,145 @@ export class PriceStep extends LitElement {
                                     : ''
                     }
                 </div>
+
+                <div class="tokenModal ${(this.showTokenModal) ? 'show' : ''}">
+
+                    <div @click=${() => this.closeTokenModal()}
+                         class="overlay ${(this.showTokenModalOverlay) ? 'show' : ''}"></div>
+
+                    <div class="contentWrapper ${(this.showTokenModalContent) ? 'show' : ''}">
+                        <div class="content">
+                            <div class="titleWrapper">
+                                <p>Tokens</p>
+                                <div class="closeButton"
+                                     @click=${() => this.closeTokenModal()}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                         viewBox="0 0 24 24"
+                                         fill="none" stroke="currentColor" stroke-width="2"
+                                         stroke-linecap="round"
+                                         stroke-linejoin="round">
+                                        <path d="M18 6 6 18"/>
+                                        <path d="m6 6 12 12"/>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <div class="tokensList">
+                                ${this.tokens &&
+                                this.tokens.map((token: Cryptocurrency) => {
+                                    return token.networks?.map((network) => {
+                                        const networkStandart = getTokenStandart(network.symbol);
+
+                                        let formatPrice = 0;
+                                        if (this.price) {
+                                            //@ts-ignore
+                                            const price = this.price / token.rates['usd'];
+                                            formatPrice = roundUpAmount(price.toString(), token.stable);
+
+                                        }
+
+                                        return html`
+                                            <div
+                                                    @click=${() => {
+                                                        this.dispatchTokenSelect(token.symbol, network.symbol);
+                                                        this.closeTokenModal();
+                                                    }}
+                                                    class=${`tokenItem
+                                                        ${this.selectedTokenSymbol === token.symbol && this.selectedNetworkSymbol === network.symbol ? 'selected' : ''}
+                                                    `}
+                                            >
+                                                <div class="tokenContent">
+                                                    <div class="tokenIconWrapper">
+                                                        <token-icon
+                                                                .id=${token.symbol}
+                                                                width="32"
+                                                                height="32"
+                                                                class="tokenIcon"
+                                                        ></token-icon>
+
+                                                        <network-icon
+                                                                .id=${network.symbol}
+                                                                width="16"
+                                                                height="16"
+                                                                class="networkIcon"
+                                                        ></network-icon>
+                                                    </div>
+
+                                                    <div class="info">
+                                                        <div class="leftSection">
+                                                            <p>${token.symbol}</p>
+
+                                                            ${networkStandart
+                                                                    ? html`
+                                                                        <div class="badge">
+                                                                            ${networkStandart}
+                                                                        </div>
+                                                                    `
+                                                                    : ''}
+                                                        </div>
+
+                                                        ${
+                                                                (formatPrice !== 0)
+                                                                        ? html`
+                                                                            <p>~${formatPrice} ${token.symbol}</p>
+                                                                        `
+                                                                        : ''
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `;
+                                    });
+                                })}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         `;
     }
 
+    private dispatchTokenSelect(tokenSymbol: string, networkSymbol: string) {
+        const updateEvent = new CustomEvent('updateSelectedToken', {
+            detail: {
+                tokenSymbol: tokenSymbol,
+                networkSymbol: networkSymbol
+            },
+            bubbles: true,
+            composed: true
+        });
+
+        this.dispatchEvent(updateEvent);
+    }
+
+    private openTokenModal() {
+        this.showTokenModal = true;
+
+        setTimeout(() => {
+            this.showTokenModalOverlay = true;
+
+            setTimeout(() => {
+                this.showTokenModalContent = true;
+            }, 200)
+        }, 200)
+    }
+
+    private closeTokenModal() {
+        this.showTokenModalContent = false;
+
+        setTimeout(() => {
+            this.showTokenModalOverlay = false;
+
+            setTimeout(() => {
+                this.showTokenModal = false;
+            }, 200)
+        }, 200)
+    }
+
     private handleKeyDown(event: KeyboardEvent) {
-        if(!this.numpadButtonsActive){
+        if (!this.numpadButtonsActive) {
             return;
         }
 
@@ -365,6 +575,7 @@ export class PriceStep extends LitElement {
             this.handleKeyPress(event.key);
         }
     }
+
     private handleKeyPress(key: string) {
         if (key === 'backspace') {
             this.priceValue = this.priceValue.slice(0, -1) || '0'
@@ -401,6 +612,7 @@ export class PriceStep extends LitElement {
         });
         this.dispatchEvent(updateEvent);
     }
+
     private updateInvoiceMessage(message: string) {
         const updateEvent = new CustomEvent('updateInvoiceMessage', {
             detail: {
@@ -411,6 +623,7 @@ export class PriceStep extends LitElement {
         });
         this.dispatchEvent(updateEvent);
     }
+
     private updateCurrentPriceStep(step: CurrentPriceStep) {
         const updateEvent = new CustomEvent('updateCurrentPriceStep', {
             detail: {
@@ -433,6 +646,7 @@ export class PriceStep extends LitElement {
             this.dispatchEvent(nextStepEvent);
         }
     }
+
     private nextWithPayload() {
         if (this.currentPriceStep === 'priceEnter') {
 
@@ -476,7 +690,7 @@ export class PriceStep extends LitElement {
             transition-property: all;
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
             transition-duration: 350ms;
-            
+
             .header {
                 padding: 16px;
 
@@ -502,11 +716,11 @@ export class PriceStep extends LitElement {
                         overflow: hidden;
                         border: 1px solid var(--sp-widget-border-color);
                         background: var(--sp-widget-bg-color);
-                        border-radius: 8px;
+                        border-radius: 50%;
 
                         img {
-                            width: 40px;
-                            height: 40px;
+                            width: 32px;
+                            height: 32px;
                             object-fit: cover;
                         }
 
@@ -534,6 +748,7 @@ export class PriceStep extends LitElement {
                 display: flex;
                 flex-direction: column;
                 padding: 16px;
+                position: relative;
 
                 &::-webkit-scrollbar {
                     width: 1px;
@@ -553,7 +768,7 @@ export class PriceStep extends LitElement {
                     justify-content: center;
                     align-items: center;
                     gap: 8px;
-                    
+
                     p {
                         font-size: 40px;
                         line-height: 1.2;
@@ -582,27 +797,27 @@ export class PriceStep extends LitElement {
                         }
                     }
 
-                    span{
+                    span {
                         font-size: 40px;
                         line-height: 1.2;
                         font-weight: 700;
                         color: var(--sp-widget-text-color);
                     }
-                    
-                    &.medium{
-                        p, span{
+
+                    &.medium {
+                        p, span {
                             font-size: 33px;
                         }
                     }
 
-                    &.small{
-                        p, span{
+                    &.small {
+                        p, span {
                             font-size: 26px;
                         }
                     }
 
-                    &.xSmall{
-                        p, span{
+                    &.xSmall {
+                        p, span {
                             font-size: 19px;
                         }
                     }
@@ -681,8 +896,8 @@ export class PriceStep extends LitElement {
                                 outline: 2px solid var(--sp-widget-input-active-border-color);
                             }
                         }
-                        
-                        input{
+
+                        input {
                             font-size: 16px;
                         }
 
@@ -697,13 +912,69 @@ export class PriceStep extends LitElement {
                     }
                 }
 
+                .tokenInfo {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 4px;
+                    position: absolute;
+                    top: calc(50% + 55px);
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    padding: 8px;
+                    cursor: pointer;
+                    border-radius: 6px;
+                    transition-property: all;
+                    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                    transition-duration: 150ms;
+
+                    @media (hover: hover) and (pointer: fine) {
+                        &:hover {
+                            background: var(--sp-widget-function-button-hover-color);
+                        }
+                    }
+
+                    .selectText {
+                        font-size: 13px;
+                        font-weight: 500;
+                        line-height: 1.2;
+                        color: var(--sp-widget-text-color);
+                    }
+
+                    p {
+                        color: var(--sp-widget-function-button-text-color);
+                        font-size: 12px;
+                        line-height: 1.2;
+                        font-weight: 500;
+
+                        span {
+                            color: var(--sp-widget-function-button-text-color);
+                            font-size: 12px;
+                            line-height: 1.2;
+                            font-weight: 500;
+                        }
+                    }
+
+                    .tokenIcon {
+                        background: var(--sp-widget-bg-color);
+                        border: 1px solid var(--sp-widget-border-color);
+                        width: 20px;
+                        aspect-ratio: 1;
+                        border-radius: 50%;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        overflow: hidden;
+                    }
+                }
+
             }
 
             .footer {
                 border-radius: 12px 12px 0 0;
                 padding: 8px;
                 background-color: var(--sp-widget-bg-color);
-                
+
                 .buttonsWrapper {
                     display: flex;
                     align-items: center;
@@ -827,6 +1098,266 @@ export class PriceStep extends LitElement {
                                 }
                             }
 
+                        }
+                    }
+                }
+            }
+
+            .tokenModal {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 0;
+                display: flex;
+                align-items: flex-end;
+                overflow: hidden;
+                z-index: 11;
+
+                &.show {
+                    height: 100%;
+                }
+
+                .overlay {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    z-index: 10;
+                    background: color-mix(in srgb,
+                    black 0%,
+                    transparent) !important;
+                    transition-property: all;
+                    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                    transition-duration: 150ms;
+
+                    &.show {
+                        background: color-mix(in srgb,
+                        black 75%,
+                        transparent) !important;
+                    }
+                }
+
+                .contentWrapper {
+                    width: 100%;
+                    background: var(--sp-widget-bg-color);
+                    z-index: 11;
+                    border-radius: 12px 12px 0 0;
+                    overflow: hidden;
+                    height: auto;
+                    max-height: 50%;
+                    display: flex;
+                    flex-direction: column;
+                    transform: translateY(100%);
+                    transition-property: all;
+                    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                    transition-duration: 150ms;
+
+                    &.show {
+                        transform: translateY(0);
+                    }
+
+                    .content {
+                        padding: 1rem;
+                        display: flex;
+                        flex-direction: column;
+                        overflow: hidden;
+                        height: auto;
+                        max-height: 100%;
+
+                        .titleWrapper {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+
+                            p {
+                                font-size: 20px;
+                                line-height: 28px;
+                                font-weight: 700;
+                                color: var(--sp-widget-text-color);
+                            }
+                        }
+
+                        .closeButton {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            cursor: pointer;
+                            user-select: none;
+                            transition-property: all;
+                            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                            transition-duration: 350ms;
+                            width: 25px;
+                            height: 25px;
+                            background: var(--sp-widget-function-button-color);
+                            border-radius: 6px;
+
+                            svg {
+                                width: 20px;
+                                height: 20px;
+                                color: var(--sp-widget-function-button-text-color);
+                                transition-property: all;
+                                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                                transition-duration: 350ms;
+                            }
+
+                            @media (hover: hover) and (pointer: fine) {
+                                &:hover {
+                                    background: var(--sp-widget-function-button-hover-color);
+
+                                    svg {
+                                        color: var(--sp-widget-function-button-hover-text-color);
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+                .tokensList {
+                    margin-top: 20px;
+                    flex: 1;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                    width: 100%;
+                    padding: 0 4px;
+
+                    &::-webkit-scrollbar {
+                        width: 2px;
+                    }
+
+                    &::-webkit-scrollbar-track {
+                        background: transparent;
+                    }
+
+                    &::-webkit-scrollbar-thumb {
+                        background: var(--sp-widget-secondary-bg-color);
+                    }
+
+                    .tokenItem {
+                        user-select: none;
+                        cursor: pointer;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        width: 100%;
+                        padding: 8px;
+                        border: 1px solid var(--sp-widget-function-button-border-color);
+                        border-radius: 8px;
+                        background: var(--sp-widget-function-button-color);
+                        outline: 2px solid transparent;
+                        transition-property: all;
+                        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                        transition-duration: 50ms;
+
+                        &.selected {
+                            border: 1px solid var(--sp-widget-active-color);
+                        }
+
+                        @media (hover: hover) and (pointer: fine) {
+                            &:hover {
+                                background: var(--sp-widget-function-button-hover-color);
+                                border: 1px solid var(--sp-widget-function-button-hover-border-color);
+                            }
+                        }
+
+                        .tokenContent {
+                            flex: 1;
+                            display: flex;
+                            gap: 8px;
+                            align-items: center;
+
+                            img {
+                                width: 32px;
+                                height: 32px;
+                                border-radius: 50%;
+                                object-fit: cover;
+                                border: 1px solid var(--sp-widget-border-color);
+                                background: var(--sp-widget-bg-color);
+                            }
+
+                            .tokenIconWrapper {
+                                position: relative;
+
+                                .tokenIcon {
+                                    position: relative;
+                                    background: var(--sp-widget-bg-color);
+                                    border: 1px solid var(--sp-widget-border-color);
+                                    width: 32px;
+                                    height: 32px;
+                                    border-radius: 50%;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    overflow: hidden;
+
+                                    svg {
+                                        width: 16px;
+                                        height: 16px;
+                                        stroke: var(--sp-widget-active-color);
+                                    }
+                                }
+
+                                .networkIcon {
+                                    position: absolute;
+                                    bottom: -2px;
+                                    right: -3px;
+                                    background: var(--sp-widget-bg-color);
+                                    border: 1px solid var(--sp-widget-border-color);
+                                    width: 16px;
+                                    height: 16px;
+                                    border-radius: 50%;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    overflow: hidden;
+
+                                    svg {
+                                        width: 16px;
+                                        height: 16px;
+                                        stroke: var(--sp-widget-active-color);
+                                    }
+                                }
+                            }
+
+                            .info {
+                                flex: 1;
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+
+                                .leftSection {
+                                    display: flex;
+                                    gap: 8px;
+                                    align-items: center;
+
+                                    p {
+                                        font-weight: 500;
+                                        color: var(--sp-widget-text-color);
+                                    }
+                                }
+
+                                p {
+                                    font-size: 12px;
+                                    font-weight: 500;
+                                    color: var(--sp-widget-secondary-text-color);
+                                }
+                            }
+
+                            .badge {
+                                color: var(--sp-widget-badge-text-color);
+                                font-weight: 700;
+                                padding: 2px 4px;
+                                background: var(--sp-widget-badge-bg-color);
+                                border: 1px solid var(--sp-widget-badge-border-color);
+                                font-size: 10px;
+                                border-radius: 4px;
+                            }
                         }
                     }
                 }

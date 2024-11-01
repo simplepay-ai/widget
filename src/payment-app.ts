@@ -3,7 +3,7 @@ import {
     Cryptocurrency,
     HttpError,
     Invoice, InvoiceCreateErrors,
-    InvoiceStatus,
+    InvoiceStatus, Network,
     ValidationError,
     WsClient
 } from '@simplepay-ai/api-client';
@@ -24,11 +24,22 @@ import './steps/processing-step.ts';
 import './steps/token-icon.ts';
 import './steps/network-icon.ts';
 import './steps/custom-notification.ts';
+import './steps/preview-step.ts';
 import {checkWalletAddress} from "./util.ts";
 import themesConfig from '../themesConfig.json';
 
 @customElement('payment-app')
 export class PaymentApp extends LitElement {
+
+    @property({type: String})
+    noPreview: string = '';
+
+    @property({type: String})
+    tokenSymbol: string = '';
+
+    @property({type: String})
+    networkSymbol: string = '';
+
     @property({
         converter: (attrValue: string | null) => {
             if (attrValue && parseFloat(attrValue) && parseFloat(attrValue) > 0)
@@ -62,6 +73,9 @@ export class PaymentApp extends LitElement {
 
     @property({ attribute: false })
     private priceAvailable: boolean = false;
+
+    @property({ attribute: false })
+    private tokenAvailable: boolean = false;
 
     @property({ attribute: false })
     private appStep: AppStep = 'loading';
@@ -145,18 +159,10 @@ export class PaymentApp extends LitElement {
                 break;
         }
 
-        this.API = new Client();
-
-        this.clientId = this.clientId ? this.clientId : '';
-        this.price = (this.price && this.price !== '0') ? this.price : '';
-        this.priceAvailable = Boolean(this.price);
-        this.tokens = await this.getTokens();
-
         if (this.invoiceId) {
             await this.getInvoice(this.invoiceId);
             return;
         }
-
         if (!this.clientId) {
             this.errorTitle = 'Empty clientId';
             this.errorText =
@@ -166,7 +172,6 @@ export class PaymentApp extends LitElement {
 
             return;
         }
-
         if (!this.appId) {
             this.errorTitle = 'Empty appId';
             this.errorText =
@@ -175,6 +180,56 @@ export class PaymentApp extends LitElement {
             this.goToStep('error');
 
             return;
+        }
+
+        this.API = new Client();
+
+        this.clientId = this.clientId ? this.clientId : '';
+        this.price = (this.price && this.price !== '0') ? this.price : '';
+        this.priceAvailable = Boolean(this.price);
+        this.tokens = await this.getTokens();
+
+        if(this.tokens && this.tokens.length > 0){
+
+            const defaultToken = this.tokens?.find((item: Cryptocurrency) => item.symbol === this.tokenSymbol && item);
+            let defaultNetwork: Network | undefined = undefined;
+
+            if(defaultToken && defaultToken.networks && defaultToken.networks?.length > 0){
+                const networks: Network[] = defaultToken.networks;
+                defaultNetwork = networks.find((item: Network) => item.symbol === this.networkSymbol);
+            }
+
+            if((!defaultToken && this.tokenSymbol !== '') || (!defaultNetwork && this.networkSymbol !== '')){
+
+                if(!defaultToken){
+                    this.errorTitle = 'Invalid Token Name';
+                    this.errorText =
+                        'The token name you entered is incorrect. Please double-check the name and try again.';
+                }
+
+                if(!defaultNetwork){
+                    this.errorTitle = 'Invalid Token Network';
+                    this.errorText =
+                        'The token network you selected is incorrect. Please verify the network and try again.';
+                }
+
+                if(!defaultNetwork && !defaultToken){
+                    this.errorTitle = 'Invalid Token Name and Network';
+                    this.errorText =
+                        'The token name and network you entered is incorrect. Please verify the token name and network and try again.';
+                }
+
+                this.goToStep('error');
+
+                return;
+            }
+
+            if(defaultToken && defaultNetwork){
+                this.selectedTokenSymbol = defaultToken.symbol;
+                this.selectedNetworkSymbol = defaultNetwork.symbol;
+                this.tokenAvailable = true;
+            }
+
         }
 
         if (this.priceAvailable && Number(this.price) < 1) {
@@ -197,17 +252,24 @@ export class PaymentApp extends LitElement {
                 for(let product of resultProductsInfo){
                     const currentPrice = Number(this.price);
                     const productSum = currentPrice + (product.count * product?.prices[0].price);
-                    this.price = parseFloat(productSum.toString()).toFixed(2)
+                    this.price = parseFloat(productSum.toString()).toFixed(2);
                 }
 
                 this.priceAvailable = true;
-                this.goToStep('setToken');
-                return;
+
+                // this.priceAvailable = true;
+                // this.goToStep('setToken');
+                // return;
             }
 
         }
 
-        if(!this.price || this.price === '0'){
+        if(this.noPreview !== 'true'){
+            this.goToStep('preview');
+            return;
+        }
+
+        if(!this.price || this.price === '0' || this.payload){
             this.goToStep('setPrice');
             return;
         }
@@ -228,16 +290,40 @@ export class PaymentApp extends LitElement {
                           .text=${this.errorText}
                       ></error-step>`
                     : ''}
+                ${this.appStep === 'preview'
+                        ? html` <preview-step
+                                .price=${this.price}
+                                .productsInfo=${this.productsInfo}
+                                .selectedTokenSymbol=${this.selectedTokenSymbol}
+                                .selectedNetworkSymbol=${this.selectedNetworkSymbol}
+                                .tokens=${this.tokens}
+                                .tokenAvailable=${this.tokenAvailable}
+                                @nextStep=${this.nextStep}
+                                @updateSelectedToken=${(event: CustomEvent) => {
+                                    this.selectedTokenSymbol = event.detail.tokenSymbol;
+                                    this.selectedNetworkSymbol = event.detail.networkSymbol;
+                                }}
+                            >
+                        </preview-step>`
+                        : ''}
                 ${this.appStep === 'setPrice'
                     ? html` <price-step
                           .price=${this.price}
+                          .priceAvailable=${this.priceAvailable}
                           .payload=${this.payload === 'true'}
                           .invoiceMessage=${this.invoiceMessage}
                           .currentPriceStep=${this.priceStep}
+                          .selectedTokenSymbol=${this.selectedTokenSymbol}
+                          .selectedNetworkSymbol=${this.selectedNetworkSymbol}
+                          .tokens=${this.tokens}
                           @updatePrice=${(event: CustomEvent) => (this.price = event.detail.price)}
                           @updateInvoiceMessage=${(event: CustomEvent) => (this.invoiceMessage = event.detail.invoiceMessage)}
                           @updateCurrentPriceStep=${(event: CustomEvent) => (this.priceStep = event.detail.currentPriceStep)}
                           @nextStep=${this.nextStep}
+                          @updateSelectedToken=${(event: CustomEvent) => {
+                              this.selectedTokenSymbol = event.detail.tokenSymbol;
+                              this.selectedNetworkSymbol = event.detail.networkSymbol;
+                          }}
                       ></price-step>`
                     : ''}
                 
@@ -276,10 +362,8 @@ export class PaymentApp extends LitElement {
                                 @updateWalletConnectorConfig=${(event: CustomEvent) => {
                                     this.walletConnectorConfig = event.detail.walletConnectorConfig
                                 }}
-                          
                           .creatingInvoice=${this.creatingInvoice}
                           @nextStep=${this.nextStep}
-                          
                       ></wallet-step>`
                     : ''}
                 ${this.appStep === 'payment'
@@ -616,6 +700,19 @@ export class PaymentApp extends LitElement {
 
     private nextStep() {
 
+        if(this.appStep === 'preview' && this.selectedTokenSymbol && this.selectedNetworkSymbol){
+
+            if((this.priceAvailable || this.productsInfo.length > 0) && this.payload !== 'true'){
+                this.goToStep('setWallet');
+                return;
+            }else{
+                this.priceStep = (!this.priceAvailable) ? 'priceEnter' : 'messageEnter'
+                this.goToStep('setPrice');
+                return;
+            }
+
+        }
+
         if(this.appStep === 'setPrice' && this.payload === 'true'){
 
             if (this.price && Number(this.price) >= 1 && this.priceStep === 'priceEnter') {
@@ -626,8 +723,13 @@ export class PaymentApp extends LitElement {
             }
 
             if (this.invoiceMessage.trim() !== '' && this.invoiceMessage.length <= 124 && this.priceStep === 'messageEnter') {
-                this.goToStep('setToken');
-                return;
+                if(this.selectedTokenSymbol && this.selectedNetworkSymbol){
+                    this.goToStep('setWallet');
+                    return;
+                }else{
+                    this.goToStep('setToken');
+                    return;
+                }
             }
 
         }
@@ -636,8 +738,13 @@ export class PaymentApp extends LitElement {
             if (this.price && Number(this.price) >= 1 && this.invoiceMessage.length <= 124) {
                 this.price = parseFloat(this.price).toFixed(2);
 
-                this.goToStep('setToken');
-                return;
+                if(this.selectedTokenSymbol && this.selectedNetworkSymbol){
+                    this.goToStep('setWallet');
+                    return;
+                }else{
+                    this.goToStep('setToken');
+                    return;
+                }
             }
         }
 
@@ -684,8 +791,23 @@ export class PaymentApp extends LitElement {
             this.walletAddress = '';
             this.walletType = '';
 
-            this.goToStep('setToken');
+            if(this.noPreview === 'true'){
+                this.goToStep('setToken');
+                return;
+            }
 
+            if(this.payload === 'true' && (this.priceAvailable || this.productsInfo.length > 0)){
+                this.priceStep = 'messageEnter';
+                this.goToStep('setPrice');
+                return;
+            }
+
+            if(this.priceAvailable || this.productsInfo.length > 0){
+                this.goToStep('preview');
+                return;
+            }
+
+            this.goToStep('setPrice');
             return;
         }
     }
