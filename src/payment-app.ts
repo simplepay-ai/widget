@@ -159,6 +159,8 @@ export class PaymentApp extends LitElement {
                 break;
         }
 
+        this.API = new Client();
+
         if (this.invoiceId) {
             await this.getInvoice(this.invoiceId);
             return;
@@ -181,8 +183,6 @@ export class PaymentApp extends LitElement {
 
             return;
         }
-
-        this.API = new Client();
 
         this.clientId = this.clientId ? this.clientId : '';
         this.price = (this.price && this.price !== '0') ? this.price : '';
@@ -628,6 +628,7 @@ export class PaymentApp extends LitElement {
         try {
             result = await this.API.invoice.get(invoiceId);
         } catch (e) {
+            console.log('e', e)
             this.errorTitle = 'Error';
             this.errorText =
                 'There was an error with creating/receiving an invoice. Please try again later.';
