@@ -1,6 +1,6 @@
 # SimplePay Payment Widget
 
-Visit [Demo payment page](https://simplepay-widget.vercel.app/pay).
+Visit [Demo payment page](https://widget-test-gamma.vercel.app/).
 
 ## Usage
 
