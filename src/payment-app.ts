@@ -1057,7 +1057,7 @@ export class PaymentApp extends LitElement {
             font-weight: 500;
             border-radius: 6px;
             cursor: pointer;
-            width: 100%;
+            width: 175px;
             height: 40px;
             padding: 16px 8px;
             border: 0;
@@ -1121,7 +1121,7 @@ export class PaymentApp extends LitElement {
                 margin: 0 auto;
                 width: 100%;
                 height: 700px;
-                max-width: 360px;
+                max-width: 390px;
                 border-radius: 6px;
                 overflow: hidden;
                 background: var(--sp-widget-secondary-bg-color);
