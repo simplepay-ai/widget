@@ -198,7 +198,7 @@ export class PaymentApp extends LitElement {
             if (modalParams['trigger']) {
                 // this.modalTriggerID = modalParams['trigger'];
 
-                const triggerElement = document.querySelector(`${modalParams['trigger']}`);
+                const triggerElement = document.getElementById(`${modalParams['trigger']}`);
                 if(triggerElement){
                     triggerElement.addEventListener('click', () => this.openPaymentModal());
                 }
