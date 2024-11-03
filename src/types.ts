@@ -17,6 +17,14 @@ export type CurrentPriceStep = 'priceEnter' | 'messageEnter';
 
 export type WalletType = 'MetaMask' | 'Coinbase' | 'WalletConnect' | 'Injected' | 'Custom'
 
+export type OpenMode = 'auto' | 'button' | 'trigger'
+
+export interface IOpenButton{
+    backgroundColor: string;
+    textColor: string;
+    title: string;
+}
+
 export interface IProviderInfo{
     name: string;
     image: string;

@@ -20,40 +20,36 @@
         height: 100svh;
     }
 
-    .appContainer {
-        margin: 0 auto;
-        width: 100%;
-        height: 700px;
-        max-width: 360px;
-        border-radius: 6px;
-        overflow: hidden;
-        border: 1px solid #e4e4e7;
-    }
+    /*.appContainer {*/
+    /*    margin: 0 auto;*/
+    /*    width: 100%;*/
+    /*    height: 700px;*/
+    /*    max-width: 360px;*/
+    /*    border-radius: 6px;*/
+    /*    overflow: hidden;*/
+    /*    border: 1px solid #e4e4e7;*/
+    /*}*/
 
-    @media (max-width: 768px) {
-        .appContainer {
-            height: 100%;
-            max-width: unset;
-            border-radius: 0;
-            border: 0;
-        }
-    }
+    /*@media (max-width: 768px) {*/
+    /*    .appContainer {*/
+    /*        height: 100%;*/
+    /*        max-width: unset;*/
+    /*        border-radius: 0;*/
+    /*        border: 0;*/
+    /*    }*/
+    /*}*/
 </style>
 
 <div class="appContainer">
     <payment-app
             appId="eb651bb3-6e26-4f1d-9549-d96540300d8e"
             clientId="707533d2-971d-4cd6-a2a5-9c6dd44c0fe5"
-            invoiceId=""
-            theme="dark"
-            price=""
-            products=''
-            payload=""
-            noPreview=""
-            tokenSymbol=""
-            networkSymbol=""
+            theme="light"
+            modal='{"open": "button", "button": {"backgroundColor": "red","textColor": "#000","title": "Pay in ETH"}, "trigger": "#textTriggerModal"}'
     ></payment-app>
 
+<!--    modal='{"open": "auto","button": {"backgroundColor": "","textColor": "","title": ""},"trigger": ""}'-->
+<!--    invoiceId=""-->
 <!--    price="1"-->
 <!--    products='[{"id":"15f46a4c-be9d-48c3-a1ba-343f654e7f1e", "count": 1}, {"id":"6d946778-cbca-4297-b0d2-19aa3f26a6ae", "count": 1}]'-->
 <!--    theme="light"-->
@@ -62,6 +58,10 @@
 <!--    tokenSymbol="ETH"-->
 <!--    networkSymbol="ethereum"-->
 </div>
+
+<!--<button id="textTriggerModal">-->
+<!--    test trigger-->
+<!--</button>-->
 
 <script src="src/main.ts" type="module"></script>
 </body>
