@@ -409,6 +409,25 @@ export class PaymentStep extends LitElement {
                                                         `
                                                         : ''
                                         }
+                                        
+                                        ${
+                                                (this.invoice?.products && this.invoice.products.length === 0)
+                                                ? html`
+                                                            <div class="card">
+                                                                <svg class="image" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                                                     stroke-linecap="round" stroke-linejoin="round">
+                                                                    <circle cx="12" cy="12" r="10"/>
+                                                                    <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
+                                                                    <path d="M12 18V6"/>
+                                                                </svg>
+
+                                                                <p class="title">Amount</p>
+                                                                <p class="price">${`$${this.price}`}</p>
+                                                            </div>
+                                                        `
+                                                        : ''
+                                        }
 
                                         <button class=${`mainButton ${(this.connectorPaymentAwaiting) ? 'active' : ''} `}
                                                 @click=${this.triggerTransaction}
@@ -1247,6 +1266,56 @@ export class PaymentStep extends LitElement {
                                 }
                             }
                         }
+                    }
+                }
+
+                .card {
+                    margin: 0 auto;
+                    margin-bottom: -2rem;
+                    padding: 8px;
+                    width: 165px;
+                    max-width: 165px;
+                    height: 165px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    border-radius: 12px;
+                    background-color: var(--sp-widget-bg-color);
+
+                    .title {
+                        margin-top: 12px;
+                        font-size: 16px;
+                        line-height: 1.2;
+                        font-weight: 500;
+                        color: var(--sp-widget-text-color);
+
+                        span {
+                            padding-left: 5px;
+                            color: var(--sp-widget-secondary-text-color);
+                            font-size: 12px;
+                            line-height: 1.2;
+                            font-weight: 400;
+                        }
+                    }
+
+                    svg {
+                        width: 40px;
+                        height: 40px;
+                        color: var(--sp-widget-active-color);
+                    }
+
+                    .title {
+                        font-size: 14px;
+                        color: var(--sp-widget-text-color);
+                    }
+
+                    .price {
+                        font-weight: 700;
+                        line-height: 1.2;
+                        font-size: 25px;
+                        margin-top: 4px;
+                        color: var(--sp-widget-text-color);
                     }
                 }
 
