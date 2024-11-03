@@ -93,9 +93,6 @@ export class PaymentApp extends LitElement {
         title: 'Pay in crypto'
     };
 
-    // @property({attribute: false, type: String})
-    // private modalTriggerID: string = '';
-
     @property({attribute: false})
     private priceAvailable: boolean = false;
 
@@ -184,23 +181,30 @@ export class PaymentApp extends LitElement {
         if (this.modal) {
 
             const modalParams = JSON.parse(this.modal);
-
             this.openMode = (modalParams.open) ? modalParams.open : 'auto'
 
-            if (modalParams.button) {
-                this.openButtonParams = {
-                    backgroundColor: (modalParams.button.backgroundColor) ? modalParams.button.backgroundColor : '#3b82f6',
-                    textColor: (modalParams.button.textColor) ? modalParams.button.textColor : '#ffffff',
-                    title: (modalParams.button.title) ? modalParams.button.title : 'Pay in crypto'
+            if(modalParams.open === 'modal'){
+
+                const configKeys = Object.keys(modalParams.config);
+
+                if(modalParams.config && configKeys.indexOf('triggerId') !== -1){
+                    this.openMode = 'trigger';
+
+                    const triggerElement = document.getElementById(`${modalParams.config.triggerId}`);
+                    if(triggerElement){
+                        triggerElement.addEventListener('click', () => this.openPaymentModal());
+                    }
                 }
-            }
 
-            if (modalParams['trigger']) {
-                // this.modalTriggerID = modalParams['trigger'];
+                if(modalParams.config && (configKeys.indexOf('backgroundColor') !== -1 || configKeys.indexOf('textColor') !== -1 || configKeys.indexOf('title') !== -1)){
 
-                const triggerElement = document.getElementById(`${modalParams['trigger']}`);
-                if(triggerElement){
-                    triggerElement.addEventListener('click', () => this.openPaymentModal());
+                    this.openMode = 'button';
+
+                    this.openButtonParams = {
+                        backgroundColor: (modalParams.config.backgroundColor) ? modalParams.config.backgroundColor : '#3b82f6',
+                        textColor: (modalParams.config.textColor) ? modalParams.config.textColor : '#ffffff',
+                        title: (modalParams.config.title) ? modalParams.config.title : 'Pay in crypto'
+                    }
                 }
             }
         }
@@ -223,15 +227,15 @@ export class PaymentApp extends LitElement {
             await this.getInvoice(this.invoiceId);
             return;
         }
-        if (!this.clientId) {
-            this.errorTitle = 'Empty clientId';
-            this.errorText =
-                'You did not pass the clientId. In order to continue, the clientId field must be filled in.';
-
-            this.goToStep('error');
-
-            return;
-        }
+        // if (!this.clientId) {
+        //     // this.errorTitle = 'Empty clientId';
+        //     // this.errorText =
+        //     //     'You did not pass the clientId. In order to continue, the clientId field must be filled in.';
+        //     //
+        //     // this.goToStep('error');
+        //
+        //     return;
+        // }
         if (!this.appId) {
             this.errorTitle = 'Empty appId';
             this.errorText =
@@ -242,7 +246,7 @@ export class PaymentApp extends LitElement {
             return;
         }
 
-        this.clientId = this.clientId ? this.clientId : '';
+        this.clientId = this.clientId ? this.clientId : crypto.randomUUID();
         this.price = (this.price && this.price !== '0') ? this.price : '';
         this.priceAvailable = Boolean(this.price);
         this.tokens = await this.getTokens();
@@ -485,6 +489,17 @@ export class PaymentApp extends LitElement {
             return html`
                 <div class=${`stepWrapper`}>
                     ${content}
+                </div>
+            `;
+        }
+
+        if (this.openMode === 'modal') {
+            return html`
+                <div class="paymentModal show">
+                    <div class="paymentModalOverlay show"></div>
+                    <div class="paymentModalContent show">
+                        ${content}
+                    </div>
                 </div>
             `;
         }
