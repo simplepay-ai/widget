@@ -195,13 +195,14 @@ export class PaymentApp extends LitElement {
                 }
             }
 
-            // if (modalParams['trigger']) {
-            //     this.modalTriggerID = modalParams['trigger'];
-            // }
+            if (modalParams['trigger']) {
+                // this.modalTriggerID = modalParams['trigger'];
 
-            console.log('openMode', this.openMode)
-            console.log('openButtonParams', this.openButtonParams)
-
+                const triggerElement = document.querySelector(`${modalParams['trigger']}`);
+                if(triggerElement){
+                    triggerElement.addEventListener('click', () => this.openPaymentModal());
+                }
+            }
         }
 
         switch (this.theme) {
@@ -497,6 +498,19 @@ export class PaymentApp extends LitElement {
                     ${this.openButtonParams.title}
                 </button>
                 
+                <div class="paymentModal ${(this.showPaymentModal) ? 'show' : ''}">
+                    <div class="paymentModalOverlay ${(this.showPaymentModalOverlay) ? 'show' : ''}" 
+                         @click=${() => this.closePaymentModal()}
+                    ></div>
+                    <div class="paymentModalContent ${(this.showPaymentModalContent) ? 'show' : ''}">
+                        ${content}
+                    </div>
+                </div>
+            `;
+        }
+
+        if (this.openMode === 'trigger') {
+            return html`
                 <div class="paymentModal ${(this.showPaymentModal) ? 'show' : ''}">
                     <div class="paymentModalOverlay ${(this.showPaymentModalOverlay) ? 'show' : ''}" 
                          @click=${() => this.closePaymentModal()}
