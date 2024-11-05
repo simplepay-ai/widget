@@ -13,6 +13,8 @@
 
       "--sp-widget-active-color": "rgb(59 130 246)",
 
+      "--sp-widget-scroll-color": "rgb(228 228 231)",
+
       "--sp-widget-badge-bg-color": "rgb(228 228 231)",
       "--sp-widget-badge-text-color": "rgb(0 0 0)",
       "--sp-widget-badge-border-color": "rgb(228 228 231)",
@@ -63,6 +65,8 @@
       "--sp-widget-border-color": "rgb(42 42 42)",
 
       "--sp-widget-active-color": "rgb(59 130 246)",
+
+      "--sp-widget-scroll-color": "rgb(85 85 85)",
 
       "--sp-widget-badge-bg-color": "rgb(228 228 231)",
       "--sp-widget-badge-text-color": "rgb(0 0 0)",

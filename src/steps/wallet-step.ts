@@ -75,9 +75,6 @@ export class WalletStep extends LitElement {
     @property({attribute: false, type: String})
     private connectingType: WalletType | '' = '';
 
-    // @property({attribute: false, type: Object})
-    // private providerInfo: IProviderInfo | null = null;
-
     async connectedCallback() {
         super.connectedCallback();
 
@@ -533,13 +530,6 @@ export class WalletStep extends LitElement {
 
     private createNewConnectorConfig() {
 
-        // const chains = [];
-        // if(this.selectedNetworkSymbol === 'bsc'){
-        //     chains.push(bsc);
-        // }else{
-        //     chains.push(mainnet);
-        // }
-
         const config = createConfig({
             chains: [mainnet, bsc],
             connectors: [
@@ -639,7 +629,7 @@ export class WalletStep extends LitElement {
                         detail: {
                             notificationData: {
                                 title: 'Wallet Connection Not Confirmed',
-                                text: 'The wallet connection was not confirmed. Please try again for continue.',
+                                text: 'The wallet connection was not confirmed. Please try again to continue.',
                                 buttonText: 'Confirm'
                             },
                             notificationShow: true
@@ -696,7 +686,7 @@ export class WalletStep extends LitElement {
                         detail: {
                             notificationData: {
                                 title: 'Wallet Connection Not Confirmed',
-                                text: 'The wallet connection was not confirmed. Please try again for continue.',
+                                text: 'The wallet connection was not confirmed. Please try again to continue.',
                                 buttonText: 'Confirm'
                             },
                             notificationShow: true
@@ -774,7 +764,7 @@ export class WalletStep extends LitElement {
                         detail: {
                             notificationData: {
                                 title: 'Wallet Connection Not Confirmed',
-                                text: 'The wallet connection was not confirmed. Please try again for continue.',
+                                text: 'The wallet connection was not confirmed. Please try again to continue.',
                                 buttonText: 'Confirm'
                             },
                             notificationShow: true
@@ -890,7 +880,7 @@ export class WalletStep extends LitElement {
                         detail: {
                             notificationData: {
                                 title: 'Wallet Connection Not Confirmed',
-                                text: 'The wallet connection was not confirmed. Please try again for continue.',
+                                text: ['The wallet connection was not confirmed. Please try again to continue.', 'Maybe your wallet extension is inactive in browser. Activate it by clicking on its icon in your browser.'],
                                 buttonText: 'Confirm'
                             },
                             notificationShow: true
@@ -1213,7 +1203,7 @@ export class WalletStep extends LitElement {
                 }
 
                 &::-webkit-scrollbar-thumb {
-                    background: var(--sp-widget-secondary-bg-color);
+                    background: var(--sp-widget-scroll-color);
                 }
 
                 .spinner {

@@ -395,7 +395,7 @@ export class ProcessingStep extends LitElement {
                 }
 
                 &::-webkit-scrollbar-thumb {
-                    background: var(--sp-widget-secondary-bg-color);
+                    background: var(--sp-widget-scroll-color);
                 }
 
                 .topInfo {

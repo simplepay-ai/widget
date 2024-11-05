@@ -98,7 +98,7 @@ export class PreviewStep extends LitElement {
 
         }
 
-        if(changedProperties.has('selectedTokenSymbol') || changedProperties.has('selectedNetworkSymbol')){
+        if (changedProperties.has('selectedTokenSymbol') || changedProperties.has('selectedNetworkSymbol')) {
             this.tokenStandart = getTokenStandart(this.selectedNetworkSymbol);
         }
     }
@@ -107,172 +107,175 @@ export class PreviewStep extends LitElement {
         return html`
             <div class=${`stepWrapper`}>
 
-                <div class="merchantInfo">
-                    
-                    <div class="image">
-                        <img src="https://img.simplepay.ai/-yPhRoP2w49Zz9pH1BxIZYm9ezaI2_dzNULBcaG_Cc8/resize:fit:300/czM6Ly9zaW1wbGVwYXkvaW1hZ2UvcHJvZHVjdC84ZTRjZGNiMS0wMTFkLTRlN2QtOTNhOC05YjM0Y2Q4Y2Y5OTMuanBn.webp" alt="merchant image">
+                <div class="mainSection">
+                    <div class="merchantInfo">
+
+                        <div class="image">
+                            <img src="https://img.simplepay.ai/-yPhRoP2w49Zz9pH1BxIZYm9ezaI2_dzNULBcaG_Cc8/resize:fit:300/czM6Ly9zaW1wbGVwYXkvaW1hZ2UvcHJvZHVjdC84ZTRjZGNiMS0wMTFkLTRlN2QtOTNhOC05YjM0Y2Q4Y2Y5OTMuanBn.webp"
+                                 alt="merchant image">
+                        </div>
+
+                        <!--                    <div class="image placeholder">-->
+                        <!--                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"-->
+                        <!--                             fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"-->
+                        <!--                             stroke-linejoin="round">-->
+                        <!--                            <circle cx="12" cy="8" r="5"/>-->
+                        <!--                            <path d="M20 21a8 8 0 0 0-16 0"/>-->
+                        <!--                        </svg>-->
+                        <!--                    </div>-->
+
+                        <p class="name">Demo app</p>
+                        <p class="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+                            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+                            exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+
                     </div>
 
-<!--                    <div class="image placeholder">-->
-<!--                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"-->
-<!--                             fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"-->
-<!--                             stroke-linejoin="round">-->
-<!--                            <circle cx="12" cy="8" r="5"/>-->
-<!--                            <path d="M20 21a8 8 0 0 0-16 0"/>-->
-<!--                        </svg>-->
-<!--                    </div>-->
-
-                    <p class="name">Demo app</p>
-                    <p class="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                        exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-
-                </div>
-
-                <div class=${`
+                    <div class=${`
                 productInfo
                 ${(Number(this.price) < 1 && (!this.productsInfo || this.productsInfo.length === 0)) ? 'custom' : ''}
                 ${(Number(this.price) >= 1 && (!this.productsInfo || this.productsInfo.length === 0)) ? 'price' : ''}
                 ${(this.productsInfo && this.productsInfo.length > 0) ? 'product' : ''}
                 `}>
 
-                    ${
-                            (Number(this.price) < 1 && (!this.productsInfo || this.productsInfo.length === 0))
-                                    ? html`
-                                        <div class="card">
-                                            <svg class="image" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                                                 stroke-linecap="round" stroke-linejoin="round">
-                                                <circle cx="12" cy="12" r="10"/>
-                                                <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
-                                                <path d="M12 18V6"/>
-                                            </svg>
+                        ${
+                                (Number(this.price) < 1 && (!this.productsInfo || this.productsInfo.length === 0))
+                                        ? html`
+                                            <div class="card">
+                                                <svg class="image" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                                     stroke-linecap="round" stroke-linejoin="round">
+                                                    <circle cx="12" cy="12" r="10"/>
+                                                    <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
+                                                    <path d="M12 18V6"/>
+                                                </svg>
 
-                                            <p class="title">Payment</p>
-                                        </div>
-                                    `
-                                    : ''
-                    }
+                                                <p class="title">Payment</p>
+                                            </div>
+                                        `
+                                        : ''
+                        }
 
-                    ${
-                            (Number(this.price) >= 1 && (!this.productsInfo || this.productsInfo.length === 0))
-                                    ? html`
-                                        <div class="card">
-                                            <svg class="image" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                                                 stroke-linecap="round" stroke-linejoin="round">
-                                                <circle cx="12" cy="12" r="10"/>
-                                                <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
-                                                <path d="M12 18V6"/>
-                                            </svg>
+                        ${
+                                (Number(this.price) >= 1 && (!this.productsInfo || this.productsInfo.length === 0))
+                                        ? html`
+                                            <div class="card">
+                                                <svg class="image" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                                     stroke-linecap="round" stroke-linejoin="round">
+                                                    <circle cx="12" cy="12" r="10"/>
+                                                    <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
+                                                    <path d="M12 18V6"/>
+                                                </svg>
 
-                                            <p class="title">Amount</p>
-                                            <p class="price">${`$${this.price}`}</p>
-                                        </div>
-                                    `
-                                    : ''
-                    }
+                                                <p class="title">Amount</p>
+                                                <p class="price">${`$${this.price}`}</p>
+                                            </div>
+                                        `
+                                        : ''
+                        }
 
-                    ${
-                            (this.productsInfo && this.productsInfo.length > 0)
-                                    ? html`
-                                        <div class="card"
-                                             @click=${() => this.openProductModal()}
-                                        >
-                                            <div class="image">
+                        ${
+                                (this.productsInfo && this.productsInfo.length > 0)
+                                        ? html`
+                                            <div class="card"
+                                                 @click=${() => this.openProductModal()}
+                                            >
+                                                <div class="image">
+
+                                                    ${
+                                                            (this.productsInfo.length === 1 && this.productsInfo[0].image)
+                                                                    ? html`
+                                                                        <img .src=${this.productsInfo[0].image} alt="product image">
+                                                                    `
+                                                                    : html`
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="800px"
+                                                                             height="800px" viewBox="0 0 24 24" fill="none">
+                                                                            <path d="M15.5777 3.38197L17.5777 4.43152C19.7294 5.56066 20.8052 6.12523 21.4026 7.13974C22 8.15425 22 9.41667 22 11.9415V12.0585C22 14.5833 22 15.8458 21.4026 16.8603C20.8052 17.8748 19.7294 18.4393 17.5777 19.5685L15.5777 20.618C13.8221 21.5393 12.9443 22 12 22C11.0557 22 10.1779 21.5393 8.42229 20.618L6.42229 19.5685C4.27063 18.4393 3.19479 17.8748 2.5974 16.8603C2 15.8458 2 14.5833 2 12.0585V11.9415C2 9.41667 2 8.15425 2.5974 7.13974C3.19479 6.12523 4.27063 5.56066 6.42229 4.43152L8.42229 3.38197C10.1779 2.46066 11.0557 2 12 2C12.9443 2 13.8221 2.46066 15.5777 3.38197Z"
+                                                                                  stroke="#1C274C" stroke-width="1"
+                                                                                  stroke-linecap="round"/>
+                                                                            <path d="M21 7.5L17 9.5M12 12L3 7.5M12 12V21.5M12 12C12 12 14.7426 10.6287 16.5 9.75C16.6953 9.65237 17 9.5 17 9.5M17 9.5V13M17 9.5L7.5 4.5"
+                                                                                  stroke="#1C274C" stroke-width="1"
+                                                                                  stroke-linecap="round"/>
+                                                                        </svg>
+                                                                    `
+                                                    }
+
+                                                </div>
 
                                                 ${
-                                                        (this.productsInfo.length === 1 && this.productsInfo[0].image)
+                                                        (this.productsInfo.length === 1)
                                                                 ? html`
-                                                                    <img .src=${this.productsInfo[0].image} alt="product image">
+                                                                    <div class="title">
+                                                                        <p class="name">${this.productsInfo[0].name}</p>
+                                                                        <span class="count">x${this.productsInfo[0].count}</span>
+                                                                    </div>
                                                                 `
                                                                 : html`
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="800px"
-                                                                         height="800px" viewBox="0 0 24 24" fill="none">
-                                                                        <path d="M15.5777 3.38197L17.5777 4.43152C19.7294 5.56066 20.8052 6.12523 21.4026 7.13974C22 8.15425 22 9.41667 22 11.9415V12.0585C22 14.5833 22 15.8458 21.4026 16.8603C20.8052 17.8748 19.7294 18.4393 17.5777 19.5685L15.5777 20.618C13.8221 21.5393 12.9443 22 12 22C11.0557 22 10.1779 21.5393 8.42229 20.618L6.42229 19.5685C4.27063 18.4393 3.19479 17.8748 2.5974 16.8603C2 15.8458 2 14.5833 2 12.0585V11.9415C2 9.41667 2 8.15425 2.5974 7.13974C3.19479 6.12523 4.27063 5.56066 6.42229 4.43152L8.42229 3.38197C10.1779 2.46066 11.0557 2 12 2C12.9443 2 13.8221 2.46066 15.5777 3.38197Z"
-                                                                              stroke="#1C274C" stroke-width="1"
-                                                                              stroke-linecap="round"/>
-                                                                        <path d="M21 7.5L17 9.5M12 12L3 7.5M12 12V21.5M12 12C12 12 14.7426 10.6287 16.5 9.75C16.6953 9.65237 17 9.5 17 9.5M17 9.5V13M17 9.5L7.5 4.5"
-                                                                              stroke="#1C274C" stroke-width="1"
-                                                                              stroke-linecap="round"/>
-                                                                    </svg>
+                                                                    <p class="title">Total items: ${this.productsInfo.length}</p>
                                                                 `
                                                 }
 
+                                                <p class="price">
+                                                        $${this.productsTotalAmount}</p>
+
+                                            </div>
+                                        `
+                                        : ''
+                        }
+
+                        ${
+                                (this.selectedTokenSymbol && this.selectedNetworkSymbol && this.tokenAvailable)
+                                        ? html`
+                                            <div class="tokenCard">
+                                                <p>${this.tokenPrice} <span>${this.selectedTokenSymbol}</span></p>
+
+                                                <token-icon
+                                                        .id=${this.selectedTokenSymbol}
+                                                        width="25"
+                                                        height="25"
+                                                        class="tokenIcon"
+                                                ></token-icon>
+
                                             </div>
 
-                                            ${
-                                                    (this.productsInfo.length === 1)
-                                                            ? html`
-                                                                <div class="title">
-                                                                    <p class="name">${this.productsInfo[0].name}</p>
-                                                                    <span class="count">x${this.productsInfo[0].count}</span>
-                                                                </div>
-                                                            `
-                                                            : html`
-                                                                <p class="title">Total items: ${this.productsInfo.length}</p>
-                                                            `
-                                            }
-
-                                            <p class="price">
-                                                    $${this.productsTotalAmount}</p>
-
-                                        </div>
-                                    `
-                                    : ''
-                    }
-
-                    ${
-                            (this.selectedTokenSymbol && this.selectedNetworkSymbol && this.tokenAvailable)
-                                    ? html`
-                                        <div class="tokenCard">
-                                            <p>${this.tokenPrice} <span>${this.selectedTokenSymbol}</span></p>
-
-                                            <token-icon
-                                                    .id=${this.selectedTokenSymbol}
-                                                    width="25"
-                                                    height="25"
-                                                    class="tokenIcon"
-                                            ></token-icon>
-
-                                        </div>
-
-                                        <div class=${`
+                                            <div class=${`
                                         networkCard
                                         ${(this.selectedNetworkSymbol === 'bsc') ? 'uppercase' : 'capitalize'}
                                         `}>
 
-                                            <network-icon
-                                                    .id=${this.selectedNetworkSymbol}
-                                                    width="20"
-                                                    height="20"
-                                                    class="networkIcon"
-                                            ></network-icon>
+                                                <network-icon
+                                                        .id=${this.selectedNetworkSymbol}
+                                                        width="20"
+                                                        height="20"
+                                                        class="networkIcon"
+                                                ></network-icon>
 
-                                            ${this.selectedNetworkSymbol}
+                                                ${this.selectedNetworkSymbol}
 
-                                            ${
-                                                    (this.tokenStandart)
-                                                     ? html`
-                                                                <div class="badge">
-                                                                    ${this.tokenStandart}
-                                                                </div>
-                                                            `
-                                                            : ''
-                                            }
-                                            
-                                        </div>
-                                    `
-                                    : ''
-                    }
+                                                ${
+                                                        (this.tokenStandart)
+                                                                ? html`
+                                                                    <div class="badge">
+                                                                        ${this.tokenStandart}
+                                                                    </div>
+                                                                `
+                                                                : ''
+                                                }
 
+                                            </div>
+                                        `
+                                        : ''
+                        }
+
+                    </div>
                 </div>
 
                 <div class="footer">
 
                     ${
                             (!this.tokenAvailable)
-                            ? html`
+                                    ? html`
                                         <div class="tokenInfo">
                                             <p class="label">
                                                 Token:
@@ -283,62 +286,63 @@ export class PreviewStep extends LitElement {
                                                 ${
                                                         (this.selectedTokenSymbol)
                                                                 ? html`
-                                                <p><span>${this.tokenPrice}</span> ${this.selectedTokenSymbol}</p>
+                                                                    <p><span>${this.tokenPrice}</span> ${this.selectedTokenSymbol}</p>
 
-                                                <token-icon
-                                                        .id=${this.selectedTokenSymbol}
-                                                        width="25"
-                                                        height="25"
-                                                        class="tokenIcon"
-                                                ></token-icon>
-                                            `
+                                                                    <token-icon
+                                                                            .id=${this.selectedTokenSymbol}
+                                                                            width="25"
+                                                                            height="25"
+                                                                            class="tokenIcon"
+                                                                    ></token-icon>
+                                                                `
                                                                 : html`
-                                                <p>Choose token</p>
+                                                                    <p>Choose token</p>
 
-                                                <div class="image placeholder">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                         stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                                        <path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727"/>
-                                                    </svg>
-                                                </div>
-                                            `
+                                                                    <div class="image placeholder">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                                             stroke-width="1.5" stroke-linecap="round"
+                                                                             stroke-linejoin="round">
+                                                                            <path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727"/>
+                                                                        </svg>
+                                                                    </div>
+                                                                `
                                                 }
                                             </div>
 
                                             ${
                                                     (this.selectedNetworkSymbol)
                                                             ? html`
-                                            <div class=${`
+                                                                <div class=${`
                                             networkInfo
                                             ${(this.selectedNetworkSymbol === 'bsc') ? 'uppercase' : 'capitalize'}
                                             `}>
-                                                <p class="label">
-                                                    Network:
-                                                </p>
+                                                                    <p class="label">
+                                                                        Network:
+                                                                    </p>
 
-                                                <div class="value">
-                                                    <network-icon
-                                                            .id=${this.selectedNetworkSymbol}
-                                                            width="20"
-                                                            height="20"
-                                                            class="networkIcon"
-                                                    ></network-icon>
+                                                                    <div class="value">
+                                                                        <network-icon
+                                                                                .id=${this.selectedNetworkSymbol}
+                                                                                width="20"
+                                                                                height="20"
+                                                                                class="networkIcon"
+                                                                        ></network-icon>
 
-                                                    ${this.selectedNetworkSymbol}
-                                                    
-                                                    ${
-                                                                    (this.tokenStandart)
-                                                                            ? html`
-                                                                <div class="badge">
-                                                                    ${this.tokenStandart}
+                                                                        ${this.selectedNetworkSymbol}
+
+                                                                        ${
+                                                                                (this.tokenStandart)
+                                                                                        ? html`
+                                                                                            <div class="badge">
+                                                                                                ${this.tokenStandart}
+                                                                                            </div>
+                                                                                        `
+                                                                                        : ''
+                                                                        }
+                                                                    </div>
                                                                 </div>
                                                             `
-                                                                            : ''
-                                                            }
-                                                </div>
-                                            </div>
-                                        `
                                                             : ''
                                             }
                                         </div>
@@ -457,13 +461,13 @@ export class PreviewStep extends LitElement {
                                         const networkStandart = getTokenStandart(network.symbol);
 
                                         let formatPrice = 0;
-                                        if(this.price){
+                                        if (this.price) {
                                             //@ts-ignore
                                             const price = this.price / token.rates['usd'];
                                             formatPrice = roundUpAmount(price.toString(), token.stable);
 
                                         }
-                                        
+
                                         return html`
                                             <div
                                                     @click=${() => {
@@ -505,8 +509,8 @@ export class PreviewStep extends LitElement {
                                                         </div>
 
                                                         ${
-                                                                (formatPrice !== 0) 
-                                                                    ? html`
+                                                                (formatPrice !== 0)
+                                                                        ? html`
                                                                             <p>~${formatPrice} ${token.symbol}</p>
                                                                         `
                                                                         : ''
@@ -617,6 +621,25 @@ export class PreviewStep extends LitElement {
             transition-property: all;
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
             transition-duration: 350ms;
+            
+            .mainSection{
+                flex: 1;
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+
+                &::-webkit-scrollbar {
+                    width: 2px;
+                }
+
+                &::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+
+                &::-webkit-scrollbar-thumb {
+                    background: var(--sp-widget-scroll-color);
+                }
+            }
 
             .merchantInfo {
                 padding: 1rem 1.5rem 0;
@@ -674,7 +697,7 @@ export class PreviewStep extends LitElement {
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                padding: 0 1rem;
+                padding: 1rem;
 
                 .card {
                     padding: 8px;
@@ -752,7 +775,7 @@ export class PreviewStep extends LitElement {
                     font-weight: 400;
                     line-height: 1.2;
                     color: var(--sp-widget-text-color);
-                    
+
                     &.capitalize {
                         text-transform: capitalize;
                     }
@@ -1137,7 +1160,7 @@ export class PreviewStep extends LitElement {
                         overflow: hidden;
                         height: auto;
                         max-height: 100%;
-                        
+
                         .titleWrapper {
                             display: flex;
                             justify-content: space-between;
@@ -1208,7 +1231,7 @@ export class PreviewStep extends LitElement {
                     }
 
                     &::-webkit-scrollbar-thumb {
-                        background: var(--sp-widget-secondary-bg-color);
+                        background: var(--sp-widget-scroll-color);
                     }
 
                     .productItem {
@@ -1414,9 +1437,9 @@ export class PreviewStep extends LitElement {
                     }
 
                     &::-webkit-scrollbar-thumb {
-                        background: var(--sp-widget-secondary-bg-color);
+                        background: var(--sp-widget-scroll-color);
                     }
-                    
+
                     .tokenItem {
                         user-select: none;
                         cursor: pointer;

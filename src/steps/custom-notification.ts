@@ -63,8 +63,20 @@ export class CustomNotification extends LitElement {
                                 </svg>
                             </div>
                         </div>
+                        
                         <div class="textWrapper">
-                            ${this.data?.text ? html` <p>${this.data.text}</p> ` : ''}
+                            ${
+                                    (this.data?.text && typeof this.data?.text === 'string')
+                                            ? html`<p>${this.data.text}</p>`
+                                            : ''
+                            }
+                            ${
+                                    (this.data?.text && Array.isArray(this.data?.text))
+                                            ? this.data?.text.map((item: string) => html`
+                                                <p>${item}</p>
+                                            `)
+                                            : ''
+                            }
                         </div>
                         ${this.data?.buttonText
                                 ? html`
@@ -239,6 +251,10 @@ export class CustomNotification extends LitElement {
                             font-size: 13px;
                             font-weight: 400;
                             color: var(--sp-widget-secondary-text-color);
+                            
+                            &:not(:first-child){
+                                margin-top: 12px;
+                            }
                         }
                     }
 

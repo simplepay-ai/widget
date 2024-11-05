@@ -31,9 +31,9 @@ export interface IProviderInfo{
 }
 
 export interface INotification {
-    title?: String;
-    text?: String;
-    buttonText?: String;
+    title?: string;
+    text?: string | string[];
+    buttonText?: string;
 }
 
 export interface IProduct {

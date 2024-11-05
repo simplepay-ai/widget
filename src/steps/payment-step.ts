@@ -870,7 +870,7 @@ export class PaymentStep extends LitElement {
                 }
 
                 &::-webkit-scrollbar-thumb {
-                    background: var(--sp-widget-secondary-bg-color);
+                    background: var(--sp-widget-scroll-color);
                 }
                 
                 &.between{
@@ -1179,7 +1179,7 @@ export class PaymentStep extends LitElement {
                     }
 
                     &::-webkit-scrollbar-thumb {
-                        background: var(--sp-widget-bg-color);
+                        background: var(--sp-widget-scroll-color);
                     }
                     
                     .title{
