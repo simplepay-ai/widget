@@ -517,7 +517,7 @@ export class ProcessingStep extends LitElement {
                                 height: 100%;
 
                                 rect {
-                                    fill: var(--sp-widget-secondary-bg-color);
+                                    fill: transparent;
                                 }
 
                                 path {
