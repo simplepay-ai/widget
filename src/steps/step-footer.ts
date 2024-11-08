@@ -196,7 +196,7 @@ export class StepFooter extends LitElement {
                         : ''}
                 ${this.hasBackButton
                         ? html`
-                            <a href=${this.backButtonUrl}>
+                            <a href=${this.backButtonUrl || location.href}>
                                 <button class="mainButton">Back to Store</button>
                             </a>
                         `
