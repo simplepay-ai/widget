@@ -165,6 +165,9 @@ export class PaymentApp extends LitElement {
     @property({attribute: false})
     private showPaymentModalContent: boolean = false;
 
+    @property({attribute: false})
+    private appInfo: any;
+
     constructor() {
         super();
 
@@ -227,15 +230,7 @@ export class PaymentApp extends LitElement {
             await this.getInvoice(this.invoiceId);
             return;
         }
-        // if (!this.clientId) {
-        //     // this.errorTitle = 'Empty clientId';
-        //     // this.errorText =
-        //     //     'You did not pass the clientId. In order to continue, the clientId field must be filled in.';
-        //     //
-        //     // this.goToStep('error');
-        //
-        //     return;
-        // }
+
         if (!this.appId) {
             this.errorTitle = 'Empty appId';
             this.errorText =
@@ -250,6 +245,27 @@ export class PaymentApp extends LitElement {
         this.price = (this.price && this.price !== '0') ? this.price : '';
         this.priceAvailable = Boolean(this.price);
         this.tokens = await this.getTokens();
+        this.appInfo = await this.getApp();
+
+        if(!this.appInfo){
+            this.errorTitle = 'Error';
+            this.errorText =
+                'Failed to retrieve app data. Please try again later.';
+            this.goToStep('error');
+            this.dispatchErrorEvent('Fetch App Error', 'Failed to retrieve app data. Please try again later.');
+
+            return;
+        }
+
+        if(this.tokens && this.tokens.length === 0){
+            this.errorTitle = 'Error';
+            this.errorText =
+                'Currently, there are no tokens available for selection as a payment option on this project.';
+            this.goToStep('error');
+            this.dispatchErrorEvent('Empty Tokens', 'Currently, there are no tokens available for selection as a payment option on this project.');
+
+            return;
+        }
 
         if (this.tokens && this.tokens.length > 0) {
 
@@ -366,6 +382,7 @@ export class PaymentApp extends LitElement {
                                 .selectedNetworkSymbol=${this.selectedNetworkSymbol}
                                 .tokens=${this.tokens}
                                 .tokenAvailable=${this.tokenAvailable}
+                                .appInfo=${this.appInfo}
                                 @nextStep=${this.nextStep}
                                 @updateSelectedToken=${(event: CustomEvent) => {
                                     this.selectedTokenSymbol = event.detail.tokenSymbol;
@@ -377,6 +394,7 @@ export class PaymentApp extends LitElement {
             ${this.appStep === 'setPrice'
                     ? html`
                         <price-step
+                                .appInfo=${this.appInfo}
                                 .price=${this.price}
                                 .priceAvailable=${this.priceAvailable}
                                 .tokenAvailable=${this.tokenAvailable}
@@ -970,6 +988,19 @@ export class PaymentApp extends LitElement {
 
     private goToStep(stepName: AppStep) {
         this.appStep = stepName;
+    }
+
+    private async getApp(){
+        try {
+            const result = await this.API.app.get(this.appId);
+            return result;
+        } catch (error) {
+            this.errorTitle = 'Error';
+            this.errorText =
+                'Failed to retrieve app data. Please try again later.';
+            this.goToStep('error');
+            this.dispatchErrorEvent('Fetch App Error', 'Failed to retrieve app data. Please try again later.');
+        }
     }
 
     private async getTokens() {

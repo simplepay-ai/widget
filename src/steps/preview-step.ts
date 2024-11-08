@@ -2,10 +2,13 @@ import {css, html, LitElement, property} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {IProduct} from "../types.ts";
 import {getTokenStandart, roundUpAmount} from "../util.ts";
-import {Cryptocurrency} from "@simplepay-ai/api-client";
+import {App, Cryptocurrency} from "@simplepay-ai/api-client";
 
 @customElement('preview-step')
 export class PreviewStep extends LitElement {
+
+    @property({type: Object})
+    appInfo: App | null = null;
 
     @property({type: String})
     price: string = '';
@@ -109,26 +112,37 @@ export class PreviewStep extends LitElement {
 
                 <div class="mainSection">
                     <div class="merchantInfo">
+                        
+                        ${
+                                (this.appInfo?.image)
+                                ? html`
+                                            <div class="image">
+                                                <img src=${this.appInfo.image}
+                                                     alt="merchant image">
+                                            </div>
+                                        `
+                                        : html`
+                                            <div class="image placeholder">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                                     fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                                     stroke-linejoin="round">
+                                                    <circle cx="12" cy="8" r="5"/>
+                                                    <path d="M20 21a8 8 0 0 0-16 0"/>
+                                                </svg>
+                                            </div>
+                                        `
+                        }
 
-                        <div class="image">
-                            <img src="https://img.simplepay.ai/-yPhRoP2w49Zz9pH1BxIZYm9ezaI2_dzNULBcaG_Cc8/resize:fit:300/czM6Ly9zaW1wbGVwYXkvaW1hZ2UvcHJvZHVjdC84ZTRjZGNiMS0wMTFkLTRlN2QtOTNhOC05YjM0Y2Q4Y2Y5OTMuanBn.webp"
-                                 alt="merchant image">
-                        </div>
-
-                        <!--                    <div class="image placeholder">-->
-                        <!--                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"-->
-                        <!--                             fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"-->
-                        <!--                             stroke-linejoin="round">-->
-                        <!--                            <circle cx="12" cy="8" r="5"/>-->
-                        <!--                            <path d="M20 21a8 8 0 0 0-16 0"/>-->
-                        <!--                        </svg>-->
-                        <!--                    </div>-->
-
-                        <p class="name">Demo app</p>
-                        <p class="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                            exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-
+                        <p class="name">${this.appInfo?.name}</p>
+                        
+                        ${
+                                (this.appInfo?.description)
+                                ? html`
+                                            <p class="description">${this.appInfo.description}</p>
+                                        `
+                                        : ''
+                        }
+                        
                     </div>
 
                     <div class=${`
