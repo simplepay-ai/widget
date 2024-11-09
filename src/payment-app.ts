@@ -168,6 +168,9 @@ export class PaymentApp extends LitElement {
     @property({attribute: false})
     private appInfo: any;
 
+    @property({attribute: false, type: Boolean})
+    private payloadMessage: boolean = false;
+
     constructor() {
         super();
 
@@ -246,6 +249,13 @@ export class PaymentApp extends LitElement {
         this.priceAvailable = Boolean(this.price);
         this.tokens = await this.getTokens();
         this.appInfo = await this.getApp();
+
+        if(this.payload){
+            const parsedPayload = JSON.parse(this.payload);
+            this.payloadMessage = parsedPayload.message === true || parsedPayload.message === 'true';
+        }else{
+            this.payloadMessage = false;
+        }
 
         if(!this.appInfo){
             this.errorTitle = 'Error';
@@ -347,7 +357,7 @@ export class PaymentApp extends LitElement {
             return;
         }
 
-        if (!this.price || this.price === '0' || this.payload) {
+        if (!this.price || this.price === '0' || this.payloadMessage) {
 
             if (this.priceAvailable) {
                 this.priceStep = 'messageEnter';
@@ -398,7 +408,7 @@ export class PaymentApp extends LitElement {
                                 .price=${this.price}
                                 .priceAvailable=${this.priceAvailable}
                                 .tokenAvailable=${this.tokenAvailable}
-                                .payload=${this.payload === 'true'}
+                                .payloadMessage=${this.payloadMessage}
                                 .invoiceMessage=${this.invoiceMessage}
                                 .currentPriceStep=${this.priceStep}
                                 .selectedTokenSymbol=${this.selectedTokenSymbol}
@@ -889,17 +899,17 @@ export class PaymentApp extends LitElement {
             if (this.priceStep === 'priceEnter' && (!this.price || Number(this.price) < 1)) {
                 return;
             }
-            if (this.priceStep === 'messageEnter' && this.payload === 'true' && (this.invoiceMessage.trim() === '' || this.invoiceMessage.length > 124)) {
+            if (this.priceStep === 'messageEnter' && this.payloadMessage && (this.invoiceMessage.trim() === '' || this.invoiceMessage.length > 124)) {
                 return;
             }
-            if (this.priceStep === 'messageEnter' && this.payload !== 'true' && this.invoiceMessage.length > 124) {
+            if (this.priceStep === 'messageEnter' && this.payloadMessage && this.invoiceMessage.length > 124) {
                 return;
             }
 
             if (this.priceStep === 'priceEnter') {
                 this.price = parseFloat(this.price).toFixed(2);
 
-                if (this.payload === 'true') {
+                if (this.payloadMessage) {
                     this.priceStep = 'messageEnter';
                     return;
                 }

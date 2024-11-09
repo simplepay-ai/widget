@@ -14,7 +14,7 @@ export class PriceStep extends LitElement {
     price: string = '';
 
     @property({type: Boolean})
-    payload: boolean = false;
+    payloadMessage: boolean = false;
 
     @property({type: String})
     invoiceMessage: string = '';
@@ -103,7 +103,7 @@ export class PriceStep extends LitElement {
 
         } else {
 
-            if (this.payload) {
+            if (this.payloadMessage) {
                 this.nextButtonDisabled = this.invoiceMessage.trim() === '' || this.invoiceMessage.length > 124;
             } else {
                 this.nextButtonDisabled = this.invoiceMessage.length > 124;
@@ -316,7 +316,7 @@ export class PriceStep extends LitElement {
                 <div class="footer">
 
                     ${
-                            (this.payload)
+                            (this.payloadMessage)
                                     ? html`
                                         <div class="buttonsWrapper">
 
