@@ -54,6 +54,9 @@ export class PaymentStep extends LitElement {
     @query('#qrcode')
     qrcode: any;
 
+    @property({attribute: false, type: Array})
+    products: InvoiceProduct[] = [];
+
     firstUpdated(_changedProperties: PropertyValues) {
         super.firstUpdated(_changedProperties);
 
@@ -74,6 +77,41 @@ export class PaymentStep extends LitElement {
         //@ts-ignore
         this.formatAmount = roundUpAmount(this.invoice?.amount, this.invoice?.cryptocurrency.stable);
         this.tokenStandart = getTokenStandart(this.invoice?.network.symbol!);
+
+        if(this.invoice?.products && this.invoice.products.length > 0){
+            this.products = this.invoice.products;
+            return;
+        }else if(this.invoice?.payload?.products && this.invoice?.payload?.products.length > 0){
+
+            for(let product of this.invoice?.payload?.products){
+
+                const result: InvoiceProduct = {
+                    count: product.count,
+                    product: {
+                        id: this.invoice?.payload?.products.indexOf(product),
+                        name: product.name,
+                        description: product.description,
+                        image: product.image,
+                        createdAt: '',
+                        updatedAt: '',
+                        prices: [
+                            {
+                                price: product.price,
+                                currency: {
+                                    id: '5e091838-d7bb-4365-a395-84d82d1ac7c2',
+                                    symbol: 'USD',
+                                    code: 840
+                                }
+                            }
+                        ]
+                    }
+                }
+                this.products.push(result);
+
+            }
+
+        }
+
     }
 
     render() {
@@ -350,7 +388,7 @@ export class PaymentStep extends LitElement {
                                         </div>
 
                                         ${
-                                                (this.invoice?.products && this.invoice.products.length > 0)
+                                                (this.products.length > 0)
                                                         ? html`
                                                             <div class="products">
                                                                 <p class="title">Products</p>
@@ -358,7 +396,7 @@ export class PaymentStep extends LitElement {
                                                                 <div class="productsList">
 
                                                                     ${
-                                                                            this.invoice.products.map((item: InvoiceProduct) => html`
+                                                                            this.products.map((item: InvoiceProduct) => html`
                                                                                 <div class="productItem">
 
                                                                                     <div class=${`imageWrapper ${(!item.product.image) && 'placeholder'}`}>
@@ -411,7 +449,7 @@ export class PaymentStep extends LitElement {
                                         }
                                         
                                         ${
-                                                (this.invoice?.products && this.invoice.products.length === 0)
+                                                (this.products.length === 0)
                                                 ? html`
                                                             <div class="card">
                                                                 <svg class="image" xmlns="http://www.w3.org/2000/svg" width="24" height="24"

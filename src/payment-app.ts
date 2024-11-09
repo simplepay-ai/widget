@@ -65,8 +65,8 @@ export class PaymentApp extends LitElement {
     @property({type: String})
     payload: string = '';
 
-    @property({type: Array})
-    products: IProductInvoice[] = [];
+    @property({type: String})
+    products: string = '';
 
     @property({type: String})
     clientId: string = '';
@@ -320,24 +320,82 @@ export class PaymentApp extends LitElement {
 
         }
 
-        if (this.products && this.products.length > 0) {
+        if(this.products){
 
-            const resultProductsInfo: IProduct[] = await this.getProductsInfo(this.products);
-            this.productsInfo = resultProductsInfo;
+            const parsedProducts = (this.products === 'custom') ? this.products : JSON.parse(this.products);
 
-            if (resultProductsInfo.length > 0) {
+            if(Array.isArray(parsedProducts) && parsedProducts.length > 0){
+                const resultProductsInfo: IProduct[] = await this.getProductsInfo(parsedProducts);
+                this.productsInfo = resultProductsInfo;
 
-                let resultPrice = 0
-                for (let product of resultProductsInfo) {
+                if (resultProductsInfo.length > 0) {
 
-                    const productSum = product.count * product?.prices[0].price;
-                    resultPrice += productSum;
+                    let resultPrice = 0
+                    for (let product of resultProductsInfo) {
+
+                        const productSum = product.count * product?.prices[0].price;
+                        resultPrice += productSum;
+
+                    }
+
+                    this.price = parseFloat(resultPrice.toString()).toFixed(2);
+                    this.priceAvailable = true;
 
                 }
+            }
 
-                this.price = parseFloat(resultPrice.toString()).toFixed(2);
-                this.priceAvailable = true;
+            if(this.products === 'custom'){
+                const parsedPayload = JSON.parse(this.payload);
 
+                if(!parsedPayload.products){
+                    this.errorTitle = 'Error';
+                    this.errorText =
+                        'We couldn’t get product data from the payload. Please check the data source or try again later.';
+                    this.goToStep('error');
+                    this.dispatchErrorEvent('Get Product Data Error', 'We couldn’t get product data from the payload. Please check the data source or try again later.');
+
+                    return;
+                }
+
+                const resultProducts = [];
+                for(let product of parsedPayload.products){
+                    const resultProductData = {
+                        id: parsedPayload.products.indexOf(product) + 1,
+                        name: product.name,
+                        description: product.description,
+                        image: product.image,
+                        createdAt: '',
+                        updatedAt: '',
+                        prices: [
+                            {
+                                currency: {
+                                    id: '5e091838-d7bb-4365-a395-84d82d1ac7c2',
+                                    symbol: 'USD',
+                                    code: 840
+                                },
+                                price: product.price
+                            }
+                        ],
+                        count: product.count,
+                    }
+                    resultProducts.push(resultProductData);
+                }
+                this.productsInfo = resultProducts;
+
+                if (resultProducts.length > 0) {
+
+                    let resultPrice = 0
+                    for (let product of resultProducts) {
+
+                        const productSum = product.count * product?.prices[0].price;
+                        resultPrice += productSum;
+
+                    }
+
+                    this.price = parseFloat(resultPrice.toString()).toFixed(2);
+                    this.priceAvailable = true;
+
+                }
             }
 
         }
@@ -628,19 +686,41 @@ export class PaymentApp extends LitElement {
                 cryptocurrency: this.selectedTokenSymbol,
                 currency: 'USD',
                 appId: this.appId,
+                payload: {}
             }
 
-            if (this.products.length > 0) {
-                params['products'] = this.products;
-            } else {
-                params['price'] = Number(this.price);
+            if(this.products){
+
+                const parsedProducts = (this.products === 'custom') ? this.products : JSON.parse(this.products);
+
+                if(Array.isArray(parsedProducts) && parsedProducts.length > 0){
+                    params['products'] = parsedProducts;
+                }
+
+                if(this.products === 'custom'){
+                    params['price'] = Number(this.price);
+
+                    const parsedPayload = JSON.parse(this.payload);
+                    params.payload.products = parsedPayload.products;
+                }
+
             }
 
-            if (this.invoiceMessage !== '') {
-                params['payload'] = {
-                    message: this.invoiceMessage
-                };
+            if(this.invoiceMessage !== '') {
+                params.payload.message = this.invoiceMessage;
             }
+
+            // if (this.products.length > 0) {
+            //     params['products'] = this.products;
+            // } else {
+            //     params['price'] = Number(this.price);
+            // }
+
+            // if (this.invoiceMessage !== '') {
+            //     params['payload'] = {
+            //         message: this.invoiceMessage
+            //     };
+            // }
 
             const invoice = await this.API.invoice.create(params);
             invoiceId = invoice.id;
@@ -731,6 +811,7 @@ export class PaymentApp extends LitElement {
 
                 try {
                     const newInvoiceData = await this.API.invoice.get(invoiceId);
+                    console.log('newInvoiceData', newInvoiceData)
                     this.invoice = newInvoiceData;
 
                     if (newInvoiceData.status === 'processing') {
@@ -815,8 +896,35 @@ export class PaymentApp extends LitElement {
         this.invoice = result;
         this.price = result.price || '';
 
-        if (result.products && result.products.length > 0) {
+        if(result.products && result.products.length > 0) {
             this.productsInfo = await this.getProductsInfo(result.products)
+        }else if(result.payload.products && result.payload.products.length > 0){
+
+            const resultProducts = [];
+            for(let product of result.payload.products){
+                const resultProductData = {
+                    id: result.payload.products.indexOf(product) + 1,
+                    name: product.name,
+                    description: product.description,
+                    image: product.image,
+                    createdAt: '',
+                    updatedAt: '',
+                    prices: [
+                        {
+                            currency: {
+                                id: '5e091838-d7bb-4365-a395-84d82d1ac7c2',
+                                symbol: 'USD',
+                                code: 840
+                            },
+                            price: product.price
+                        }
+                    ],
+                    count: product.count,
+                }
+                resultProducts.push(resultProductData);
+            }
+            this.productsInfo = resultProducts;
+
         }
 
         this.dispatchInvoiceChangedEvent(result.status, result);

@@ -46,6 +46,14 @@ export interface IProduct {
     prices: IProductPrice[];
     count: number;
 }
+//
+// export interface ICustomProduct {
+//     name: string;
+//     description?: string;
+//     image?: string;
+//     price: number;
+//     count: number;
+// }
 
 export interface IProductPrice {
     currency: Currency;
