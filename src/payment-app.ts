@@ -704,6 +704,8 @@ export class PaymentApp extends LitElement {
                     params.payload.products = parsedPayload.products;
                 }
 
+            }else{
+                params.price = Number(this.price);
             }
 
             if(this.invoiceMessage !== '') {
@@ -898,7 +900,7 @@ export class PaymentApp extends LitElement {
 
         if(result.products && result.products.length > 0) {
             this.productsInfo = await this.getProductsInfo(result.products)
-        }else if(result.payload.products && result.payload.products.length > 0){
+        }else if(result.payload?.products && result.payload?.products.length > 0){
 
             const resultProducts = [];
             for(let product of result.payload.products){
