@@ -490,7 +490,7 @@ export class PaymentApp extends LitElement {
                                 .selectedTokenSymbol=${this.selectedTokenSymbol}
                                 .selectedNetworkSymbol=${this.selectedNetworkSymbol}
                                 .price=${this.price}
-                                .returnButtonShow=${!this.priceAvailable || this.priceAvailable && this.noPreview === 'true'}
+                                .returnButtonShow=${!this.priceAvailable || this.priceAvailable && this.noPreview !== 'true'}
                                 .productsInfo=${this.productsInfo}
                                 @updateSelectedToken=${(event: CustomEvent) => {
                                     this.selectedTokenSymbol = event.detail.tokenSymbol;
