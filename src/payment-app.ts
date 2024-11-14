@@ -189,7 +189,7 @@ export class PaymentApp extends LitElement {
             const modalParams = JSON.parse(this.modal);
             this.openMode = (modalParams.open) ? modalParams.open : 'auto'
 
-            if(modalParams.open === 'modal'){
+            if(modalParams.open === 'modal' && modalParams?.config){
 
                 const configKeys = Object.keys(modalParams.config);
 
