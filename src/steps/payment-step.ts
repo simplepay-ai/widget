@@ -433,7 +433,7 @@ export class PaymentStep extends LitElement {
                                                                                     </div>
 
                                                                                     <div class="priceWrapper">
-                                                                                        <p class="price">${item.product.prices[0].price}
+                                                                                        <p class="price">${parseFloat(item.product.prices[0].price.toString()).toFixed(2)}
                                                                                             ${item.product.prices[0].currency.symbol}</p>
                                                                                         <p class="count">Count: ${item.count}</p>
                                                                                     </div>

@@ -694,7 +694,10 @@ export class PaymentApp extends LitElement {
                 const parsedProducts = (this.products === 'custom') ? this.products : JSON.parse(this.products);
 
                 if(Array.isArray(parsedProducts) && parsedProducts.length > 0){
-                    params['products'] = parsedProducts;
+                    params['products'] = [...parsedProducts.map((item) => {
+                        item.count = Number(item.count);
+                        return item
+                    })];
                 }
 
                 if(this.products === 'custom'){
