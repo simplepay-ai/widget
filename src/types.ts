@@ -11,13 +11,20 @@ export type AppStep =
     | 'setWallet'
     | 'payment'
     | 'processing'
-    | 'success';
+    | 'success'
+
+    | 'typeSelect'
+    | 'newSetPrice'
+    | 'setProduct'
+    | 'setCart';
 
 export type CurrentPriceStep = 'priceEnter' | 'messageEnter';
 
 export type WalletType = 'MetaMask' | 'Coinbase' | 'WalletConnect' | 'Injected' | 'Custom'
 
 export type OpenMode = 'auto' | 'modal' | 'button' | 'trigger'
+
+export type InvoiceType = 'request' | 'item' | 'cart'
 
 export interface IOpenButton{
     backgroundColor: string;
