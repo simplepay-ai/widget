@@ -192,6 +192,9 @@ export class PaymentApp extends LitElement {
     @property({attribute: false, type: Array})
     private invoiceCart: ICartProduct[] = [];
 
+    @property({attribute: false, type: String})
+    private invoicePrice: string = '0';
+
     constructor() {
         super();
 
@@ -497,8 +500,8 @@ export class PaymentApp extends LitElement {
                     ? html`
                         <new-set-price-step
                                 .appInfo=${this.appInfo}
-                                .price=${this.price}
-                                @updatePrice=${(event: CustomEvent) => (this.price = event.detail.price)}
+                                .price=${this.invoicePrice}
+                                @updatePrice=${(event: CustomEvent) => (this.invoicePrice = event.detail.price)}
                                 @nextStep=${this.nextStep}
                                 @prevStep=${this.prevStep}
                         ></new-set-price-step>`
@@ -513,6 +516,8 @@ export class PaymentApp extends LitElement {
                                 @updateInvoiceProductId=${(event: CustomEvent) => (this.invoiceProductId = event.detail.invoiceProductId)}
                                 @nextStep=${this.nextStep}
                                 @prevStep=${this.prevStep}
+                                @updateNotification=${(event: CustomEvent) =>
+                                        this.updateNotification(event)}
                         ></product-step>`
                     : ''
             }
@@ -1224,19 +1229,19 @@ export class PaymentApp extends LitElement {
             }
         }
 
-        if (this.appStep === 'newSetPrice' && this.price && Number(this.price) >= 1) {
+        if (this.appStep === 'newSetPrice' && this.invoicePrice && Number(this.invoicePrice) >= 1) {
 
-            this.price = parseFloat(this.price).toFixed(2);
-            //CREATE INVOICE
+            this.invoicePrice = parseFloat(this.invoicePrice).toFixed(2);
+            this.createInvoice();
 
         }
 
         if (this.appStep === 'setProduct' && this.invoiceProductId) {
-            //CREATE INVOICE
+            this.createInvoice();
         }
 
         if (this.appStep === 'setCart' && this.invoiceCart.length > 0) {
-            //CREATE INVOICE
+            this.createInvoice();
         }
     }
 
@@ -1294,6 +1299,10 @@ export class PaymentApp extends LitElement {
 
     private goToStep(stepName: AppStep) {
         this.appStep = stepName;
+    }
+
+    private createInvoice(){
+        console.log('createInvoice')
     }
 
     private async getApp() {

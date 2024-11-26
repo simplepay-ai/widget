@@ -114,6 +114,24 @@ export class ProductStep extends LitElement {
 
     private dispatchNextStep() {
 
+        const product = this.products.find((item) => item.id === this.invoiceProductId);
+        if(!product || product.prices[0].price < 1){
+            const options = {
+                detail: {
+                    notificationData: {
+                        title: 'Minimum Invoice Amount',
+                        text: 'The minimum amount required to create an invoice is 1 USD. Please adjust the amount and try again.',
+                        buttonText: 'Confirm'
+                    },
+                    notificationShow: true
+                },
+                bubbles: true,
+                composed: true
+            };
+            this.dispatchEvent(new CustomEvent('updateNotification', options));
+            return;
+        }
+
         const nextStepEvent = new CustomEvent('nextStep', {
             bubbles: true,
             composed: true
