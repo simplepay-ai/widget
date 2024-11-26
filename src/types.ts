@@ -72,3 +72,8 @@ export interface IProductInvoice {
     product?: Product,
     count: number
 }
+
+export interface ICartProduct{
+    id: string;
+    count: number;
+}

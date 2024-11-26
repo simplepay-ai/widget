@@ -12,7 +12,7 @@ import {customElement} from 'lit/decorators.js';
 import {
     AppStep,
     AppTheme,
-    CurrentPriceStep,
+    CurrentPriceStep, ICartProduct,
     INotification, InvoiceType, IOpenButton,
     IProduct,
     IProductInvoice,
@@ -37,6 +37,7 @@ import './steps/preview-step.ts';
 import './steps/type-select.ts';
 import './steps/new-set-price-step.ts';
 import './steps/product-step.ts';
+import './steps/cart-step.ts';
 import {checkWalletAddress} from "./util.ts";
 import themesConfig from '../themesConfig.json';
 
@@ -187,6 +188,9 @@ export class PaymentApp extends LitElement {
 
     @property({attribute: false, type: String})
     private invoiceProductId: string = '';
+
+    @property({attribute: false, type: Array})
+    private invoiceCart: ICartProduct[] = [];
 
     constructor() {
         super();
@@ -510,6 +514,63 @@ export class PaymentApp extends LitElement {
                                 @nextStep=${this.nextStep}
                                 @prevStep=${this.prevStep}
                         ></product-step>`
+                    : ''
+            }
+
+            ${this.appStep === 'setCart'
+                    ? html`
+                        <cart-step
+                                .products=${this.appProducts}
+                                .cart=${this.invoiceCart}
+                                @addToCart=${(event: CustomEvent) => {
+                                    const productId = event.detail.productId;
+                                    if(productId){
+                                        const check = this.invoiceCart.find((item: ICartProduct) => item.id === productId);
+                                        
+                                        if(check){
+                                            this.invoiceCart = [
+                                                    ...this.invoiceCart.filter((item: ICartProduct) => item.id !== productId),
+                                                {
+                                                    id: check.id,
+                                                    count: check.count + 1
+                                                }
+                                            ]
+                                        }else{
+                                            this.invoiceCart = [
+                                                ...this.invoiceCart,
+                                                {
+                                                    id: productId,
+                                                    count: 1
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }}
+                                @removeFromCart=${(event: CustomEvent) => {
+                                    const productId = event.detail.productId;
+                                    if(productId){
+
+                                        const check = this.invoiceCart.find((item: ICartProduct) => item.id === productId);
+                                        if(check && check.count - 1 > 0){
+                                            this.invoiceCart = [
+                                                ...this.invoiceCart.filter((item: ICartProduct) => item.id !== productId),
+                                                {
+                                                    id: check.id,
+                                                    count: check.count - 1
+                                                }
+                                            ]
+                                        }else{
+                                            this.invoiceCart = [
+                                                ...this.invoiceCart.filter((item: ICartProduct) => item.id !== productId),
+                                            ]
+                                        }
+                                    }
+                                }}
+                                @nextStep=${this.nextStep}
+                                @prevStep=${this.prevStep}
+                                @updateNotification=${(event: CustomEvent) =>
+                                        this.updateNotification(event)}
+                        ></cart-step>`
                     : ''
             }
 
@@ -1173,6 +1234,10 @@ export class PaymentApp extends LitElement {
         if (this.appStep === 'setProduct' && this.invoiceProductId) {
             //CREATE INVOICE
         }
+
+        if (this.appStep === 'setCart' && this.invoiceCart.length > 0) {
+            //CREATE INVOICE
+        }
     }
 
     private async prevStep() {
@@ -1217,6 +1282,11 @@ export class PaymentApp extends LitElement {
         }
 
         if (this.appStep === 'setProduct') {
+            this.goToStep('typeSelect');
+            return;
+        }
+
+        if (this.appStep === 'setCart') {
             this.goToStep('typeSelect');
             return;
         }
