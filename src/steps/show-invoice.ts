@@ -610,6 +610,8 @@ export class ShowInvoice extends LitElement {
                                                     const time = new Date(item.updatedAt).toTimeString()
                                                     const updateDate = `${date} ${time.split(':')[0]}:${time.split(':')[1]}`
 
+                                                    const formatPrice = (item.amount) ? roundUpAmount(item.amount, item.cryptocurrency.stable).toString() : '---';
+
                                                     return html`
                                                         <div class="transactionItem"
                                                              @click=${() => {
@@ -643,9 +645,16 @@ export class ShowInvoice extends LitElement {
                                                                         )}
                                                                     </p>
                                                                 </div>
-                                                                <p class="secondary">
-                                                                    Amount: ${(item.amount) ? item.amount : '---'}USD
-                                                                </p>
+                                                                
+                                                                ${
+                                                                        (formatPrice !== '---')
+                                                                        ? html`
+                                                                                    <p class="secondary">
+                                                                                        Amount: ${formatPrice} ${item.cryptocurrency.symbol}
+                                                                                    </p>
+                                                                                `
+                                                                                : ''
+                                                                }
                                                             </div>
                                                             <div class="rightSection">
                                                                 <div class="status">

@@ -590,6 +590,10 @@ export class PaymentApp extends LitElement {
         if(changedProperties.has('appStep') && this.invoice){
             this.getInvoiceTransactions(this.invoice.id);
         }
+
+        if(changedProperties.has('appStep') && this.invoice && this.appStep === 'showInvoice'){
+            this.getInvoice(this.invoice.id);
+        }
     }
 
     render() {
@@ -1364,83 +1368,83 @@ export class PaymentApp extends LitElement {
 
     private nextStep() {
 
-        if (this.appStep === 'preview') {
-            if (!this.selectedTokenSymbol || !this.selectedNetworkSymbol) {
-                return;
-            }
-
-            this.priceStep = (this.priceAvailable) ? 'messageEnter' : 'priceEnter'
-
-            this.goToStep('setPrice');
-            return;
-
-        }
-
-        if (this.appStep === 'setPrice') {
-
-            if (this.priceStep === 'priceEnter' && (!this.price || Number(this.price) < 1)) {
-                return;
-            }
-            if (this.priceStep === 'messageEnter' && this.payloadMessage && (this.invoiceMessage.trim() === '' || this.invoiceMessage.length > 124)) {
-                return;
-            }
-            if (this.priceStep === 'messageEnter' && this.payloadMessage && this.invoiceMessage.length > 124) {
-                return;
-            }
-
-            if (this.priceStep === 'priceEnter') {
-                this.price = parseFloat(this.price).toFixed(2);
-
-                if (this.payloadMessage) {
-                    this.priceStep = 'messageEnter';
-                    return;
-                }
-
-                if (this.noPreview === 'true' && !this.tokenAvailable) {
-                    this.goToStep('setToken');
-                    return;
-                }
-
-                this.goToStep('setWallet');
-                return;
-            }
-
-            if (this.priceStep === 'messageEnter') {
-
-                if (this.noPreview === 'true' && !this.tokenAvailable) {
-                    this.goToStep('setToken');
-                    return;
-                }
-
-                this.goToStep('setWallet');
-                return;
-
-            }
-
-        }
-
-        if (this.appStep === 'setToken' && this.selectedTokenSymbol && this.selectedNetworkSymbol) {
-            this.goToStep('setWallet');
-            return;
-        }
-
-        if (this.appStep === 'setWallet' && this.walletAddress && !checkWalletAddress(this.walletAddress, this.selectedNetworkSymbol)) {
-            this.notificationData = {
-                title: 'Invalid Wallet Address',
-                text: 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.',
-                buttonText: 'Confirm'
-            };
-            this.notificationShow = true;
-
-            this.dispatchErrorEvent('Invalid Wallet Address', 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.');
-        }
-
-        if (this.appStep === 'setWallet' && this.walletAddress && checkWalletAddress(this.walletAddress, this.selectedNetworkSymbol)) {
-
-            this.creatingInvoice = true;
-            // this.createInvoice();
-
-        }
+        // if (this.appStep === 'preview') {
+        //     if (!this.selectedTokenSymbol || !this.selectedNetworkSymbol) {
+        //         return;
+        //     }
+        //
+        //     this.priceStep = (this.priceAvailable) ? 'messageEnter' : 'priceEnter'
+        //
+        //     this.goToStep('setPrice');
+        //     return;
+        //
+        // }
+        //
+        // if (this.appStep === 'setPrice') {
+        //
+        //     if (this.priceStep === 'priceEnter' && (!this.price || Number(this.price) < 1)) {
+        //         return;
+        //     }
+        //     if (this.priceStep === 'messageEnter' && this.payloadMessage && (this.invoiceMessage.trim() === '' || this.invoiceMessage.length > 124)) {
+        //         return;
+        //     }
+        //     if (this.priceStep === 'messageEnter' && this.payloadMessage && this.invoiceMessage.length > 124) {
+        //         return;
+        //     }
+        //
+        //     if (this.priceStep === 'priceEnter') {
+        //         this.price = parseFloat(this.price).toFixed(2);
+        //
+        //         if (this.payloadMessage) {
+        //             this.priceStep = 'messageEnter';
+        //             return;
+        //         }
+        //
+        //         if (this.noPreview === 'true' && !this.tokenAvailable) {
+        //             this.goToStep('setToken');
+        //             return;
+        //         }
+        //
+        //         this.goToStep('setWallet');
+        //         return;
+        //     }
+        //
+        //     if (this.priceStep === 'messageEnter') {
+        //
+        //         if (this.noPreview === 'true' && !this.tokenAvailable) {
+        //             this.goToStep('setToken');
+        //             return;
+        //         }
+        //
+        //         this.goToStep('setWallet');
+        //         return;
+        //
+        //     }
+        //
+        // }
+        //
+        // if (this.appStep === 'setToken' && this.selectedTokenSymbol && this.selectedNetworkSymbol) {
+        //     this.goToStep('setWallet');
+        //     return;
+        // }
+        //
+        // if (this.appStep === 'setWallet' && this.walletAddress && !checkWalletAddress(this.walletAddress, this.selectedNetworkSymbol)) {
+        //     this.notificationData = {
+        //         title: 'Invalid Wallet Address',
+        //         text: 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.',
+        //         buttonText: 'Confirm'
+        //     };
+        //     this.notificationShow = true;
+        //
+        //     this.dispatchErrorEvent('Invalid Wallet Address', 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.');
+        // }
+        //
+        // if (this.appStep === 'setWallet' && this.walletAddress && checkWalletAddress(this.walletAddress, this.selectedNetworkSymbol)) {
+        //
+        //     this.creatingInvoice = true;
+        //     // this.createInvoice();
+        //
+        // }
 
         ///////////////////////
 
@@ -1676,170 +1680,6 @@ export class PaymentApp extends LitElement {
             this.notificationShow = true;
             this.creatingTransaction = false;
         }
-        
-        // let invoiceId: string = '';
-        // let invoiceWS = null;
-        //
-        // try {
-        //
-        //     invoiceWS = ws.appClientInvoice(this.appId, this.clientId);
-        //
-        //     let params: any = {
-        //         type: 'payment',
-        //         clientId: this.clientId,
-        //         from: this.walletAddress,
-        //         network: this.selectedNetworkSymbol,
-        //         cryptocurrency: this.selectedTokenSymbol,
-        //         currency: 'USD',
-        //         appId: this.appId,
-        //         payload: {}
-        //     }
-        //
-        //     if(this.products){
-        //
-        //         const parsedProducts = (this.products === 'custom') ? this.products : JSON.parse(this.products);
-        //
-        //         if(Array.isArray(parsedProducts) && parsedProducts.length > 0){
-        //             params['products'] = [...parsedProducts.map((item) => {
-        //                 item.count = Number(item.count);
-        //                 return item
-        //             })];
-        //         }
-        //
-        //         if(this.products === 'custom'){
-        //             params['price'] = Number(this.price);
-        //
-        //             const parsedPayload = JSON.parse(this.payload);
-        //             params.payload.products = parsedPayload.products;
-        //         }
-        //
-        //     }else{
-        //         params.price = Number(this.price);
-        //     }
-        //
-        //     if(this.invoiceMessage !== '') {
-        //         params.payload.message = this.invoiceMessage;
-        //     }
-        //
-        //     const invoice = await this.API.invoice.create(params);
-        //     invoiceId = invoice.id;
-        //
-        //     this.dispatchInvoiceChangedEvent('created', invoice);
-        //
-        // } catch (error) {
-        //     let errorTitle: string = '';
-        //     let errorText: string = '';
-        //
-        //     if (error instanceof ValidationError) {
-        //         const errorObject = error as ValidationError<InvoiceCreateErrors>;
-        //         const fieldsError: string[] = [];
-        //
-        //         for (const [key, value] of Object.entries(errorObject.errors)) {
-        //             fieldsError.push(`${key} - ${value}`);
-        //         }
-        //
-        //         errorTitle = 'Validation Error';
-        //         errorText = `Please review the following fields in your request: ${fieldsError.join(', ')}. Ensure they meet the required format and try again.`;
-        //
-        //     } else if (error instanceof HttpError) {
-        //         errorTitle = 'Request Error';
-        //         errorText = `An error occurred while creating the invoice. Please try again later.`;
-        //
-        //     } else {
-        //         errorTitle = 'Server Connection Error';
-        //         errorText = `We were unable to connect to the server. Please check your internet connection and try again.`;
-        //
-        //     }
-        //
-        //     this.notificationData = {
-        //         title: errorTitle,
-        //         text: errorText,
-        //         buttonText: 'Confirm'
-        //     };
-        //     this.notificationShow = true;
-        //     this.creatingInvoice = false;
-        //
-        //     this.dispatchErrorEvent(`Invoice Creating ${errorTitle}`, errorText);
-        // }
-        //
-        // if (invoiceWS) {
-        //
-        //     invoiceWS.on(InvoiceStatus.Processing, (invoice) => {
-        //         console.log('invoice Processing', invoice);
-        //         this.invoice = invoice;
-        //         this.dispatchInvoiceChangedEvent(invoice.status, invoice);
-        //         this.goToStep('payment');
-        //     });
-        //
-        //     invoiceWS.on(InvoiceStatus.Confirming, (invoice) => {
-        //         console.log('invoice Confirming', invoice);
-        //         this.invoice = invoice;
-        //         this.dispatchInvoiceChangedEvent(invoice.status, invoice);
-        //         this.goToStep('processing');
-        //     });
-        //
-        //     invoiceWS.on(InvoiceStatus.Rejected, (invoice) => {
-        //         console.log('invoice Rejected', invoice);
-        //         this.invoice = invoice;
-        //         this.dispatchInvoiceChangedEvent(invoice.status, invoice);
-        //         this.goToStep('success');
-        //     });
-        //
-        //     invoiceWS.on(InvoiceStatus.Canceled, (invoice) => {
-        //         console.log('invoice Cancelled', invoice);
-        //         this.invoice = invoice;
-        //         this.dispatchInvoiceChangedEvent(invoice.status, invoice);
-        //         this.goToStep('success');
-        //     });
-        //
-        //     invoiceWS.on(InvoiceStatus.Success, (invoice) => {
-        //         console.log('invoice Success', invoice);
-        //         this.invoice = invoice;
-        //         this.dispatchInvoiceChangedEvent(invoice.status, invoice);
-        //         this.goToStep('success');
-        //     });
-        //
-        //     invoiceWS.on(InvoiceStatus.Expired, (invoice) => {
-        //         console.log('invoice Expired', invoice);
-        //         this.invoice = invoice;
-        //         this.dispatchInvoiceChangedEvent(invoice.status, invoice);
-        //         this.goToStep('success');
-        //     });
-        //
-        //     setTimeout(async () => {
-        //
-        //         try {
-        //             const newInvoiceData = await this.API.invoice.get(invoiceId);
-        //             console.log('newInvoiceData', newInvoiceData)
-        //             this.invoice = newInvoiceData;
-        //
-        //             if (newInvoiceData.status === 'processing') {
-        //                 this.goToStep('payment');
-        //             }
-        //         } catch (error) {
-        //             let errorTitle: string = '';
-        //             let errorText: string = '';
-        //
-        //             if (error instanceof HttpError) {
-        //                 errorTitle = 'Request Error';
-        //                 errorText = `An error occurred while creating the invoice. Please try again later.`;
-        //             } else {
-        //                 errorTitle = 'Server Connection Error';
-        //                 errorText = `We were unable to connect to the server. Please check your internet connection and try again.`;
-        //             }
-        //
-        //             this.notificationData = {
-        //                 title: errorTitle,
-        //                 text: errorText,
-        //                 buttonText: 'Confirm'
-        //             };
-        //             this.notificationShow = true;
-        //             this.creatingInvoice = false;
-        //             this.dispatchErrorEvent(`Invoice Creating ${errorTitle}`, errorText);
-        //         }
-        //
-        //     }, 1000);
-        // }
 
     }
 

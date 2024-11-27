@@ -31,20 +31,24 @@ export class SuccessStep extends LitElement {
     tokenStandart: string = '';
 
     @property({attribute: false})
-    formatAmount: string = '';
+    amountToken: string = '';
 
     @property({attribute: false})
-    leftAmount: string = '';
+    amountUSD: string = '';
 
     connectedCallback() {
         super.connectedCallback();
 
-        const left = this.invoice?.total - this.invoice?.paid;
-        const price = left / Number(this.transaction?.rate);
-        this.leftAmount = parseFloat(left.toString()).toFixed(2);
-        this.formatAmount = roundUpAmount(price.toString(), this.transaction?.cryptocurrency.stable!).toString();
-        //@ts-ignore
-        // this.formatAmount = roundUpAmount(this.transaction?.rate, this.transaction?.cryptocurrency.stable);
+        if(this.transaction?.amount){
+            this.amountToken = roundUpAmount(this.transaction.amount, this.transaction.cryptocurrency.stable).toString();
+
+            const formatAmount = parseFloat(this.transaction.amount);
+            const formatRate = parseFloat(this.transaction.rate);
+            const calc = Number(formatAmount) * Number(formatRate);
+
+            this.amountUSD = parseFloat(calc.toString()).toFixed(2);
+        }
+
         this.tokenStandart = getTokenStandart(this.transaction?.network.symbol!);
     }
 
@@ -164,7 +168,7 @@ export class SuccessStep extends LitElement {
                         <div class="infoItem">
                             <p class="title">Amount:</p>
                             <p class="amountInfo">
-                                ${this.formatAmount} ${this.transaction?.cryptocurrency.symbol}
+                                ${(this.amountToken) ? this.amountToken : 0} ${this.transaction?.cryptocurrency.symbol}
                             </p>
                         </div>
                         <div class="infoItem">
@@ -285,7 +289,7 @@ export class SuccessStep extends LitElement {
                 </div>
 
                 <step-footer
-                        .price=${this.leftAmount}
+                        .price=${this.amountUSD}
                         .hasBackButton=${true}
                         .backButtonUrl=${this.backToStoreUrl}
                         .productsInfo=${this.invoice?.products}

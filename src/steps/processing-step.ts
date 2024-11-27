@@ -40,18 +40,23 @@ export class ProcessingStep extends LitElement {
     qrCodeUrl: string = '';
 
     @property({attribute: false})
-    formatAmount: string = '';
+    amountToken: string = '';
 
     @property({attribute: false})
-    leftAmount: string = '';
+    amountUSD: string = '';
 
     connectedCallback() {
         super.connectedCallback();
 
-        const left = this.invoice?.total - this.invoice?.paid;
-        const price = left / Number(this.transaction?.rate);
-        this.leftAmount = parseFloat(left.toString()).toFixed(2);
-        this.formatAmount = roundUpAmount(price.toString(), this.transaction?.cryptocurrency.stable!).toString();
+        if(this.transaction?.amount){
+            this.amountToken = roundUpAmount(this.transaction.amount, this.transaction.cryptocurrency.stable).toString();
+
+            const formatAmount = parseFloat(this.transaction.amount);
+            const formatRate = parseFloat(this.transaction.rate);
+            const calc = Number(formatAmount) * Number(formatRate);
+
+            this.amountUSD = parseFloat(calc.toString()).toFixed(2);
+        }
 
         this.progressMaxNumber = this.getBlocksCount(this.transaction?.network.symbol!);
         this.timeForBlock = this.getTimeForBlock(this.transaction?.network.symbol!);
@@ -182,7 +187,7 @@ export class ProcessingStep extends LitElement {
                         <div class="infoItem">
                             <p class="title">Amount:</p>
                             <p class="amountInfo">
-                                ${this.formatAmount} ${this.transaction?.cryptocurrency.symbol}
+                                ${this.amountToken} ${this.transaction?.cryptocurrency.symbol}
                             </p>
                         </div>
                         <div class="infoItem">
@@ -303,7 +308,7 @@ export class ProcessingStep extends LitElement {
                 </div>
 
                 <step-footer
-                        .price=${this.leftAmount}
+                        .price=${this.amountUSD}
                         .hasExplorerButton=${true}
                         .explorerLink=${this.qrCodeUrl}
                         .productsInfo=${this.invoice?.products}
