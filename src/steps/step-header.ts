@@ -189,7 +189,7 @@ export class StepHeader extends LitElement {
                 .leftSection {
                     display: flex;
                     align-items: center;
-                    gap: 12px;
+                    gap: 8px;
 
                     .backButton {
                         cursor: pointer;
@@ -313,9 +313,9 @@ export class StepHeader extends LitElement {
                         &.withAddress {
                             display: flex;
                             align-items: center;
-                            gap: 6px;
+                            gap: 4px;
                             padding: 4px;
-                            font-size: 12px;
+                            font-size: 10px;
                             font-weight: 700;
                             
                             @container(width < 350px){
@@ -326,7 +326,7 @@ export class StepHeader extends LitElement {
 
                             .network {
                                 border-radius: 50%;
-                                width: 17px;
+                                width: 12px;
                                 aspect-ratio: 1;
                                 background: var(--sp-widget-bg-color);
                             }

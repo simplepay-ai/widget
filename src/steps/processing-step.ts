@@ -1,45 +1,45 @@
-import { Invoice } from '@simplepay-ai/api-client';
+import {Invoice, Transaction} from '@simplepay-ai/api-client';
 //@ts-ignore
 import QRCode from 'corcojs-qrcode';
-import { PropertyValues } from 'lit';
-import { css, customElement, html, LitElement, property, query } from 'lit-element';
+import {PropertyValues} from 'lit';
+import {css, customElement, html, LitElement, property, query} from 'lit-element';
 import {IProduct} from "../types.ts";
 import {getTokenStandart, roundUpAmount} from "../util.ts";
 
 @customElement('processing-step')
 export class ProcessingStep extends LitElement {
 
-    @property({ type: Array })
-    productsInfo: IProduct[] = [];
-
-    @property({ type: Object })
+    @property({type: Object})
     invoice: Invoice | null = null;
 
-    @property({ type: String })
-    price: string = '';
+    @property({type: Object})
+    transaction: Transaction | null = null;
+
+    @property({type: Boolean})
+    hasReturnBack: boolean = true;
 
     @query('#qrcode')
     qrcode: any;
 
-    @property({ attribute: false })
+    @property({attribute: false})
     progressMaxNumber: number = 0;
 
-    @property({ attribute: false })
+    @property({attribute: false})
     progressNumber: number = 1;
 
-    @property({ attribute: false })
+    @property({attribute: false})
     timeForBlock: number = 1;
 
-    @property({ attribute: false })
+    @property({attribute: false})
     progressPercent: number = 0;
 
-    @property({ attribute: false })
+    @property({attribute: false})
     tokenStandart: string = '';
 
-    @property({ attribute: false, type: String })
+    @property({attribute: false, type: String})
     qrCodeUrl: string = '';
 
-    @property({ attribute: false })
+    @property({attribute: false})
     formatAmount: string = '';
 
     connectedCallback() {
@@ -48,9 +48,9 @@ export class ProcessingStep extends LitElement {
         //@ts-ignore
         this.formatAmount = roundUpAmount(this.invoice?.amount, this.invoice?.cryptocurrency.stable);
 
-        this.progressMaxNumber = this.getBlocksCount(this.invoice?.network.symbol!);
-        this.timeForBlock = this.getTimeForBlock(this.invoice?.network.symbol!);
-        this.tokenStandart = getTokenStandart(this.invoice?.network.symbol!);
+        this.progressMaxNumber = this.getBlocksCount(this.transaction?.network.symbol!);
+        this.timeForBlock = this.getTimeForBlock(this.transaction?.network.symbol!);
+        this.tokenStandart = getTokenStandart(this.transaction?.network.symbol!);
         this.progressPercent = Math.round((100 * this.progressNumber) / this.progressMaxNumber);
 
         setInterval(() => this.calcProgress(), this.timeForBlock);
@@ -59,10 +59,10 @@ export class ProcessingStep extends LitElement {
     firstUpdated(_changedProperties: PropertyValues) {
         super.firstUpdated(_changedProperties);
 
-        if (this.invoice) {
+        if (this.transaction) {
             const networkSymbol =
-                this.invoice?.network.symbol === 'bsc' ? 'bnb' : this.invoice?.network.symbol;
-            this.qrCodeUrl = `https://blockchair.com/${networkSymbol}/transaction/${this.invoice.txHash}?from=simplepay`;
+                this.transaction?.network.symbol === 'bsc' ? 'bnb' : this.transaction?.network.symbol;
+            this.qrCodeUrl = `https://blockchair.com/${networkSymbol}/transaction/${this.transaction.hash}?from=simplepay`;
 
             const qr = QRCode(0, 'H');
             qr.addData(this.qrCodeUrl);
@@ -76,13 +76,13 @@ export class ProcessingStep extends LitElement {
         return html`
             <div class=${`stepWrapper`}>
                 <step-header
-                    .title=${'Proсessing transaction'}
-                    .hasBackButton=${false}
-                    .hasShareButton=${true}
-                    .sharedData=${{
-                        title: 'New Invoice',
-                        url: this.qrCodeUrl
-                    }}
+                        .title= ${'Proсessing transaction'}
+                        .hasBackButton=${this.hasReturnBack}
+                        .hasShareButton=${true}
+                        .sharedData=${{
+                            title: 'New Invoice',
+                            url: this.qrCodeUrl
+                        }}
                 ></step-header>
 
                 <div class="stepContent">
@@ -99,7 +99,7 @@ export class ProcessingStep extends LitElement {
                                 <div class="infoItem">
                                     <p class="title">Invoice created</p>
                                     <p class="text">
-                                        ${`${new Date(this.invoice?.createdAt!).toLocaleDateString()} ${new Date(this.invoice?.createdAt!).toLocaleTimeString()}`}
+                                        ${`${new Date(this.transaction?.createdAt!).toLocaleDateString()} ${new Date(this.transaction?.createdAt!).toLocaleTimeString()}`}
                                     </p>
                                 </div>
                                 <div class="infoItem">
@@ -119,8 +119,8 @@ export class ProcessingStep extends LitElement {
 
                             <div class="icon">
                                 <img
-                                    src="https://loutre.blockchair.io/assets/kit/blockchair.cube.svg"
-                                    alt="blockchair icon"
+                                        src="https://loutre.blockchair.io/assets/kit/blockchair.cube.svg"
+                                        alt="blockchair icon"
                                 />
                             </div>
                         </div>
@@ -133,8 +133,8 @@ export class ProcessingStep extends LitElement {
 
                         <div class="loader">
                             <div
-                                class="progressLine"
-                                style=${`width: ${this.progressPercent}%`}
+                                    class="progressLine"
+                                    style=${`width: ${this.progressPercent}%`}
                             ></div>
                         </div>
 
@@ -150,33 +150,34 @@ export class ProcessingStep extends LitElement {
                             <p class="title">Network:</p>
                             <div class="networkInfo">
                                 <network-icon
-                                    .id=${this.invoice?.network.symbol}
-                                    width="16"
-                                    height="16"
-                                    class="icon"
+                                        .id=${this.transaction?.network.symbol}
+                                        width="16"
+                                        height="16"
+                                        class="icon"
                                 ></network-icon>
-                                <p>${this.invoice?.network.symbol}</p>
+                                <p>${this.transaction?.network.symbol}</p>
                             </div>
                         </div>
                         <div class="infoItem">
                             <p class="title">Token:</p>
                             <div class="tokenInfo">
                                 <token-icon
-                                    .id=${this.invoice?.cryptocurrency.symbol}
-                                    width="16"
-                                    height="16"
-                                    class="icon"
+                                        .id=${this.transaction?.cryptocurrency.symbol}
+                                        width="16"
+                                        height="16"
+                                        class="icon"
                                 ></token-icon>
-                                <p>${this.invoice?.cryptocurrency.symbol}</p>
+                                <p>${this.transaction?.cryptocurrency.symbol}</p>
                                 ${this.tokenStandart !== ''
-                                    ? html` <div class="badge">${this.tokenStandart}</div> `
-                                    : ''}
+                                        ? html`
+                                            <div class="badge">${this.tokenStandart}</div> `
+                                        : ''}
                             </div>
                         </div>
                         <div class="infoItem">
                             <p class="title">Amount:</p>
                             <p class="amountInfo">
-                                ${this.formatAmount} ${this.invoice?.cryptocurrency.symbol}
+                                ${this.formatAmount} ${this.transaction?.cryptocurrency.symbol}
                             </p>
                         </div>
                         <div class="infoItem">
@@ -184,13 +185,13 @@ export class ProcessingStep extends LitElement {
 
                             <div class="copyLine"
                                  @click=${(event: CustomEvent) =>
-                                         this.copyData(event, this.invoice?.from || '')}
+                                         this.copyData(event, this.transaction?.from || '')}
                             >
                                 <p>
-                                    ${this.invoice?.from.slice(0, 6)}
-                                        ...${this.invoice?.from.slice(
-                                            this.invoice?.from.length - 4,
-                                            this.invoice?.from.length
+                                    ${this.transaction?.from.slice(0, 6)}
+                                        ...${this.transaction?.from.slice(
+                                            this.transaction?.from.length - 4,
+                                            this.transaction?.from.length
                                     )}
                                 </p>
 
@@ -231,7 +232,7 @@ export class ProcessingStep extends LitElement {
                                             stroke-linecap="round"
                                             stroke-linejoin="round"
                                     >
-                                        <path d="M20 6 9 17l-5-5" />
+                                        <path d="M20 6 9 17l-5-5"/>
                                     </svg>
                                 </div>
                             </div>
@@ -241,13 +242,13 @@ export class ProcessingStep extends LitElement {
 
                             <div class="copyLine"
                                  @click=${(event: CustomEvent) =>
-                                         this.copyData(event, this.invoice?.to || '')}
+                                         this.copyData(event, this.transaction?.to || '')}
                             >
                                 <p>
-                                    ${this.invoice?.to.slice(0, 6)}
-                                        ...${this.invoice?.to.slice(
-                                            this.invoice?.to.length - 4,
-                                            this.invoice?.to.length
+                                    ${this.transaction?.to.slice(0, 6)}
+                                        ...${this.transaction?.to.slice(
+                                            this.transaction?.to.length - 4,
+                                            this.transaction?.to.length
                                     )}
                                 </p>
 
@@ -288,7 +289,7 @@ export class ProcessingStep extends LitElement {
                                             stroke-linecap="round"
                                             stroke-linejoin="round"
                                     >
-                                        <path d="M20 6 9 17l-5-5" />
+                                        <path d="M20 6 9 17l-5-5"/>
                                     </svg>
                                 </div>
                             </div>
@@ -297,10 +298,10 @@ export class ProcessingStep extends LitElement {
                 </div>
 
                 <step-footer
-                    .price=${this.price}
-                    .hasExplorerButton=${true}
-                    .explorerLink=${this.qrCodeUrl}
-                    .productsInfo=${this.productsInfo}
+                        .price=${this.transaction?.amount}
+                        .hasExplorerButton=${true}
+                        .explorerLink=${this.qrCodeUrl}
+                        .productsInfo=${this.invoice?.products}
                 ></step-footer>
             </div>
         `;
@@ -558,7 +559,7 @@ export class ProcessingStep extends LitElement {
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
-                    
+
                     .title {
                         font-size: 16px;
                         line-height: 20px;
@@ -801,8 +802,8 @@ export class ProcessingStep extends LitElement {
                                 font-weight: 700;
                             }
                         }
-                        
-                        .copyLine{
+
+                        .copyLine {
                             display: flex;
                             align-items: center;
                             gap: 4px;
@@ -810,7 +811,7 @@ export class ProcessingStep extends LitElement {
                             transition-property: all;
                             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                             transition-duration: 150ms;
-                            
+
                             p {
                                 font-size: 12px;
                                 line-height: 20px;
@@ -820,7 +821,7 @@ export class ProcessingStep extends LitElement {
                                 transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                                 transition-duration: 150ms;
                             }
-                            
+
                             svg {
                                 width: 16px;
                                 height: 16px;
@@ -829,9 +830,9 @@ export class ProcessingStep extends LitElement {
                                 transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                                 transition-duration: 150ms;
                             }
-                            
+
                             .activeIcon,
-                            .defaultIcon{
+                            .defaultIcon {
                                 align-items: center;
                                 justify-content: center;
                             }
@@ -839,7 +840,7 @@ export class ProcessingStep extends LitElement {
                             .defaultIcon {
                                 display: flex;
                             }
-                            
+
                             .activeIcon {
                                 display: none;
                             }

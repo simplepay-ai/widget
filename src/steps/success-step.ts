@@ -1,53 +1,53 @@
-import { Invoice } from '@simplepay-ai/api-client';
+import {Invoice, Transaction} from '@simplepay-ai/api-client';
 //@ts-ignore
 import QRCode from 'corcojs-qrcode';
-import { PropertyValues } from 'lit';
-import { css, customElement, html, LitElement, property, query } from 'lit-element';
+import {PropertyValues} from 'lit';
+import {css, customElement, html, LitElement, property, query} from 'lit-element';
 import {IProduct} from "../types.ts";
 import {getTokenStandart, roundUpAmount} from "../util.ts";
 
 @customElement('success-step')
 export class SuccessStep extends LitElement {
 
-    @property({ type: Array })
-    productsInfo: IProduct[] = [];
-
-    @property({ type: Object })
+    @property({type: Object})
     invoice: Invoice | null = null;
 
-    @property({ type: String })
-    price: string = '';
+    @property({type: Object})
+    transaction: Transaction | null = null;
 
-    @property({ type: String })
+    @property({type: Boolean})
+    hasReturnBack: boolean = true;
+
+    @property({type: String})
     backToStoreUrl: string = '';
 
     @query('#qrcode')
     qrcode: any;
 
-    @property({ attribute: false, type: String })
+    @property({attribute: false, type: String})
     qrCodeUrl: string = '';
 
-    @property({ attribute: false })
+    @property({attribute: false})
     tokenStandart: string = '';
 
-    @property({ attribute: false })
+    @property({attribute: false})
     formatAmount: string = '';
 
     connectedCallback() {
         super.connectedCallback();
 
         //@ts-ignore
-        this.formatAmount = roundUpAmount(this.invoice?.amount, this.invoice?.cryptocurrency.stable);
-        this.tokenStandart = getTokenStandart(this.invoice?.network.symbol!);
+        this.formatAmount = roundUpAmount(this.transaction?.amount, this.transaction?.cryptocurrency.stable);
+        this.tokenStandart = getTokenStandart(this.transaction?.network.symbol!);
     }
 
     firstUpdated(_changedProperties: PropertyValues) {
         super.firstUpdated(_changedProperties);
 
-        if (this.invoice) {
+        if (this.transaction) {
             const networkSymbol =
-                this.invoice?.network.symbol === 'bsc' ? 'bnb' : this.invoice?.network.symbol;
-            this.qrCodeUrl = `https://blockchair.com/${networkSymbol}/transaction/${this.invoice.txHash}?from=simplepay`;
+                this.transaction?.network.symbol === 'bsc' ? 'bnb' : this.transaction?.network.symbol;
+            this.qrCodeUrl = `https://blockchair.com/${networkSymbol}/transaction/${this.transaction.hash}?from=simplepay`;
 
             const qr = QRCode(0, 'H');
             qr.addData(this.qrCodeUrl);
@@ -61,13 +61,13 @@ export class SuccessStep extends LitElement {
         return html`
             <div class=${`stepWrapper`}>
                 <step-header
-                    .title=${`${this.invoice?.status} transaction`}
-                    .hasBackButton=${false}
-                    .hasShareButton=${true}
-                    .sharedData=${ (this.invoice?.txHash) ? {
-                        title: 'New Invoice',
-                        url: this.qrCodeUrl
-                    } : null}
+                        .title=${`${this.transaction?.status} transaction`}
+                        .hasBackButton=${this.hasReturnBack}
+                        .hasShareButton=${true}
+                        .sharedData=${(this.transaction?.hash) ? {
+                            title: 'New Invoice',
+                            url: this.qrCodeUrl
+                        } : null}
                 ></step-header>
 
                 <div class="stepContent">
@@ -83,30 +83,30 @@ export class SuccessStep extends LitElement {
                                 <div class="infoItem">
                                     <p class="title">Invoice created</p>
                                     <p class="text">
-                                        ${`${new Date(this.invoice?.createdAt!).toLocaleDateString()} ${new Date(this.invoice?.createdAt!).toLocaleTimeString()}`}
+                                        ${`${new Date(this.transaction?.createdAt!).toLocaleDateString()} ${new Date(this.transaction?.createdAt!).toLocaleTimeString()}`}
                                     </p>
                                 </div>
                                 <div class="infoItem">
                                     <p class="title">Processing</p>
-                                    <p class="text capitalize">${this.invoice?.status}</p>
+                                    <p class="text capitalize">${this.transaction?.status}</p>
                                 </div>
 
                                 <div class="infoItem">
                                     <p class="title">
-                                        ${this.invoice?.status.toString() === 'success'
-                                            ? 'Payment success'
-                                            : 'Payment failed'}
+                                        ${this.transaction?.status.toString() === 'success'
+                                                ? 'Payment success'
+                                                : 'Payment failed'}
                                     </p>
                                     <p class="text">
-                                        ${`${new Date(this.invoice?.updatedAt!).toLocaleDateString()} ${new Date(this.invoice?.updatedAt!).toLocaleTimeString()}`}
+                                        ${`${new Date(this.transaction?.updatedAt!).toLocaleDateString()} ${new Date(this.transaction?.updatedAt!).toLocaleTimeString()}`}
                                     </p>
                                 </div>
                             </div>
                         </div>
                         <div class="rightSection">
                             ${
-                                    (this.invoice?.txHash)
-                                        ? html`
+                                    (this.transaction?.hash)
+                                            ? html`
                                                 <div id="qrcode" class="qrcode"></div>
 
                                                 <div class="icon">
@@ -130,33 +130,34 @@ export class SuccessStep extends LitElement {
                             <p class="title">Network:</p>
                             <div class="networkInfo">
                                 <network-icon
-                                    .id=${this.invoice?.network.symbol}
-                                    width="16"
-                                    height="16"
-                                    class="icon"
+                                        .id=${this.transaction?.network.symbol}
+                                        width="16"
+                                        height="16"
+                                        class="icon"
                                 ></network-icon>
-                                <p>${this.invoice?.network.symbol}</p>
+                                <p>${this.transaction?.network.symbol}</p>
                             </div>
                         </div>
                         <div class="infoItem">
                             <p class="title">Token:</p>
                             <div class="tokenInfo">
                                 <token-icon
-                                    .id=${this.invoice?.cryptocurrency.symbol}
-                                    width="16"
-                                    height="16"
-                                    class="icon"
+                                        .id=${this.transaction?.cryptocurrency.symbol}
+                                        width="16"
+                                        height="16"
+                                        class="icon"
                                 ></token-icon>
-                                <p>${this.invoice?.cryptocurrency.symbol}</p>
+                                <p>${this.transaction?.cryptocurrency.symbol}</p>
                                 ${this.tokenStandart !== ''
-                                    ? html` <div class="badge">${this.tokenStandart}</div> `
-                                    : ''}
+                                        ? html`
+                                            <div class="badge">${this.tokenStandart}</div> `
+                                        : ''}
                             </div>
                         </div>
                         <div class="infoItem">
                             <p class="title">Amount:</p>
                             <p class="amountInfo">
-                                ${this.formatAmount} ${this.invoice?.cryptocurrency.symbol}
+                                ${this.formatAmount} ${this.transaction?.cryptocurrency.symbol}
                             </p>
                         </div>
                         <div class="infoItem">
@@ -164,14 +165,14 @@ export class SuccessStep extends LitElement {
 
                             <div class="copyLine"
                                  @click=${(event: CustomEvent) =>
-            this.copyData(event, this.invoice?.from || '')}
+                                         this.copyData(event, this.transaction?.from || '')}
                             >
                                 <p>
-                                    ${this.invoice?.from.slice(0, 6)}
-                                        ...${this.invoice?.from.slice(
-            this.invoice?.from.length - 4,
-            this.invoice?.from.length
-        )}
+                                    ${this.transaction?.from.slice(0, 6)}
+                                        ...${this.transaction?.from.slice(
+                                            this.transaction?.from.length - 4,
+                                            this.transaction?.from.length
+                                    )}
                                 </p>
 
                                 <div class="defaultIcon">
@@ -211,7 +212,7 @@ export class SuccessStep extends LitElement {
                                             stroke-linecap="round"
                                             stroke-linejoin="round"
                                     >
-                                        <path d="M20 6 9 17l-5-5" />
+                                        <path d="M20 6 9 17l-5-5"/>
                                     </svg>
                                 </div>
                             </div>
@@ -221,14 +222,14 @@ export class SuccessStep extends LitElement {
 
                             <div class="copyLine"
                                  @click=${(event: CustomEvent) =>
-            this.copyData(event, this.invoice?.to || '')}
+                                         this.copyData(event, this.transaction?.to || '')}
                             >
                                 <p>
-                                    ${this.invoice?.to.slice(0, 6)}
-                                        ...${this.invoice?.to.slice(
-            this.invoice?.to.length - 4,
-            this.invoice?.to.length
-        )}
+                                    ${this.transaction?.to.slice(0, 6)}
+                                        ...${this.transaction?.to.slice(
+                                            this.transaction?.to.length - 4,
+                                            this.transaction?.to.length
+                                    )}
                                 </p>
 
                                 <div class="defaultIcon">
@@ -268,7 +269,7 @@ export class SuccessStep extends LitElement {
                                             stroke-linecap="round"
                                             stroke-linejoin="round"
                                     >
-                                        <path d="M20 6 9 17l-5-5" />
+                                        <path d="M20 6 9 17l-5-5"/>
                                     </svg>
                                 </div>
                             </div>
@@ -277,10 +278,10 @@ export class SuccessStep extends LitElement {
                 </div>
 
                 <step-footer
-                    .price=${this.price}
-                    .hasBackButton=${true}
-                    .backButtonUrl=${this.backToStoreUrl}
-                    .productsInfo=${this.productsInfo}
+                        .price=${this.transaction?.amount}
+                        .hasBackButton=${true}
+                        .backButtonUrl=${this.backToStoreUrl}
+                        .productsInfo=${this.invoice?.products}
                 ></step-footer>
             </div>
         `;
@@ -674,7 +675,8 @@ export class SuccessStep extends LitElement {
                                 font-weight: 700;
                             }
                         }
-                        .copyLine{
+
+                        .copyLine {
                             display: flex;
                             align-items: center;
                             gap: 4px;
@@ -682,7 +684,7 @@ export class SuccessStep extends LitElement {
                             transition-property: all;
                             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                             transition-duration: 150ms;
-                            
+
                             p {
                                 font-size: 12px;
                                 line-height: 20px;
@@ -703,7 +705,7 @@ export class SuccessStep extends LitElement {
                             }
 
                             .activeIcon,
-                            .defaultIcon{
+                            .defaultIcon {
                                 align-items: center;
                                 justify-content: center;
                             }

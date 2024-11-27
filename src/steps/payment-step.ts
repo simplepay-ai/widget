@@ -1,4 +1,4 @@
-import {Invoice, InvoiceProduct, Network} from '@simplepay-ai/api-client';
+import {Invoice, InvoiceProduct, Network, Transaction} from '@simplepay-ai/api-client';
 //@ts-ignore
 import QRCode from 'corcojs-qrcode';
 import {PropertyValues} from 'lit';
@@ -21,17 +21,21 @@ const ABI_USDT_ETH = [{"constant":true,"inputs":[],"name":"name","outputs":[{"na
 
 @customElement('payment-step')
 export class PaymentStep extends LitElement {
+
+    @property({type: Object})
+    transaction: Transaction | null = null;
+
     @property({type: Object})
     invoice: Invoice | null = null;
 
-    @property({type: String})
-    price: string = '';
+    @property({type: Boolean})
+    hasReturnBack: boolean = true;
 
     @property({type: String})
     walletAddress: string = '';
 
     @property({type: Boolean})
-    cancelingInvoice: boolean = false;
+    cancelingTransaction: boolean = false;
 
     @property({type: Boolean})
     checkingTransaction: boolean = false;
@@ -54,15 +58,12 @@ export class PaymentStep extends LitElement {
     @query('#qrcode')
     qrcode: any;
 
-    @property({attribute: false, type: Array})
-    products: InvoiceProduct[] = [];
-
     firstUpdated(_changedProperties: PropertyValues) {
         super.firstUpdated(_changedProperties);
 
-        if (this.invoice && this.invoice?.to) {
+        if (this.transaction && this.transaction?.to) {
             const qr = QRCode(0, 'H');
-            qr.addData(this.invoice?.to);
+            qr.addData(this.transaction?.to);
             qr.make();
 
             if(this.qrcode){
@@ -75,43 +76,8 @@ export class PaymentStep extends LitElement {
         super.connectedCallback();
 
         //@ts-ignore
-        this.formatAmount = roundUpAmount(this.invoice?.amount, this.invoice?.cryptocurrency.stable);
-        this.tokenStandart = getTokenStandart(this.invoice?.network.symbol!);
-
-        if(this.invoice?.products && this.invoice.products.length > 0){
-            this.products = this.invoice.products;
-            return;
-        }else if(this.invoice?.payload?.products && this.invoice?.payload?.products.length > 0){
-
-            for(let product of this.invoice?.payload?.products){
-
-                const result: InvoiceProduct = {
-                    count: product.count,
-                    product: {
-                        id: this.invoice?.payload?.products.indexOf(product),
-                        name: product.name,
-                        description: product.description,
-                        image: product.image,
-                        createdAt: '',
-                        updatedAt: '',
-                        prices: [
-                            {
-                                price: product.price,
-                                currency: {
-                                    id: '5e091838-d7bb-4365-a395-84d82d1ac7c2',
-                                    symbol: 'USD',
-                                    code: 840
-                                }
-                            }
-                        ]
-                    }
-                }
-                this.products.push(result);
-
-            }
-
-        }
-
+        this.formatAmount = roundUpAmount(this.transaction?.amount, this.transaction?.cryptocurrency.stable);
+        this.tokenStandart = getTokenStandart(this.transaction?.network.symbol!);
     }
 
     render() {
@@ -119,13 +85,13 @@ export class PaymentStep extends LitElement {
             <div class=${`stepWrapper`}>
                 <step-header
                         .title= ${'Awaiting for Payment'}
-                        .hasBackButton=${false}
+                        .hasBackButton=${this.hasReturnBack}
                         .showAddress=${true}
-                        .walletAddress=${this.invoice?.from}
+                        .walletAddress=${this.transaction?.from}
                 ></step-header>
 
                 ${
-                        (this.cancelingInvoice)
+                        (this.cancelingTransaction)
                                 ? html`
                                     <div class="stepContent">
                                         <div class="spinner">
@@ -140,7 +106,7 @@ export class PaymentStep extends LitElement {
                                                 />
                                             </svg>
 
-                                            <p>Canceling invoice ...</p>
+                                            <p>Canceling transaction ...</p>
                                         </div>
                                     </div>
                                 `
@@ -171,7 +137,7 @@ export class PaymentStep extends LitElement {
                 }
 
                 ${
-                        (!this.cancelingInvoice && !this.checkingTransaction && (!this.walletType || this.walletType === 'Custom'))
+                        (!this.cancelingTransaction && !this.checkingTransaction && (!this.walletType || this.walletType === 'Custom'))
                                 ? html`
                                     <div class="stepContent">
                                         <div class="topInfo">
@@ -179,12 +145,12 @@ export class PaymentStep extends LitElement {
                                                 <p class="title">Network:</p>
                                                 <div class="info">
                                                     <network-icon
-                                                            .id=${this.invoice?.network.symbol}
+                                                            .id=${this.transaction?.network.symbol}
                                                             width="16"
                                                             height="16"
                                                             class="icon"
                                                     ></network-icon>
-                                                    <p class="text">${this.invoice?.network.symbol}</p>
+                                                    <p class="text">${this.transaction?.network.symbol}</p>
                                                 </div>
                                             </div>
 
@@ -193,13 +159,13 @@ export class PaymentStep extends LitElement {
 
                                                 <div class="info">
                                                     <token-icon
-                                                            .id=${this.invoice?.cryptocurrency.symbol}
+                                                            .id=${this.transaction?.cryptocurrency.symbol}
                                                             width="16"
                                                             height="16"
                                                             class="icon"
                                                     ></token-icon>
 
-                                                    <p class="text">${this.invoice?.cryptocurrency.symbol}</p>
+                                                    <p class="text">${this.transaction?.cryptocurrency.symbol}</p>
 
                                                     ${this.tokenStandart !== ''
                                                             ? html`
@@ -213,13 +179,13 @@ export class PaymentStep extends LitElement {
                                             <div id="qrcode" class="qrcodeContainer"></div>
                                             <div class="tokenIconWrapper">
                                                 <token-icon
-                                                        .id=${this.invoice?.cryptocurrency.symbol}
+                                                        .id=${this.transaction?.cryptocurrency.symbol}
                                                         width="42"
                                                         height="42"
                                                         class="tokenIcon"
                                                 ></token-icon>
                                                 <network-icon
-                                                        .id=${this.invoice?.network.symbol}
+                                                        .id=${this.transaction?.network.symbol}
                                                         width="20"
                                                         height="20"
                                                         class="networkIcon"
@@ -237,7 +203,7 @@ export class PaymentStep extends LitElement {
                                                     <input
                                                             id="payAddress"
                                                             type="text"
-                                                            .value=${this.invoice?.to}
+                                                            .value=${this.transaction?.to}
                                                             readonly
                                                             disabled
                                                     />
@@ -245,7 +211,7 @@ export class PaymentStep extends LitElement {
                                                     <div
                                                             class="copyButton"
                                                             @click=${(event: CustomEvent) =>
-                                                                    this.copyData(event, this.invoice?.to || '')}
+                                                                    this.copyData(event, this.transaction?.to || '')}
                                                     >
                                                         <div class="default">
                                                             <svg
@@ -293,7 +259,7 @@ export class PaymentStep extends LitElement {
                                                     <input
                                                             id="payAmount"
                                                             type="text"
-                                                            .value=${`${this.formatAmount} ${this.invoice?.cryptocurrency.symbol}`}
+                                                            .value=${`${this.formatAmount} ${this.transaction?.cryptocurrency.symbol}`}
                                                             readonly
                                                             disabled
                                                     />
@@ -348,7 +314,7 @@ export class PaymentStep extends LitElement {
                 }
 
                 ${
-                        (!this.cancelingInvoice && !this.checkingTransaction && (this.walletType && this.walletType !== 'Custom'))
+                        (!this.cancelingTransaction && !this.checkingTransaction && (this.walletType && this.walletType !== 'Custom'))
                                 ? html`
                                     <div class="stepContent between">
 
@@ -357,12 +323,12 @@ export class PaymentStep extends LitElement {
                                                 <p class="title">Network:</p>
                                                 <div class="info">
                                                     <network-icon
-                                                            .id=${this.invoice?.network.symbol}
+                                                            .id=${this.transaction?.network.symbol}
                                                             width="16"
                                                             height="16"
                                                             class="icon"
                                                     ></network-icon>
-                                                    <p class="text">${this.invoice?.network.symbol}</p>
+                                                    <p class="text">${this.transaction?.network.symbol}</p>
                                                 </div>
                                             </div>
 
@@ -371,13 +337,13 @@ export class PaymentStep extends LitElement {
 
                                                 <div class="info">
                                                     <token-icon
-                                                            .id=${this.invoice?.cryptocurrency.symbol}
+                                                            .id=${this.transaction?.cryptocurrency.symbol}
                                                             width="16"
                                                             height="16"
                                                             class="icon"
                                                     ></token-icon>
 
-                                                    <p class="text">${this.invoice?.cryptocurrency.symbol}</p>
+                                                    <p class="text">${this.transaction?.cryptocurrency.symbol}</p>
 
                                                     ${this.tokenStandart !== ''
                                                             ? html`
@@ -388,7 +354,7 @@ export class PaymentStep extends LitElement {
                                         </div>
 
                                         ${
-                                                (this.products.length > 0)
+                                                (this.invoice?.products.length > 0)
                                                         ? html`
                                                             <div class="products">
                                                                 <p class="title">Products</p>
@@ -396,7 +362,7 @@ export class PaymentStep extends LitElement {
                                                                 <div class="productsList">
 
                                                                     ${
-                                                                            this.products.map((item: InvoiceProduct) => html`
+                                                                            this.invoice?.products.map((item: InvoiceProduct) => html`
                                                                                 <div class="productItem">
 
                                                                                     <div class=${`imageWrapper ${(!item.product.image) && 'placeholder'}`}>
@@ -449,7 +415,7 @@ export class PaymentStep extends LitElement {
                                         }
                                         
                                         ${
-                                                (this.products.length === 0)
+                                                (this.invoice?.products.length === 0)
                                                 ? html`
                                                             <div class="card">
                                                                 <svg class="image" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -461,7 +427,7 @@ export class PaymentStep extends LitElement {
                                                                 </svg>
 
                                                                 <p class="title">Amount</p>
-                                                                <p class="price">${`$${this.price}`}</p>
+                                                                <p class="price">${`$${this.transaction?.amount}`}</p>
                                                             </div>
                                                         `
                                                         : ''
@@ -494,18 +460,18 @@ export class PaymentStep extends LitElement {
                 }
 
                 <step-footer
-                        .price=${this.price}
+                        .price=${this.transaction?.amount}
                         .hasButton=${false}
                         .hasCancelButton=${true}
                         .hasTimer=${true}
-                        .timerTimeStart=${(Date.parse(this.invoice?.expireAt!) -
-                                Date.parse(this.invoice?.createdAt!)) /
+                        .timerTimeStart=${(Date.parse(this.transaction?.expireAt!) -
+                                Date.parse(this.transaction?.createdAt!)) /
                         1000}
-                        .timerTimeCurrent=${(Date.parse(this.invoice?.expireAt!) -
+                        .timerTimeCurrent=${(Date.parse(this.transaction?.expireAt!) -
                                 new Date().getTime()) /
                         1000}
-                        .buttonDisabled=${this.cancelingInvoice || this.connectorPaymentAwaiting || this.checkingTransaction}
-                        @footerCancelClick=${this.dispatchCancelInvoice}
+                        .buttonDisabled=${this.cancelingTransaction || this.connectorPaymentAwaiting || this.checkingTransaction}
+                        @footerCancelClick=${this.dispatchCancelTransaction}
                 ></step-footer>
             </div>
         `;
@@ -517,7 +483,7 @@ export class PaymentStep extends LitElement {
 
         if(this.walletType !== 'MetaMask'){
             try {
-                await switchChain(this.walletConnectorConfig, { chainId: (this.invoice?.network.symbol === 'bsc') ? bsc.id : mainnet.id })
+                await switchChain(this.walletConnectorConfig, { chainId: (this.transaction?.network.symbol === 'bsc') ? bsc.id : mainnet.id })
             }catch (e) {
 
                 const options = {
@@ -543,10 +509,10 @@ export class PaymentStep extends LitElement {
             setTimeout(() => reject(new Error('Timeout error')), 40000)
         );
 
-        switch (this.invoice?.network.symbol){
+        switch (this.transaction?.network.symbol){
             case 'bsc':
 
-                if(this.invoice?.cryptocurrency.symbol === 'USDT'){
+                if(this.transaction?.cryptocurrency.symbol === 'USDT'){
 
                     try {
 
@@ -556,24 +522,13 @@ export class PaymentStep extends LitElement {
                                 address: '0x55d398326f99059fF775485246999027B3197955',
                                 functionName: 'transfer',
                                 args: [
-                                    this.invoice?.to,
-                                    parseEther(this.invoice?.amount!)
+                                    this.transaction?.to,
+                                    parseEther(this.transaction?.amount!)
                                 ],
                                 chainId: bsc.id,
                             }),
                             timer,
                         ]);
-
-                        // const hashTransaction = await writeContract(this.walletConnectorConfig, {
-                        //     abi: ABI_USDT_BSC,
-                        //     address: '0x55d398326f99059fF775485246999027B3197955',
-                        //     functionName: 'transfer',
-                        //     args: [
-                        //         this.invoice?.to,
-                        //         parseEther(this.invoice?.amount!)
-                        //     ],
-                        //     chainId: bsc.id,
-                        // })
 
                         if(hashTransaction){
                             this.checkingTransaction = true;
@@ -584,11 +539,7 @@ export class PaymentStep extends LitElement {
 
                     }catch (e) {
 
-                        console.log(e)
-
                         const error = e as WriteContractErrorType;
-                        console.log('writeContract error', error)
-                        console.log('writeContract error message', error.message)
 
                         let messageTitle = '';
                         let messageText = '';
@@ -606,7 +557,7 @@ export class PaymentStep extends LitElement {
                         }else if(error.message.indexOf('not match the target chain') !== -1){
 
                             messageTitle = 'Transaction Canceled'
-                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the ${ (this.invoice.network.symbol === 'bsc') ? 'BNB' : 'Ethereum Mainnet' } network manually and try again.`
+                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the ${ (this.transaction.network.symbol === 'bsc') ? 'BNB' : 'Ethereum Mainnet' } network manually and try again.`
 
                         }else if(error.message.indexOf('Timeout error') !== -1){
 
@@ -645,15 +596,8 @@ export class PaymentStep extends LitElement {
                 break;
             case 'ethereum':
 
-                if(this.invoice?.cryptocurrency.symbol === 'USDT'){
+                if(this.transaction?.cryptocurrency.symbol === 'USDT'){
                     try {
-
-                        // const feesPerGas = await estimateFeesPerGas(this.walletConnectorConfig);
-                        // const gas = await estimateGas(this.walletConnectorConfig, {
-                        //     to: this.invoice?.to,
-                        //     value: parseUnits( this.invoice?.amount!, 6 )
-                        // })
-                        // const gasPrice = await getGasPrice(config)
 
                         const hashTransaction = await Promise.race([
                             writeContract(this.walletConnectorConfig, {
@@ -661,30 +605,13 @@ export class PaymentStep extends LitElement {
                                 address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
                                 functionName: 'transfer',
                                 args: [
-                                    this.invoice?.to,
-                                    parseUnits( this.invoice?.amount!, 6 )
+                                    this.transaction?.to,
+                                    parseUnits( this.transaction?.amount!, 6 )
                                 ],
                                 chainId: mainnet.id,
-                                // gas: gas,
-                                // maxFeePerGas: (feesPerGas as any).maxFeePerGas,
-                                // maxPriorityFeePerGas: (feesPerGas as any).maxPriorityFeePerGas,
                             }),
                             timer,
                         ]);
-
-                        // const hashTransaction = await writeContract(this.walletConnectorConfig, {
-                        //     abi: ABI_USDT_ETH,
-                        //     address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
-                        //     functionName: 'transfer',
-                        //     args: [
-                        //         this.invoice?.to,
-                        //         parseUnits( this.invoice?.amount!, 6 )
-                        //     ],
-                        //     chainId: mainnet.id,
-                        //     // gas: gas,
-                        //     // maxFeePerGas: (feesPerGas as any).maxFeePerGas,
-                        //     // maxPriorityFeePerGas: (feesPerGas as any).maxPriorityFeePerGas,
-                        // })
 
                         if(hashTransaction){
                             this.checkingTransaction = true;
@@ -696,8 +623,6 @@ export class PaymentStep extends LitElement {
                     }catch (e) {
 
                         const error = e as WriteContractErrorType;
-                        console.log('writeContract error', error)
-                        console.log('writeContract error message', error.message)
 
                         let messageTitle = '';
                         let messageText = '';
@@ -714,7 +639,7 @@ export class PaymentStep extends LitElement {
 
                         }else if(error.message.indexOf('not match the target chain') !== -1){
 
-                            const network: Network = this.invoice.network;
+                            const network: Network = this.transaction.network;
                             const networkName: any = (network && network.symbol === 'bsc') ? 'BNB' : 'Ethereum Mainnet'
 
                             messageTitle = 'Transaction Canceled'
@@ -764,21 +689,13 @@ export class PaymentStep extends LitElement {
             const hashTransaction = await Promise.race([
                 sendTransaction(this.walletConnectorConfig, {
                     //@ts-ignore
-                    to: this.invoice?.to,
-                    value: parseEther( this.invoice?.amount! ),
-                    chainId: (this.invoice?.network.symbol === 'bsc') ? bsc.id : mainnet.id,
+                    to: this.transaction?.to,
+                    value: parseEther( this.transaction?.amount! ),
+                    chainId: (this.transaction?.network.symbol === 'bsc') ? bsc.id : mainnet.id,
                     data: '0x'
                 }),
                 timer,
             ]);
-
-            // const hashTransaction = await sendTransaction(this.walletConnectorConfig, {
-            //     to: this.invoice?.to,
-            //     value: parseEther( this.invoice?.amount! ),
-            //     chainId: (this.invoice?.network.symbol === 'bsc') ? bsc.id : mainnet.id,
-            //     data: '0x'
-            // })
-            //
 
             if(hashTransaction){
                 this.checkingTransaction = true;
@@ -804,7 +721,7 @@ export class PaymentStep extends LitElement {
             }else if(error.message.indexOf('not match the target chain') !== -1){
 
                 messageTitle = 'Transaction Canceled'
-                messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the ${ (this.invoice?.network.symbol === 'bsc') ? 'BNB' : 'Ethereum Mainnet' } network manually and try again.`
+                messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the ${ (this.transaction?.network.symbol === 'bsc') ? 'BNB' : 'Ethereum Mainnet' } network manually and try again.`
 
             }else if(error.message.indexOf('Timeout error') !== -1){
 
@@ -839,13 +756,13 @@ export class PaymentStep extends LitElement {
         }
     }
 
-    private dispatchCancelInvoice() {
-        const cancelInvoiceEvent = new CustomEvent('cancelInvoice', {
+    private dispatchCancelTransaction() {
+        const cancelTransactionEvent = new CustomEvent('cancelTransaction', {
             bubbles: true,
             composed: true
         });
 
-        this.dispatchEvent(cancelInvoiceEvent);
+        this.dispatchEvent(cancelTransactionEvent);
     }
 
     private updatePaymentAwaiting(state: boolean) {

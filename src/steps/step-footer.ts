@@ -1,12 +1,16 @@
 import {css, html, LitElement, property} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {IProduct} from "../types.ts";
+import {InvoiceProduct} from "@simplepay-ai/api-client";
 
 @customElement('step-footer')
 export class StepFooter extends LitElement {
 
     @property({ type: Array })
     productsInfo: IProduct[] = [];
+
+    @property({ type: Array })
+    products: InvoiceProduct[] = [];
 
     @property({type: String})
     price: string = '';
@@ -80,11 +84,11 @@ export class StepFooter extends LitElement {
             setInterval(() => this.calcTimer(oneStep), 1000);
         }
 
-        if(this.productsInfo && this.productsInfo.length > 0){
-            for(let product of this.productsInfo){
-                this.totalSum += product.count * product.prices[0].price
-            }
-        }
+        // if(this.productsInfo && this.productsInfo.length > 0){
+        //     for(let product of this.productsInfo){
+        //         this.totalSum += product.count * product.prices[0].price
+        //     }
+        // }
     }
 
     render() {
@@ -99,14 +103,14 @@ export class StepFooter extends LitElement {
                                             @click=${this.dispatchCancelInvoice}
                                             ?disabled=${this.buttonDisabled}
                                     >
-                                        Cancel payment
+                                        Cancel transaction
                                     </button>
                                 `
                                 : ''
                 }
                 
                 ${
-                        !this.hasCancelButton && this.productsInfo.length === 0
+                        !this.hasCancelButton && this.products.length === 0
                             ? html`
                                     <div class="product">
                                         <div class="image placeholder">
@@ -118,7 +122,7 @@ export class StepFooter extends LitElement {
 
                                         <div class="price">
                                             <p>Total:</p>
-                                            <p>${this.price ? `${this.price} USD` : 'Custom'}</p>
+                                            <p>${this.price ? `${this.price} USD` : '0 USD'}</p>
                                         </div>
                                     </div>
                                 `
@@ -126,16 +130,16 @@ export class StepFooter extends LitElement {
                 }
 
                 ${
-                        !this.hasCancelButton && this.productsInfo.length > 0
+                        !this.hasCancelButton && this.products.length > 0
                                 ? html`
                                     <div class="product">
-                                        <div class=${`image ${ (this.productsInfo.length !== 1 || !this.productsInfo[0].image) && 'placeholder' }`}>
+                                        <div class=${`image ${ ((this.products.length === 1 && this.products[0].count > 1) || this.products.length > 1) && 'placeholder' }`}>
                                             
                                             ${
-                                                    (this.productsInfo.length === 1 && this.productsInfo[0].image)
+                                                    (this.products.length === 1 && this.products[0].count === 1 && this.products[0].product.image)
                                                         ? html`
                                                                 <img
-                                                                        src=${ this.productsInfo[0].image }
+                                                                        src=${ this.products[0].product.image }
                                                                         alt="product image"
                                                                 />
                                                             `
@@ -154,11 +158,11 @@ export class StepFooter extends LitElement {
                                             <div class="info">
                                                 <div class="row">
                                                     <p>Items:</p>
-                                                    <p>${this.productsInfo.length}</p>
+                                                    <p>${this.products.length}</p>
                                                 </div>
                                                 <div class="row">
                                                     <p>Total:</p>
-                                                    <p>${parseFloat(this.totalSum.toString()).toFixed(2)} USD</p>
+                                                    <p>${parseFloat(this.price.toString()).toFixed(2)} USD</p>
                                                 </div>
                                             </div>
 
@@ -285,7 +289,7 @@ export class StepFooter extends LitElement {
             </div>
 
             ${
-                    this.productsInfo.length > 0
+                    this.products.length > 0
                             ? html`
                                 <div class="fullProductInfo ${ (this.productInfoOpen) ? 'show' : '' }">
                                     
@@ -304,15 +308,15 @@ export class StepFooter extends LitElement {
                                             <div class="productsList">
 
                                                 ${
-                                                        this.productsInfo.map((item: IProduct) => html`
+                                                        this.products.map((item: InvoiceProduct) => html`
                                                     <div class="productItem">
 
-                                                        <div class=${`imageWrapper ${ (!item.image) && 'placeholder' }`}>
+                                                        <div class=${`imageWrapper ${ (!item.product.image) && 'placeholder' }`}>
 
                                                             ${
-                                                                    (item.image)
+                                                                    (item.product.image)
                                                                             ? html`
-                                                                                <img src=${item.image} alt="product image">
+                                                                                <img src=${item.product.image} alt="product image">
                                                             `
                                                                             : html`
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24" fill="none">
@@ -326,12 +330,12 @@ export class StepFooter extends LitElement {
                                                         </div>
 
                                                         <div class="info">
-                                                            <p class="name">${item.name}</p>
-                                                            <p class="description">${item.description}</p>
+                                                            <p class="name">${item.product.name}</p>
+                                                            <p class="description">${item.product.description}</p>
                                                         </div>
 
                                                         <div class="priceWrapper">
-                                                            <p class="price">${item.prices[0].price} ${item.prices[0].currency.symbol}</p>
+                                                            <p class="price">${item.product.prices[0].price} ${item.product.prices[0].currency.symbol}</p>
                                                             <p class="count">Count: ${item.count}</p>
                                                         </div>
 

@@ -3,7 +3,7 @@ import {
     Cryptocurrency,
     HttpError,
     Invoice, InvoiceCreateErrors,
-    InvoiceStatus, Network, Product,
+    InvoiceStatus, Network, Product, Transaction, TransactionCreateErrors,
     ValidationError,
     WsClient
 } from '@simplepay-ai/api-client';
@@ -39,6 +39,7 @@ import './steps/new-set-price-step.ts';
 import './steps/product-step.ts';
 import './steps/cart-step.ts';
 import './steps/show-invoice.ts';
+import './steps/new-wallet-step.ts';
 import {checkWalletAddress} from "./util.ts";
 import themesConfig from '../themesConfig.json';
 
@@ -126,7 +127,7 @@ export class PaymentApp extends LitElement {
     private notificationData: INotification | null = null;
 
     @property({attribute: false})
-    private cancelingInvoice: Boolean = false;
+    private cancelingTransaction: Boolean = false;
 
     @property({attribute: false})
     private connectorPaymentAwaiting: Boolean = false;
@@ -185,7 +186,13 @@ export class PaymentApp extends LitElement {
     private invoice: Invoice | null = null;
 
     @property({attribute: false})
+    private transaction: Transaction | null = null;
+
+    @property({attribute: false})
     private creatingInvoice: Boolean = false;
+
+    @property({attribute: false})
+    private creatingTransaction: Boolean = false;
 
     @property({attribute: false})
     private tokenAvailable: boolean = false;
@@ -195,6 +202,12 @@ export class PaymentApp extends LitElement {
 
     @property({attribute: false})
     private selectedNetworkSymbol: string = '';
+
+    @property({attribute: false})
+    private onlyTransaction: boolean = false;
+
+    @property({attribute: false})
+    private transactionInterval: any = null;
 
     constructor() {
         super();
@@ -272,10 +285,10 @@ export class PaymentApp extends LitElement {
         });
         this.clientId = this.clientId ? this.clientId : crypto.randomUUID();
 
-        if(this.invoiceId){
+        if (this.invoiceId) {
 
             this.tokens = await this.getTokens();
-            if(this.tokens && this.tokens.length === 0){
+            if (this.tokens && this.tokens.length === 0) {
                 this.errorTitle = 'Error';
                 this.errorText =
                     'Currently, there are no tokens available for selection as a payment option on this project.';
@@ -330,9 +343,11 @@ export class PaymentApp extends LitElement {
 
             }
 
-            if(this.transactionId){
-                //go to transaction
-            }else{
+            if (this.transactionId) {
+                this.onlyTransaction = true;
+                this.getTransaction(this.transactionId);
+                return;
+            } else {
                 this.getInvoice(this.invoiceId);
                 return;
             }
@@ -537,6 +552,35 @@ export class PaymentApp extends LitElement {
         if (changedProperties.has('invoice') && this.invoice?.id) {
             this.goToStep('showInvoice');
         }
+
+        if (changedProperties.has('transaction') && this.transaction?.id) {
+            switch (this.transaction?.status) {
+                case "processing":
+                    if(this.appStep !== 'payment'){
+                        this.goToStep('payment');
+                    }
+                    return;
+                case "confirming":
+                    if(this.appStep !== 'processing'){
+                        this.goToStep('processing');
+                    }
+                    return;
+                case "rejected":
+                case "canceled":
+                case "success":
+                case "expired":
+                    if(this.appStep !== 'success'){
+                        this.goToStep('success');
+                    }
+                    return;
+                default:
+                    break;
+            }
+        }
+
+        if(changedProperties.has('appStep') && this.appStep === 'success' && this.transactionInterval){
+            clearInterval(this.transactionInterval);
+        }
     }
 
     render() {
@@ -668,6 +712,71 @@ export class PaymentApp extends LitElement {
                         </show-invoice>`
                     : ''}
 
+            ${this.appStep === 'setNewWallet'
+                    ? html`
+                        <new-wallet-step
+                                .invoice=${this.invoice}
+                                .creatingTransaction=${this.creatingTransaction}
+                                .walletAddress=${this.walletAddress}
+                                .walletType=${this.walletType}
+                                .selectedTokenSymbol=${this.selectedTokenSymbol}
+                                .selectedNetworkSymbol=${this.selectedNetworkSymbol}
+                                .walletConnectorConfig=${this.walletConnectorConfig}
+                                @updateNotification=${(event: CustomEvent) =>
+                                        this.updateNotification(event)}
+                                @updateWalletType=${(event: CustomEvent) =>
+                                        (this.walletType = event.detail.walletType)}
+                                @updateWalletAddress=${(event: CustomEvent) =>
+                                        (this.walletAddress = event.detail.walletAddress)}
+                                @updateWalletConnectorConfig=${(event: CustomEvent) => {
+                                    this.walletConnectorConfig = event.detail.walletConnectorConfig
+                                }}
+                                @nextStep=${this.nextStep}
+                                @returnBack=${this.prevStep}
+                        >
+                        </new-wallet-step>`
+                    : ''}
+
+            ${this.appStep === 'payment'
+                    ? html`
+                        <payment-step
+                                .transaction=${this.transaction}
+                                .walletAddress=${this.walletAddress}
+                                .invoice=${this.invoice}
+                                .cancelingTransaction=${this.cancelingTransaction}
+                                .connectorPaymentAwaiting=${this.connectorPaymentAwaiting}
+                                .walletType=${this.walletType}
+                                .walletConnectorConfig=${(this.walletType === 'Custom') ? null : this.walletConnectorConfig}
+                                .hasReturnBack=${!this.onlyTransaction}
+                                @cancelTransaction=${this.cancelTransaction}
+                                @updatePaymentAwaiting=${(event: CustomEvent) =>
+                                        (this.connectorPaymentAwaiting = event.detail.connectorPaymentAwaiting)}
+                                @updateNotification=${(event: CustomEvent) =>
+                                        this.updateNotification(event)}
+                        ></payment-step>`
+                    : ''}
+            ${this.appStep === 'processing'
+                    ? html`
+                        <processing-step
+                                .invoice=${this.invoice}
+                                .transaction=${this.transaction}
+                                .hasReturnBack=${!this.onlyTransaction}
+                                @nextStep=${this.nextStep}
+                                @returnBack=${this.prevStep}
+                        ></processing-step>`
+                    : ''}
+            ${this.appStep === 'success'
+                    ? html`
+                        <success-step
+                                .invoice=${this.invoice}
+                                .transaction=${this.transaction}
+                                .backToStoreUrl=${this.backToStoreUrl}
+                                .hasReturnBack=${!this.onlyTransaction}
+                                @returnBack=${this.prevStep}
+                        ></success-step>`
+                    : ''}
+            
+
             ${this.appStep === 'preview'
                     ? html`
                         <preview-step
@@ -750,44 +859,6 @@ export class PaymentApp extends LitElement {
                                 .creatingInvoice=${this.creatingInvoice}
                                 @nextStep=${this.nextStep}
                         ></wallet-step>`
-                    : ''}
-            ${this.appStep === 'payment'
-                    ? html`
-                        <payment-step
-                                .price=${this.price}
-                                .walletAddress=${this.walletAddress}
-                                .invoice=${this.invoice}
-                                .cancelingInvoice=${this.cancelingInvoice}
-                                .connectorPaymentAwaiting=${this.connectorPaymentAwaiting}
-                                .walletType=${this.walletType}
-                                .walletConnectorConfig=${(this.walletType === 'Custom') ? null : this.walletConnectorConfig}
-                                @cancelInvoice=${this.cancelInvoice}
-                                @updatePaymentAwaiting=${(event: CustomEvent) =>
-                                        (this.connectorPaymentAwaiting = event.detail.connectorPaymentAwaiting)}
-                                @updateNotification=${(event: CustomEvent) =>
-                                        this.updateNotification(event)}
-                        ></payment-step>`
-                    : ''}
-            ${this.appStep === 'processing'
-                    ? html`
-                        <processing-step
-                                .price=${this.price}
-                                .invoice=${this.invoice}
-                                .productsInfo=${this.productsInfo}
-                                @nextStep=${this.nextStep}
-                                @returnBack=${this.prevStep}
-                        ></processing-step>`
-                    : ''}
-            ${this.appStep === 'success'
-                    ? html`
-                        <success-step
-                                .price=${this.price}
-                                .invoice=${this.invoice}
-                                .backToStoreUrl=${this.backToStoreUrl}
-                                .productsInfo=${this.productsInfo}
-                                @nextStep=${this.nextStep}
-                                @returnBack=${this.prevStep}
-                        ></success-step>`
                     : ''}
 
             <custom-notification
@@ -894,6 +965,55 @@ export class PaymentApp extends LitElement {
         }
         this.notificationShow = event.detail.notificationShow;
     }
+
+    // private async checkTransaction(transactionId){
+    //
+    //     try{
+    //         this.transaction = await this.API.transaction.get(transactionId);
+    //
+    //     }catch (e) {
+    //         if (e instanceof ValidationError) {
+    //             const error = e as ValidationError<InvoiceCreateErrors>;
+    //             console.log(error.errors);
+    //         }
+    //
+    //         if (e instanceof HttpError) {
+    //             const error = e as HttpError;
+    //             console.log(error.code);
+    //         }
+    //     }
+    //
+    //
+    //
+    //     //         invoiceWS.on(InvoiceStatus.Rejected, (invoice) => {
+    //     //             console.log('invoice Rejected', invoice);
+    //     //             this.invoice = invoice;
+    //     //             this.dispatchInvoiceChangedEvent(invoice.status, invoice);
+    //     //             this.goToStep('success');
+    //     //         });
+    //     //
+    //     //         invoiceWS.on(InvoiceStatus.Canceled, (invoice) => {
+    //     //             console.log('invoice Cancelled', invoice);
+    //     //             this.invoice = invoice;
+    //     //             this.dispatchInvoiceChangedEvent(invoice.status, invoice);
+    //     //             this.goToStep('success');
+    //     //         });
+    //     //
+    //     //         invoiceWS.on(InvoiceStatus.Success, (invoice) => {
+    //     //             console.log('invoice Success', invoice);
+    //     //             this.invoice = invoice;
+    //     //             this.dispatchInvoiceChangedEvent(invoice.status, invoice);
+    //     //             this.goToStep('success');
+    //     //         });
+    //     //
+    //     //         invoiceWS.on(InvoiceStatus.Expired, (invoice) => {
+    //     //             console.log('invoice Expired', invoice);
+    //     //             this.invoice = invoice;
+    //     //             this.dispatchInvoiceChangedEvent(invoice.status, invoice);
+    //     //             this.goToStep('success');
+    //     //         });
+    //
+    // }
 
     // private async createInvoice() {
     //
@@ -1076,23 +1196,28 @@ export class PaymentApp extends LitElement {
     //
     // }
 
-    private async cancelInvoice() {
+    private async cancelTransaction() {
 
-        if (!this.invoice?.id) {
+        if (!this.transaction?.id) {
 
             this.notificationData = {
                 title: 'Error',
-                text: 'Unable to retrieve the ID of invoice. Please try again later.',
+                text: 'Unable to retrieve the ID of transaction. Please try again later.',
                 buttonText: 'Confirm'
             };
             this.notificationShow = true;
-            this.dispatchErrorEvent('Invoice Canceling Error', 'Unable to retrieve the ID of invoice. Please try again later.');
+            this.dispatchErrorEvent('Transaction Canceling Error', 'Unable to retrieve the ID of transaction. Please try again later.');
             return;
         }
 
         try {
-            this.cancelingInvoice = true;
-            await this.API.invoice.cancel(this.invoice?.id);
+            this.cancelingTransaction = true;
+            await this.API.transaction.cancel(this.transaction?.id);
+
+            if(!this.transactionInterval){
+                this.transactionInterval = setInterval(() => this.updateTransaction(), 3000)
+            }
+
         } catch (error) {
 
             this.notificationData = {
@@ -1100,7 +1225,7 @@ export class PaymentApp extends LitElement {
                 text: 'Failed to cancel the invoice. Please try again later.',
                 buttonText: 'Confirm'
             };
-            this.cancelingInvoice = false;
+            this.cancelingTransaction = false;
             this.dispatchErrorEvent('Invoice Canceling Error', 'Failed to cancel the invoice. Please try again later.');
             return;
 
@@ -1332,6 +1457,26 @@ export class PaymentApp extends LitElement {
         if (this.appStep === 'setCart' && this.invoiceCart.length > 0) {
             this.createInvoice();
         }
+
+        if (this.appStep === 'showInvoice' && this.selectedTokenSymbol && this.selectedNetworkSymbol) {
+            this.creatingTransaction = false;
+            this.goToStep('setNewWallet');
+        }
+
+        if(this.appStep === 'setNewWallet' && this.walletAddress && !checkWalletAddress(this.walletAddress, this.selectedNetworkSymbol)){
+            this.notificationData = {
+                title: 'Invalid Wallet Address',
+                text: 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.',
+                buttonText: 'Confirm'
+            };
+            this.notificationShow = true;
+
+            this.dispatchErrorEvent('Invalid Wallet Address', 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.');
+        }
+
+        if(this.appStep === 'setNewWallet' && this.walletAddress && checkWalletAddress(this.walletAddress, this.selectedNetworkSymbol)){
+            this.createTransaction();
+        }
     }
 
     private async prevStep() {
@@ -1348,25 +1493,25 @@ export class PaymentApp extends LitElement {
 
         }
 
-        if (this.appStep === 'setWallet') {
-
-            this.walletAddress = '';
-            this.walletType = '';
-
-            if (this.noPreview === 'true' && this.tokenAvailable) {
-                this.goToStep('setPrice');
-                return;
-            }
-
-            if (this.noPreview === 'true' && !this.tokenAvailable) {
-                this.goToStep('setToken');
-                return;
-            }
-
-            this.goToStep('preview');
-            return;
-
-        }
+        // if (this.appStep === 'setWallet') {
+        //
+        //     this.walletAddress = '';
+        //     this.walletType = '';
+        //
+        //     if (this.noPreview === 'true' && this.tokenAvailable) {
+        //         this.goToStep('setPrice');
+        //         return;
+        //     }
+        //
+        //     if (this.noPreview === 'true' && !this.tokenAvailable) {
+        //         this.goToStep('setToken');
+        //         return;
+        //     }
+        //
+        //     this.goToStep('preview');
+        //     return;
+        //
+        // }
 
         ///////////////////////
 
@@ -1382,6 +1527,26 @@ export class PaymentApp extends LitElement {
 
         if (this.appStep === 'setCart') {
             this.goToStep('typeSelect');
+            return;
+        }
+
+        if (this.appStep === 'setNewWallet') {
+            this.goToStep('showInvoice');
+            return;
+        }
+
+        if (this.appStep === 'payment') {
+            this.goToStep('showInvoice');
+            return;
+        }
+
+        if (this.appStep === 'processing') {
+            this.goToStep('showInvoice');
+            return;
+        }
+
+        if (this.appStep === 'success') {
+            this.goToStep('showInvoice');
             return;
         }
     }
@@ -1422,7 +1587,7 @@ export class PaymentApp extends LitElement {
             const invoice = await this.API.invoice.create(invoiceParams, true);
             const fullInvoice = await this.API.invoice.get(invoice.id, true);
 
-            if(fullInvoice.id){
+            if (fullInvoice.id) {
                 // this.invoice = fullInvoice;
                 this.dispatchInvoiceCreatedEvent(fullInvoice.id);
             }
@@ -1450,15 +1615,247 @@ export class PaymentApp extends LitElement {
 
     }
 
-    private async getInvoice(invoiceId: string){
+    private async createTransaction() {
+
+        this.creatingTransaction = true;
+
+        const transactionParams = {
+            invoiceId: this.invoice?.id,
+            from: this.walletAddress,
+            network: this.selectedNetworkSymbol,
+            cryptocurrency: this.selectedTokenSymbol
+        }
+
+        try {
+            this.transaction = await this.API.transaction.create(transactionParams);
+
+            if(!this.transactionInterval){
+                this.transactionInterval = setInterval(() => this.updateTransaction(), 3000)
+            }
+
+        }catch (e) {
+            if (e instanceof ValidationError) {
+                const error = e as ValidationError<TransactionCreateErrors>;
+                console.log(error.errors);
+            }
+
+            if (e instanceof HttpError) {
+                const error = e as HttpError;
+                console.log(error.code);
+            }
+
+            this.notificationData = {
+                title: 'Transaction create failed',
+                text: 'Failed to create transaction. Please, try again later',
+                buttonText: 'Confirm'
+            };
+            this.notificationShow = true;
+            this.creatingTransaction = false;
+        }
+        
+        // let invoiceId: string = '';
+        // let invoiceWS = null;
+        //
+        // try {
+        //
+        //     invoiceWS = ws.appClientInvoice(this.appId, this.clientId);
+        //
+        //     let params: any = {
+        //         type: 'payment',
+        //         clientId: this.clientId,
+        //         from: this.walletAddress,
+        //         network: this.selectedNetworkSymbol,
+        //         cryptocurrency: this.selectedTokenSymbol,
+        //         currency: 'USD',
+        //         appId: this.appId,
+        //         payload: {}
+        //     }
+        //
+        //     if(this.products){
+        //
+        //         const parsedProducts = (this.products === 'custom') ? this.products : JSON.parse(this.products);
+        //
+        //         if(Array.isArray(parsedProducts) && parsedProducts.length > 0){
+        //             params['products'] = [...parsedProducts.map((item) => {
+        //                 item.count = Number(item.count);
+        //                 return item
+        //             })];
+        //         }
+        //
+        //         if(this.products === 'custom'){
+        //             params['price'] = Number(this.price);
+        //
+        //             const parsedPayload = JSON.parse(this.payload);
+        //             params.payload.products = parsedPayload.products;
+        //         }
+        //
+        //     }else{
+        //         params.price = Number(this.price);
+        //     }
+        //
+        //     if(this.invoiceMessage !== '') {
+        //         params.payload.message = this.invoiceMessage;
+        //     }
+        //
+        //     const invoice = await this.API.invoice.create(params);
+        //     invoiceId = invoice.id;
+        //
+        //     this.dispatchInvoiceChangedEvent('created', invoice);
+        //
+        // } catch (error) {
+        //     let errorTitle: string = '';
+        //     let errorText: string = '';
+        //
+        //     if (error instanceof ValidationError) {
+        //         const errorObject = error as ValidationError<InvoiceCreateErrors>;
+        //         const fieldsError: string[] = [];
+        //
+        //         for (const [key, value] of Object.entries(errorObject.errors)) {
+        //             fieldsError.push(`${key} - ${value}`);
+        //         }
+        //
+        //         errorTitle = 'Validation Error';
+        //         errorText = `Please review the following fields in your request: ${fieldsError.join(', ')}. Ensure they meet the required format and try again.`;
+        //
+        //     } else if (error instanceof HttpError) {
+        //         errorTitle = 'Request Error';
+        //         errorText = `An error occurred while creating the invoice. Please try again later.`;
+        //
+        //     } else {
+        //         errorTitle = 'Server Connection Error';
+        //         errorText = `We were unable to connect to the server. Please check your internet connection and try again.`;
+        //
+        //     }
+        //
+        //     this.notificationData = {
+        //         title: errorTitle,
+        //         text: errorText,
+        //         buttonText: 'Confirm'
+        //     };
+        //     this.notificationShow = true;
+        //     this.creatingInvoice = false;
+        //
+        //     this.dispatchErrorEvent(`Invoice Creating ${errorTitle}`, errorText);
+        // }
+        //
+        // if (invoiceWS) {
+        //
+        //     invoiceWS.on(InvoiceStatus.Processing, (invoice) => {
+        //         console.log('invoice Processing', invoice);
+        //         this.invoice = invoice;
+        //         this.dispatchInvoiceChangedEvent(invoice.status, invoice);
+        //         this.goToStep('payment');
+        //     });
+        //
+        //     invoiceWS.on(InvoiceStatus.Confirming, (invoice) => {
+        //         console.log('invoice Confirming', invoice);
+        //         this.invoice = invoice;
+        //         this.dispatchInvoiceChangedEvent(invoice.status, invoice);
+        //         this.goToStep('processing');
+        //     });
+        //
+        //     invoiceWS.on(InvoiceStatus.Rejected, (invoice) => {
+        //         console.log('invoice Rejected', invoice);
+        //         this.invoice = invoice;
+        //         this.dispatchInvoiceChangedEvent(invoice.status, invoice);
+        //         this.goToStep('success');
+        //     });
+        //
+        //     invoiceWS.on(InvoiceStatus.Canceled, (invoice) => {
+        //         console.log('invoice Cancelled', invoice);
+        //         this.invoice = invoice;
+        //         this.dispatchInvoiceChangedEvent(invoice.status, invoice);
+        //         this.goToStep('success');
+        //     });
+        //
+        //     invoiceWS.on(InvoiceStatus.Success, (invoice) => {
+        //         console.log('invoice Success', invoice);
+        //         this.invoice = invoice;
+        //         this.dispatchInvoiceChangedEvent(invoice.status, invoice);
+        //         this.goToStep('success');
+        //     });
+        //
+        //     invoiceWS.on(InvoiceStatus.Expired, (invoice) => {
+        //         console.log('invoice Expired', invoice);
+        //         this.invoice = invoice;
+        //         this.dispatchInvoiceChangedEvent(invoice.status, invoice);
+        //         this.goToStep('success');
+        //     });
+        //
+        //     setTimeout(async () => {
+        //
+        //         try {
+        //             const newInvoiceData = await this.API.invoice.get(invoiceId);
+        //             console.log('newInvoiceData', newInvoiceData)
+        //             this.invoice = newInvoiceData;
+        //
+        //             if (newInvoiceData.status === 'processing') {
+        //                 this.goToStep('payment');
+        //             }
+        //         } catch (error) {
+        //             let errorTitle: string = '';
+        //             let errorText: string = '';
+        //
+        //             if (error instanceof HttpError) {
+        //                 errorTitle = 'Request Error';
+        //                 errorText = `An error occurred while creating the invoice. Please try again later.`;
+        //             } else {
+        //                 errorTitle = 'Server Connection Error';
+        //                 errorText = `We were unable to connect to the server. Please check your internet connection and try again.`;
+        //             }
+        //
+        //             this.notificationData = {
+        //                 title: errorTitle,
+        //                 text: errorText,
+        //                 buttonText: 'Confirm'
+        //             };
+        //             this.notificationShow = true;
+        //             this.creatingInvoice = false;
+        //             this.dispatchErrorEvent(`Invoice Creating ${errorTitle}`, errorText);
+        //         }
+        //
+        //     }, 1000);
+        // }
+
+    }
+
+    private async getInvoice(invoiceId: string) {
         try {
             this.invoice = await this.API.invoice.get(invoiceId, true);
-        }catch (e) {
+        } catch (e) {
             this.errorTitle = 'Error';
             this.errorText =
                 'Failed to retrieve invoice data. Please try again later.';
             this.dispatchErrorEvent('Fetch Invoice Error', 'Failed to retrieve invoice data. Please try again later.');
             return 'error';
+        }
+    }
+
+    private async getTransaction(transactionId: string) {
+        try {
+            this.transaction = await this.API.transaction.get(transactionId);
+
+            if(!this.transactionInterval){
+                this.transactionInterval = setInterval(() => this.updateTransaction(), 3000)
+            }
+
+        } catch (e) {
+            this.errorTitle = 'Error';
+            this.errorText =
+                'Failed to retrieve transaction data. Please try again later.';
+            this.dispatchErrorEvent('Fetch Transaction Error', 'Failed to retrieve transaction data. Please try again later.');
+            return 'error';
+        }
+    }
+
+    private async updateTransaction(){
+        try {
+            const updatedTransaction = await this.API.transaction.get(this.transaction?.id);
+            if(updatedTransaction){
+                this.transaction = updatedTransaction;
+            }
+        }catch (e){
+            console.log('e', e)
         }
     }
 
@@ -1507,47 +1904,47 @@ export class PaymentApp extends LitElement {
         }
     }
 
-    private async getProductsInfo(products: IProductInvoice[]) {
-        const result = [];
-        for (let product of products) {
+    // private async getProductsInfo(products: IProductInvoice[]) {
+    //     const result = [];
+    //     for (let product of products) {
+    //
+    //         try {
+    //             const productId = product.id || product.product?.id;
+    //             const info = await this.API.product.get(productId);
+    //             const count = products.find((item) => item.id === productId)?.count || product.count;
+    //
+    //             if (info) {
+    //                 result.push({
+    //                     ...info,
+    //                     count: count
+    //                 });
+    //             }
+    //
+    //         } catch (e) {
+    //             this.notificationData = {
+    //                 title: 'Get Products Failed',
+    //                 text: 'Failed to retrieve data for some products.',
+    //                 buttonText: 'Confirm'
+    //             };
+    //             this.notificationShow = true;
+    //
+    //             this.dispatchErrorEvent('Fetch Products Error', 'Failed to retrieve data for some products.');
+    //         }
+    //     }
+    //
+    //     return result;
+    // }
 
-            try {
-                const productId = product.id || product.product?.id;
-                const info = await this.API.product.get(productId);
-                const count = products.find((item) => item.id === productId)?.count || product.count;
-
-                if (info) {
-                    result.push({
-                        ...info,
-                        count: count
-                    });
-                }
-
-            } catch (e) {
-                this.notificationData = {
-                    title: 'Get Products Failed',
-                    text: 'Failed to retrieve data for some products.',
-                    buttonText: 'Confirm'
-                };
-                this.notificationShow = true;
-
-                this.dispatchErrorEvent('Fetch Products Error', 'Failed to retrieve data for some products.');
-            }
-        }
-
-        return result;
-    }
-
-    private dispatchInvoiceChangedEvent(status: string, invoice: Invoice) {
-        const updateStatusEvent = new CustomEvent(`${status}-status-changed`, {
-            detail: {
-                invoice: invoice
-            },
-            bubbles: true,
-            composed: true
-        });
-        this.dispatchEvent(updateStatusEvent);
-    }
+    // private dispatchInvoiceChangedEvent(status: string, invoice: Invoice) {
+    //     const updateStatusEvent = new CustomEvent(`${status}-status-changed`, {
+    //         detail: {
+    //             invoice: invoice
+    //         },
+    //         bubbles: true,
+    //         composed: true
+    //     });
+    //     this.dispatchEvent(updateStatusEvent);
+    // }
 
     private dispatchInvoiceCreatedEvent(invoiceId: string) {
         const invoiceCreatedEvent = new CustomEvent(`invoice-created`, {

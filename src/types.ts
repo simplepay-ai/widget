@@ -17,7 +17,8 @@ export type AppStep =
     | 'newSetPrice'
     | 'setProduct'
     | 'setCart'
-    | 'showInvoice';
+    | 'showInvoice'
+    | 'setNewWallet';
 
 export type CurrentPriceStep = 'priceEnter' | 'messageEnter';
 
