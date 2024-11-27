@@ -181,7 +181,7 @@ export class StepHeader extends LitElement {
             
             .stepTitle {
                 display: flex;
-                gap: 16px;
+                gap: 8px;
                 align-items: center;
                 width: 100%;
                 justify-content: space-between;

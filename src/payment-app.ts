@@ -189,6 +189,9 @@ export class PaymentApp extends LitElement {
     private transaction: Transaction | null = null;
 
     @property({attribute: false})
+    private invoiceTransactions: Transaction[] = [];
+
+    @property({attribute: false})
     private creatingInvoice: Boolean = false;
 
     @property({attribute: false})
@@ -348,6 +351,7 @@ export class PaymentApp extends LitElement {
                 this.getTransaction(this.transactionId);
                 return;
             } else {
+                this.getInvoiceTransactions(this.invoiceId);
                 this.getInvoice(this.invoiceId);
                 return;
             }
@@ -581,6 +585,10 @@ export class PaymentApp extends LitElement {
         if(changedProperties.has('appStep') && this.appStep === 'success' && this.transactionInterval){
             clearInterval(this.transactionInterval);
         }
+
+        if(changedProperties.has('appStep') && this.invoice){
+            this.getInvoiceTransactions(this.invoice.id);
+        }
     }
 
     render() {
@@ -703,10 +711,17 @@ export class PaymentApp extends LitElement {
                                 .selectedNetworkSymbol=${this.selectedNetworkSymbol}
                                 .tokens=${this.tokens}
                                 .tokenAvailable=${this.tokenAvailable}
+                                .transactions=${this.invoiceTransactions}
                                 @nextStep=${this.nextStep}
                                 @updateSelectedToken=${(event: CustomEvent) => {
                                     this.selectedTokenSymbol = event.detail.tokenSymbol;
                                     this.selectedNetworkSymbol = event.detail.networkSymbol;
+                                }}
+                                @updateSelectedTransaction=${(event: CustomEvent) => {
+                                    const transaction = this.invoiceTransactions.find((item) => item.id === event.detail.transactionId);
+                                    if(transaction){
+                                        this.setTransaction(transaction);   
+                                    }
                                 }}
                         >
                         </show-invoice>`
@@ -1431,15 +1446,15 @@ export class PaymentApp extends LitElement {
             switch (this.invoiceType) {
                 case "request":
                     this.goToStep('newSetPrice');
-                    break;
+                    return;
                 case "item":
                     this.goToStep('setProduct');
-                    break;
+                    return;
                 case "cart":
                     this.goToStep('setCart');
-                    break;
+                    return;
                 default:
-                    break;
+                    return;
             }
         }
 
@@ -1447,20 +1462,23 @@ export class PaymentApp extends LitElement {
 
             this.invoicePrice = parseFloat(this.invoicePrice).toFixed(2);
             this.createInvoice();
-
+            return;
         }
 
         if (this.appStep === 'setProduct' && this.invoiceProductId) {
             this.createInvoice();
+            return;
         }
 
         if (this.appStep === 'setCart' && this.invoiceCart.length > 0) {
             this.createInvoice();
+            return;
         }
 
         if (this.appStep === 'showInvoice' && this.selectedTokenSymbol && this.selectedNetworkSymbol) {
             this.creatingTransaction = false;
             this.goToStep('setNewWallet');
+            return;
         }
 
         if(this.appStep === 'setNewWallet' && this.walletAddress && !checkWalletAddress(this.walletAddress, this.selectedNetworkSymbol)){
@@ -1472,10 +1490,12 @@ export class PaymentApp extends LitElement {
             this.notificationShow = true;
 
             this.dispatchErrorEvent('Invalid Wallet Address', 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.');
+            return;
         }
 
         if(this.appStep === 'setNewWallet' && this.walletAddress && checkWalletAddress(this.walletAddress, this.selectedNetworkSymbol)){
             this.createTransaction();
+            return;
         }
     }
 
@@ -1846,6 +1866,32 @@ export class PaymentApp extends LitElement {
             this.dispatchErrorEvent('Fetch Transaction Error', 'Failed to retrieve transaction data. Please try again later.');
             return 'error';
         }
+    }
+
+    private setTransaction(transaction: Transaction){
+        this.transaction = transaction;
+        if(!this.transactionInterval){
+            this.transactionInterval = setInterval(() => this.updateTransaction(), 3000)
+        }
+    }
+
+    private async getInvoiceTransactions(invoiceId: string){
+
+        try {
+            this.invoiceTransactions = await this.API.transaction.list({
+                invoiceId
+            })
+        }catch (e) {
+            this.notificationData = {
+                title: 'Get Invoice Transactions Failed',
+                text: 'Failed to retrieve transactions of invoice.',
+                buttonText: 'Confirm'
+            };
+            this.notificationShow = true;
+
+            this.dispatchErrorEvent('Fetch Invoice Transactions Error', 'Failed to retrieve transactions of invoice.');
+        }
+
     }
 
     private async updateTransaction(){
