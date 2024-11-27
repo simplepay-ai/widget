@@ -131,16 +131,10 @@ export class PaymentApp extends LitElement {
     private selectedNetworkSymbol: string = '';
 
     @property({attribute: false})
-    private invoice: Invoice | null = null;
-
-    @property({attribute: false})
     private notificationShow: boolean = false;
 
     @property({attribute: false})
     private notificationData: INotification | null = null;
-
-    @property({attribute: false})
-    private creatingInvoice: Boolean = false;
 
     @property({attribute: false})
     private cancelingInvoice: Boolean = false;
@@ -194,6 +188,12 @@ export class PaymentApp extends LitElement {
 
     @property({attribute: false, type: String})
     private invoicePrice: string = '0';
+
+    @property({attribute: false})
+    private invoice: Invoice | null = null;
+
+    @property({attribute: false})
+    private creatingInvoice: Boolean = false;
 
     constructor() {
         super();
@@ -251,7 +251,6 @@ export class PaymentApp extends LitElement {
                 break;
         }
 
-        this.API = new Client();
         // if (this.invoiceId) {
         // await this.getInvoice(this.invoiceId);
         // return;
@@ -266,6 +265,10 @@ export class PaymentApp extends LitElement {
 
             return;
         }
+
+        this.API = new Client({
+            apiKey: this.appId
+        });
 
         this.clientId = this.clientId ? this.clientId : crypto.randomUUID();
         this.tokens = await this.getTokens();
@@ -501,6 +504,7 @@ export class PaymentApp extends LitElement {
                         <new-set-price-step
                                 .appInfo=${this.appInfo}
                                 .price=${this.invoicePrice}
+                                .creatingInvoice=${this.creatingInvoice}
                                 @updatePrice=${(event: CustomEvent) => (this.invoicePrice = event.detail.price)}
                                 @nextStep=${this.nextStep}
                                 @prevStep=${this.prevStep}
@@ -513,6 +517,7 @@ export class PaymentApp extends LitElement {
                         <product-step
                                 .products=${this.appProducts}
                                 .invoiceProductId=${this.invoiceProductId}
+                                .creatingInvoice=${this.creatingInvoice}
                                 @updateInvoiceProductId=${(event: CustomEvent) => (this.invoiceProductId = event.detail.invoiceProductId)}
                                 @nextStep=${this.nextStep}
                                 @prevStep=${this.prevStep}
@@ -527,6 +532,7 @@ export class PaymentApp extends LitElement {
                         <cart-step
                                 .products=${this.appProducts}
                                 .cart=${this.invoiceCart}
+                                .creatingInvoice=${this.creatingInvoice}
                                 @addToCart=${(event: CustomEvent) => {
                                     const productId = event.detail.productId;
                                     if(productId){
@@ -1301,8 +1307,59 @@ export class PaymentApp extends LitElement {
         this.appStep = stepName;
     }
 
-    private createInvoice(){
-        console.log('createInvoice')
+    private async createInvoice(){
+
+        this.creatingInvoice = true;
+
+        const invoiceParams: any = {
+            appId: this.appId,
+            type: 'payment',
+            clientId: crypto.randomUUID(),
+            currency: 'USD',
+        }
+
+        switch (this.invoiceType) {
+            case "request":
+                invoiceParams.total = Number(this.invoicePrice);
+                break;
+            case "item":
+                invoiceParams.products = [{
+                    id: this.invoiceProductId,
+                    count: 1
+                }]
+                break;
+            case "cart":
+                invoiceParams.products = this.invoiceCart;
+                break;
+            default:
+                return;
+        }
+
+        try {
+            this.invoice = await this.API.invoice.create(invoiceParams);
+            this.creatingInvoice = false;
+        }catch (e) {
+
+            if (e instanceof ValidationError) {
+                const error = e as ValidationError<InvoiceCreateErrors>;
+                console.log(error.errors);
+            }
+
+            if (e instanceof HttpError) {
+                const error = e as HttpError;
+                console.log(error.code);
+            }
+
+            this.notificationData = {
+                title: 'Invoice create failed',
+                text: 'Failed to create invoice. Please, try again later',
+                buttonText: 'Confirm'
+            };
+            this.notificationShow = true;
+            this.creatingInvoice = false;
+
+        }
+
     }
 
     private async getApp() {

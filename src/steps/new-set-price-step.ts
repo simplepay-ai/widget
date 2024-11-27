@@ -16,6 +16,9 @@ export class NewSetPriceStep extends LitElement {
     @property({attribute: false, type: Boolean})
     numpadButtonsActive = false;
 
+    @property({type: Boolean})
+    creatingInvoice: boolean = false;
+
     @property({attribute: false, type: String})
     private priceValue = '0';
 
@@ -47,108 +50,132 @@ export class NewSetPriceStep extends LitElement {
         return html`
             <div class="stepWrapper">
 
-                <div class="header">
+                ${this.creatingInvoice
+                        ? html`
+                            <div class="stepContent loading">
+                                <div class="spinner">
+                                    <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                    >
+                                        <circle cx="12" cy="12" r="10" stroke-width="4"/>
+                                        <path
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                        />
+                                    </svg>
 
-                    <p>Invoice from:</p>
-                    <div class="merchantInfo">
+                                    <p>Creating invoice ...</p>
+                                </div>
+                            </div>
+                        `
+                        : html`
+                            <div class="header">
 
-                        ${
-                                (this.appInfo?.image)
-                                        ? html`
-                                            <div class="image">
-                                                <img src=${this.appInfo.image}
-                                                     alt="merchant image">
-                                            </div>
-                                        `
-                                        : html`
-                                            <div class="image placeholder">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                     viewBox="0 0 24 24"
-                                                     fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                                                     stroke-linejoin="round">
-                                                    <circle cx="12" cy="8" r="5"/>
-                                                    <path d="M20 21a8 8 0 0 0-16 0"/>
-                                                </svg>
-                                            </div>
-                                        `
-                        }
+                                <p>Invoice from:</p>
+                                <div class="merchantInfo">
 
-                        <p>${this.appInfo?.name}</p>
+                                    ${
+                                            (this.appInfo?.image)
+                                                    ? html`
+                                                        <div class="image">
+                                                            <img src=${this.appInfo.image}
+                                                                 alt="merchant image">
+                                                        </div>
+                                                    `
+                                                    : html`
+                                                        <div class="image placeholder">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                                 viewBox="0 0 24 24"
+                                                                 fill="none" stroke="currentColor" stroke-width="1.5"
+                                                                 stroke-linecap="round"
+                                                                 stroke-linejoin="round">
+                                                                <circle cx="12" cy="8" r="5"/>
+                                                                <path d="M20 21a8 8 0 0 0-16 0"/>
+                                                            </svg>
+                                                        </div>
+                                                    `
+                                    }
 
-                    </div>
+                                    <p>${this.appInfo?.name}</p>
 
-                </div>
+                                </div>
 
-                <div class="stepContent">
-                    <div class=${`priceEnter
+                            </div>
+
+                            <div class="stepContent">
+                                <div class=${`priceEnter
                                             ${(this.priceValue.toString().length >= 9 ? 'medium' : '')}
                                             ${(this.priceValue.toString().length >= 12 ? 'small' : '')}
                                             ${(this.priceValue.toString().length >= 15 ? 'xSmall' : '')}
                                             `}>
-                        <p>
-                            ${this.priceValue} <span class="line"></span>
-                        </p>
-                        <span>USD</span>
-                    </div>
-                </div>
-                <div class="footer">
+                                    <p>
+                                        ${this.priceValue} <span class="line"></span>
+                                    </p>
+                                    <span>USD</span>
+                                </div>
+                            </div>
 
-                    <div class="buttonsWrapper">
+                            <div class="footer">
 
-                        <button class="secondaryButton"
-                                @click=${() => this.dispatchPrevStep()}
-                        >
-                            Back
-                        </button>
+                                <div class="buttonsWrapper">
 
-                        <button class="mainButton"
-                        .disabled=${ !this.priceValue || Number(this.priceValue) < 1 }
-                        @click=${() => this.dispatchNextStep()}
-                        >
-                            Create
-                        </button>
+                                    <button class="secondaryButton"
+                                            @click=${() => this.dispatchPrevStep()}
+                                    >
+                                        Back
+                                    </button>
 
-                    </div>
+                                    <button class="mainButton"
+                                            .disabled=${!this.priceValue || Number(this.priceValue) < 1}
+                                            @click=${() => this.dispatchNextStep()}
+                                    >
+                                        Create
+                                    </button>
 
-                    <div class="keyboardWrapper">
+                                </div>
 
-                        <div class="keyboard">
+                                <div class="keyboardWrapper">
 
-                            ${
-                                    this.numpadButtons.map((button) => {
+                                    <div class="keyboard">
 
-                                        const buttonContent = (button === 'backspace')
-                                                ? html`
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                         height="24"
-                                                         viewBox="0 0 24 24" fill="none"
-                                                         stroke="currentColor"
-                                                         stroke-width="2" stroke-linecap="round"
-                                                         stroke-linejoin="round">
-                                                        <path d="M10 5a2 2 0 0 0-1.344.519l-6.328 5.74a1 1 0 0 0 0 1.481l6.328 5.741A2 2 0 0 0 10 19h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"/>
-                                                        <path d="m12 9 6 6"/>
-                                                        <path d="m18 9-6 6"/>
-                                                    </svg>`
-                                                : html`<p>${button}</p>`
+                                        ${
+                                                this.numpadButtons.map((button) => {
 
-                                        const buttonSubClass = (button === 'backspace' || button === '.')
-                                                ? 'secondary'
-                                                : '';
+                                                    const buttonContent = (button === 'backspace')
+                                                            ? html`
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                     height="24"
+                                                                     viewBox="0 0 24 24" fill="none"
+                                                                     stroke="currentColor"
+                                                                     stroke-width="2" stroke-linecap="round"
+                                                                     stroke-linejoin="round">
+                                                                    <path d="M10 5a2 2 0 0 0-1.344.519l-6.328 5.74a1 1 0 0 0 0 1.481l6.328 5.741A2 2 0 0 0 10 19h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"/>
+                                                                    <path d="m12 9 6 6"/>
+                                                                    <path d="m18 9-6 6"/>
+                                                                </svg>`
+                                                            : html`<p>${button}</p>`
 
-                                        return html`
-                                            <div class=${`item ${buttonSubClass}`}
-                                                 @click=${() => this.handleKeyPress(button)}>
-                                                ${buttonContent}
-                                            </div>
-                                        `
-                                    })
-                            }
+                                                    const buttonSubClass = (button === 'backspace' || button === '.')
+                                                            ? 'secondary'
+                                                            : '';
 
-                        </div>
+                                                    return html`
+                                                        <div class=${`item ${buttonSubClass}`}
+                                                             @click=${() => this.handleKeyPress(button)}>
+                                                            ${buttonContent}
+                                                        </div>
+                                                    `
+                                                })
+                                        }
 
-                    </div>
-                    
-                </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        `
+                }
             </div>
         `;
     }
@@ -299,6 +326,10 @@ export class NewSetPriceStep extends LitElement {
                 flex-direction: column;
                 padding: 16px;
                 position: relative;
+                
+                &.loading{
+                    background: var(--sp-widget-bg-color);
+                }
 
                 &::-webkit-scrollbar {
                     width: 1px;
@@ -310,6 +341,38 @@ export class NewSetPriceStep extends LitElement {
 
                 &::-webkit-scrollbar-thumb {
                     background: var(--sp-widget-scroll-color);
+                }
+
+                .spinner {
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-direction: column;
+
+                    p {
+                        margin-top: 8px;
+                        font-size: 12px;
+                        font-weight: 600;
+                        color: var(--sp-widget-text-color);
+                    }
+
+                    svg {
+                        width: 20px;
+                        height: 20px;
+                        animation: spin 1s linear infinite;
+                    }
+
+                    circle {
+                        stroke: var(--sp-widget-active-color);
+                        opacity: 0.25;
+                    }
+
+                    path {
+                        fill: var(--sp-widget-active-color);
+                        opacity: 0.75;
+                    }
                 }
 
                 .priceEnter {
@@ -515,6 +578,15 @@ export class NewSetPriceStep extends LitElement {
             }
             50% {
                 opacity: 0;
+            }
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
             }
         }
     `;
