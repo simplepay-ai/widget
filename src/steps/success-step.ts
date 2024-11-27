@@ -33,11 +33,18 @@ export class SuccessStep extends LitElement {
     @property({attribute: false})
     formatAmount: string = '';
 
+    @property({attribute: false})
+    leftAmount: string = '';
+
     connectedCallback() {
         super.connectedCallback();
 
+        const left = this.invoice?.total - this.invoice?.paid;
+        const price = left / Number(this.transaction?.rate);
+        this.leftAmount = parseFloat(left.toString()).toFixed(2);
+        this.formatAmount = roundUpAmount(price.toString(), this.transaction?.cryptocurrency.stable!).toString();
         //@ts-ignore
-        this.formatAmount = roundUpAmount(this.transaction?.amount, this.transaction?.cryptocurrency.stable);
+        // this.formatAmount = roundUpAmount(this.transaction?.rate, this.transaction?.cryptocurrency.stable);
         this.tokenStandart = getTokenStandart(this.transaction?.network.symbol!);
     }
 
@@ -278,7 +285,7 @@ export class SuccessStep extends LitElement {
                 </div>
 
                 <step-footer
-                        .price=${this.transaction?.amount}
+                        .price=${this.leftAmount}
                         .hasBackButton=${true}
                         .backButtonUrl=${this.backToStoreUrl}
                         .productsInfo=${this.invoice?.products}

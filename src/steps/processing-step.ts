@@ -42,11 +42,16 @@ export class ProcessingStep extends LitElement {
     @property({attribute: false})
     formatAmount: string = '';
 
+    @property({attribute: false})
+    leftAmount: string = '';
+
     connectedCallback() {
         super.connectedCallback();
 
-        //@ts-ignore
-        this.formatAmount = roundUpAmount(this.invoice?.amount, this.invoice?.cryptocurrency.stable);
+        const left = this.invoice?.total - this.invoice?.paid;
+        const price = left / Number(this.transaction?.rate);
+        this.leftAmount = parseFloat(left.toString()).toFixed(2);
+        this.formatAmount = roundUpAmount(price.toString(), this.transaction?.cryptocurrency.stable!).toString();
 
         this.progressMaxNumber = this.getBlocksCount(this.transaction?.network.symbol!);
         this.timeForBlock = this.getTimeForBlock(this.transaction?.network.symbol!);
@@ -298,7 +303,7 @@ export class ProcessingStep extends LitElement {
                 </div>
 
                 <step-footer
-                        .price=${this.transaction?.amount}
+                        .price=${this.leftAmount}
                         .hasExplorerButton=${true}
                         .explorerLink=${this.qrCodeUrl}
                         .productsInfo=${this.invoice?.products}

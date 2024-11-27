@@ -102,7 +102,7 @@ export class ShowInvoice extends LitElement {
             this.tokenStandart = getTokenStandart(this.selectedNetworkSymbol);
         }
 
-        if(changedProperties.has('transactions') && this.transactions.length > 0){
+        if (changedProperties.has('transactions') && this.transactions.length > 0) {
             const transaction = this.transactions.find((item) => item.status === 'created' || item.status === 'processing' || item.status === 'confirming')
             this.activeTransaction = (transaction) ? transaction : null;
         }
@@ -301,108 +301,114 @@ export class ShowInvoice extends LitElement {
 
                 </div>
 
-                <div class="footer">
+                ${
+                        (Number(this.invoice?.total - this.invoice?.paid) > 0)
+                                ? html`
+                                    <div class="footer">
 
-                    ${
-                            (!this.tokenAvailable)
-                                    ? html`
-                                        <div class="tokenInfo">
-                                            <p class="label">
-                                                Token:
-                                            </p>
+                                        ${
+                                                (!this.tokenAvailable)
+                                                        ? html`
+                                                            <div class="tokenInfo">
+                                                                <p class="label">
+                                                                    Token:
+                                                                </p>
 
-                                            <div class="tokenCard" @click=${() => this.openTokenModal()}>
+                                                                <div class="tokenCard" @click=${() => this.openTokenModal()}>
 
-                                                ${
-                                                        (this.selectedTokenSymbol)
-                                                                ? html`
-                                                                    <p><span>${this.tokenPrice}</span>
-                                                                        ${this.selectedTokenSymbol}</p>
+                                                                    ${
+                                                                            (this.selectedTokenSymbol)
+                                                                                    ? html`
+                                                                                        <p><span>${this.tokenPrice}</span>
+                                                                                            ${this.selectedTokenSymbol}</p>
 
-                                                                    <token-icon
-                                                                            .id=${this.selectedTokenSymbol}
-                                                                            width="25"
-                                                                            height="25"
-                                                                            class="tokenIcon"
-                                                                    ></token-icon>
-                                                                `
-                                                                : html`
-                                                                    <p>Choose token</p>
+                                                                                        <token-icon
+                                                                                                .id=${this.selectedTokenSymbol}
+                                                                                                width="25"
+                                                                                                height="25"
+                                                                                                class="tokenIcon"
+                                                                                        ></token-icon>
+                                                                                    `
+                                                                                    : html`
+                                                                                        <p>Choose token</p>
 
-                                                                    <div class="image placeholder">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                             height="24"
-                                                                             viewBox="0 0 24 24" fill="none"
-                                                                             stroke="currentColor"
-                                                                             stroke-width="1.5" stroke-linecap="round"
-                                                                             stroke-linejoin="round">
-                                                                            <path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727"/>
-                                                                        </svg>
-                                                                    </div>
-                                                                `
-                                                }
-                                            </div>
+                                                                                        <div class="image placeholder">
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                                                 height="24"
+                                                                                                 viewBox="0 0 24 24" fill="none"
+                                                                                                 stroke="currentColor"
+                                                                                                 stroke-width="1.5" stroke-linecap="round"
+                                                                                                 stroke-linejoin="round">
+                                                                                                <path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727"/>
+                                                                                            </svg>
+                                                                                        </div>
+                                                                                    `
+                                                                    }
+                                                                </div>
 
-                                            ${
-                                                    (this.selectedNetworkSymbol)
-                                                            ? html`
-                                                                <div class=${`
+                                                                ${
+                                                                        (this.selectedNetworkSymbol)
+                                                                                ? html`
+                                                                                    <div class=${`
                                             networkInfo
                                             ${(this.selectedNetworkSymbol === 'bsc') ? 'uppercase' : 'capitalize'}
                                             `}>
-                                                                    <p class="label">
-                                                                        Network:
-                                                                    </p>
+                                                                                        <p class="label">
+                                                                                            Network:
+                                                                                        </p>
 
-                                                                    <div class="value">
-                                                                        <network-icon
-                                                                                .id=${this.selectedNetworkSymbol}
-                                                                                width="20"
-                                                                                height="20"
-                                                                                class="networkIcon"
-                                                                        ></network-icon>
+                                                                                        <div class="value">
+                                                                                            <network-icon
+                                                                                                    .id=${this.selectedNetworkSymbol}
+                                                                                                    width="20"
+                                                                                                    height="20"
+                                                                                                    class="networkIcon"
+                                                                                            ></network-icon>
 
-                                                                        ${this.selectedNetworkSymbol}
+                                                                                            ${this.selectedNetworkSymbol}
 
-                                                                        ${
-                                                                                (this.tokenStandart)
-                                                                                        ? html`
-                                                                                            <div class="badge">
-                                                                                                ${this.tokenStandart}
-                                                                                            </div>
-                                                                                        `
-                                                                                        : ''
-                                                                        }
-                                                                    </div>
-                                                                </div>
-                                                            `
-                                                            : ''
-                                            }
-                                        </div>
-                                    `
-                                    : ''
-                    }
+                                                                                            ${
+                                                                                                    (this.tokenStandart)
+                                                                                                            ? html`
+                                                                                                                <div class="badge">
+                                                                                                                    ${this.tokenStandart}
+                                                                                                                </div>
+                                                                                                            `
+                                                                                                            : ''
+                                                                                            }
+                                                                                        </div>
+                                                                                    </div>
+                                                                                `
+                                                                                : ''
+                                                                }
+                                                            </div>
+                                                        `
+                                                        : ''
+                                        }
 
-                    ${
-                            (this.activeTransaction)
-                            ? html`
-                                        <button class="mainButton"
-                                                @click=${() => this.dispatchSelectTransaction(this.activeTransaction?.id)}
-                                        >
-                                            To active transaction
-                                        </button>
-                                    `
-                                    : html`
-                                        <button class="mainButton"
-                                                @click=${this.dispatchNextStep}
-                                                .disabled=${!this.selectedTokenSymbol || !this.selectedNetworkSymbol}
-                                        >
-                                            Next
-                                        </button>
-                                    `
-                    }
+                                        ${
+                                                (this.activeTransaction)
+                                                        ? html`
+                                                            <button class="mainButton"
+                                                                    @click=${() => this.dispatchSelectTransaction(this.activeTransaction?.id)}
+                                                            >
+                                                                To active transaction
+                                                            </button>
+                                                        `
+                                                        : html`
+                                                            <button class="mainButton"
+                                                                    @click=${this.dispatchNextStep}
+                                                                    .disabled=${!this.selectedTokenSymbol || !this.selectedNetworkSymbol}
+                                                            >
+                                                                Next
+                                                            </button>
+                                                        `
+                                        }
 
-                </div>
+                                    </div>
+                                ` : ''
+                }
+
 
                 <div class="productModal ${(this.showProductModal) ? 'show' : ''}">
 
@@ -761,7 +767,7 @@ export class ShowInvoice extends LitElement {
     }
 
     private dispatchSelectTransaction(transactionId) {
-        if(transactionId){
+        if (transactionId) {
             const updateEvent = new CustomEvent('updateSelectedTransaction', {
                 detail: {
                     transactionId: transactionId,

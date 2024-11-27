@@ -16,8 +16,560 @@ import {
 import {bsc, mainnet} from "@wagmi/core/chains";
 import {parseEther, parseUnits} from "viem";
 
-const ABI_USDT_BSC = [{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"constant":true,"inputs":[],"name":"_decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"_name","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"_symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"burn","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mint","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"renounceOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]
-const ABI_USDT_ETH = [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_upgradedAddress","type":"address"}],"name":"deprecate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"deprecated","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_evilUser","type":"address"}],"name":"addBlackList","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transferFrom","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"upgradedAddress","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"balances","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"maximumFee","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"_totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"unpause","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_maker","type":"address"}],"name":"getBlackListStatus","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"},{"name":"","type":"address"}],"name":"allowed","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"paused","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"who","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"pause","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"newBasisPoints","type":"uint256"},{"name":"newMaxFee","type":"uint256"}],"name":"setParams","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"amount","type":"uint256"}],"name":"issue","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"amount","type":"uint256"}],"name":"redeem","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"basisPointsRate","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"isBlackListed","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_clearedUser","type":"address"}],"name":"removeBlackList","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"MAX_UINT","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_blackListedUser","type":"address"}],"name":"destroyBlackFunds","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"_initialSupply","type":"uint256"},{"name":"_name","type":"string"},{"name":"_symbol","type":"string"},{"name":"_decimals","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"amount","type":"uint256"}],"name":"Issue","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"amount","type":"uint256"}],"name":"Redeem","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"newAddress","type":"address"}],"name":"Deprecate","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"feeBasisPoints","type":"uint256"},{"indexed":false,"name":"maxFee","type":"uint256"}],"name":"Params","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_blackListedUser","type":"address"},{"indexed":false,"name":"_balance","type":"uint256"}],"name":"DestroyedBlackFunds","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_user","type":"address"}],"name":"AddedBlackList","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_user","type":"address"}],"name":"RemovedBlackList","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[],"name":"Pause","type":"event"},{"anonymous":false,"inputs":[],"name":"Unpause","type":"event"}]
+const ABI_USDT_BSC = [{
+    "inputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+}, {
+    "anonymous": false,
+    "inputs": [{"indexed": true, "internalType": "address", "name": "owner", "type": "address"}, {
+        "indexed": true,
+        "internalType": "address",
+        "name": "spender",
+        "type": "address"
+    }, {"indexed": false, "internalType": "uint256", "name": "value", "type": "uint256"}],
+    "name": "Approval",
+    "type": "event"
+}, {
+    "anonymous": false,
+    "inputs": [{
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+    }, {"indexed": true, "internalType": "address", "name": "newOwner", "type": "address"}],
+    "name": "OwnershipTransferred",
+    "type": "event"
+}, {
+    "anonymous": false,
+    "inputs": [{"indexed": true, "internalType": "address", "name": "from", "type": "address"}, {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+    }, {"indexed": false, "internalType": "uint256", "name": "value", "type": "uint256"}],
+    "name": "Transfer",
+    "type": "event"
+}, {
+    "constant": true,
+    "inputs": [],
+    "name": "_decimals",
+    "outputs": [{"internalType": "uint8", "name": "", "type": "uint8"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [],
+    "name": "_name",
+    "outputs": [{"internalType": "string", "name": "", "type": "string"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [],
+    "name": "_symbol",
+    "outputs": [{"internalType": "string", "name": "", "type": "string"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [{"internalType": "address", "name": "owner", "type": "address"}, {
+        "internalType": "address",
+        "name": "spender",
+        "type": "address"
+    }],
+    "name": "allowance",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [{"internalType": "address", "name": "spender", "type": "address"}, {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+    }],
+    "name": "approve",
+    "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [{"internalType": "address", "name": "account", "type": "address"}],
+    "name": "balanceOf",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [{"internalType": "uint256", "name": "amount", "type": "uint256"}],
+    "name": "burn",
+    "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [],
+    "name": "decimals",
+    "outputs": [{"internalType": "uint8", "name": "", "type": "uint8"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [{"internalType": "address", "name": "spender", "type": "address"}, {
+        "internalType": "uint256",
+        "name": "subtractedValue",
+        "type": "uint256"
+    }],
+    "name": "decreaseAllowance",
+    "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [],
+    "name": "getOwner",
+    "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [{"internalType": "address", "name": "spender", "type": "address"}, {
+        "internalType": "uint256",
+        "name": "addedValue",
+        "type": "uint256"
+    }],
+    "name": "increaseAllowance",
+    "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [{"internalType": "uint256", "name": "amount", "type": "uint256"}],
+    "name": "mint",
+    "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [],
+    "name": "name",
+    "outputs": [{"internalType": "string", "name": "", "type": "string"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [],
+    "name": "symbol",
+    "outputs": [{"internalType": "string", "name": "", "type": "string"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [],
+    "name": "totalSupply",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [{"internalType": "address", "name": "recipient", "type": "address"}, {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+    }],
+    "name": "transfer",
+    "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [{"internalType": "address", "name": "sender", "type": "address"}, {
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+    }, {"internalType": "uint256", "name": "amount", "type": "uint256"}],
+    "name": "transferFrom",
+    "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [{"internalType": "address", "name": "newOwner", "type": "address"}],
+    "name": "transferOwnership",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}]
+const ABI_USDT_ETH = [{
+    "constant": true,
+    "inputs": [],
+    "name": "name",
+    "outputs": [{"name": "", "type": "string"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [{"name": "_upgradedAddress", "type": "address"}],
+    "name": "deprecate",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [{"name": "_spender", "type": "address"}, {"name": "_value", "type": "uint256"}],
+    "name": "approve",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [],
+    "name": "deprecated",
+    "outputs": [{"name": "", "type": "bool"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [{"name": "_evilUser", "type": "address"}],
+    "name": "addBlackList",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [],
+    "name": "totalSupply",
+    "outputs": [{"name": "", "type": "uint256"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [{"name": "_from", "type": "address"}, {"name": "_to", "type": "address"}, {
+        "name": "_value",
+        "type": "uint256"
+    }],
+    "name": "transferFrom",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [],
+    "name": "upgradedAddress",
+    "outputs": [{"name": "", "type": "address"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [{"name": "", "type": "address"}],
+    "name": "balances",
+    "outputs": [{"name": "", "type": "uint256"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [],
+    "name": "decimals",
+    "outputs": [{"name": "", "type": "uint256"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [],
+    "name": "maximumFee",
+    "outputs": [{"name": "", "type": "uint256"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [],
+    "name": "_totalSupply",
+    "outputs": [{"name": "", "type": "uint256"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [],
+    "name": "unpause",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [{"name": "_maker", "type": "address"}],
+    "name": "getBlackListStatus",
+    "outputs": [{"name": "", "type": "bool"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [{"name": "", "type": "address"}, {"name": "", "type": "address"}],
+    "name": "allowed",
+    "outputs": [{"name": "", "type": "uint256"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [],
+    "name": "paused",
+    "outputs": [{"name": "", "type": "bool"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [{"name": "who", "type": "address"}],
+    "name": "balanceOf",
+    "outputs": [{"name": "", "type": "uint256"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [],
+    "name": "pause",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [],
+    "name": "getOwner",
+    "outputs": [{"name": "", "type": "address"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{"name": "", "type": "address"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [],
+    "name": "symbol",
+    "outputs": [{"name": "", "type": "string"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [{"name": "_to", "type": "address"}, {"name": "_value", "type": "uint256"}],
+    "name": "transfer",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [{"name": "newBasisPoints", "type": "uint256"}, {"name": "newMaxFee", "type": "uint256"}],
+    "name": "setParams",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [{"name": "amount", "type": "uint256"}],
+    "name": "issue",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [{"name": "amount", "type": "uint256"}],
+    "name": "redeem",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [{"name": "_owner", "type": "address"}, {"name": "_spender", "type": "address"}],
+    "name": "allowance",
+    "outputs": [{"name": "remaining", "type": "uint256"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [],
+    "name": "basisPointsRate",
+    "outputs": [{"name": "", "type": "uint256"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [{"name": "", "type": "address"}],
+    "name": "isBlackListed",
+    "outputs": [{"name": "", "type": "bool"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [{"name": "_clearedUser", "type": "address"}],
+    "name": "removeBlackList",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "constant": true,
+    "inputs": [],
+    "name": "MAX_UINT",
+    "outputs": [{"name": "", "type": "uint256"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [{"name": "newOwner", "type": "address"}],
+    "name": "transferOwnership",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "constant": false,
+    "inputs": [{"name": "_blackListedUser", "type": "address"}],
+    "name": "destroyBlackFunds",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "inputs": [{"name": "_initialSupply", "type": "uint256"}, {"name": "_name", "type": "string"}, {
+        "name": "_symbol",
+        "type": "string"
+    }, {"name": "_decimals", "type": "uint256"}],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+}, {
+    "anonymous": false,
+    "inputs": [{"indexed": false, "name": "amount", "type": "uint256"}],
+    "name": "Issue",
+    "type": "event"
+}, {
+    "anonymous": false,
+    "inputs": [{"indexed": false, "name": "amount", "type": "uint256"}],
+    "name": "Redeem",
+    "type": "event"
+}, {
+    "anonymous": false,
+    "inputs": [{"indexed": false, "name": "newAddress", "type": "address"}],
+    "name": "Deprecate",
+    "type": "event"
+}, {
+    "anonymous": false,
+    "inputs": [{"indexed": false, "name": "feeBasisPoints", "type": "uint256"}, {
+        "indexed": false,
+        "name": "maxFee",
+        "type": "uint256"
+    }],
+    "name": "Params",
+    "type": "event"
+}, {
+    "anonymous": false,
+    "inputs": [{"indexed": false, "name": "_blackListedUser", "type": "address"}, {
+        "indexed": false,
+        "name": "_balance",
+        "type": "uint256"
+    }],
+    "name": "DestroyedBlackFunds",
+    "type": "event"
+}, {
+    "anonymous": false,
+    "inputs": [{"indexed": false, "name": "_user", "type": "address"}],
+    "name": "AddedBlackList",
+    "type": "event"
+}, {
+    "anonymous": false,
+    "inputs": [{"indexed": false, "name": "_user", "type": "address"}],
+    "name": "RemovedBlackList",
+    "type": "event"
+}, {
+    "anonymous": false,
+    "inputs": [{"indexed": true, "name": "owner", "type": "address"}, {
+        "indexed": true,
+        "name": "spender",
+        "type": "address"
+    }, {"indexed": false, "name": "value", "type": "uint256"}],
+    "name": "Approval",
+    "type": "event"
+}, {
+    "anonymous": false,
+    "inputs": [{"indexed": true, "name": "from", "type": "address"}, {
+        "indexed": true,
+        "name": "to",
+        "type": "address"
+    }, {"indexed": false, "name": "value", "type": "uint256"}],
+    "name": "Transfer",
+    "type": "event"
+}, {"anonymous": false, "inputs": [], "name": "Pause", "type": "event"}, {
+    "anonymous": false,
+    "inputs": [],
+    "name": "Unpause",
+    "type": "event"
+}]
 
 @customElement('payment-step')
 export class PaymentStep extends LitElement {
@@ -53,7 +605,10 @@ export class PaymentStep extends LitElement {
     tokenStandart: string = '';
 
     @property({attribute: false})
-    formatAmount: string = '';
+    leftAmountToken: string = '';
+
+    @property({attribute: false})
+    leftAmount: string = '';
 
     @query('#qrcode')
     qrcode: any;
@@ -66,7 +621,7 @@ export class PaymentStep extends LitElement {
             qr.addData(this.transaction?.to);
             qr.make();
 
-            if(this.qrcode){
+            if (this.qrcode) {
                 this.qrcode.innerHTML = qr.createSvgTag();
             }
         }
@@ -75,9 +630,11 @@ export class PaymentStep extends LitElement {
     async connectedCallback() {
         super.connectedCallback();
 
-        //@ts-ignore
-        this.formatAmount = roundUpAmount(this.transaction?.amount, this.transaction?.cryptocurrency.stable);
-        this.tokenStandart = getTokenStandart(this.transaction?.network.symbol!);
+        const left = this.invoice?.total - this.invoice?.paid;
+        this.leftAmount = parseFloat(left.toString()).toFixed(2);
+
+        const price = left / Number(this.transaction?.rate);
+        this.leftAmountToken = roundUpAmount(price.toString(), this.transaction?.cryptocurrency.stable!).toString();
     }
 
     render() {
@@ -259,7 +816,7 @@ export class PaymentStep extends LitElement {
                                                     <input
                                                             id="payAmount"
                                                             type="text"
-                                                            .value=${`${this.formatAmount} ${this.transaction?.cryptocurrency.symbol}`}
+                                                            .value=${`${this.leftAmountToken} ${this.transaction?.cryptocurrency.symbol}`}
                                                             readonly
                                                             disabled
                                                     />
@@ -267,7 +824,7 @@ export class PaymentStep extends LitElement {
                                                     <div
                                                             class="copyButton"
                                                             @click=${(event: CustomEvent) =>
-                                                                    this.copyData(event, this.formatAmount.toString() || '')}
+                                                                    this.copyData(event, this.leftAmountToken.toString() || '')}
                                                     >
                                                         <div class="default">
                                                             <svg
@@ -395,11 +952,13 @@ export class PaymentStep extends LitElement {
 
                                                                                     <div class="info">
                                                                                         <p class="name">${item.product.name}</p>
-                                                                                        <p class="description">${item.product.description}</p>
+                                                                                        <p class="description">
+                                                                                            ${item.product.description}</p>
                                                                                     </div>
 
                                                                                     <div class="priceWrapper">
-                                                                                        <p class="price">${parseFloat(item.product.prices[0].price.toString()).toFixed(2)}
+                                                                                        <p class="price">
+                                                                                            ${parseFloat(item.product.prices[0].price.toString()).toFixed(2)}
                                                                                             ${item.product.prices[0].currency.symbol}</p>
                                                                                         <p class="count">Count: ${item.count}</p>
                                                                                     </div>
@@ -413,13 +972,15 @@ export class PaymentStep extends LitElement {
                                                         `
                                                         : ''
                                         }
-                                        
+
                                         ${
                                                 (this.invoice?.products.length === 0)
-                                                ? html`
+                                                        ? html`
                                                             <div class="card">
-                                                                <svg class="image" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                                                <svg class="image" xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                     height="24"
+                                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                                     stroke-width="1.5"
                                                                      stroke-linecap="round" stroke-linejoin="round">
                                                                     <circle cx="12" cy="12" r="10"/>
                                                                     <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
@@ -427,7 +988,7 @@ export class PaymentStep extends LitElement {
                                                                 </svg>
 
                                                                 <p class="title">Amount</p>
-                                                                <p class="price">${`$${this.transaction?.amount}`}</p>
+                                                                <p class="price">${`$${this.leftAmount}`}</p>
                                                             </div>
                                                         `
                                                         : ''
@@ -438,20 +999,21 @@ export class PaymentStep extends LitElement {
                                                 .disabled=${this.connectorPaymentAwaiting}
                                         >
                                             ${
-                                                (this.connectorPaymentAwaiting) 
-                                                    ? html`
-                                                            <div class="spinner">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                                    <circle cx="12" cy="12" r="10" stroke-width="4" />
-                                                                    <path
-                                                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                                                    />
-                                                                </svg>
-                                                            </div>
-                                                        ` 
-                                                    : 'Pay'
+                                                    (this.connectorPaymentAwaiting)
+                                                            ? html`
+                                                                <div class="spinner">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                                         viewBox="0 0 24 24">
+                                                                        <circle cx="12" cy="12" r="10" stroke-width="4"/>
+                                                                        <path
+                                                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                                        />
+                                                                    </svg>
+                                                                </div>
+                                                            `
+                                                            : 'Pay'
                                             }
-                                            
+
                                         </button>
 
                                     </div>
@@ -460,7 +1022,7 @@ export class PaymentStep extends LitElement {
                 }
 
                 <step-footer
-                        .price=${this.transaction?.amount}
+                        .price=${this.leftAmount}
                         .hasButton=${false}
                         .hasCancelButton=${true}
                         .hasTimer=${true}
@@ -477,14 +1039,14 @@ export class PaymentStep extends LitElement {
         `;
     }
 
-    private async triggerTransaction(){
+    private async triggerTransaction() {
 
         this.updatePaymentAwaiting(true);
 
-        if(this.walletType !== 'MetaMask'){
+        if (this.walletType !== 'MetaMask') {
             try {
-                await switchChain(this.walletConnectorConfig, { chainId: (this.transaction?.network.symbol === 'bsc') ? bsc.id : mainnet.id })
-            }catch (e) {
+                await switchChain(this.walletConnectorConfig, {chainId: (this.transaction?.network.symbol === 'bsc') ? bsc.id : mainnet.id})
+            } catch (e) {
 
                 const options = {
                     detail: {
@@ -509,10 +1071,10 @@ export class PaymentStep extends LitElement {
             setTimeout(() => reject(new Error('Timeout error')), 40000)
         );
 
-        switch (this.transaction?.network.symbol){
+        switch (this.transaction?.network.symbol) {
             case 'bsc':
 
-                if(this.transaction?.cryptocurrency.symbol === 'USDT'){
+                if (this.transaction?.cryptocurrency.symbol === 'USDT') {
 
                     try {
 
@@ -523,48 +1085,48 @@ export class PaymentStep extends LitElement {
                                 functionName: 'transfer',
                                 args: [
                                     this.transaction?.to,
-                                    parseEther(this.transaction?.amount!)
+                                    parseEther(this.leftAmountToken)
                                 ],
                                 chainId: bsc.id,
                             }),
                             timer,
                         ]);
 
-                        if(hashTransaction){
+                        if (hashTransaction) {
                             this.checkingTransaction = true;
                             this.updatePaymentAwaiting(false);
                         }
 
                         return;
 
-                    }catch (e) {
+                    } catch (e) {
 
                         const error = e as WriteContractErrorType;
 
                         let messageTitle = '';
                         let messageText = '';
 
-                        if(error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1){
+                        if (error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1) {
 
                             messageTitle = 'Transaction Canceled'
                             messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
 
-                        }else if(error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1){
+                        } else if (error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1) {
 
                             messageTitle = 'Transaction Canceled'
                             messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
 
-                        }else if(error.message.indexOf('not match the target chain') !== -1){
+                        } else if (error.message.indexOf('not match the target chain') !== -1) {
 
                             messageTitle = 'Transaction Canceled'
-                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the ${ (this.transaction.network.symbol === 'bsc') ? 'BNB' : 'Ethereum Mainnet' } network manually and try again.`
+                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the ${(this.transaction.network.symbol === 'bsc') ? 'BNB' : 'Ethereum Mainnet'} network manually and try again.`
 
-                        }else if(error.message.indexOf('Timeout error') !== -1){
+                        } else if (error.message.indexOf('Timeout error') !== -1) {
 
                             messageTitle = 'Transaction Canceled'
                             messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
 
-                        }else{
+                        } else {
 
                             messageTitle = 'Transaction Canceled';
                             messageText = 'Something went wrong with the transaction. Please try again later.'
@@ -596,7 +1158,7 @@ export class PaymentStep extends LitElement {
                 break;
             case 'ethereum':
 
-                if(this.transaction?.cryptocurrency.symbol === 'USDT'){
+                if (this.transaction?.cryptocurrency.symbol === 'USDT') {
                     try {
 
                         const hashTransaction = await Promise.race([
@@ -606,38 +1168,38 @@ export class PaymentStep extends LitElement {
                                 functionName: 'transfer',
                                 args: [
                                     this.transaction?.to,
-                                    parseUnits( this.transaction?.amount!, 6 )
+                                    parseUnits(this.leftAmountToken, 6)
                                 ],
                                 chainId: mainnet.id,
                             }),
                             timer,
                         ]);
 
-                        if(hashTransaction){
+                        if (hashTransaction) {
                             this.checkingTransaction = true;
                             this.updatePaymentAwaiting(false);
                         }
 
                         return;
 
-                    }catch (e) {
+                    } catch (e) {
 
                         const error = e as WriteContractErrorType;
 
                         let messageTitle = '';
                         let messageText = '';
 
-                        if(error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1){
+                        if (error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1) {
 
                             messageTitle = 'Transaction Canceled'
                             messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
 
-                        }else if(error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1){
+                        } else if (error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1) {
 
                             messageTitle = 'Transaction Canceled'
                             messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
 
-                        }else if(error.message.indexOf('not match the target chain') !== -1){
+                        } else if (error.message.indexOf('not match the target chain') !== -1) {
 
                             const network: Network = this.transaction.network;
                             const networkName: any = (network && network.symbol === 'bsc') ? 'BNB' : 'Ethereum Mainnet'
@@ -645,12 +1207,12 @@ export class PaymentStep extends LitElement {
                             messageTitle = 'Transaction Canceled'
                             messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the ${networkName} network manually and try again.`
 
-                        }else if(error.message.indexOf('Timeout error') !== -1){
+                        } else if (error.message.indexOf('Timeout error') !== -1) {
 
                             messageTitle = 'Transaction Canceled'
                             messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
 
-                        }else{
+                        } else {
 
                             messageTitle = 'Transaction Canceled';
                             messageText = 'Something went wrong with the transaction. Please try again later.'
@@ -690,45 +1252,45 @@ export class PaymentStep extends LitElement {
                 sendTransaction(this.walletConnectorConfig, {
                     //@ts-ignore
                     to: this.transaction?.to,
-                    value: parseEther( this.transaction?.amount! ),
+                    value: parseEther(this.leftAmountToken),
                     chainId: (this.transaction?.network.symbol === 'bsc') ? bsc.id : mainnet.id,
                     data: '0x'
                 }),
                 timer,
             ]);
 
-            if(hashTransaction){
+            if (hashTransaction) {
                 this.checkingTransaction = true;
                 this.updatePaymentAwaiting(false);
             }
-        }catch (e) {
+        } catch (e) {
             const error = e as SendTransactionErrorType;
             console.log('sendTransaction error message', error.message)
 
             let messageTitle = '';
             let messageText = '';
 
-            if(error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1){
+            if (error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1) {
 
                 messageTitle = 'Transaction Canceled'
                 messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
 
-            }else if(error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1){
+            } else if (error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1) {
 
                 messageTitle = 'Transaction Canceled'
                 messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
 
-            }else if(error.message.indexOf('not match the target chain') !== -1){
+            } else if (error.message.indexOf('not match the target chain') !== -1) {
 
                 messageTitle = 'Transaction Canceled'
-                messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the ${ (this.transaction?.network.symbol === 'bsc') ? 'BNB' : 'Ethereum Mainnet' } network manually and try again.`
+                messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the ${(this.transaction?.network.symbol === 'bsc') ? 'BNB' : 'Ethereum Mainnet'} network manually and try again.`
 
-            }else if(error.message.indexOf('Timeout error') !== -1){
+            } else if (error.message.indexOf('Timeout error') !== -1) {
 
                 messageTitle = 'Transaction Canceled'
                 messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
 
-            }else{
+            } else {
 
                 messageTitle = 'Transaction Canceled';
                 messageText = 'Something went wrong with the transaction. Please try again later.'
@@ -827,8 +1389,8 @@ export class PaymentStep extends LitElement {
                 &::-webkit-scrollbar-thumb {
                     background: var(--sp-widget-scroll-color);
                 }
-                
-                &.between{
+
+                &.between {
                     justify-content: space-between;
                 }
 
@@ -1118,8 +1680,8 @@ export class PaymentStep extends LitElement {
                         }
                     }
                 }
-                
-                .products{
+
+                .products {
                     margin-top: 1rem;
                     flex: 1;
                     height: auto;
@@ -1136,15 +1698,15 @@ export class PaymentStep extends LitElement {
                     &::-webkit-scrollbar-thumb {
                         background: var(--sp-widget-scroll-color);
                     }
-                    
-                    .title{
+
+                    .title {
                         font-size: 18px;
                         line-height: 28px;
                         font-weight: 700;
                         color: var(--sp-widget-text-color);
                     }
-                    
-                    .productsList{
+
+                    .productsList {
                         margin-top: 20px;
                         flex: 1;
                         overflow-y: auto;
@@ -1153,8 +1715,8 @@ export class PaymentStep extends LitElement {
                         flex-direction: column;
                         gap: 16px;
                         width: 100%;
-                        
-                        .productItem{
+
+                        .productItem {
                             display: flex;
                             align-items: flex-start;
                             gap: 12px;
@@ -1178,13 +1740,13 @@ export class PaymentStep extends LitElement {
                                     object-fit: cover;
                                 }
 
-                                &.placeholder{
+                                &.placeholder {
                                     svg {
                                         width: 32px;
                                         height: 32px;
                                         object-fit: cover;
 
-                                        path{
+                                        path {
                                             stroke: var(--sp-widget-text-color);
                                         }
                                     }
@@ -1334,8 +1896,8 @@ export class PaymentStep extends LitElement {
                             opacity: 0.75;
                         }
                     }
-                    
-                    &.active{
+
+                    &.active {
                         touch-action: none;
                         pointer-events: none;
                     }
