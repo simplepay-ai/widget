@@ -61,6 +61,9 @@ export class ShowInvoice extends LitElement {
     @property({attribute: false, type: Number})
     leftAmount: number = 0;
 
+    @property({attribute: false, type: Object})
+    activeTransaction: Transaction | null = null;
+
     connectedCallback() {
         super.connectedCallback();
 
@@ -97,6 +100,11 @@ export class ShowInvoice extends LitElement {
 
         if (changedProperties.has('selectedTokenSymbol') || changedProperties.has('selectedNetworkSymbol')) {
             this.tokenStandart = getTokenStandart(this.selectedNetworkSymbol);
+        }
+
+        if(changedProperties.has('transactions') && this.transactions.length > 0){
+            const transaction = this.transactions.find((item) => item.status === 'created' || item.status === 'processing' || item.status === 'confirming')
+            this.activeTransaction = (transaction) ? transaction : null;
         }
     }
 
@@ -375,12 +383,24 @@ export class ShowInvoice extends LitElement {
                                     : ''
                     }
 
-                    <button class="mainButton"
-                            @click=${this.dispatchNextStep}
-                            .disabled=${!this.selectedTokenSymbol || !this.selectedNetworkSymbol}
-                    >
-                        Next
-                    </button>
+                    ${
+                            (this.activeTransaction)
+                            ? html`
+                                        <button class="mainButton"
+                                                @click=${() => this.dispatchSelectTransaction(this.activeTransaction?.id)}
+                                        >
+                                            To active transaction
+                                        </button>
+                                    `
+                                    : html`
+                                        <button class="mainButton"
+                                                @click=${this.dispatchNextStep}
+                                                .disabled=${!this.selectedTokenSymbol || !this.selectedNetworkSymbol}
+                                        >
+                                            Next
+                                        </button>
+                                    `
+                    }
 
                 </div>
 
@@ -741,15 +761,17 @@ export class ShowInvoice extends LitElement {
     }
 
     private dispatchSelectTransaction(transactionId) {
-        const updateEvent = new CustomEvent('updateSelectedTransaction', {
-            detail: {
-                transactionId: transactionId,
-            },
-            bubbles: true,
-            composed: true
-        });
+        if(transactionId){
+            const updateEvent = new CustomEvent('updateSelectedTransaction', {
+                detail: {
+                    transactionId: transactionId,
+                },
+                bubbles: true,
+                composed: true
+            });
 
-        this.dispatchEvent(updateEvent);
+            this.dispatchEvent(updateEvent);
+        }
     }
 
     static styles = css`

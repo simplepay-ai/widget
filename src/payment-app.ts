@@ -582,8 +582,9 @@ export class PaymentApp extends LitElement {
             }
         }
 
-        if(changedProperties.has('appStep') && this.appStep === 'success' && this.transactionInterval){
+        if(changedProperties.has('appStep') && (this.appStep === 'success' || this.appStep === 'showInvoice') && this.transactionInterval){
             clearInterval(this.transactionInterval);
+            this.transactionInterval = null;
         }
 
         if(changedProperties.has('appStep') && this.invoice){
@@ -768,6 +769,7 @@ export class PaymentApp extends LitElement {
                                         (this.connectorPaymentAwaiting = event.detail.connectorPaymentAwaiting)}
                                 @updateNotification=${(event: CustomEvent) =>
                                         this.updateNotification(event)}
+                                @returnBack=${this.prevStep}
                         ></payment-step>`
                     : ''}
             ${this.appStep === 'processing'
@@ -1227,7 +1229,7 @@ export class PaymentApp extends LitElement {
 
         try {
             this.cancelingTransaction = true;
-            await this.API.transaction.cancel(this.transaction?.id);
+            this.transaction = await this.API.transaction.cancel(this.transaction?.id);
 
             if(!this.transactionInterval){
                 this.transactionInterval = setInterval(() => this.updateTransaction(), 3000)
@@ -1648,6 +1650,8 @@ export class PaymentApp extends LitElement {
 
         try {
             this.transaction = await this.API.transaction.create(transactionParams);
+            this.cancelingTransaction = false;
+            this.goToStep('payment');
 
             if(!this.transactionInterval){
                 this.transactionInterval = setInterval(() => this.updateTransaction(), 3000)
