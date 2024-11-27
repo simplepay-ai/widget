@@ -16,7 +16,8 @@ export type AppStep =
     | 'typeSelect'
     | 'newSetPrice'
     | 'setProduct'
-    | 'setCart';
+    | 'setCart'
+    | 'showInvoice';
 
 export type CurrentPriceStep = 'priceEnter' | 'messageEnter';
 
