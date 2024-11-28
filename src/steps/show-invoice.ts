@@ -105,6 +105,10 @@ export class ShowInvoice extends LitElement {
             const transaction = this.transactions.find((item) => item.status === 'created' || item.status === 'processing' || item.status === 'confirming')
             this.activeTransaction = (transaction) ? transaction : null;
         }
+
+        if(changedProperties.has('invoice') && this.invoice){
+            this.leftAmount = Number(this.invoice?.total!) - Number(this.invoice?.paid!);
+        }
     }
 
     render() {
