@@ -346,11 +346,14 @@ export class PaymentApp extends LitElement {
 
             if (this.transactionId) {
                 this.onlyTransaction = true;
-                this.getTransaction(this.transactionId);
+
+                this.getInvoice(this.invoiceId).then(() => {
+                    this.getTransaction(this.transactionId);
+                });
                 return;
             } else {
-                this.getInvoiceTransactions(this.invoiceId);
                 this.getInvoice(this.invoiceId);
+                this.getInvoiceTransactions(this.invoiceId);
                 return;
             }
 
@@ -551,7 +554,7 @@ export class PaymentApp extends LitElement {
     updated(changedProperties: Map<string | symbol, unknown>): void {
         super.updated(changedProperties);
 
-        if (changedProperties.has('invoice') && this.invoice?.id) {
+        if (changedProperties.has('invoice') && this.invoice?.id && !this.onlyTransaction) {
             this.goToStep('showInvoice');
         }
 

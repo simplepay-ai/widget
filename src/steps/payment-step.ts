@@ -629,8 +629,8 @@ export class PaymentStep extends LitElement {
 
     async connectedCallback() {
         super.connectedCallback();
-
         const left = Number(this.invoice?.total!) - Number(this.invoice?.paid!);
+        console.log('left', this.invoice?.total)
         this.leftAmount = parseFloat(left.toString()).toFixed(2);
 
         const price = left / Number(this.transaction?.rate);
