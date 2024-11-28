@@ -4,7 +4,7 @@ import QRCode from 'corcojs-qrcode';
 import {PropertyValues} from 'lit';
 import {css, html, LitElement, property, query} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
-import {getTokenStandart, roundUpAmount} from "../util.ts";
+import {roundUpAmount} from "../util.ts";
 import {WalletType} from "../types.ts";
 import {
     sendTransaction,
@@ -630,7 +630,7 @@ export class PaymentStep extends LitElement {
     async connectedCallback() {
         super.connectedCallback();
 
-        const left = this.invoice?.total - this.invoice?.paid;
+        const left = Number(this.invoice?.total!) - Number(this.invoice?.paid!);
         this.leftAmount = parseFloat(left.toString()).toFixed(2);
 
         const price = left / Number(this.transaction?.rate);
@@ -911,7 +911,7 @@ export class PaymentStep extends LitElement {
                                         </div>
 
                                         ${
-                                                (this.invoice?.products.length > 0)
+                                                (this.invoice?.products && this.invoice?.products.length > 0)
                                                         ? html`
                                                             <div class="products">
                                                                 <p class="title">Products</p>

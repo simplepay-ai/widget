@@ -1,6 +1,6 @@
 import {css, html, LitElement, property} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
-import {InvoiceType, IProduct} from "../types.ts";
+import {InvoiceType} from "../types.ts";
 
 @customElement('type-select')
 export class TypeSelect extends LitElement {

@@ -3,9 +3,8 @@ import {
     Cryptocurrency,
     HttpError,
     Invoice, InvoiceCreateErrors,
-    InvoiceStatus, Network, Product, Transaction, TransactionCreateErrors,
+    Network, Product, Transaction, TransactionCreateErrors,
     ValidationError,
-    WsClient
 } from '@simplepay-ai/api-client';
 import {css, html, LitElement, property} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
@@ -15,7 +14,6 @@ import {
     CurrentPriceStep, ICartProduct,
     INotification, InvoiceType, IOpenButton,
     IProduct,
-    IProductInvoice,
     OpenMode,
     WalletType
 } from './types';

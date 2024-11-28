@@ -1,8 +1,6 @@
-import {css, html, LitElement, property, query} from 'lit-element';
+import {css, html, LitElement, property} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
-import {CurrentPriceStep} from "../types.ts";
-import {App, Cryptocurrency} from "@simplepay-ai/api-client";
-import {getTokenStandart, roundUpAmount} from "../util.ts";
+import {App} from "@simplepay-ai/api-client";
 
 @customElement('new-set-price-step')
 export class NewSetPriceStep extends LitElement {
@@ -25,15 +23,11 @@ export class NewSetPriceStep extends LitElement {
     @property({attribute: false, type: Array})
     private numpadButtons = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', 'backspace'];
 
-    @property({attribute: false, type: Boolean})
-    private nextButtonDisabled: boolean = true;
-
     connectedCallback() {
         super.connectedCallback();
 
         if (this.price && this.price !== '0') {
             this.priceValue = parseFloat(this.price).toFixed(2)
-            this.nextButtonDisabled = Number(this.price) < 1
         }
 
         this.numpadButtonsActive = true;

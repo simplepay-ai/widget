@@ -1,7 +1,7 @@
 import {css, html, LitElement, property} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {checkWalletAddress, getTokenStandart} from "../util.ts";
-import {IProduct, WalletType} from "../types.ts";
+import {WalletType} from "../types.ts";
 import {
     createConfig,
     http,
@@ -504,7 +504,7 @@ export class NewWalletStep extends LitElement {
                 }
 
                 <step-footer
-                        .price=${this.invoice?.total - this.invoice?.paid}
+                        .price=${Number(this.invoice?.total!) - Number(this.invoice?.paid!)}
                         .hasButton=${true}
                         .buttonDisabled=${this.buttonDisabled || this.creatingTransaction}
                         .buttonText=${'Confirm'}

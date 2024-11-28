@@ -1,6 +1,6 @@
 import {css, html, LitElement, property} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
-import {App, Product} from "@simplepay-ai/api-client";
+import {Product} from "@simplepay-ai/api-client";
 
 @customElement('product-step')
 export class ProductStep extends LitElement {

@@ -1,8 +1,7 @@
 import {css, html, LitElement, property} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
-import {IProduct} from "../types.ts";
 import {getTokenStandart, roundUpAmount} from "../util.ts";
-import {App, Cryptocurrency, Invoice, InvoiceProduct, Product, Transaction} from "@simplepay-ai/api-client";
+import {Cryptocurrency, Invoice, InvoiceProduct, Transaction} from "@simplepay-ai/api-client";
 
 @customElement('show-invoice')
 export class ShowInvoice extends LitElement {
@@ -67,7 +66,7 @@ export class ShowInvoice extends LitElement {
     connectedCallback() {
         super.connectedCallback();
 
-        this.leftAmount = this.invoice?.total - this.invoice?.paid;
+        this.leftAmount = Number(this.invoice?.total!) - Number(this.invoice?.paid!);
     }
 
     updated(changedProperties: Map<string | symbol, unknown>): void {
@@ -162,10 +161,10 @@ export class ShowInvoice extends LitElement {
 
                         <div class=${`
                         card
-                        ${(this.invoice?.products.length > 0) && 'hasProduct'}
+                        ${(this.invoice?.products && this.invoice?.products.length > 0) && 'hasProduct'}
                         `}
                              @click=${() => {
-                                 if (this.invoice?.products.length > 0) {
+                                 if (this.invoice?.products && this.invoice?.products.length > 0) {
                                      this.openProductModal()
                                  }
                              }}
@@ -218,7 +217,7 @@ export class ShowInvoice extends LitElement {
                             }
 
                             ${
-                                    (this.invoice?.products.length > 1 || this.invoice?.products.length === 1 && this.invoice.products[0].count > 1)
+                                    ((this.invoice?.products && this.invoice?.products.length > 1) || (this.invoice?.products && this.invoice?.products.length === 1 && this.invoice.products[0].count > 1))
                                             ? html`
                                                 <div class="productImage">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="800px"
@@ -302,7 +301,7 @@ export class ShowInvoice extends LitElement {
                 </div>
 
                 ${
-                        (Number(this.invoice?.total - this.invoice?.paid) > 0)
+                        (Number(this.invoice?.total!) - Number(this.invoice?.paid!) > 0)
                                 ? html`
                                     <div class="footer">
 
@@ -390,7 +389,7 @@ export class ShowInvoice extends LitElement {
                                                 (this.activeTransaction)
                                                         ? html`
                                                             <button class="mainButton"
-                                                                    @click=${() => this.dispatchSelectTransaction(this.activeTransaction?.id)}
+                                                                    @click=${() => this.dispatchSelectTransaction(this.activeTransaction?.id!)}
                                                             >
                                                                 To active transaction
                                                             </button>
@@ -435,7 +434,7 @@ export class ShowInvoice extends LitElement {
                             <div class="productsList">
 
                                 ${
-                                        this.invoice?.products.length > 0 && this.invoice?.products.map((item: InvoiceProduct) => html`
+                                        this.invoice?.products && this.invoice?.products.length > 0 && this.invoice?.products.map((item: InvoiceProduct) => html`
                                             <div class="productItem">
 
                                                 <div class=${`imageWrapper ${(!item.product.image) && 'placeholder'}`}>
@@ -511,8 +510,9 @@ export class ShowInvoice extends LitElement {
                                     return token.networks?.map((network) => {
                                         const networkStandart = getTokenStandart(network.symbol);
 
-                                        const leftPrice = this.invoice?.total - this.invoice?.paid;
                                         let formatPrice = 0;
+                                        let leftPrice = (this.invoice) ? Number(this.invoice.total) - Number(this.invoice.paid) : 0;
+                                        
                                         //@ts-ignore
                                         const price = leftPrice / token.rates['usd'];
                                         formatPrice = roundUpAmount(price.toString(), token.stable);
@@ -775,7 +775,7 @@ export class ShowInvoice extends LitElement {
         }
     }
 
-    private dispatchSelectTransaction(transactionId) {
+    private dispatchSelectTransaction(transactionId: string) {
         if (transactionId) {
             const updateEvent = new CustomEvent('updateSelectedTransaction', {
                 detail: {

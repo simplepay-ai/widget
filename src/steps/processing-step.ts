@@ -3,7 +3,6 @@ import {Invoice, Transaction} from '@simplepay-ai/api-client';
 import QRCode from 'corcojs-qrcode';
 import {PropertyValues} from 'lit';
 import {css, customElement, html, LitElement, property, query} from 'lit-element';
-import {IProduct} from "../types.ts";
 import {getTokenStandart, roundUpAmount} from "../util.ts";
 
 @customElement('processing-step')
