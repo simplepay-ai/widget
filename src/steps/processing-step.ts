@@ -1,4 +1,4 @@
-import {Invoice, Transaction} from '@simplepay-ai/api-client';
+import {Invoice, InvoiceProduct, Transaction} from '@simplepay-ai/api-client';
 //@ts-ignore
 import QRCode from 'corcojs-qrcode';
 import {PropertyValues} from 'lit';
@@ -44,6 +44,9 @@ export class ProcessingStep extends LitElement {
     @property({attribute: false})
     amountUSD: string = '';
 
+    @property({attribute: false, type: Array})
+    invoiceProducts: InvoiceProduct[] = [];
+
     connectedCallback() {
         super.connectedCallback();
 
@@ -55,6 +58,14 @@ export class ProcessingStep extends LitElement {
             const calc = Number(formatAmount) * Number(formatRate);
 
             this.amountUSD = parseFloat(calc.toString()).toFixed(2);
+        }
+
+        if(this.invoice?.payload?.products && this.invoice?.payload?.products.length > 0){
+            this.invoiceProducts = this.invoice?.payload?.products;
+        }
+
+        if(this.invoice?.products && this.invoice.products.length > 0){
+            this.invoiceProducts = this.invoice.products;
         }
 
         this.progressMaxNumber = this.getBlocksCount(this.transaction?.network.symbol!);
@@ -310,7 +321,7 @@ export class ProcessingStep extends LitElement {
                         .price=${this.amountUSD}
                         .hasExplorerButton=${true}
                         .explorerLink=${this.qrCodeUrl}
-                        .productsInfo=${this.invoice?.products}
+                        .productsInfo=${this.invoiceProducts}
                 ></step-footer>
             </div>
         `;

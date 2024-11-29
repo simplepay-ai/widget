@@ -1,4 +1,4 @@
-import {Invoice, Transaction} from '@simplepay-ai/api-client';
+import {Invoice, InvoiceProduct, Transaction} from '@simplepay-ai/api-client';
 //@ts-ignore
 import QRCode from 'corcojs-qrcode';
 import {PropertyValues} from 'lit';
@@ -35,6 +35,9 @@ export class SuccessStep extends LitElement {
     @property({attribute: false})
     amountUSD: string = '';
 
+    @property({attribute: false, type: Array})
+    invoiceProducts: InvoiceProduct[] = [];
+
     connectedCallback() {
         super.connectedCallback();
 
@@ -49,6 +52,14 @@ export class SuccessStep extends LitElement {
         }
 
         this.tokenStandart = getTokenStandart(this.transaction?.network.symbol!);
+
+        if(this.invoice?.payload?.products && this.invoice?.payload?.products.length > 0){
+            this.invoiceProducts = this.invoice?.payload?.products;
+        }
+
+        if(this.invoice?.products && this.invoice.products.length > 0){
+            this.invoiceProducts = this.invoice.products;
+        }
     }
 
     firstUpdated(_changedProperties: PropertyValues) {
@@ -291,7 +302,7 @@ export class SuccessStep extends LitElement {
                         .price=${this.amountUSD}
                         .hasBackButton=${true}
                         .backButtonUrl=${this.backToStoreUrl}
-                        .productsInfo=${this.invoice?.products}
+                        .productsInfo=${this.invoiceProducts}
                 ></step-footer>
             </div>
         `;

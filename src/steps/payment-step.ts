@@ -613,6 +613,9 @@ export class PaymentStep extends LitElement {
     @query('#qrcode')
     qrcode: any;
 
+    @property({attribute: false, type: Array})
+    invoiceProducts: InvoiceProduct[] = [];
+
     firstUpdated(_changedProperties: PropertyValues) {
         super.firstUpdated(_changedProperties);
 
@@ -629,8 +632,16 @@ export class PaymentStep extends LitElement {
 
     async connectedCallback() {
         super.connectedCallback();
+
+        if(this.invoice?.payload?.products && this.invoice?.payload?.products.length > 0){
+            this.invoiceProducts = this.invoice?.payload?.products;
+        }
+
+        if(this.invoice?.products && this.invoice.products.length > 0){
+            this.invoiceProducts = this.invoice.products;
+        }
+
         const left = Number(this.invoice?.total!) - Number(this.invoice?.paid!);
-        console.log('left', this.invoice?.total)
         this.leftAmount = parseFloat(left.toString()).toFixed(2);
 
         const price = left / Number(this.transaction?.rate);
@@ -911,7 +922,7 @@ export class PaymentStep extends LitElement {
                                         </div>
 
                                         ${
-                                                (this.invoice?.products && this.invoice?.products.length > 0)
+                                                (this.invoiceProducts && this.invoiceProducts.length > 0)
                                                         ? html`
                                                             <div class="products">
                                                                 <p class="title">Products</p>
@@ -919,7 +930,7 @@ export class PaymentStep extends LitElement {
                                                                 <div class="productsList">
 
                                                                     ${
-                                                                            this.invoice?.products.map((item: InvoiceProduct) => html`
+                                                                            this.invoiceProducts.map((item: InvoiceProduct) => html`
                                                                                 <div class="productItem">
 
                                                                                     <div class=${`imageWrapper ${(!item.product.image) && 'placeholder'}`}>
@@ -974,7 +985,7 @@ export class PaymentStep extends LitElement {
                                         }
 
                                         ${
-                                                (this.invoice?.products.length === 0)
+                                                (this.invoiceProducts.length === 0)
                                                         ? html`
                                                             <div class="card">
                                                                 <svg class="image" xmlns="http://www.w3.org/2000/svg" width="24"

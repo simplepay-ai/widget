@@ -24,6 +24,9 @@ export class ShowInvoice extends LitElement {
     @property({type: Boolean})
     tokenAvailable: boolean = false;
 
+    @property({attribute: false, type: Array})
+    invoiceProducts: InvoiceProduct[] = [];
+
     @property({attribute: false, type: Boolean})
     showProductModal: boolean = false;
 
@@ -67,6 +70,15 @@ export class ShowInvoice extends LitElement {
         super.connectedCallback();
 
         this.leftAmount = Number(this.invoice?.total!) - Number(this.invoice?.paid!);
+
+        if (this.invoice?.payload?.products && this.invoice?.payload?.products.length > 0) {
+            this.invoiceProducts = this.invoice?.payload?.products;
+        }
+
+        if (this.invoice?.products && this.invoice.products.length > 0) {
+            this.invoiceProducts = this.invoice.products;
+        }
+
     }
 
     updated(changedProperties: Map<string | symbol, unknown>): void {
@@ -106,7 +118,7 @@ export class ShowInvoice extends LitElement {
             this.activeTransaction = (transaction) ? transaction : null;
         }
 
-        if(changedProperties.has('invoice') && this.invoice){
+        if (changedProperties.has('invoice') && this.invoice) {
             this.leftAmount = Number(this.invoice?.total!) - Number(this.invoice?.paid!);
         }
     }
@@ -165,17 +177,17 @@ export class ShowInvoice extends LitElement {
 
                         <div class=${`
                         card
-                        ${(this.invoice?.products && this.invoice?.products.length > 0) && 'hasProduct'}
+                        ${(this.invoiceProducts && this.invoiceProducts.length > 0) && 'hasProduct'}
                         `}
                              @click=${() => {
-                                 if (this.invoice?.products && this.invoice?.products.length > 0) {
+                                 if (this.invoiceProducts && this.invoiceProducts.length > 0) {
                                      this.openProductModal()
                                  }
                              }}
                         >
 
                             ${
-                                    (this.invoice?.products.length === 0)
+                                    (this.invoiceProducts.length === 0)
                                             ? html`
                                                 <div class="icon">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -192,14 +204,14 @@ export class ShowInvoice extends LitElement {
                             }
 
                             ${
-                                    (this.invoice?.products.length === 1 && this.invoice.products[0].count === 1)
+                                    (this.invoiceProducts.length === 1 && this.invoiceProducts[0].count === 1)
                                             ? html`
                                                 <div class="productImage">
 
                                                     ${
-                                                            (this.invoice.products[0].product.image)
+                                                            (this.invoiceProducts[0].product.image)
                                                                     ? html`
-                                                                        <img .src=${this.invoice.products[0].product.image}
+                                                                        <img .src=${this.invoiceProducts[0].product.image}
                                                                              alt="product image">
                                                                     `
                                                                     : html`
@@ -221,7 +233,7 @@ export class ShowInvoice extends LitElement {
                             }
 
                             ${
-                                    ((this.invoice?.products && this.invoice?.products.length > 1) || (this.invoice?.products && this.invoice?.products.length === 1 && this.invoice.products[0].count > 1))
+                                    ((this.invoiceProducts && this.invoiceProducts.length > 1) || (this.invoiceProducts && this.invoiceProducts.length === 1 && this.invoiceProducts[0].count > 1))
                                             ? html`
                                                 <div class="productImage">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="800px"
@@ -305,7 +317,7 @@ export class ShowInvoice extends LitElement {
                 </div>
 
                 ${
-                        (Number(this.invoice?.total!) - Number(this.invoice?.paid!) > 0)
+                        (this.invoice?.status === 'active')
                                 ? html`
                                     <div class="footer">
 
@@ -438,7 +450,7 @@ export class ShowInvoice extends LitElement {
                             <div class="productsList">
 
                                 ${
-                                        this.invoice?.products && this.invoice?.products.length > 0 && this.invoice?.products.map((item: InvoiceProduct) => html`
+                                        this.invoiceProducts && this.invoiceProducts.length > 0 && this.invoiceProducts.map((item: InvoiceProduct) => html`
                                             <div class="productItem">
 
                                                 <div class=${`imageWrapper ${(!item.product.image) && 'placeholder'}`}>
@@ -516,7 +528,7 @@ export class ShowInvoice extends LitElement {
 
                                         let formatPrice = 0;
                                         let leftPrice = (this.invoice) ? Number(this.invoice.total) - Number(this.invoice.paid) : 0;
-                                        
+
                                         //@ts-ignore
                                         const price = leftPrice / token.rates['usd'];
                                         formatPrice = roundUpAmount(price.toString(), token.stable);
@@ -649,12 +661,13 @@ export class ShowInvoice extends LitElement {
                                                                         )}
                                                                     </p>
                                                                 </div>
-                                                                
+
                                                                 ${
                                                                         (formatPrice !== '---')
-                                                                        ? html`
+                                                                                ? html`
                                                                                     <p class="secondary">
-                                                                                        Amount: ${formatPrice} ${item.cryptocurrency.symbol}
+                                                                                        Amount: ${formatPrice}
+                                                                                        ${item.cryptocurrency.symbol}
                                                                                     </p>
                                                                                 `
                                                                                 : ''

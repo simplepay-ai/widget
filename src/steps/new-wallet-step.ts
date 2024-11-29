@@ -11,7 +11,7 @@ import {
 } from "@wagmi/core";
 import {mainnet, bsc} from '@wagmi/core/chains'
 import {coinbaseWallet, metaMask, walletConnect} from "@wagmi/connectors";
-import {Invoice} from "@simplepay-ai/api-client";
+import {Invoice, InvoiceProduct} from "@simplepay-ai/api-client";
 
 @customElement('new-wallet-step')
 export class NewWalletStep extends LitElement {
@@ -73,10 +73,21 @@ export class NewWalletStep extends LitElement {
     @property({attribute: false, type: String})
     private connectingType: WalletType | '' = '';
 
+    @property({attribute: false, type: Array})
+    invoiceProducts: InvoiceProduct[] = [];
+
     async connectedCallback() {
         super.connectedCallback();
 
         await this.checkConnectorConfig();
+
+        if(this.invoice?.payload?.products && this.invoice?.payload?.products.length > 0){
+            this.invoiceProducts = this.invoice?.payload?.products;
+        }
+
+        if(this.invoice?.products && this.invoice.products.length > 0){
+            this.invoiceProducts = this.invoice.products;
+        }
     }
 
     render() {
@@ -508,7 +519,7 @@ export class NewWalletStep extends LitElement {
                         .hasButton=${true}
                         .buttonDisabled=${this.buttonDisabled || this.creatingTransaction}
                         .buttonText=${'Confirm'}
-                        .products=${this.invoice?.products}
+                        .products=${this.invoiceProducts}
                         @footerButtonClick=${this.dispatchNextStep}
                 ></step-footer>
             </div>
