@@ -271,22 +271,11 @@ export class PaymentApp extends LitElement {
         // return;
         // }
 
-        if (!this.appId) {
-            this.errorTitle = 'Empty appId';
-            this.errorText =
-                'You did not pass the appId. In order to continue, the appId field must be filled in.';
-
-            this.goToStep('error');
-
-            return;
-        }
-
-        this.API = new Client({
-            apiKey: this.appId
-        });
         this.clientId = this.clientId ? this.clientId : crypto.randomUUID();
 
         if (this.invoiceId) {
+
+            this.API = new Client();
 
             this.tokens = await this.getTokens();
             if (this.tokens && this.tokens.length === 0) {
@@ -346,7 +335,6 @@ export class PaymentApp extends LitElement {
 
             if (this.transactionId) {
                 this.onlyTransaction = true;
-
                 this.getInvoice(this.invoiceId).then(() => {
                     this.getTransaction(this.transactionId);
                 });
@@ -358,6 +346,20 @@ export class PaymentApp extends LitElement {
             }
 
         }
+
+        if (!this.appId) {
+            this.errorTitle = 'Empty appId';
+            this.errorText =
+                'You did not pass the appId. In order to continue, the appId field must be filled in.';
+
+            this.goToStep('error');
+
+            return;
+        }
+
+        this.API = new Client({
+            apiKey: this.appId
+        });
 
         const products = await this.getProducts();
         if (products === 'error') {
@@ -1687,6 +1689,7 @@ export class PaymentApp extends LitElement {
     private async getInvoice(invoiceId: string) {
         try {
             this.invoice = await this.API.invoice.get(invoiceId, true);
+
         } catch (e) {
             this.errorTitle = 'Error';
             this.errorText =
