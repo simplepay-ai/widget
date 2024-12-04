@@ -38,10 +38,17 @@ export class SuccessStep extends LitElement {
     @property({attribute: false, type: Array})
     invoiceProducts: InvoiceProduct[] = [];
 
+    @property({attribute: false, type: Boolean})
+    showProductModal: boolean = false;
+
+    @property({attribute: false, type: Boolean})
+    showProductModalOverlay: boolean = false;
+
+    @property({attribute: false, type: Boolean})
+    showProductModalContent: boolean = false;
+
     connectedCallback() {
         super.connectedCallback();
-
-        console.log('invoice', this.invoice)
 
         if (this.transaction?.amount) {
             this.amountToken = roundUpAmount(this.transaction.amount, this.transaction.cryptocurrency.stable).toString();
@@ -347,38 +354,138 @@ export class SuccessStep extends LitElement {
                                     ${this.invoice?.currency.symbol}
                                 </p>
                             </div>
+
+                            ${
+                                    (this.invoiceProducts.length === 1 && this.invoiceProducts[0].count === 1)
+                                            ? html`
+                                                <div class="infoItem">
+                                                    <p class="title">Product:</p>
+                                                    <div class="productInfo">
+                                                        ${
+                                                                (this.invoiceProducts[0].product.image)
+                                                                        ? html`
+                                                                            <div class="image">
+                                                                                <img src=${this.invoiceProducts[0].product.image}
+                                                                                     alt="product image">
+                                                                            </div>
+                                                                        `
+                                                                        : html`
+                                                                            <div class="image placeholder">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                                     height="24"
+                                                                                     viewBox="0 0 24 24"
+                                                                                     fill="none" stroke="currentColor"
+                                                                                     stroke-width="1.5"
+                                                                                     stroke-linecap="round"
+                                                                                     stroke-linejoin="round">
+                                                                                    <circle cx="12" cy="8" r="5"/>
+                                                                                    <path d="M20 21a8 8 0 0 0-16 0"/>
+                                                                                </svg>
+                                                                            </div>
+                                                                        `
+                                                        }
+
+                                                        <p class="name">${this.invoiceProducts[0].product.name}</p>
+                                                    </div>
+                                                </div>
+                                            `
+                                            : ''
+                            }
+
+                            ${
+                                    ((this.invoiceProducts.length === 1 && this.invoiceProducts[0].count > 1) || (this.invoiceProducts.length > 1))
+                                            ? html`
+                                                <div class="infoItem">
+                                                    <p class="title">Products:</p>
+                                                    <div class="productButton" @click=${() => this.openProductModal()}>
+                                                        <p class="name">Items: ${this.invoiceProducts.length}</p>
+                                                    </div>
+                                                </div>
+                                            `
+                                            : ''
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <success-footer
+                        .invoice=${this.invoice}
+                        .backButtonUrl=${this.backToStoreUrl}
+                ></success-footer>
+
+                <div class="productModal ${(this.showProductModal) ? 'show' : ''}">
+
+                    <div @click=${() => this.closeProductModal()}
+                         class="overlay ${(this.showProductModalOverlay) ? 'show' : ''}"></div>
+
+                    <div class="contentWrapper ${(this.showProductModalContent) ? 'show' : ''}">
+                        <div class="content">
+                            <div class="titleWrapper">
+                                <p>Products</p>
+                                <div class="closeButton"
+                                     @click=${() => this.closeProductModal()}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                         viewBox="0 0 24 24"
+                                         fill="none" stroke="currentColor" stroke-width="2"
+                                         stroke-linecap="round"
+                                         stroke-linejoin="round">
+                                        <path d="M18 6 6 18"/>
+                                        <path d="m6 6 12 12"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="productsList">
+
+                                ${
+                                        this.invoiceProducts && this.invoiceProducts.length > 0 && this.invoiceProducts.map((item: InvoiceProduct) => html`
+                                            <div class="productItem">
+
+                                                <div class=${`imageWrapper ${(!item.product.image) && 'placeholder'}`}>
+
+                                                    ${
+                                                            (item.product.image)
+                                                                    ? html`
+                                                                        <img src=${item.product.image} alt="product image">
+                                                                    `
+                                                                    : html`
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="800px"
+                                                                             height="800px" viewBox="0 0 24 24" fill="none">
+                                                                            <path d="M15.5777 3.38197L17.5777 4.43152C19.7294 5.56066 20.8052 6.12523 21.4026 7.13974C22 8.15425 22 9.41667 22 11.9415V12.0585C22 14.5833 22 15.8458 21.4026 16.8603C20.8052 17.8748 19.7294 18.4393 17.5777 19.5685L15.5777 20.618C13.8221 21.5393 12.9443 22 12 22C11.0557 22 10.1779 21.5393 8.42229 20.618L6.42229 19.5685C4.27063 18.4393 3.19479 17.8748 2.5974 16.8603C2 15.8458 2 14.5833 2 12.0585V11.9415C2 9.41667 2 8.15425 2.5974 7.13974C3.19479 6.12523 4.27063 5.56066 6.42229 4.43152L8.42229 3.38197C10.1779 2.46066 11.0557 2 12 2C12.9443 2 13.8221 2.46066 15.5777 3.38197Z"
+                                                                                  stroke="#1C274C" stroke-width="1"
+                                                                                  stroke-linecap="round"/>
+                                                                            <path d="M21 7.5L17 9.5M12 12L3 7.5M12 12V21.5M12 12C12 12 14.7426 10.6287 16.5 9.75C16.6953 9.65237 17 9.5 17 9.5M17 9.5V13M17 9.5L7.5 4.5"
+                                                                                  stroke="#1C274C" stroke-width="1"
+                                                                                  stroke-linecap="round"/>
+                                                                        </svg>
+                                                                    `
+                                                    }
+
+
+                                                </div>
+
+                                                <div class="info">
+                                                    <p class="name">${item.product.name}</p>
+                                                    <p class="description">${item.product.description}</p>
+                                                </div>
+
+                                                <div class="priceWrapper">
+                                                    <p class="price">${item.product.prices[0].price}
+                                                        ${item.product.prices[0].currency.symbol}</p>
+                                                    <p class="count">Count: ${item.count}</p>
+                                                </div>
+
+                                            </div>
+                                        `)
+                                }
+
+                            </div>
                         </div>
                     </div>
 
-                    ${
-                            (this.invoice?.status === 'active')
-                            ? html`
-                                        <div class="buttonContent">
-                                            <button class="mainButton" @click=${() => this.dispatchReturnBack()}>
-                                                Pay more
-                                            </button>
-                                        </div>
-                                    `
-                                    : ''
-                    }
                 </div>
-
-                <step-footer
-                        .price=${this.amountUSD}
-                        .hasBackButton=${true}
-                        .backButtonUrl=${this.backToStoreUrl}
-                        .productsInfo=${this.invoiceProducts}
-                ></step-footer>
             </div>
         `;
-    }
-
-    private dispatchReturnBack() {
-        const options = {
-            bubbles: true,
-            composed: true
-        };
-        this.dispatchEvent(new CustomEvent('returnBack', options));
     }
 
     private copyData(event: CustomEvent, text: string) {
@@ -395,6 +502,30 @@ export class SuccessStep extends LitElement {
         } catch (e) {
             console.log('CopyToClipboard error', e);
         }
+    }
+
+    private openProductModal() {
+        this.showProductModal = true;
+
+        setTimeout(() => {
+            this.showProductModalOverlay = true;
+
+            setTimeout(() => {
+                this.showProductModalContent = true;
+            }, 200)
+        }, 200)
+    }
+
+    private closeProductModal() {
+        this.showProductModalContent = false;
+
+        setTimeout(() => {
+            this.showProductModalOverlay = false;
+
+            setTimeout(() => {
+                this.showProductModal = false;
+            }, 200)
+        }, 200)
     }
 
     static styles = css`
@@ -441,10 +572,6 @@ export class SuccessStep extends LitElement {
                     flex: 1;
                     width: 100%;
                     overflow-y: auto;
-                }
-
-                .buttonContent {
-                    width: 100%;
                 }
 
                 .topInfo {
@@ -855,13 +982,16 @@ export class SuccessStep extends LitElement {
                         }
 
                         .merchantInfo {
+                            flex: 1;
                             display: flex;
                             align-items: center;
+                            justify-content: end;
                             gap: 4px;
+                            overflow: hidden;
 
                             .image {
-                                margin: 0 auto;
                                 width: 20px;
+                                min-width: 20px;
                                 aspect-ratio: 1;
                                 display: flex;
                                 justify-content: center;
@@ -892,39 +1022,297 @@ export class SuccessStep extends LitElement {
                                 line-height: 20px;
                                 color: var(--sp-widget-text-color);
                                 font-weight: 700;
+                                -webkit-line-clamp: 1;
+                                white-space: nowrap;
+                                text-overflow: ellipsis;
+                                overflow: hidden;
+                            }
+                        }
+
+                        .productInfo {
+                            flex: 1;
+                            display: flex;
+                            align-items: center;
+                            justify-content: end;
+                            gap: 4px;
+                            overflow: hidden;
+
+                            .image {
+                                width: 20px;
+                                min-width: 20px;
+                                aspect-ratio: 1;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                overflow: hidden;
+                                border: 1px solid var(--sp-widget-border-color);
+                                background: var(--sp-widget-bg-color);
+                                border-radius: 50%;
+
+                                img {
+                                    width: 20px;
+                                    height: 20px;
+                                    object-fit: cover;
+                                }
+
+                                &.placeholder {
+                                    svg {
+                                        width: 10px;
+                                        height: 10px;
+                                        object-fit: cover;
+                                        color: var(--sp-widget-active-color);
+                                    }
+                                }
+                            }
+
+                            p {
+                                font-size: 12px;
+                                line-height: 20px;
+                                color: var(--sp-widget-text-color);
+                                font-weight: 700;
+                                -webkit-line-clamp: 1;
+                                white-space: nowrap;
+                                text-overflow: ellipsis;
+                                overflow: hidden;
+                            }
+                        }
+
+                        .productButton {
+                            background-color: var(--sp-widget-function-button-color);
+                            border: 1px solid var(--sp-widget-function-button-border-color);
+                            padding: 2px 10px;
+                            border-radius: 4px;
+                            cursor: pointer;
+                            transition-property: all;
+                            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                            transition-duration: 150ms;
+
+                            p {
+                                font-size: 12px;
+                                line-height: 20px;
+                                color: var(--sp-widget-function-button-text-color);
+                                font-weight: 700;
+                                transition-property: all;
+                                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                                transition-duration: 150ms;
+                            }
+
+                            @media (hover: hover) and (pointer: fine) {
+                                &:hover {
+                                    background: var(--sp-widget-function-button-hover-color);
+                                    border: 1px solid var(--sp-widget-function-button-hover-border-color);
+
+                                    p {
+                                        color: var(--sp-widget-function-button-hover-text-color);
+                                    }
+                                }
                             }
                         }
                     }
                 }
+            }
 
-                .mainButton {
+            .productModal {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 0;
+                display: flex;
+                align-items: flex-end;
+                overflow: hidden;
+                z-index: 11;
+
+                &.show {
+                    height: 100%;
+                }
+
+                .overlay {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
                     width: 100%;
-                    -webkit-user-select: none;
-                    -moz-user-select: none;
-                    -ms-user-select: none;
-                    user-select: none;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 14px;
-                    line-height: 20px;
-                    font-weight: 500;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    height: 40px;
-                    padding: 10px 8px;
-                    color: var(--sp-widget-primary-button-text-color);
-                    background: var(--sp-widget-primary-button-color);
-                    border: 1px solid var(--sp-widget-primary-button-border-color);
+                    height: 100%;
+                    z-index: 10;
+                    background: color-mix(in srgb,
+                    black 0%,
+                    transparent) !important;
                     transition-property: all;
                     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                     transition-duration: 150ms;
 
-                    @media (hover: hover) and (pointer: fine) {
-                        &:hover {
-                            color: var(--sp-widget-primary-button-hover-text-color);
-                            background: var(--sp-widget-primary-button-hover-color);
-                            border: 1px solid var(--sp-widget-primary-button-hover-border-color);
+                    &.show {
+                        background: color-mix(in srgb,
+                        black 75%,
+                        transparent) !important;
+                    }
+                }
+
+                .contentWrapper {
+                    width: 100%;
+                    background: var(--sp-widget-bg-color);
+                    z-index: 11;
+                    border-radius: 12px 12px 0 0;
+                    overflow: hidden;
+                    height: auto;
+                    max-height: 50%;
+                    display: flex;
+                    flex-direction: column;
+                    transform: translateY(100%);
+                    transition-property: all;
+                    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                    transition-duration: 150ms;
+
+                    &.show {
+                        transform: translateY(0);
+                    }
+
+                    .content {
+                        padding: 1rem;
+                        display: flex;
+                        flex-direction: column;
+                        overflow: hidden;
+                        height: auto;
+                        max-height: 100%;
+
+                        .titleWrapper {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+
+                            p {
+                                font-size: 20px;
+                                line-height: 28px;
+                                font-weight: 700;
+                                color: var(--sp-widget-text-color);
+                            }
+                        }
+
+                        .closeButton {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            cursor: pointer;
+                            user-select: none;
+                            transition-property: all;
+                            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                            transition-duration: 350ms;
+                            width: 25px;
+                            height: 25px;
+                            background: var(--sp-widget-function-button-color);
+                            border-radius: 6px;
+
+                            svg {
+                                width: 20px;
+                                height: 20px;
+                                color: var(--sp-widget-function-button-text-color);
+                                transition-property: all;
+                                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                                transition-duration: 350ms;
+                            }
+
+                            @media (hover: hover) and (pointer: fine) {
+                                &:hover {
+                                    background: var(--sp-widget-function-button-hover-color);
+
+                                    svg {
+                                        color: var(--sp-widget-function-button-hover-text-color);
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+                .productsList {
+                    margin-top: 20px;
+                    flex: 1;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 16px;
+                    width: 100%;
+                    padding: 0 4px;
+
+                    &::-webkit-scrollbar {
+                        width: 2px;
+                    }
+
+                    &::-webkit-scrollbar-track {
+                        background: transparent;
+                    }
+
+                    &::-webkit-scrollbar-thumb {
+                        background: var(--sp-widget-scroll-color);
+                    }
+
+                    .productItem {
+                        display: flex;
+                        align-items: flex-start;
+                        gap: 12px;
+                        margin: 0 auto;
+                        width: 95%;
+
+                        .imageWrapper {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            border: 1px solid var(--sp-widget-border-color);
+                            background: var(--sp-widget-secondary-bg-color);
+                            width: 40px;
+                            height: 40px;
+                            border-radius: 8px;
+                            overflow: hidden;
+
+                            img {
+                                width: 40px;
+                                height: 40px;
+                                object-fit: cover;
+                            }
+
+                            &.placeholder {
+                                svg {
+                                    width: 32px;
+                                    height: 32px;
+                                    object-fit: cover;
+
+                                    path {
+                                        stroke: var(--sp-widget-active-color);
+                                    }
+                                }
+                            }
+                        }
+
+                        .info {
+                            flex: 1;
+
+                            .name {
+                                color: var(--sp-widget-text-color);
+                                font-size: 14px;
+                                font-weight: 500;
+                            }
+
+                            .description {
+                                font-size: 12px;
+                                color: var(--sp-widget-secondary-text-color);
+                            }
+                        }
+
+                        .priceWrapper {
+                            .price {
+                                color: var(--sp-widget-text-color);
+                                font-size: 14px;
+                                font-weight: 500;
+                                text-align: end;
+                            }
+
+                            .count {
+                                font-size: 12px;
+                                color: var(--sp-widget-secondary-text-color);
+                                text-align: end;
+                            }
                         }
                     }
                 }

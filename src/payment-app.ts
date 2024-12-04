@@ -19,6 +19,7 @@ import {
 } from './types';
 import './steps/step-header.ts';
 import './steps/step-footer.ts';
+import './steps/success-footer.ts';
 import './steps/loading-step.ts';
 import './steps/error-step.ts';
 import './steps/payment-step.ts';

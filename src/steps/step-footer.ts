@@ -1,7 +1,7 @@
 import {css, html, LitElement, property} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {IProduct} from "../types.ts";
-import {InvoiceProduct} from "@simplepay-ai/api-client";
+import {Invoice, InvoiceProduct} from "@simplepay-ai/api-client";
 
 @customElement('step-footer')
 export class StepFooter extends LitElement {
@@ -11,6 +11,9 @@ export class StepFooter extends LitElement {
 
     @property({ type: Array })
     products: InvoiceProduct[] = [];
+
+    @property({type: Object})
+    invoice: Invoice | null = null;
 
     @property({type: String})
     price: string = '';
@@ -35,9 +38,6 @@ export class StepFooter extends LitElement {
 
     @property({type: Boolean})
     hasTimer: boolean = false;
-
-    @property({type: Boolean})
-    hasBackButton: boolean = false;
 
     @property({type: String})
     backButtonUrl: string = '';
@@ -195,15 +195,6 @@ export class StepFooter extends LitElement {
                                     ?disabled=${this.buttonDisabled}
                             >
                                 ${this.buttonText}
-                            </button>
-                        `
-                        : ''}
-                ${this.hasBackButton
-                        ? html`
-                            <button class="mainButton" @click=${() => {
-                                window.location.replace(this.backButtonUrl || location.href);
-                            }}>
-                                Back to Store
                             </button>
                         `
                         : ''}

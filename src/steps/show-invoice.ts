@@ -423,8 +423,7 @@ export class ShowInvoice extends LitElement {
                                     </div>
                                 ` : ''
                 }
-
-
+                
                 <div class="productModal ${(this.showProductModal) ? 'show' : ''}">
 
                     <div @click=${() => this.closeProductModal()}
