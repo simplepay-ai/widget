@@ -273,7 +273,7 @@ export class PaymentApp extends LitElement {
 
         this.clientId = this.clientId ? this.clientId : crypto.randomUUID();
 
-        if (this.invoiceId) {
+        if(this.invoiceId || this.transactionId) {
 
             this.API = new Client();
 
@@ -335,13 +335,14 @@ export class PaymentApp extends LitElement {
 
             if (this.transactionId) {
                 this.onlyTransaction = true;
-                this.getInvoice(this.invoiceId).then(() => {
-                    this.getTransaction(this.transactionId);
-                });
+                this.getTransaction(this.transactionId);
                 return;
             } else {
-                this.getInvoice(this.invoiceId);
-                this.getInvoiceTransactions(this.invoiceId);
+                this.getInvoice(this.invoiceId).then(() => {
+                    this.getInvoiceTransactions(this.invoiceId).then(() => {
+                        this.goToStep('showInvoice');
+                    });
+                });
                 return;
             }
 
@@ -556,9 +557,9 @@ export class PaymentApp extends LitElement {
     updated(changedProperties: Map<string | symbol, unknown>): void {
         super.updated(changedProperties);
 
-        if (changedProperties.has('invoice') && this.invoice?.id && !this.onlyTransaction) {
-            this.goToStep('showInvoice');
-        }
+        // if (changedProperties.has('invoice') && this.invoice?.id && !this.onlyTransaction) {
+        //     this.goToStep('showInvoice');
+        // }
 
         if (changedProperties.has('transaction') && this.transaction?.id) {
             switch (this.transaction?.status) {
@@ -577,7 +578,9 @@ export class PaymentApp extends LitElement {
                 case "success":
                 case "expired":
                     if(this.appStep !== 'success'){
-                        this.goToStep('success');
+                        this.getInvoice(this.transaction.invoiceId).then(() => {
+                            this.goToStep('success');
+                        })
                     }
                     return;
                 default:
@@ -1576,6 +1579,7 @@ export class PaymentApp extends LitElement {
 
         if (this.appStep === 'success') {
             this.goToStep('showInvoice');
+            this.onlyTransaction = false;
             return;
         }
     }
@@ -1689,7 +1693,6 @@ export class PaymentApp extends LitElement {
     private async getInvoice(invoiceId: string) {
         try {
             this.invoice = await this.API.invoice.get(invoiceId, true);
-
         } catch (e) {
             this.errorTitle = 'Error';
             this.errorText =

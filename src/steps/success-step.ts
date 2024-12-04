@@ -41,7 +41,9 @@ export class SuccessStep extends LitElement {
     connectedCallback() {
         super.connectedCallback();
 
-        if(this.transaction?.amount){
+        console.log('invoice', this.invoice)
+
+        if (this.transaction?.amount) {
             this.amountToken = roundUpAmount(this.transaction.amount, this.transaction.cryptocurrency.stable).toString();
 
             const formatAmount = parseFloat(this.transaction.amount);
@@ -53,11 +55,11 @@ export class SuccessStep extends LitElement {
 
         this.tokenStandart = getTokenStandart(this.transaction?.network.symbol!);
 
-        if(this.invoice?.payload?.products && this.invoice?.payload?.products.length > 0){
+        if (this.invoice?.payload?.products && this.invoice?.payload?.products.length > 0) {
             this.invoiceProducts = this.invoice?.payload?.products;
         }
 
-        if(this.invoice?.products && this.invoice.products.length > 0){
+        if (this.invoice?.products && this.invoice.products.length > 0) {
             this.invoiceProducts = this.invoice.products;
         }
     }
@@ -92,210 +94,273 @@ export class SuccessStep extends LitElement {
                 ></step-header>
 
                 <div class="stepContent">
-                    <div class="topInfo">
-                        <div class="leftSection">
-                            <div class="linesWrapper">
-                                <div class="line"></div>
-                                <div class="dot"></div>
-                                <div class="dot"></div>
-                                <div class="dot"></div>
-                            </div>
-                            <div class="infoWrapper">
-                                <div class="infoItem">
-                                    <p class="title">Invoice created</p>
-                                    <p class="text">
-                                        ${`${new Date(this.transaction?.createdAt!).toLocaleDateString()} ${new Date(this.transaction?.createdAt!).toLocaleTimeString()}`}
-                                    </p>
+                    <div class="topContent">
+                        <div class="topInfo">
+                            <div class="leftSection">
+                                <div class="linesWrapper">
+                                    <div class="line"></div>
+                                    <div class="dot"></div>
+                                    <div class="dot"></div>
+                                    <div class="dot"></div>
                                 </div>
-                                <div class="infoItem">
-                                    <p class="title">Processing</p>
-                                    <p class="text capitalize">${this.transaction?.status}</p>
-                                </div>
+                                <div class="infoWrapper">
+                                    <div class="infoItem">
+                                        <p class="title">Invoice created</p>
+                                        <p class="text">
+                                            ${`${new Date(this.transaction?.createdAt!).toLocaleDateString()} ${new Date(this.transaction?.createdAt!).toLocaleTimeString()}`}
+                                        </p>
+                                    </div>
+                                    <div class="infoItem">
+                                        <p class="title">Processing</p>
+                                        <p class="text capitalize">${this.transaction?.status}</p>
+                                    </div>
 
-                                <div class="infoItem">
-                                    <p class="title">
-                                        ${this.transaction?.status.toString() === 'success'
-                                                ? 'Payment success'
-                                                : 'Payment failed'}
-                                    </p>
-                                    <p class="text">
-                                        ${`${new Date(this.transaction?.updatedAt!).toLocaleDateString()} ${new Date(this.transaction?.updatedAt!).toLocaleTimeString()}`}
-                                    </p>
+                                    <div class="infoItem">
+                                        <p class="title">
+                                            ${this.transaction?.status.toString() === 'success'
+                                                    ? 'Payment success'
+                                                    : 'Payment failed'}
+                                        </p>
+                                        <p class="text">
+                                            ${`${new Date(this.transaction?.updatedAt!).toLocaleDateString()} ${new Date(this.transaction?.updatedAt!).toLocaleTimeString()}`}
+                                        </p>
+                                    </div>
                                 </div>
+                            </div>
+                            <div class="rightSection">
+                                ${
+                                        (this.transaction?.hash)
+                                                ? html`
+                                                    <div id="qrcode" class="qrcode"></div>
+
+                                                    <div class="icon">
+                                                        <img
+                                                                src="https://loutre.blockchair.io/assets/kit/blockchair.cube.svg"
+                                                                alt="blockchair icon"
+                                                        />
+                                                    </div>
+                                                `
+                                                : ''
+                                }
                             </div>
                         </div>
-                        <div class="rightSection">
-                            ${
-                                    (this.transaction?.hash)
+
+                        <div class="separator"></div>
+                    </div>
+
+                    <div class="infoContent">
+                        <div class="infoWrapper">
+                            <p class="title">Transaction details:</p>
+
+                            <div class="infoItem">
+                                <p class="title">Network:</p>
+                                <div class="networkInfo">
+                                    <network-icon
+                                            .id=${this.transaction?.network.symbol}
+                                            width="16"
+                                            height="16"
+                                            class="icon"
+                                    ></network-icon>
+                                    <p>${this.transaction?.network.symbol}</p>
+                                </div>
+                            </div>
+                            <div class="infoItem">
+                                <p class="title">Token:</p>
+                                <div class="tokenInfo">
+                                    <token-icon
+                                            .id=${this.transaction?.cryptocurrency.symbol}
+                                            width="16"
+                                            height="16"
+                                            class="icon"
+                                    ></token-icon>
+                                    <p>${this.transaction?.cryptocurrency.symbol}</p>
+                                    ${this.tokenStandart !== ''
                                             ? html`
-                                                <div id="qrcode" class="qrcode"></div>
+                                                <div class="badge">${this.tokenStandart}</div> `
+                                            : ''}
+                                </div>
+                            </div>
+                            <div class="infoItem">
+                                <p class="title">Amount:</p>
+                                <p class="amountInfo">
+                                    ${(this.amountToken) ? this.amountToken : 0}
+                                    ${this.transaction?.cryptocurrency.symbol}
+                                </p>
+                            </div>
+                            <div class="infoItem">
+                                <p class="title">From:</p>
 
-                                                <div class="icon">
-                                                    <img
-                                                            src="https://loutre.blockchair.io/assets/kit/blockchair.cube.svg"
-                                                            alt="blockchair icon"
-                                                    />
-                                                </div>
-                                            `
-                                            : ''
-                            }
+                                <div class="copyLine"
+                                     @click=${(event: CustomEvent) =>
+                                             this.copyData(event, this.transaction?.from || '')}
+                                >
+                                    <p>
+                                        ${this.transaction?.from.slice(0, 6)}
+                                            ...${this.transaction?.from.slice(
+                                                this.transaction?.from.length - 4,
+                                                this.transaction?.from.length
+                                        )}
+                                    </p>
+
+                                    <div class="defaultIcon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="24"
+                                                height="24"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                        >
+                                            <rect
+                                                    width="14"
+                                                    height="14"
+                                                    x="8"
+                                                    y="8"
+                                                    rx="2"
+                                                    ry="2"
+                                            />
+                                            <path
+                                                    d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                                            />
+                                        </svg>
+                                    </div>
+                                    <div class="activeIcon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="24"
+                                                height="24"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                        >
+                                            <path d="M20 6 9 17l-5-5"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="infoItem">
+                                <p class="title">To:</p>
+
+                                <div class="copyLine"
+                                     @click=${(event: CustomEvent) =>
+                                             this.copyData(event, this.transaction?.to || '')}
+                                >
+                                    <p>
+                                        ${this.transaction?.to.slice(0, 6)}
+                                            ...${this.transaction?.to.slice(
+                                                this.transaction?.to.length - 4,
+                                                this.transaction?.to.length
+                                        )}
+                                    </p>
+
+                                    <div class="defaultIcon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="24"
+                                                height="24"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                        >
+                                            <rect
+                                                    width="14"
+                                                    height="14"
+                                                    x="8"
+                                                    y="8"
+                                                    rx="2"
+                                                    ry="2"
+                                            />
+                                            <path
+                                                    d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                                            />
+                                        </svg>
+                                    </div>
+                                    <div class="activeIcon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="24"
+                                                height="24"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                        >
+                                            <path d="M20 6 9 17l-5-5"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="infoWrapper">
+                            <p class="title">Invoice details:</p>
+
+                            <div class="infoItem">
+                                <p class="title">Merchant:</p>
+                                <div class="merchantInfo">
+                                    ${
+                                            (this.invoice?.app?.image)
+                                                    ? html`
+                                                        <div class="image">
+                                                            <img src=${this.invoice?.app?.image}
+                                                                 alt="merchant image">
+                                                        </div>
+                                                    `
+                                                    : html`
+                                                        <div class="image placeholder">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                                 viewBox="0 0 24 24"
+                                                                 fill="none" stroke="currentColor" stroke-width="1.5"
+                                                                 stroke-linecap="round"
+                                                                 stroke-linejoin="round">
+                                                                <circle cx="12" cy="8" r="5"/>
+                                                                <path d="M20 21a8 8 0 0 0-16 0"/>
+                                                            </svg>
+                                                        </div>
+                                                    `
+                                    }
+
+                                    <p class="name">${this.invoice?.app?.name}</p>
+                                </div>
+                            </div>
+                            <div class="infoItem">
+                                <p class="title">Total amount:</p>
+                                <p class="amountInfo">
+                                    ${(this.invoice?.total) ? this.invoice.total : 0}
+                                    ${this.invoice?.currency.symbol}
+                                </p>
+                            </div>
+                            <div class="infoItem">
+                                <p class="title">Paid amount:</p>
+                                <p class="amountInfo">
+                                    ${(this.invoice?.paid) ? this.invoice.paid : 0}
+                                    ${this.invoice?.currency.symbol}
+                                </p>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="separator"></div>
-
-                    <div class="infoWrapper">
-                        <p class="title">Transaction details:</p>
-
-                        <div class="infoItem">
-                            <p class="title">Network:</p>
-                            <div class="networkInfo">
-                                <network-icon
-                                        .id=${this.transaction?.network.symbol}
-                                        width="16"
-                                        height="16"
-                                        class="icon"
-                                ></network-icon>
-                                <p>${this.transaction?.network.symbol}</p>
-                            </div>
-                        </div>
-                        <div class="infoItem">
-                            <p class="title">Token:</p>
-                            <div class="tokenInfo">
-                                <token-icon
-                                        .id=${this.transaction?.cryptocurrency.symbol}
-                                        width="16"
-                                        height="16"
-                                        class="icon"
-                                ></token-icon>
-                                <p>${this.transaction?.cryptocurrency.symbol}</p>
-                                ${this.tokenStandart !== ''
-                                        ? html`
-                                            <div class="badge">${this.tokenStandart}</div> `
-                                        : ''}
-                            </div>
-                        </div>
-                        <div class="infoItem">
-                            <p class="title">Amount:</p>
-                            <p class="amountInfo">
-                                ${(this.amountToken) ? this.amountToken : 0} ${this.transaction?.cryptocurrency.symbol}
-                            </p>
-                        </div>
-                        <div class="infoItem">
-                            <p class="title">From:</p>
-
-                            <div class="copyLine"
-                                 @click=${(event: CustomEvent) =>
-                                         this.copyData(event, this.transaction?.from || '')}
-                            >
-                                <p>
-                                    ${this.transaction?.from.slice(0, 6)}
-                                        ...${this.transaction?.from.slice(
-                                            this.transaction?.from.length - 4,
-                                            this.transaction?.from.length
-                                    )}
-                                </p>
-
-                                <div class="defaultIcon">
-                                    <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            stroke-width="2"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                    >
-                                        <rect
-                                                width="14"
-                                                height="14"
-                                                x="8"
-                                                y="8"
-                                                rx="2"
-                                                ry="2"
-                                        />
-                                        <path
-                                                d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
-                                        />
-                                    </svg>
-                                </div>
-                                <div class="activeIcon">
-                                    <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            stroke-width="2"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                    >
-                                        <path d="M20 6 9 17l-5-5"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="infoItem">
-                            <p class="title">To:</p>
-
-                            <div class="copyLine"
-                                 @click=${(event: CustomEvent) =>
-                                         this.copyData(event, this.transaction?.to || '')}
-                            >
-                                <p>
-                                    ${this.transaction?.to.slice(0, 6)}
-                                        ...${this.transaction?.to.slice(
-                                            this.transaction?.to.length - 4,
-                                            this.transaction?.to.length
-                                    )}
-                                </p>
-
-                                <div class="defaultIcon">
-                                    <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            stroke-width="2"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                    >
-                                        <rect
-                                                width="14"
-                                                height="14"
-                                                x="8"
-                                                y="8"
-                                                rx="2"
-                                                ry="2"
-                                        />
-                                        <path
-                                                d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
-                                        />
-                                    </svg>
-                                </div>
-                                <div class="activeIcon">
-                                    <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            stroke-width="2"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                    >
-                                        <path d="M20 6 9 17l-5-5"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    ${
+                            (this.invoice?.status === 'active')
+                            ? html`
+                                        <div class="buttonContent">
+                                            <button class="mainButton" @click=${() => this.dispatchReturnBack()}>
+                                                Pay more
+                                            </button>
+                                        </div>
+                                    `
+                                    : ''
+                    }
                 </div>
 
                 <step-footer
@@ -306,6 +371,14 @@ export class SuccessStep extends LitElement {
                 ></step-footer>
             </div>
         `;
+    }
+
+    private dispatchReturnBack() {
+        const options = {
+            bubbles: true,
+            composed: true
+        };
+        this.dispatchEvent(new CustomEvent('returnBack', options));
     }
 
     private copyData(event: CustomEvent, text: string) {
@@ -344,6 +417,9 @@ export class SuccessStep extends LitElement {
                 flex: 1;
                 padding: 16px;
                 overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
 
                 &::-webkit-scrollbar {
                     width: 1px;
@@ -355,6 +431,20 @@ export class SuccessStep extends LitElement {
 
                 &::-webkit-scrollbar-thumb {
                     background: var(--sp-widget-scroll-color);
+                }
+
+                .topContent {
+                    width: 100%;
+                }
+
+                .infoContent {
+                    flex: 1;
+                    width: 100%;
+                    overflow-y: auto;
+                }
+
+                .buttonContent {
+                    width: 100%;
                 }
 
                 .topInfo {
@@ -488,7 +578,7 @@ export class SuccessStep extends LitElement {
                 }
 
                 .separator {
-                    margin: 16px 0;
+                    margin-top: 16px;
                     height: 1px;
                     width: 100%;
                     background: var(--sp-widget-separator-color);
@@ -499,6 +589,7 @@ export class SuccessStep extends LitElement {
                     flex-direction: column;
                     gap: 2px;;
                     color: var(--sp-widget-secondary-text-color);
+                    margin-bottom: 8px;
 
                     & > .title {
                         font-size: 16px;
@@ -761,6 +852,79 @@ export class SuccessStep extends LitElement {
                                     display: flex;
                                 }
                             }
+                        }
+
+                        .merchantInfo {
+                            display: flex;
+                            align-items: center;
+                            gap: 4px;
+
+                            .image {
+                                margin: 0 auto;
+                                width: 20px;
+                                aspect-ratio: 1;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                overflow: hidden;
+                                border: 1px solid var(--sp-widget-border-color);
+                                background: var(--sp-widget-bg-color);
+                                border-radius: 50%;
+
+                                img {
+                                    width: 20px;
+                                    height: 20px;
+                                    object-fit: cover;
+                                }
+
+                                &.placeholder {
+                                    svg {
+                                        width: 10px;
+                                        height: 10px;
+                                        object-fit: cover;
+                                        color: var(--sp-widget-active-color);
+                                    }
+                                }
+                            }
+
+                            p {
+                                font-size: 12px;
+                                line-height: 20px;
+                                color: var(--sp-widget-text-color);
+                                font-weight: 700;
+                            }
+                        }
+                    }
+                }
+
+                .mainButton {
+                    width: 100%;
+                    -webkit-user-select: none;
+                    -moz-user-select: none;
+                    -ms-user-select: none;
+                    user-select: none;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 14px;
+                    line-height: 20px;
+                    font-weight: 500;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    height: 40px;
+                    padding: 10px 8px;
+                    color: var(--sp-widget-primary-button-text-color);
+                    background: var(--sp-widget-primary-button-color);
+                    border: 1px solid var(--sp-widget-primary-button-border-color);
+                    transition-property: all;
+                    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                    transition-duration: 150ms;
+
+                    @media (hover: hover) and (pointer: fine) {
+                        &:hover {
+                            color: var(--sp-widget-primary-button-hover-text-color);
+                            background: var(--sp-widget-primary-button-hover-color);
+                            border: 1px solid var(--sp-widget-primary-button-hover-border-color);
                         }
                     }
                 }
