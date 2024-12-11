@@ -278,72 +278,127 @@ export class PaymentApp extends LitElement {
 
             this.API = new Client();
 
-            this.tokens = await this.getTokens();
-            if (this.tokens && this.tokens.length === 0) {
-                this.errorTitle = 'Error';
-                this.errorText =
-                    'Currently, there are no tokens available for selection as a payment option on this project.';
-                this.goToStep('error');
-                this.dispatchErrorEvent('Empty Tokens', 'Currently, there are no tokens available for selection as a payment option on this project.');
-
-                return;
-            }
-            if (this.tokens && this.tokens.length > 0) {
-
-                const defaultToken = this.tokens?.find((item: Cryptocurrency) => item.symbol === this.tokenSymbol && item);
-                let defaultNetwork: Network | undefined = undefined;
-
-                if (defaultToken && defaultToken.networks && defaultToken.networks?.length > 0) {
-                    const networks: Network[] = defaultToken.networks;
-                    defaultNetwork = networks.find((item: Network) => item.symbol === this.networkSymbol);
-                }
-
-                if ((!defaultToken && this.tokenSymbol !== '') || (!defaultNetwork && this.networkSymbol !== '')) {
-
-                    if (!defaultToken) {
-                        this.errorTitle = 'Invalid Token Name';
-                        this.errorText =
-                            'The token name you entered is incorrect. Please double-check the name and try again.';
-                    }
-
-                    if (!defaultNetwork) {
-                        this.errorTitle = 'Invalid Token Network';
-                        this.errorText =
-                            'The token network you selected is incorrect. Please verify the network and try again.';
-                    }
-
-                    if (!defaultNetwork && !defaultToken) {
-                        this.errorTitle = 'Invalid Token Name and Network';
-                        this.errorText =
-                            'The token name and network you entered is incorrect. Please verify the token name and network and try again.';
-                    }
-
-                    this.goToStep('error');
-
-                    return;
-                }
-
-                if (defaultToken && defaultNetwork) {
-                    this.selectedTokenSymbol = defaultToken.symbol;
-                    this.selectedNetworkSymbol = defaultNetwork.symbol;
-                    this.tokenAvailable = true;
-
-                    console.log('selectedTokenSymbol', defaultToken.symbol)
-                    console.log('selectedNetworkSymbol', defaultNetwork.symbol)
-                }
-
-            }
+            // this.tokens = await this.getTokens();
+            // if (this.tokens && this.tokens.length === 0) {
+            //     this.errorTitle = 'Error';
+            //     this.errorText =
+            //         'Currently, there are no tokens available for selection as a payment option on this project.';
+            //     this.goToStep('error');
+            //     this.dispatchErrorEvent('Empty Tokens', 'Currently, there are no tokens available for selection as a payment option on this project.');
+            //
+            //     return;
+            // }
+            // if (this.tokens && this.tokens.length > 0) {
+            //
+            //     const defaultToken = this.tokens?.find((item: Cryptocurrency) => item.symbol === this.tokenSymbol && item);
+            //     let defaultNetwork: Network | undefined = undefined;
+            //
+            //     if (defaultToken && defaultToken.networks && defaultToken.networks?.length > 0) {
+            //         const networks: Network[] = defaultToken.networks;
+            //         defaultNetwork = networks.find((item: Network) => item.symbol === this.networkSymbol);
+            //     }
+            //
+            //     if ((!defaultToken && this.tokenSymbol !== '') || (!defaultNetwork && this.networkSymbol !== '')) {
+            //
+            //         if (!defaultToken) {
+            //             this.errorTitle = 'Invalid Token Name';
+            //             this.errorText =
+            //                 'The token name you entered is incorrect. Please double-check the name and try again.';
+            //         }
+            //
+            //         if (!defaultNetwork) {
+            //             this.errorTitle = 'Invalid Token Network';
+            //             this.errorText =
+            //                 'The token network you selected is incorrect. Please verify the network and try again.';
+            //         }
+            //
+            //         if (!defaultNetwork && !defaultToken) {
+            //             this.errorTitle = 'Invalid Token Name and Network';
+            //             this.errorText =
+            //                 'The token name and network you entered is incorrect. Please verify the token name and network and try again.';
+            //         }
+            //
+            //         this.goToStep('error');
+            //
+            //         return;
+            //     }
+            //
+            //     if (defaultToken && defaultNetwork) {
+            //         this.selectedTokenSymbol = defaultToken.symbol;
+            //         this.selectedNetworkSymbol = defaultNetwork.symbol;
+            //         this.tokenAvailable = true;
+            //
+            //         console.log('selectedTokenSymbol', defaultToken.symbol)
+            //         console.log('selectedNetworkSymbol', defaultNetwork.symbol)
+            //     }
+            //
+            // }
 
             if (this.transactionId) {
                 this.onlyTransaction = true;
                 this.getTransaction(this.transactionId);
                 return;
             } else {
-                this.getInvoice(this.invoiceId).then(() => {
+                this.getInvoice(this.invoiceId).then(async () => {
+                    this.tokens = await this.getTokens(this.invoice?.app?.id || '')
+
+                    if (this.tokens && this.tokens.length === 0) {
+                        this.errorTitle = 'Error';
+                        this.errorText =
+                            'Currently, there are no tokens available for selection as a payment option on this project.';
+                        this.goToStep('error');
+                        this.dispatchErrorEvent('Empty Tokens', 'Currently, there are no tokens available for selection as a payment option on this project.');
+
+                        return;
+                    }
+                    if (this.tokens && this.tokens.length > 0) {
+
+                        const defaultToken = this.tokens?.find((item: Cryptocurrency) => item.symbol === this.tokenSymbol && item);
+                        let defaultNetwork: Network | undefined = undefined;
+
+                        if (defaultToken && defaultToken.networks && defaultToken.networks?.length > 0) {
+                            const networks: Network[] = defaultToken.networks;
+                            defaultNetwork = networks.find((item: Network) => item.symbol === this.networkSymbol);
+                        }
+
+                        if ((!defaultToken && this.tokenSymbol !== '') || (!defaultNetwork && this.networkSymbol !== '')) {
+
+                            if (!defaultToken) {
+                                this.errorTitle = 'Invalid Token Name';
+                                this.errorText =
+                                    'The token name you entered is incorrect. Please double-check the name and try again.';
+                            }
+
+                            if (!defaultNetwork) {
+                                this.errorTitle = 'Invalid Token Network';
+                                this.errorText =
+                                    'The token network you selected is incorrect. Please verify the network and try again.';
+                            }
+
+                            if (!defaultNetwork && !defaultToken) {
+                                this.errorTitle = 'Invalid Token Name and Network';
+                                this.errorText =
+                                    'The token name and network you entered is incorrect. Please verify the token name and network and try again.';
+                            }
+
+                            this.goToStep('error');
+
+                            return;
+                        }
+
+                        if (defaultToken && defaultNetwork) {
+                            this.selectedTokenSymbol = defaultToken.symbol;
+                            this.selectedNetworkSymbol = defaultNetwork.symbol;
+                            this.tokenAvailable = true;
+                        }
+
+                    }
+                }).then(() => {
                     this.getInvoiceTransactions(this.invoiceId).then(() => {
                         this.goToStep('showInvoice');
                     });
                 });
+
                 return;
             }
 
@@ -1775,10 +1830,10 @@ export class PaymentApp extends LitElement {
         }
     }
 
-    private async getTokens() {
+    private async getTokens(appId: string) {
         try {
             const result: Cryptocurrency[] = await this.API.cryptocurrency.list({
-                appId: this.appId,
+                appId: appId,
                 networks: true,
                 rates: true
             });
