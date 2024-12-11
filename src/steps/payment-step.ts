@@ -640,12 +640,18 @@ export class PaymentStep extends LitElement {
         if(this.invoice?.products && this.invoice.products.length > 0){
             this.invoiceProducts = this.invoice.products;
         }
+    }
 
-        const left = Number(this.invoice?.total!) - Number(this.invoice?.paid!);
-        this.leftAmount = parseFloat(left.toString()).toFixed(2);
+    updated(changedProperties: Map<string | symbol, unknown>): void {
+        super.updated(changedProperties);
 
-        const price = left / Number(this.transaction?.rate);
-        this.leftAmountToken = roundUpAmount(price.toString(), this.transaction?.cryptocurrency.stable!).toString();
+        if(this.invoice){
+            const left = Number(this.invoice?.total!) - Number(this.invoice?.paid!);
+            this.leftAmount = parseFloat(left.toString()).toFixed(2);
+
+            const price = left / Number(this.transaction?.rate);
+            this.leftAmountToken = roundUpAmount(price.toString(), this.transaction?.cryptocurrency.stable!).toString();
+        }
     }
 
     render() {

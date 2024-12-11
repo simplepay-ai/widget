@@ -563,6 +563,11 @@ export class PaymentApp extends LitElement {
         // }
 
         if (changedProperties.has('transaction') && this.transaction?.id) {
+
+            if(!this.invoice){
+                this.getInvoice(this.transaction.invoiceId);
+            }
+
             switch (this.transaction?.status) {
                 case "processing":
                     if(this.appStep !== 'payment'){
