@@ -1,8 +1,12 @@
-import { css, html, LitElement } from 'lit-element';
+import {html, LitElement, unsafeCSS} from 'lit-element';
 import { customElement } from 'lit/decorators.js';
+//@ts-ignore
+import style from "../styles/loading-step.css?inline";
 
 @customElement('loading-step')
 export class LoadingStep extends LitElement {
+
+    static styles = unsafeCSS(style);
 
     render() {
         return html`
@@ -18,59 +22,6 @@ export class LoadingStep extends LitElement {
             </div>
         `;
     }
-
-    static styles = css`
-        * {
-            font-family: system-ui;
-            font-size: 14px;
-            font-weight: 450;
-            background: transparent;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        .stepContent {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            height: 100%;
-            background: var(--sp-widget-bg-color);
-
-            .spinner {
-                width: 100%;
-                height: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-
-                svg {
-                    width: 20px;
-                    height: 20px;
-                    animation: spin 1s linear infinite;
-                }
-
-                circle {
-                    stroke: var(--sp-widget-active-color);
-                    opacity: 0.25;
-                }
-
-                path {
-                    fill: var(--sp-widget-active-color);
-                    opacity: 0.75;
-                }
-            }
-        }
-
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
-        }
-    `;
 }
 
 declare global {
