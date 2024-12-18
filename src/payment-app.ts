@@ -39,7 +39,7 @@ import './steps/product-step.ts';
 import './steps/cart-step.ts';
 import './steps/show-invoice.ts';
 import './steps/new-wallet-step.ts';
-import {checkWalletAddress} from "./util.ts";
+import {checkWalletAddress, generateUUID} from "./util.ts";
 import themesConfig from '../themesConfig.json';
 //@ts-ignore
 import style from "./styles/payment-app.css?inline";
@@ -276,7 +276,7 @@ export class PaymentApp extends LitElement {
         // return;
         // }
 
-        this.clientId = this.clientId ? this.clientId : crypto.randomUUID();
+        this.clientId = this.clientId ? this.clientId : generateUUID();
 
         if(this.invoiceId || this.transactionId) {
 
@@ -1660,7 +1660,7 @@ export class PaymentApp extends LitElement {
         const invoiceParams: any = {
             appId: this.appId,
             type: 'payment',
-            clientId: crypto.randomUUID(),
+            clientId: generateUUID(),
             currency: 'USD',
         }
 
