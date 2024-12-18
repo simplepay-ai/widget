@@ -1,9 +1,13 @@
-import {css, html, LitElement, property} from 'lit-element';
+import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {Invoice} from "@simplepay-ai/api-client";
+//@ts-ignore
+import style from "../styles/success-footer.css?inline";
 
 @customElement('success-footer')
 export class SuccessFooter extends LitElement {
+
+    static styles = unsafeCSS(style);
 
     @property({type: Object})
     invoice: Invoice | null = null;
@@ -70,146 +74,6 @@ export class SuccessFooter extends LitElement {
         };
         this.dispatchEvent(new CustomEvent('returnBack', options));
     }
-
-    static styles = css`
-        * {
-            font-family: system-ui;
-            font-size: 14px;
-            font-weight: 450;
-            background: transparent;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        .stepFooter {
-            display: flex;
-            justify-content: space-between;
-            gap: 16px;
-            border-top: 1px solid var(--sp-widget-separator-color);
-            padding: 8px;
-            background: var(--sp-widget-bg-color);
-            z-index: 10;
-            position: relative;
-
-            .product {
-                display: flex;
-                gap: 7px;
-                z-index: 2;
-                position: relative;
-
-                .image {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    border: 1px solid var(--sp-widget-border-color);
-                    background: var(--sp-widget-secondary-bg-color);
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 8px;
-                    overflow: hidden;
-
-                    img {
-                        width: 40px;
-                        height: 40px;
-                        object-fit: cover;
-                    }
-
-                    &.placeholder {
-                        svg {
-                            width: 28px;
-                            height: 28px;
-                            object-fit: cover;
-                            
-                            & > *{
-                                stroke: var(--sp-widget-text-color);
-                            }
-                        }
-                    }
-                }
-
-                .price {
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    text-align: left;
-
-                    p {
-                        white-space: nowrap;
-                        font-size: 12px;
-                        line-height: 16px;
-                        font-weight: 700;
-                        color: var(--sp-widget-text-color);
-                    }
-                }
-            }
-
-            a:has(.mainButton),
-            a:has(.secondaryButton) {
-                text-decoration: none;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                width: 175px;
-            }
-
-            .mainButton {
-                z-index: 2;
-                position: relative;
-                max-width: 175px;
-                -webkit-user-select: none;
-                -moz-user-select: none;
-                -ms-user-select: none;
-                user-select: none;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 14px;
-                line-height: 20px;
-                font-weight: 500;
-                border-radius: 6px;
-                cursor: pointer;
-                width: 100%;
-                height: 40px;
-                padding: 16px 8px;
-                color: var(--sp-widget-primary-button-text-color);
-                background: var(--sp-widget-primary-button-color);
-                border: 1px solid var(--sp-widget-primary-button-border-color);
-                transition-property: all;
-                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-                transition-duration: 150ms;
-                
-                &.full{
-                    max-width: unset;
-                }
-
-                @media (hover: hover) and (pointer: fine) {
-                    &:hover {
-                        color: var(--sp-widget-primary-button-hover-text-color);
-                        background: var(--sp-widget-primary-button-hover-color);
-                        border: 1px solid var(--sp-widget-primary-button-hover-border-color);
-                    }
-                }
-
-                &:disabled {
-                    pointer-events: none;
-                    touch-action: none;
-                    opacity: 0.5;
-                }
-
-                &.withIcon {
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-
-                    svg {
-                        width: 15px;
-                        height: 15px;
-                    }
-                }
-            }
-        }
-    `;
 }
 
 declare global {

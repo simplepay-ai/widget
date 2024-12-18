@@ -1,0 +1,62 @@
+* {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 14px;
+    font-weight: 450;
+    background: transparent;
+    margin: 0;
+    padding: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.stepContent {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    padding: 0 16px;
+    text-align: center;
+    gap: 16px;
+    overflow-y: auto;
+    background: #ffffff; /* Fallback */
+    background: var(--sp-widget-bg-color);
+}
+
+.stepContent::-webkit-scrollbar {
+    width: 1px;
+}
+
+.stepContent::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.stepContent::-webkit-scrollbar-thumb {
+    background: #888888; /* Fallback */
+    background: var(--sp-widget-scroll-color);
+}
+
+.stepContent h2 {
+    color: #333333; /* Fallback */
+    color: var(--sp-widget-text-color);
+    font-weight: 700;
+    font-size: 20px;
+}
+
+.stepContent p {
+    color: #666666; /* Fallback */
+    color: var(--sp-widget-secondary-text-color);
+    font-size: 14px;
+    line-height: 20px;
+}

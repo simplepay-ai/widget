@@ -1,0 +1,424 @@
+* {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 14px;
+    font-weight: 450;
+    background: transparent;
+    margin: 0;
+    padding: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.stepWrapper {
+    height: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+
+.stepWrapper .stepContent {
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.stepWrapper .stepContent::-webkit-scrollbar {
+    width: 1px;
+}
+
+.stepWrapper .stepContent::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.stepWrapper .stepContent::-webkit-scrollbar-thumb {
+    background: #888888; /* Fallback */
+    background: var(--sp-widget-scroll-color);
+}
+
+.stepWrapper .stepContent.loading {
+    background: #ffffff; /* Fallback */
+    background: var(--sp-widget-bg-color);
+}
+
+.stepWrapper .stepContent .spinner {
+    width: 100%;
+    height: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+
+.stepWrapper .stepContent .spinner p {
+    margin-top: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #333333; /* Fallback */
+    color: var(--sp-widget-text-color);
+}
+
+.stepWrapper .stepContent .spinner svg {
+    width: 20px;
+    height: 20px;
+    -webkit-animation: spin 1s linear infinite;
+    animation: spin 1s linear infinite;
+}
+
+.stepWrapper .stepContent .spinner circle {
+    stroke: #007bff; /* Fallback */
+    stroke: var(--sp-widget-active-color);
+    opacity: 0.25;
+}
+
+.stepWrapper .stepContent .spinner path {
+    fill: #007bff; /* Fallback */
+    fill: var(--sp-widget-active-color);
+    opacity: 0.75;
+}
+
+.stepWrapper .stepContent .emptyMessage {
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.stepWrapper .stepContent .emptyMessage .icon {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    aspect-ratio: 1;
+    width: 75px;
+}
+
+.stepWrapper .stepContent .emptyMessage .icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.stepWrapper .stepContent .emptyMessage .icon svg > * {
+    stroke: #007bff; /* Fallback */
+    stroke: var(--sp-widget-active-color);
+}
+
+.stepWrapper .stepContent .emptyMessage p {
+    width: 100%;
+    max-width: 250px;
+    color: #666666; /* Fallback */
+    color: var(--sp-widget-secondary-text-color);
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+}
+
+.stepWrapper .stepContent .productItem {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #cccccc; /* Fallback */
+    border: 1px solid var(--sp-widget-function-button-border-color);
+    border-radius: 8px;
+    background: #f8f9fa; /* Fallback */
+    background: var(--sp-widget-function-button-color);
+    padding: 4px 8px;
+}
+
+.stepWrapper .stepContent .productItem .imageWrapper {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    border: 1px solid #cccccc; /* Fallback */
+    border: 1px solid var(--sp-widget-border-color);
+    background: #f8f9fa; /* Fallback */
+    background: var(--sp-widget-secondary-bg-color);
+    width: 40px;
+    min-width: 40px;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.stepWrapper .stepContent .productItem .imageWrapper img {
+    width: 40px;
+    height: 40px;
+    -o-object-fit: cover;
+    object-fit: cover;
+}
+
+.stepWrapper .stepContent .productItem .imageWrapper svg {
+    width: 32px;
+    height: 32px;
+    -o-object-fit: cover;
+    object-fit: cover;
+}
+
+.stepWrapper .stepContent .productItem .imageWrapper svg path {
+    stroke: #007bff; /* Fallback */
+    stroke: var(--sp-widget-active-color);
+}
+
+.stepWrapper .stepContent .productItem .info {
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    overflow: hidden;
+}
+
+.stepWrapper .stepContent .productItem .info .name {
+    color: #333333; /* Fallback */
+    color: var(--sp-widget-text-color);
+    font-size: 14px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.stepWrapper .stepContent .productItem .info .price {
+    margin-top: 2px;
+    font-size: 12px;
+    color: #666666; /* Fallback */
+    color: var(--sp-widget-secondary-text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.stepWrapper .stepContent .productItem .controls {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.stepWrapper .stepContent .productItem .controls .button {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    width: 28px;
+    min-width: 28px;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    cursor: pointer;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .stepWrapper .stepContent .productItem .controls .button:hover {
+        border: 1px solid #cccccc; /* Fallback */
+        border: 1px solid var(--sp-widget-border-color);
+        background: #f8f9fa; /* Fallback */
+        background: var(--sp-widget-secondary-bg-color);
+    }
+}
+
+.stepWrapper .stepContent .productItem .controls .button svg {
+    width: 20px;
+    height: 20px;
+}
+
+.stepWrapper .stepContent .productItem .controls .button svg > * {
+    stroke: #007bff; /* Fallback */
+    stroke: var(--sp-widget-active-color);
+}
+
+.stepWrapper .stepContent .cartText {
+    padding-left: 16px;
+    margin-bottom: 6px;
+    margin-top: -5px;
+    font-size: 12px;
+    color: #666666; /* Fallback */
+    color: var(--sp-widget-secondary-text-color);
+}
+
+.stepWrapper .stepFooter {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    gap: 8px;
+    border-top: 1px solid #e5e5e5; /* Fallback */
+    border-top: 1px solid var(--sp-widget-separator-color);
+    padding: 8px;
+    background: #ffffff; /* Fallback */
+    background: var(--sp-widget-bg-color);
+}
+
+.stepWrapper .stepFooter button {
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    height: 40px;
+    padding: 16px 8px;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+.stepWrapper .stepFooter button.mainButton {
+    color: #ffffff; /* Fallback */
+    color: var(--sp-widget-primary-button-text-color);
+    background: #007bff; /* Fallback */
+    background: var(--sp-widget-primary-button-color);
+    border: 1px solid #0056b3; /* Fallback */
+    border: 1px solid var(--sp-widget-primary-button-border-color);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .stepWrapper .stepFooter button.mainButton:hover {
+        color: #ffffff; /* Fallback */
+        color: var(--sp-widget-primary-button-hover-text-color);
+        background: #0056b3; /* Fallback */
+        background: var(--sp-widget-primary-button-hover-color);
+        border: 1px solid #004080; /* Fallback */
+        border: 1px solid var(--sp-widget-primary-button-hover-border-color);
+    }
+}
+
+.stepWrapper .stepFooter button.secondaryButton {
+    color: #333333; /* Fallback */
+    color: var(--sp-widget-cancel-button-text-color);
+    background: #f8f9fa; /* Fallback */
+    background: var(--sp-widget-cancel-button-color);
+    border: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .stepWrapper .stepFooter button.secondaryButton:hover {
+        background: #e9ecef; /* Fallback */
+        background: var(--sp-widget-cancel-button-hover-color);
+        border: 0;
+    }
+}
+
+.stepWrapper .stepFooter button:disabled {
+    pointer-events: none;
+    -ms-touch-action: none;
+    touch-action: none;
+    opacity: 0.5;
+}
+
+@-webkit-keyframes spin {
+    from {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    from {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}

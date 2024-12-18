@@ -1,9 +1,13 @@
-import {css, html, LitElement, property} from 'lit-element';
+import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {INotification} from '../types.ts';
+//@ts-ignore
+import style from "../styles/custom-notification.css?inline";
 
 @customElement('custom-notification')
 export class CustomNotification extends LitElement {
+
+    static styles = unsafeCSS(style);
 
     @property({type: Boolean})
     active: boolean = false;
@@ -128,173 +132,6 @@ export class CustomNotification extends LitElement {
             this.dispatchEvent(new CustomEvent('updateNotification', cleanOptions));
         }, 350);
     }
-
-    static styles = css`
-        * {
-            font-family: system-ui;
-            font-size: 14px;
-            font-weight: 450;
-            background: transparent;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        .notification {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 0;
-            display: flex;
-            align-items: flex-end;
-            overflow: hidden;
-
-            &.show {
-                height: 100%;
-            }
-
-            .overlay {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                z-index: 10;
-                background: color-mix(in srgb,
-                black 0%,
-                transparent) !important;
-                transition-property: all;
-                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-                transition-duration: 150ms;
-
-                &.show {
-                    background: color-mix(in srgb,
-                    black 75%,
-                    transparent) !important;
-                }
-            }
-
-            .contentWrapper {
-                width: 100%;
-                background: var(--sp-widget-bg-color);
-                z-index: 11;
-                border-radius: 12px 12px 0 0;
-                overflow: hidden;
-                max-height: 50%;
-                transform: translateY(100%);
-                transition-property: all;
-                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-                transition-duration: 150ms;
-                
-                &.show{
-                    transform: translateY(0);
-                }
-                
-                .content {
-                    padding: 1rem;
-                    display: flex;
-                    flex-direction: column;
-
-                    .titleWrapper {
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-
-                        p {
-                            font-size: 20px;
-                            line-height: 28px;
-                            font-weight: 700;
-                            color: var(--sp-widget-text-color);
-                        }
-                    }
-
-                    .closeButton {
-                        margin-right: 8px;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        cursor: pointer;
-                        user-select: none;
-                        transition-property: all;
-                        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-                        transition-duration: 350ms;
-                        width: 25px;
-                        height: 25px;
-                        background: var(--sp-widget-function-button-color);
-                        border-radius: 6px;
-
-                        svg {
-                            width: 20px;
-                            height: 20px;
-                            color: var(--sp-widget-function-button-text-color);
-                            transition-property: all;
-                            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-                            transition-duration: 350ms;
-                        }
-
-                        @media (hover: hover) and (pointer: fine) {
-                            &:hover {
-                                background: var(--sp-widget-function-button-hover-color);
-
-                                svg {
-                                    color: var(--sp-widget-function-button-hover-text-color);
-                                }
-                            }
-                        }
-                    }
-                    
-                    .textWrapper{
-                        margin: 1rem 0;
-                        
-                        p{
-                            font-size: 13px;
-                            font-weight: 400;
-                            color: var(--sp-widget-secondary-text-color);
-                            
-                            &:not(:first-child){
-                                margin-top: 12px;
-                            }
-                        }
-                    }
-
-                    .mainButton {
-                        margin-top: 1rem;
-                        width: 100%;
-                        -webkit-user-select: none;
-                        -moz-user-select: none;
-                        -ms-user-select: none;
-                        user-select: none;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-size: 14px;
-                        line-height: 20px;
-                        font-weight: 500;
-                        border-radius: 6px;
-                        cursor: pointer;
-                        height: 40px;
-                        padding: 16px 8px;
-                        color: var(--sp-widget-primary-button-text-color);
-                        background: var(--sp-widget-primary-button-color);
-                        border: 1px solid var(--sp-widget-primary-button-border-color);
-                        transition-property: all;
-                        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-                        transition-duration: 150ms;
-
-                        @media(hover: hover) and (pointer: fine){
-                            &:hover{
-                                color: var(--sp-widget-primary-button-hover-text-color);
-                                background: var(--sp-widget-primary-button-hover-color);
-                                border: 1px solid var(--sp-widget-primary-button-hover-border-color);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-    `;
 }
 
 declare global {

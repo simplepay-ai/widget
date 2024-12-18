@@ -1,0 +1,190 @@
+* {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 14px;
+    font-weight: 450;
+    background: transparent;
+    margin: 0;
+    padding: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.stepFooter {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    gap: 16px;
+    border-top: 1px solid #e5e5e5; /* Fallback */
+    border-top: 1px solid var(--sp-widget-separator-color);
+    padding: 8px;
+    background: #ffffff; /* Fallback */
+    background: var(--sp-widget-bg-color);
+    z-index: 10;
+    position: relative;
+}
+
+.stepFooter .product {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    gap: 7px;
+    z-index: 2;
+    position: relative;
+}
+
+.stepFooter .product .image {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    border: 1px solid #cccccc; /* Fallback */
+    border: 1px solid var(--sp-widget-border-color);
+    background: #f8f9fa; /* Fallback */
+    background: var(--sp-widget-secondary-bg-color);
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.stepFooter .product .image img {
+    width: 40px;
+    height: 40px;
+    -o-object-fit: cover;
+    object-fit: cover;
+}
+
+.stepFooter .product .image.placeholder svg {
+    width: 28px;
+    height: 28px;
+    -o-object-fit: cover;
+    object-fit: cover;
+}
+
+.stepFooter .product .image.placeholder svg > * {
+    stroke: #333333; /* Fallback */
+    stroke: var(--sp-widget-text-color);
+}
+
+.stepFooter .product .price {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    text-align: left;
+}
+
+.stepFooter .product .price p {
+    white-space: nowrap;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 700;
+    color: #333333; /* Fallback */
+    color: var(--sp-widget-text-color);
+}
+
+.stepFooter a:has(.mainButton),
+.stepFooter a:has(.secondaryButton) {
+    text-decoration: none;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    width: 175px;
+}
+
+.stepFooter .mainButton {
+    z-index: 2;
+    position: relative;
+    max-width: 175px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    height: 40px;
+    padding: 16px 8px;
+    color: #ffffff; /* Fallback */
+    color: var(--sp-widget-primary-button-text-color);
+    background: #007bff; /* Fallback */
+    background: var(--sp-widget-primary-button-color);
+    border: 1px solid #0056b3; /* Fallback */
+    border: 1px solid var(--sp-widget-primary-button-border-color);
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+.stepFooter .mainButton.full {
+    max-width: unset;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .stepFooter .mainButton:hover {
+        color: #ffffff; /* Fallback */
+        color: var(--sp-widget-primary-button-hover-text-color);
+        background: #0056b3; /* Fallback */
+        background: var(--sp-widget-primary-button-hover-color);
+        border: 1px solid #004080; /* Fallback */
+        border: 1px solid var(--sp-widget-primary-button-hover-border-color);
+    }
+}
+
+.stepFooter .mainButton:disabled {
+    pointer-events: none;
+    -ms-touch-action: none;
+    touch-action: none;
+    opacity: 0.5;
+}
+
+.stepFooter .mainButton.withIcon {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    gap: 6px;
+}
+
+.stepFooter .mainButton.withIcon svg {
+    width: 15px;
+    height: 15px;
+}

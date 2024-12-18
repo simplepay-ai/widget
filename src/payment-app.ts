@@ -6,7 +6,7 @@ import {
     Network, Product, Transaction, TransactionCreateErrors,
     ValidationError,
 } from '@simplepay-ai/api-client';
-import {css, html, LitElement, property} from 'lit-element';
+import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {
     AppStep,
@@ -41,9 +41,13 @@ import './steps/show-invoice.ts';
 import './steps/new-wallet-step.ts';
 import {checkWalletAddress} from "./util.ts";
 import themesConfig from '../themesConfig.json';
+//@ts-ignore
+import style from "./styles/payment-app.css?inline";
 
 @customElement('payment-app')
 export class PaymentApp extends LitElement {
+
+    static styles = unsafeCSS(style);
 
     @property({type: String})
     modal: string = '';
@@ -1928,136 +1932,6 @@ export class PaymentApp extends LitElement {
         });
         this.dispatchEvent(errorEvent);
     }
-
-    static styles = css`
-        * {
-            font-family: system-ui;
-            font-style: normal;
-            font-size: 14px;
-            font-weight: 450;
-            background: transparent;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        .openModalButton {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            line-height: 20px;
-            font-weight: 500;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 175px;
-            height: 40px;
-            padding: 16px 8px;
-            border: 0;
-            transition-property: all;
-            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            transition-duration: 150ms;
-
-            @media (hover: hover) and (pointer: fine) {
-                &:hover {
-                    opacity: 0.9;
-                }
-            }
-
-            &:disabled {
-                pointer-events: none;
-                touch-action: none;
-                opacity: 0.5;
-            }
-        }
-
-        .paymentModal {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 0;
-            display: flex;
-            align-items: center;
-            overflow: hidden;
-            z-index: 1;
-
-            &.show {
-                height: 100%;
-                width: 100%;
-            }
-
-            .paymentModalOverlay {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                z-index: 2;
-                background: color-mix(in srgb,
-                black 0%,
-                transparent) !important;
-                transition-property: all;
-                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-                transition-duration: 150ms;
-
-                &.show {
-                    background: color-mix(in srgb,
-                    black 75%,
-                    transparent) !important;
-                }
-            }
-
-            .paymentModalContent {
-                position: relative;
-                z-index: 3;
-                margin: 0 auto;
-                width: 100%;
-                height: 700px;
-                max-width: 390px;
-                border-radius: 6px;
-                overflow: hidden;
-                background: var(--sp-widget-secondary-bg-color);
-                opacity: 0;
-                transition-property: all;
-                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-                transition-duration: 150ms;
-
-                &.show {
-                    opacity: 1;
-                }
-            }
-        }
-
-        .stepWrapper {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            height: 100%;
-            background: var(--sp-widget-secondary-bg-color);
-            overflow: hidden;
-
-            & > *:not(custom-notification) {
-                height: 100%;
-            }
-        }
-
-        @media (max-width: 768px) {
-
-            .paymentModal {
-                .paymentModalContent {
-                    height: 100%;
-                    max-width: unset;
-                    border-radius: 0;
-                }
-            }
-        }
-    `;
 }
 
 declare global {

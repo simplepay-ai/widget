@@ -1,9 +1,13 @@
-import {css, html, LitElement, property} from 'lit-element';
+import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {InvoiceType} from "../types.ts";
+//@ts-ignore
+import style from "../styles/type-select.css?inline";
 
 @customElement('type-select')
 export class TypeSelect extends LitElement {
+
+    static styles = unsafeCSS(style);
 
     @property({type: String})
     invoiceType: InvoiceType | '' = '';
@@ -103,138 +107,6 @@ export class TypeSelect extends LitElement {
         });
         this.dispatchEvent(nextStepEvent);
     }
-
-    static styles = css`
-        * {
-            font-family: system-ui;
-            font-size: 14px;
-            font-weight: 450;
-            background: transparent;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        .stepWrapper {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-
-            .stepContent {
-                flex: 1;
-                padding: 16px;
-                overflow-y: auto;
-                display: flex;
-                flex-direction: column;
-                gap: 4px;
-                
-                &::-webkit-scrollbar {
-                    width: 1px;
-                }
-
-                &::-webkit-scrollbar-track {
-                    background: transparent;
-                }
-
-                &::-webkit-scrollbar-thumb {
-                    background: var(--sp-widget-scroll-color);
-                }
-
-                .typeButton{
-                    user-select: none;
-                    cursor: pointer;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    gap: 8px;
-                    width: 100%;
-                    height: 50px;
-                    padding: 10px 20px;
-                    border: 1px solid var(--sp-widget-function-button-border-color);
-                    border-radius: 8px;
-                    background: var(--sp-widget-function-button-color);
-                    transition-property: all;
-                    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-                    transition-duration: 150ms;
-
-                    &.selected{
-                        border: 1px solid var(--sp-widget-active-color);
-                    }
-
-                    p {
-                        display: block;
-                        flex: 1;
-                        font-size: 14px;
-                        font-weight: 500;
-                        color: var(--sp-widget-function-button-text-color);
-                    }
-
-                    svg {
-                        color: var(--sp-widget-active-color);
-                    }
-
-                    @media (hover: hover) and (pointer: fine) {
-                        &:hover {
-                            border: 1px solid var(--sp-widget-function-button-hover-border-color);
-                            background: var(--sp-widget-function-button-hover-color);
-
-                            &.selected {
-                                border: 1px solid var(--sp-widget-active-color);
-                            }
-                        }
-                    }
-                }
-                
-            }
-
-            .stepFooter {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-top: 1px solid var(--sp-widget-separator-color);
-                padding: 8px;
-                background: var(--sp-widget-bg-color);
-
-                .mainButton {
-                    -webkit-user-select: none;
-                    -moz-user-select: none;
-                    -ms-user-select: none;
-                    user-select: none;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 14px;
-                    line-height: 20px;
-                    font-weight: 500;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    width: 100%;
-                    height: 40px;
-                    padding: 16px 8px;
-                    color: var(--sp-widget-primary-button-text-color);
-                    background: var(--sp-widget-primary-button-color);
-                    border: 1px solid var(--sp-widget-primary-button-border-color);
-                    transition-property: all;
-                    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-                    transition-duration: 150ms;
-
-                    @media(hover: hover) and (pointer: fine){
-                        &:hover{
-                            color: var(--sp-widget-primary-button-hover-text-color);
-                            background: var(--sp-widget-primary-button-hover-color);
-                            border: 1px solid var(--sp-widget-primary-button-hover-border-color);
-                        }
-                    }
-
-                    &:disabled {
-                        pointer-events: none;
-                        touch-action: none;
-                        opacity: 0.5;
-                    }
-                }
-            }
-        }
-    `;
 }
 
 declare global {
