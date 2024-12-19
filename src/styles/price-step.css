@@ -51,7 +51,8 @@
 
 .stepWrapper .header .merchantInfo .image {
     width: 32px;
-    aspect-ratio: 1;
+    height: 32px;
+    min-width: 32px;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -374,7 +375,8 @@
     border: 1px solid #cccccc; /* Fallback */
     border: 1px solid var(--sp-widget-border-color);
     width: 20px;
-    aspect-ratio: 1;
+    height: 20px;
+    min-width: 20px;
     border-radius: 50%;
     display: -webkit-box;
     display: -ms-flexbox;

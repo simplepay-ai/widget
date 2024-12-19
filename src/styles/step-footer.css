@@ -134,9 +134,10 @@
 
 .stepFooter .product .productsInfo .toggleButton {
     width: 18px;
+    height: 18px;
+    min-width: 18px;
     color: #666666; /* Fallback */
     color: var(--sp-widget-secondary-text-color);
-    aspect-ratio: 1;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;

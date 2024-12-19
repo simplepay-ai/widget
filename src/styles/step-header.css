@@ -122,6 +122,7 @@
     font-weight: 700;
     color: #333333; /* Fallback */
     color: var(--sp-widget-text-color);
+    text-transform: capitalize;
 }
 
 .stepHeader .stepTitle .leftSection p:first-letter {
@@ -246,7 +247,8 @@
 .stepHeader .stepTitle .rightSection .badge.withAddress .network {
     border-radius: 50%;
     width: 12px;
-    aspect-ratio: 1;
+    height: 12px;
+    min-width: 12px;
     background: #ffffff; /* Fallback */
     background: var(--sp-widget-bg-color);
 }
@@ -271,8 +273,9 @@
     justify-content: center;
     gap: 4px;
     font-size: 12px;
-    aspect-ratio: 1;
     width: 32px;
+    height: 32px;
+    min-width: 32px;
     -webkit-transition-property: all;
     transition-property: all;
     -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);

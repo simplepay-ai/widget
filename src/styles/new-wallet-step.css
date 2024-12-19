@@ -126,7 +126,8 @@
 .stepWrapper .stepContent .walletType svg.typeIcon {
     display: block;
     width: 30px;
-    aspect-ratio: 1;
+    height: 30px;
+    min-width: 30px;
 }
 
 .stepWrapper .stepContent .walletType .spinner {
@@ -416,7 +417,8 @@
 .stepWrapper .stepContent .walletModal .contentWrapper .content .inputWrapper .input .pasteButton {
     padding: 11px;
     width: 42px;
-    aspect-ratio: 1;
+    height: 42px;
+    min-width: 42px;
     border: 1px solid #cccccc; /* Fallback */
     border: 1px solid var(--sp-widget-function-button-border-color);
     border-radius: 6px;

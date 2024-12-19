@@ -208,7 +208,8 @@
     -ms-flex-align: center;
     align-items: center;
     width: 128px;
-    aspect-ratio: 1;
+    height: 128px;
+    min-width: 128px;
 }
 
 .stepWrapper .stepContent .topInfo .rightSection .qrcode svg {
@@ -517,7 +518,8 @@
 
 .stepWrapper .stepContent .infoWrapper .infoItem .hashInfo .separator .dot {
     width: 4px;
-    aspect-ratio: 1;
+    height: 4px;
+    min-width: 4px;
     background: #666666; /* Fallback */
     background: var(--sp-widget-secondary-text-color);
     border-radius: 50%;
