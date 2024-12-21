@@ -741,8 +741,8 @@
 }
 
 .stepWrapper .stepContent .infoWrapper .infoItem .productInfo .image.placeholder svg {
-    width: 10px;
-    height: 10px;
+    width: 13px;
+    height: 13px;
     -o-object-fit: cover;
     object-fit: cover;
     color: #007bff; /* Fallback */

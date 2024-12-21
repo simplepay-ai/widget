@@ -547,10 +547,10 @@
     object-fit: cover;
 }
 
-.stepWrapper .stepContent .products .productsList .productItem .imageWrapper.placeholder svg path {
-    stroke: #333333; /* Fallback */
-    stroke: var(--sp-widget-text-color);
-}
+/*.stepWrapper .stepContent .products .productsList .productItem .imageWrapper.placeholder svg path {*/
+/*    stroke: #333333; !* Fallback *!*/
+/*    stroke: var(--sp-widget-text-color);*/
+/*}*/
 
 .stepWrapper .stepContent .products .productsList .productItem .info {
     -webkit-box-flex: 1;
