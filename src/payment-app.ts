@@ -204,10 +204,16 @@ export class PaymentApp extends LitElement {
     private tokenAvailable: boolean = false;
 
     @property({attribute: false})
-    private selectedTokenSymbol: string = '';
+    private selectedToken: Cryptocurrency | null = null;
 
     @property({attribute: false})
-    private selectedNetworkSymbol: string = '';
+    private selectedNetwork: Network | null = null;
+
+    // @property({attribute: false})
+    // private selectedTokenSymbol: string = '';
+    //
+    // @property({attribute: false})
+    // private selectedNetworkSymbol: string = '';
 
     @property({attribute: false})
     private onlyTransaction: boolean = false;
@@ -391,8 +397,10 @@ export class PaymentApp extends LitElement {
                         }
 
                         if (defaultToken && defaultNetwork) {
-                            this.selectedTokenSymbol = defaultToken.symbol;
-                            this.selectedNetworkSymbol = defaultNetwork.symbol;
+                            this.selectedToken = defaultToken;
+                            this.selectedNetwork = defaultNetwork;
+                            // this.selectedTokenSymbol = defaultToken.symbol;
+                            // this.selectedNetworkSymbol = defaultNetwork.symbol;
                             this.tokenAvailable = true;
                         }
 
@@ -783,15 +791,15 @@ export class PaymentApp extends LitElement {
                     ? html`
                         <show-invoice
                                 .invoice=${this.invoice}
-                                .selectedTokenSymbol=${this.selectedTokenSymbol}
-                                .selectedNetworkSymbol=${this.selectedNetworkSymbol}
+                                .selectedToken=${this.selectedToken}
+                                .selectedNetwork=${this.selectedNetwork}
                                 .tokens=${this.tokens}
                                 .tokenAvailable=${this.tokenAvailable}
                                 .transactions=${this.invoiceTransactions}
                                 @nextStep=${this.nextStep}
                                 @updateSelectedToken=${(event: CustomEvent) => {
-                                    this.selectedTokenSymbol = event.detail.tokenSymbol;
-                                    this.selectedNetworkSymbol = event.detail.networkSymbol;
+                                    this.selectedToken = event.detail.token;
+                                    this.selectedNetwork = event.detail.network;
                                 }}
                                 @updateSelectedTransaction=${(event: CustomEvent) => {
                                     const transaction = this.invoiceTransactions.find((item) => item.id === event.detail.transactionId);
@@ -810,8 +818,8 @@ export class PaymentApp extends LitElement {
                                 .creatingTransaction=${this.creatingTransaction}
                                 .walletAddress=${this.walletAddress}
                                 .walletType=${this.walletType}
-                                .selectedTokenSymbol=${this.selectedTokenSymbol}
-                                .selectedNetworkSymbol=${this.selectedNetworkSymbol}
+                                .selectedToken=${this.selectedToken}
+                                .selectedNetwork=${this.selectedNetwork}
                                 .walletConnectorConfig=${this.walletConnectorConfig}
                                 @updateNotification=${(event: CustomEvent) =>
                                         this.updateNotification(event)}
@@ -874,15 +882,16 @@ export class PaymentApp extends LitElement {
                         <preview-step
                                 .price=${this.price}
                                 .productsInfo=${this.productsInfo}
-                                .selectedTokenSymbol=${this.selectedTokenSymbol}
-                                .selectedNetworkSymbol=${this.selectedNetworkSymbol}
+                                .selectedTokenSymbol=${this.selectedToken?.symbol}
+                                .selectedNetworkSymbol=${this.selectedNetwork?.symbol}
                                 .tokens=${this.tokens}
                                 .tokenAvailable=${this.tokenAvailable}
                                 .appInfo=${this.appInfo}
                                 @nextStep=${this.nextStep}
                                 @updateSelectedToken=${(event: CustomEvent) => {
-                                    this.selectedTokenSymbol = event.detail.tokenSymbol;
-                                    this.selectedNetworkSymbol = event.detail.networkSymbol;
+                                    console.log('updateSelectedToken', event.detail)
+                                    // this.selectedTokenSymbol = event.detail.tokenSymbol;
+                                    // this.selectedNetworkSymbol = event.detail.networkSymbol;
                                 }}
                         >
                         </preview-step>`
@@ -897,16 +906,17 @@ export class PaymentApp extends LitElement {
                                 .payloadMessage=${this.payloadMessage}
                                 .invoiceMessage=${this.invoiceMessage}
                                 .currentPriceStep=${this.priceStep}
-                                .selectedTokenSymbol=${this.selectedTokenSymbol}
-                                .selectedNetworkSymbol=${this.selectedNetworkSymbol}
+                                .selectedTokenSymbol=${this.selectedToken?.symbol}
+                                .selectedNetworkSymbol=${this.selectedNetwork?.symbol}
                                 .tokens=${this.tokens}
                                 @updatePrice=${(event: CustomEvent) => (this.price = event.detail.price)}
                                 @updateInvoiceMessage=${(event: CustomEvent) => (this.invoiceMessage = event.detail.invoiceMessage)}
                                 @updateCurrentPriceStep=${(event: CustomEvent) => (this.priceStep = event.detail.currentPriceStep)}
                                 @nextStep=${this.nextStep}
                                 @updateSelectedToken=${(event: CustomEvent) => {
-                                    this.selectedTokenSymbol = event.detail.tokenSymbol;
-                                    this.selectedNetworkSymbol = event.detail.networkSymbol;
+                                    console.log('updateSelectedToken', event.detail)
+                                    // this.selectedTokenSymbol = event.detail.tokenSymbol;
+                                    // this.selectedNetworkSymbol = event.detail.networkSymbol;
                                 }}
                         ></price-step>`
                     : ''}
@@ -915,14 +925,15 @@ export class PaymentApp extends LitElement {
                     ? html`
                         <token-step
                                 .tokens=${this.tokens}
-                                .selectedTokenSymbol=${this.selectedTokenSymbol}
-                                .selectedNetworkSymbol=${this.selectedNetworkSymbol}
+                                .selectedTokenSymbol=${this.selectedToken?.symbol}
+                                .selectedNetworkSymbol=${this.selectedNetwork?.symbol}
                                 .price=${this.price}
                                 .returnButtonShow=${!this.priceAvailable || this.priceAvailable && this.noPreview !== 'true' || this.payloadMessage && this.noPreview === 'true'}
                                 .productsInfo=${this.productsInfo}
                                 @updateSelectedToken=${(event: CustomEvent) => {
-                                    this.selectedTokenSymbol = event.detail.tokenSymbol;
-                                    this.selectedNetworkSymbol = event.detail.networkSymbol;
+                                    console.log('updateSelectedToken', event.detail)
+                                    // this.selectedTokenSymbol = event.detail.tokenSymbol;
+                                    // this.selectedNetworkSymbol = event.detail.networkSymbol;
                                 }}
                                 @nextStep=${this.nextStep}
                                 @returnBack=${this.prevStep}
@@ -935,8 +946,8 @@ export class PaymentApp extends LitElement {
                                 .walletType=${this.walletType}
                                 .price=${this.price}
                                 .productsInfo=${this.productsInfo}
-                                .selectedTokenSymbol=${this.selectedTokenSymbol}
-                                .selectedNetworkSymbol=${this.selectedNetworkSymbol}
+                                .selectedTokenSymbol=${this.selectedToken?.symbol}
+                                .selectedNetworkSymbol=${this.selectedNetwork?.symbol}
                                 .walletConnectorConfig=${this.walletConnectorConfig}
                                 @returnBack=${this.prevStep}
                                 @updateNotification=${(event: CustomEvent) =>
@@ -1552,13 +1563,13 @@ export class PaymentApp extends LitElement {
             return;
         }
 
-        if (this.appStep === 'showInvoice' && this.selectedTokenSymbol && this.selectedNetworkSymbol) {
+        if (this.appStep === 'showInvoice' && this.selectedToken && this.selectedNetwork) {
             this.creatingTransaction = false;
             this.goToStep('setNewWallet');
             return;
         }
 
-        if(this.appStep === 'setNewWallet' && this.walletAddress && !checkWalletAddress(this.walletAddress, this.selectedNetworkSymbol)){
+        if(this.appStep === 'setNewWallet' && this.walletAddress && !checkWalletAddress(this.walletAddress, this.selectedNetwork?.type || '')){
             this.notificationData = {
                 title: 'Invalid Wallet Address',
                 text: 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.',
@@ -1570,7 +1581,7 @@ export class PaymentApp extends LitElement {
             return;
         }
 
-        if(this.appStep === 'setNewWallet' && this.walletAddress && checkWalletAddress(this.walletAddress, this.selectedNetworkSymbol)){
+        if(this.appStep === 'setNewWallet' && this.walletAddress && checkWalletAddress(this.walletAddress, this.selectedNetwork?.type || '')){
             this.createTransaction();
             return;
         }
@@ -1720,8 +1731,8 @@ export class PaymentApp extends LitElement {
         const transactionParams = {
             invoiceId: this.invoice?.id,
             from: this.walletAddress,
-            network: this.selectedNetworkSymbol,
-            cryptocurrency: this.selectedTokenSymbol
+            network: this.selectedNetwork?.symbol,
+            cryptocurrency: this.selectedToken?.symbol
         }
 
         try {

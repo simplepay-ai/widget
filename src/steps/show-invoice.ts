@@ -1,7 +1,7 @@
 import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {getTokenStandart, roundUpAmount} from "../util.ts";
-import {Cryptocurrency, Invoice, InvoiceProduct, Transaction} from "@simplepay-ai/api-client";
+import {Cryptocurrency, Invoice, InvoiceProduct, Network, Transaction} from "@simplepay-ai/api-client";
 //@ts-ignore
 import style from "../styles/show-invoice.css?inline";
 
@@ -19,11 +19,11 @@ export class ShowInvoice extends LitElement {
     @property({type: Array})
     tokens: Cryptocurrency[] = [];
 
-    @property({type: String})
-    selectedTokenSymbol: string = '';
+    @property({type: Object})
+    selectedToken: Cryptocurrency | null = null;
 
-    @property({type: String})
-    selectedNetworkSymbol: string = '';
+    @property({type: Object})
+    selectedNetwork: Network | null = null;
 
     @property({type: Boolean})
     tokenAvailable: boolean = false;
@@ -88,15 +88,15 @@ export class ShowInvoice extends LitElement {
     updated(changedProperties: Map<string | symbol, unknown>): void {
         super.updated(changedProperties);
 
-        if ((changedProperties.has('selectedTokenSymbol') || changedProperties.has('selectedNetworkSymbol') || changedProperties.has('leftAmount'))) {
+        if ((changedProperties.has('selectedToken') || changedProperties.has('selectedNetwork') || changedProperties.has('leftAmount'))) {
 
             const currentToken = this.tokens.find((item) => {
-                return item.symbol === this.selectedTokenSymbol && item.networks;
+                return item.id === this.selectedToken?.id && item.networks;
             })
 
             if (currentToken?.networks && currentToken.rates) {
 
-                const currentNetwork = currentToken.networks.find((item) => item.symbol === this.selectedNetworkSymbol);
+                const currentNetwork = currentToken.networks.find((item) => item.id === this.selectedNetwork?.id);
 
                 if (currentNetwork) {
                     //@ts-ignore
@@ -114,7 +114,7 @@ export class ShowInvoice extends LitElement {
         }
 
         if (changedProperties.has('selectedTokenSymbol') || changedProperties.has('selectedNetworkSymbol')) {
-            this.tokenStandart = getTokenStandart(this.selectedNetworkSymbol);
+            this.tokenStandart = getTokenStandart(this.selectedNetwork?.symbol || '');
         }
 
         if (changedProperties.has('transactions') && this.transactions.length > 0) {
@@ -261,13 +261,13 @@ export class ShowInvoice extends LitElement {
                         </div>
 
                         ${
-                                (this.selectedTokenSymbol && this.selectedNetworkSymbol && this.tokenAvailable)
+                                (this.selectedToken && this.selectedNetwork && this.tokenAvailable)
                                         ? html`
                                             <div class="tokenCard">
-                                                <p>${this.tokenPrice} <span>${this.selectedTokenSymbol}</span></p>
+                                                <p>${this.tokenPrice} <span>${this.selectedToken.symbol}</span></p>
 
                                                 <token-icon
-                                                        .id=${this.selectedTokenSymbol}
+                                                        .id=${this.selectedToken.symbol}
                                                         width="25"
                                                         height="25"
                                                         class="tokenIcon"
@@ -277,18 +277,18 @@ export class ShowInvoice extends LitElement {
 
                                             <div class=${`
                                         networkCard
-                                        ${(this.selectedNetworkSymbol === 'bsc') ? 'uppercase' : 'capitalize'}
+                                        ${(this.selectedNetwork.symbol === 'bsc') ? 'uppercase' : 'capitalize'}
                                         `}
                                             >
 
                                                 <network-icon
-                                                        .id=${this.selectedNetworkSymbol}
+                                                        .id=${this.selectedNetwork.symbol}
                                                         width="20"
                                                         height="20"
                                                         class="networkIcon"
                                                 ></network-icon>
 
-                                                ${this.selectedNetworkSymbol}
+                                                ${this.selectedNetwork.symbol}
 
                                                 ${
                                                         (this.tokenStandart)
@@ -336,13 +336,13 @@ export class ShowInvoice extends LitElement {
                                                                 <div class="tokenCard" @click=${() => this.openTokenModal()}>
 
                                                                     ${
-                                                                            (this.selectedTokenSymbol)
+                                                                            (this.selectedToken)
                                                                                     ? html`
                                                                                         <p><span>${this.tokenPrice}</span>
-                                                                                            ${this.selectedTokenSymbol}</p>
+                                                                                            ${this.selectedToken.symbol}</p>
 
                                                                                         <token-icon
-                                                                                                .id=${this.selectedTokenSymbol}
+                                                                                                .id=${this.selectedToken.symbol}
                                                                                                 width="25"
                                                                                                 height="25"
                                                                                                 class="tokenIcon"
@@ -366,11 +366,11 @@ export class ShowInvoice extends LitElement {
                                                                 </div>
 
                                                                 ${
-                                                                        (this.selectedNetworkSymbol)
+                                                                        (this.selectedNetwork)
                                                                                 ? html`
                                                                                     <div class=${`
                                             networkInfo
-                                            ${(this.selectedNetworkSymbol === 'bsc') ? 'uppercase' : 'capitalize'}
+                                            ${(this.selectedNetwork.symbol === 'bsc') ? 'uppercase' : 'capitalize'}
                                             `}>
                                                                                         <p class="label">
                                                                                             Network:
@@ -378,13 +378,13 @@ export class ShowInvoice extends LitElement {
 
                                                                                         <div class="value">
                                                                                             <network-icon
-                                                                                                    .id=${this.selectedNetworkSymbol}
+                                                                                                    .id=${this.selectedNetwork.symbol}
                                                                                                     width="20"
                                                                                                     height="20"
                                                                                                     class="networkIcon"
                                                                                             ></network-icon>
 
-                                                                                            ${this.selectedNetworkSymbol}
+                                                                                            ${this.selectedNetwork.symbol}
 
                                                                                             ${
                                                                                                     (this.tokenStandart)
@@ -417,7 +417,7 @@ export class ShowInvoice extends LitElement {
                                                         : html`
                                                             <button class="mainButton"
                                                                     @click=${this.dispatchNextStep}
-                                                                    .disabled=${!this.selectedTokenSymbol || !this.selectedNetworkSymbol}
+                                                                    .disabled=${!this.selectedToken || !this.selectedNetwork}
                                                             >
                                                                 Next
                                                             </button>
@@ -539,11 +539,11 @@ export class ShowInvoice extends LitElement {
                                         return html`
                                             <div
                                                     @click=${() => {
-                                                        this.dispatchTokenSelect(token.symbol, network.symbol);
+                                                        this.dispatchTokenSelect(token, network);
                                                         this.closeTokenModal();
                                                     }}
                                                     class=${`tokenItem
-                                                        ${this.selectedTokenSymbol === token.symbol && this.selectedNetworkSymbol === network.symbol ? 'selected' : ''}
+                                                        ${this.selectedToken?.id === token.id && this.selectedNetwork?.id === network.id ? 'selected' : ''}
                                                     `}
                                             >
                                                 <div class="tokenContent">
@@ -771,11 +771,11 @@ export class ShowInvoice extends LitElement {
         }, 200)
     }
 
-    private dispatchTokenSelect(tokenSymbol: string, networkSymbol: string) {
+    private dispatchTokenSelect(token: Cryptocurrency, network: Network) {
         const updateEvent = new CustomEvent('updateSelectedToken', {
             detail: {
-                tokenSymbol: tokenSymbol,
-                networkSymbol: networkSymbol
+                token: token,
+                network: network
             },
             bubbles: true,
             composed: true
@@ -785,7 +785,7 @@ export class ShowInvoice extends LitElement {
     }
 
     private dispatchNextStep() {
-        if (this.selectedNetworkSymbol && this.selectedTokenSymbol) {
+        if (this.selectedNetwork && this.selectedToken) {
             const nextStepEvent = new CustomEvent('nextStep', {
                 bubbles: true,
                 composed: true

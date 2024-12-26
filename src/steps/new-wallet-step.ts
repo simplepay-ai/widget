@@ -11,7 +11,7 @@ import {
 } from "@wagmi/core";
 import {mainnet, bsc} from '@wagmi/core/chains'
 import {coinbaseWallet, metaMask, walletConnect} from "@wagmi/connectors";
-import {Invoice, InvoiceProduct} from "@simplepay-ai/api-client";
+import {Cryptocurrency, Invoice, InvoiceProduct, Network} from "@simplepay-ai/api-client";
 //@ts-ignore
 import style from "../styles/new-wallet-step.css?inline";
 
@@ -26,11 +26,11 @@ export class NewWalletStep extends LitElement {
     @property({type: String})
     walletAddress: string = '';
 
-    @property({type: String})
-    selectedTokenSymbol: string = '';
+    @property({type: Object})
+    selectedToken: Cryptocurrency | null = null;
 
-    @property({type: String})
-    selectedNetworkSymbol: string = '';
+    @property({type: Object})
+    selectedNetwork: Network | null = null;
 
     @property({type: String})
     walletType: WalletType | '' = '';
@@ -103,9 +103,9 @@ export class NewWalletStep extends LitElement {
                         .backButtonDisabled=${this.creatingTransaction}
                         .showToken=${true}
                         .token="${{
-                            tokenSymbol: this.selectedTokenSymbol,
-                            networkStandart: getTokenStandart(this.selectedNetworkSymbol),
-                            networkSymbol: this.selectedNetworkSymbol
+                            tokenSymbol: this.selectedToken?.symbol,
+                            networkStandart: getTokenStandart(this.selectedNetwork?.symbol || ''),
+                            networkSymbol: this.selectedNetwork?.symbol
                         }}"
                 ></step-header>
 
@@ -132,7 +132,7 @@ export class NewWalletStep extends LitElement {
                             <div class="stepContent">
 
                                 ${
-                                        (['bsc', 'ethereum'].includes(this.selectedNetworkSymbol))
+                                        (['bsc', 'ethereum'].includes(this.selectedNetwork?.symbol || ''))
                                                 ? html`
                                                     <div @click=${() => this.selectWalletType('MetaMask')}
                                                          class=${`
@@ -458,7 +458,7 @@ export class NewWalletStep extends LitElement {
                                                             type="text"
                                                             value=${this.inputValue}
                                                             @input=${this.inputHandler}
-                                                            placeholder=${`Enter your ${this.selectedNetworkSymbol} address`}
+                                                            placeholder=${`Enter your ${this.selectedNetwork?.symbol} address`}
                                                     />
 
                                                     <div class="pasteButton" @click=${() => this.pasteData()}>
@@ -531,7 +531,7 @@ export class NewWalletStep extends LitElement {
     }
 
     private async checkConnectorConfig() {
-        if (this.selectedNetworkSymbol !== 'bsc' && this.selectedNetworkSymbol !== 'ethereum') {
+        if (this.selectedNetwork?.symbol !== 'bsc' && this.selectedNetwork?.symbol !== 'ethereum') {
             return;
         }
 
@@ -1066,7 +1066,7 @@ export class NewWalletStep extends LitElement {
 
     private selectCustomWallet() {
 
-        if (!checkWalletAddress(this.inputValue, this.selectedNetworkSymbol)) {
+        if (!checkWalletAddress(this.inputValue, this.selectedNetwork?.type || '')) {
 
             this.walletModalErrorText = 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.';
             this.showWalletModalError = true;
