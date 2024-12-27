@@ -4,7 +4,7 @@ import {
     HttpError,
     Invoice, InvoiceCreateErrors, InvoiceEventType,
     Network, Product, Transaction, TransactionCreateErrors, TransactionEventType,
-    ValidationError, WsClient,
+    ValidationError, WsClient, TransactionStatus
 } from '@simplepay-ai/api-client';
 import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
@@ -43,7 +43,6 @@ import {checkWalletAddress, generateUUID} from "./util.ts";
 import themesConfig from '../themesConfig.json';
 //@ts-ignore
 import style from "./styles/payment-app.css?inline";
-import {TransactionStatus} from "@simplepay-ai/api-client/dist/models/Transaction";
 
 @customElement('payment-app')
 export class PaymentApp extends LitElement {
@@ -647,7 +646,7 @@ export class PaymentApp extends LitElement {
                                 .tokenAvailable=${this.tokenAvailable}
                                 .appInfo=${this.appInfo}
                                 @nextStep=${this.nextStep}
-                                @updateSelectedToken=${(event: CustomEvent) => {
+                                @updateSelectedToken=${() => {
                                     // this.selectedTokenSymbol = event.detail.tokenSymbol;
                                     // this.selectedNetworkSymbol = event.detail.networkSymbol;
                                 }}
@@ -671,7 +670,7 @@ export class PaymentApp extends LitElement {
                                 @updateInvoiceMessage=${(event: CustomEvent) => (this.invoiceMessage = event.detail.invoiceMessage)}
                                 @updateCurrentPriceStep=${(event: CustomEvent) => (this.priceStep = event.detail.currentPriceStep)}
                                 @nextStep=${this.nextStep}
-                                @updateSelectedToken=${(event: CustomEvent) => {
+                                @updateSelectedToken=${() => {
                                     // this.selectedTokenSymbol = event.detail.tokenSymbol;
                                     // this.selectedNetworkSymbol = event.detail.networkSymbol;
                                 }}
@@ -687,7 +686,7 @@ export class PaymentApp extends LitElement {
                                 .price=${this.price}
                                 .returnButtonShow=${!this.priceAvailable || this.priceAvailable && this.noPreview !== 'true' || this.payloadMessage && this.noPreview === 'true'}
                                 .productsInfo=${this.productsInfo}
-                                @updateSelectedToken=${(event: CustomEvent) => {
+                                @updateSelectedToken=${() => {
                                     // this.selectedTokenSymbol = event.detail.tokenSymbol;
                                     // this.selectedNetworkSymbol = event.detail.networkSymbol;
                                 }}
@@ -1402,16 +1401,16 @@ export class PaymentApp extends LitElement {
     //     // }
     // }
 
-    private async updateTransaction(){
-        try {
-            const updatedTransaction = await this.API.transaction.get(this.transaction?.id);
-            if(updatedTransaction){
-                this.transaction = updatedTransaction;
-            }
-        }catch (e){
-            console.log('e', e)
-        }
-    }
+    // private async updateTransaction(){
+    //     try {
+    //         const updatedTransaction = await this.API.transaction.get(this.transaction?.id);
+    //         if(updatedTransaction){
+    //             this.transaction = updatedTransaction;
+    //         }
+    //     }catch (e){
+    //         console.log('e', e)
+    //     }
+    // }
 
     private async getApp() {
         try {
