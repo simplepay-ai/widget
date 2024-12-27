@@ -77,6 +77,7 @@ export class StepFooter extends LitElement {
         super.connectedCallback();
 
         if(this.hasTimer) {
+
             this.timerTimeStartLocal = this.timerTimeStart;
             this.timerTimeCurrentLocal = this.timerTimeCurrent;
 

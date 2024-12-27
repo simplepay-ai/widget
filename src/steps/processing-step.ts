@@ -336,6 +336,7 @@ export class ProcessingStep extends LitElement {
             case 'ethereum':
                 return 12;
             case 'bsc':
+            case 'polygon':
                 return 27;
             case 'tron':
                 return 24;
@@ -353,6 +354,7 @@ export class ProcessingStep extends LitElement {
             case 'ethereum':
                 return 10000;
             case 'bsc':
+            case 'polygon':
                 return 3000;
             case 'tron':
                 return 3000;
