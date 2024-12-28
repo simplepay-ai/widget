@@ -9,7 +9,7 @@ import {
     connect,
     injected, createStorage, reconnect, getAccount, disconnect,
 } from "@wagmi/core";
-import {mainnet, bsc} from '@wagmi/core/chains'
+import {mainnet, bsc, polygon, avalanche} from '@wagmi/core/chains'
 import {coinbaseWallet, metaMask, walletConnect} from "@wagmi/connectors";
 import {Cryptocurrency, Invoice, InvoiceProduct, Network} from "@simplepay-ai/api-client";
 //@ts-ignore
@@ -132,7 +132,7 @@ export class NewWalletStep extends LitElement {
                             <div class="stepContent">
 
                                 ${
-                                        (['bsc', 'ethereum'].includes(this.selectedNetwork?.symbol || ''))
+                                        (['bsc', 'ethereum', 'polygon', 'avalanche'].includes(this.selectedNetwork?.symbol || ''))
                                                 ? html`
                                                     <div @click=${() => this.selectWalletType('MetaMask')}
                                                          class=${`
@@ -531,7 +531,7 @@ export class NewWalletStep extends LitElement {
     }
 
     private async checkConnectorConfig() {
-        if (this.selectedNetwork?.symbol !== 'bsc' && this.selectedNetwork?.symbol !== 'ethereum') {
+        if (!['bsc', 'ethereum', 'polygon', 'avalanche'].includes(this.selectedNetwork?.symbol || '')) {
             return;
         }
 
@@ -544,7 +544,7 @@ export class NewWalletStep extends LitElement {
     private createNewConnectorConfig() {
 
         const config = createConfig({
-            chains: [mainnet, bsc],
+            chains: [mainnet, bsc, polygon, avalanche],
             connectors: [
                 injected(),
                 metaMask(),
@@ -568,6 +568,20 @@ export class NewWalletStep extends LitElement {
                     http('https://bsc.callstaticrpc.com'),
                     http('https://bsc-pokt.nodies.app'),
                     http('https://bsc-rpc.publicnode.com'),
+                ]),
+                [polygon.id]: fallback([
+                    http('https://polygon.llamarpc.com'),
+                    http('https://polygon.drpc.org'),
+                    http('https://rpc.ankr.com/polygon'),
+                    http('https://polygon.api.onfinality.io/public'),
+                    http('https://1rpc.io/matic'),
+                ]),
+                [avalanche.id]: fallback([
+                    http('https://1rpc.io/avax/c'),
+                    http('https://ava-mainnet.public.blastapi.io/ext/bc/C/rpc'),
+                    http('https://avalanche-c-chain-rpc.publicnode.com'),
+                    http('https://avax.meowrpc.com'),
+                    http('https://avalanche.drpc.org'),
                 ])
             }
         })
@@ -599,8 +613,8 @@ export class NewWalletStep extends LitElement {
             }, 100);
         });
 
-        const state = this.walletConnectorConfig.state
-        const connections = state.connections;
+        const state = this.walletConnectorConfig?.state
+        const connections = state?.connections;
 
         let connectResult = null;
         switch (type) {

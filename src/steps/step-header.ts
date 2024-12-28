@@ -83,7 +83,7 @@ export class StepHeader extends LitElement {
                             ? html`
                                   <div class="tokenIconWrapper">
                                       <token-icon
-                                          .id=${this.token.tokenSymbol}
+                                          .id=${this.token.tokenSymbol.replace('x', '')}
                                           width="32"
                                           height="32"
                                           class="tokenIcon"

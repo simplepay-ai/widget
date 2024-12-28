@@ -179,7 +179,7 @@ export class SuccessStep extends LitElement {
                                 <p class="title">Token:</p>
                                 <div class="tokenInfo">
                                     <token-icon
-                                            .id=${this.transaction?.cryptocurrency.symbol}
+                                            .id=${this.transaction?.cryptocurrency.symbol.toString().replace('x', '')}
                                             width="16"
                                             height="16"
                                             class="icon"

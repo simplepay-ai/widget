@@ -186,7 +186,7 @@ export class ProcessingStep extends LitElement {
                             <p class="title">Token:</p>
                             <div class="tokenInfo">
                                 <token-icon
-                                        .id=${this.transaction?.cryptocurrency.symbol}
+                                        .id=${this.transaction?.cryptocurrency.symbol.toString().replace('x', '')}
                                         width="16"
                                         height="16"
                                         class="icon"
@@ -337,6 +337,7 @@ export class ProcessingStep extends LitElement {
                 return 12;
             case 'bsc':
             case 'polygon':
+            case 'avalanche':
                 return 27;
             case 'tron':
                 return 24;
@@ -355,6 +356,7 @@ export class ProcessingStep extends LitElement {
                 return 10000;
             case 'bsc':
             case 'polygon':
+            case 'avalanche':
                 return 3000;
             case 'tron':
                 return 3000;

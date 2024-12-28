@@ -1,4 +1,4 @@
-import {Invoice, InvoiceProduct, Network, Transaction} from '@simplepay-ai/api-client';
+import {Invoice, InvoiceProduct, Transaction} from '@simplepay-ai/api-client';
 //@ts-ignore
 import QRCode from 'corcojs-qrcode';
 import {PropertyValues} from 'lit';
@@ -13,12 +13,13 @@ import {
     writeContract,
     WriteContractErrorType
 } from "@wagmi/core";
-import {bsc, mainnet} from "@wagmi/core/chains";
+import {bsc, mainnet, polygon, avalanche} from "@wagmi/core/chains";
 import {parseEther, parseUnits} from "viem";
 //@ts-ignore
 import style from "../styles/payment-step.css?inline";
 
-const ABI_USDT_BSC = [{
+const ABI_USDT_BSC = [
+    {
     "inputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -238,7 +239,8 @@ const ABI_USDT_BSC = [{
     "stateMutability": "nonpayable",
     "type": "function"
 }]
-const ABI_USDT_ETH = [{
+const ABI_USDT_ETH = [
+    {
     "constant": true,
     "inputs": [],
     "name": "name",
@@ -572,6 +574,155 @@ const ABI_USDT_ETH = [{
     "name": "Unpause",
     "type": "event"
 }]
+const ABI_USDT_POLYGON = [
+    {"inputs":[{"internalType":"address","name":"_proxyTo","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"_new","type":"address"},{"indexed":false,"internalType":"address","name":"_old","type":"address"}],"name":"ProxyOwnerUpdate","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_new","type":"address"},{"indexed":true,"internalType":"address","name":"_old","type":"address"}],"name":"ProxyUpdated","type":"event"},{"stateMutability":"payable","type":"fallback"},{"inputs":[],"name":"implementation","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"proxyOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"proxyType","outputs":[{"internalType":"uint256","name":"proxyTypeId","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferProxyOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newProxyTo","type":"address"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"updateAndCall","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"_newProxyTo","type":"address"}],"name":"updateImplementation","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}
+]
+const ABI_USDT_AVALANCE = [
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_logic",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "admin_",
+                "type": "address"
+            },
+            {
+                "internalType": "bytes",
+                "name": "_data",
+                "type": "bytes"
+            }
+        ],
+        "stateMutability": "payable",
+        "type": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "previousAdmin",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "newAdmin",
+                "type": "address"
+            }
+        ],
+        "name": "AdminChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "beacon",
+                "type": "address"
+            }
+        ],
+        "name": "BeaconUpgraded",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "implementation",
+                "type": "address"
+            }
+        ],
+        "name": "Upgraded",
+        "type": "event"
+    },
+    {
+        "stateMutability": "payable",
+        "type": "fallback"
+    },
+    {
+        "inputs": [],
+        "name": "admin",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "admin_",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "newAdmin",
+                "type": "address"
+            }
+        ],
+        "name": "changeAdmin",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "implementation",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "implementation_",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "newImplementation",
+                "type": "address"
+            }
+        ],
+        "name": "upgradeTo",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "newImplementation",
+                "type": "address"
+            },
+            {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+            }
+        ],
+        "name": "upgradeToAndCall",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "stateMutability": "payable",
+        "type": "receive"
+    }
+]
 
 @customElement('payment-step')
 export class PaymentStep extends LitElement {
@@ -1066,7 +1217,29 @@ export class PaymentStep extends LitElement {
 
         if (this.walletType !== 'MetaMask') {
             try {
-                await switchChain(this.walletConnectorConfig, {chainId: (this.transaction?.network.symbol === 'bsc') ? bsc.id : mainnet.id})
+
+                let chainId = 0;
+
+                switch (this.transaction?.network.symbol) {
+                    case 'bsc':
+                        chainId = bsc.id;
+                        break;
+                    case 'ethereum':
+                        chainId = mainnet.id;
+                        break;
+                    case 'polygon':
+                        chainId = polygon.id;
+                        break;
+                    case 'avalanche':
+                        chainId = avalanche.id;
+                        break;
+                    default:
+                        break;
+                }
+
+                await switchChain(this.walletConnectorConfig, {chainId: chainId})
+
+                // await switchChain(this.walletConnectorConfig, {chainId: (this.transaction?.network.symbol === 'bsc') ? bsc.id : mainnet.id})
             } catch (e) {
 
                 const options = {
@@ -1140,7 +1313,7 @@ export class PaymentStep extends LitElement {
                         } else if (error.message.indexOf('not match the target chain') !== -1) {
 
                             messageTitle = 'Transaction Canceled'
-                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the ${(this.transaction.network.symbol === 'bsc') ? 'BNB' : 'Ethereum Mainnet'} network manually and try again.`
+                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the BNB network manually and try again.`
 
                         } else if (error.message.indexOf('Timeout error') !== -1) {
 
@@ -1222,11 +1395,176 @@ export class PaymentStep extends LitElement {
 
                         } else if (error.message.indexOf('not match the target chain') !== -1) {
 
-                            const network: Network = this.transaction.network;
-                            const networkName: any = (network && network.symbol === 'bsc') ? 'BNB' : 'Ethereum Mainnet'
+                            messageTitle = 'Transaction Canceled'
+                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the Ethereum Mainnet network manually and try again.`
+
+                        } else if (error.message.indexOf('Timeout error') !== -1) {
 
                             messageTitle = 'Transaction Canceled'
-                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the ${networkName} network manually and try again.`
+                            messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
+
+                        } else {
+
+                            messageTitle = 'Transaction Canceled';
+                            messageText = 'Something went wrong with the transaction. Please try again later.'
+
+                        }
+
+                        const options = {
+                            detail: {
+                                notificationData: {
+                                    title: messageTitle,
+                                    text: messageText,
+                                    buttonText: 'Confirm'
+                                },
+                                notificationShow: true
+                            },
+                            bubbles: true,
+                            composed: true
+                        };
+                        this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                        this.checkingTransaction = false;
+                        this.updatePaymentAwaiting(false);
+                        return;
+
+                    }
+
+                }
+
+                break;
+            case 'polygon':
+
+                if (this.transaction?.cryptocurrency.symbol === 'USDT') {
+
+                    try {
+
+                        const hashTransaction = await Promise.race([
+                            writeContract(this.walletConnectorConfig, {
+                                abi: ABI_USDT_POLYGON,
+                                address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+                                functionName: 'transfer',
+                                args: [
+                                    this.transaction?.to,
+                                    parseEther(this.leftAmountToken)
+                                ],
+                                chainId: polygon.id,
+                            }),
+                            timer,
+                        ]);
+
+                        if (hashTransaction) {
+                            this.checkingTransaction = true;
+                            this.updatePaymentAwaiting(false);
+                        }
+
+                        return;
+
+                    } catch (e) {
+
+                        const error = e as WriteContractErrorType;
+
+                        let messageTitle = '';
+                        let messageText = '';
+
+                        if (error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+
+                        } else if (error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+
+                        } else if (error.message.indexOf('not match the target chain') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the Polygon network manually and try again.`
+
+                        } else if (error.message.indexOf('Timeout error') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
+
+                        } else {
+
+                            messageTitle = 'Transaction Canceled';
+                            messageText = 'Something went wrong with the transaction. Please try again later.'
+
+                        }
+
+                        const options = {
+                            detail: {
+                                notificationData: {
+                                    title: messageTitle,
+                                    text: messageText,
+                                    buttonText: 'Confirm'
+                                },
+                                notificationShow: true
+                            },
+                            bubbles: true,
+                            composed: true
+                        };
+                        this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                        this.checkingTransaction = false;
+                        this.updatePaymentAwaiting(false);
+                        return;
+
+                    }
+
+                }
+
+                break;
+            case 'avalanche':
+
+                if (this.transaction?.cryptocurrency.symbol === 'USDT') {
+
+                    try {
+
+                        const hashTransaction = await Promise.race([
+                            writeContract(this.walletConnectorConfig, {
+                                abi: ABI_USDT_AVALANCE,
+                                address: '0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7',
+                                functionName: 'transfer',
+                                args: [
+                                    this.transaction?.to,
+                                    parseEther(this.leftAmountToken)
+                                ],
+                                chainId: avalanche.id,
+                            }),
+                            timer,
+                        ]);
+
+                        if (hashTransaction) {
+                            this.checkingTransaction = true;
+                            this.updatePaymentAwaiting(false);
+                        }
+
+                        return;
+
+                    } catch (e) {
+
+                        const error = e as WriteContractErrorType;
+
+                        let messageTitle = '';
+                        let messageText = '';
+
+                        if (error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+
+                        } else if (error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+
+                        } else if (error.message.indexOf('not match the target chain') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the Avalanche network manually and try again.`
 
                         } else if (error.message.indexOf('Timeout error') !== -1) {
 
@@ -1269,12 +1607,31 @@ export class PaymentStep extends LitElement {
 
         try {
 
+            let chainId = 0;
+
+            switch (this.transaction?.network.symbol) {
+                case 'bsc':
+                    chainId = bsc.id;
+                    break;
+                case 'ethereum':
+                    chainId = mainnet.id;
+                    break;
+                case 'polygon':
+                    chainId = polygon.id;
+                    break;
+                case 'avalanche':
+                    chainId = avalanche.id;
+                    break;
+                default:
+                    break;
+            }
+
             const hashTransaction = await Promise.race([
                 sendTransaction(this.walletConnectorConfig, {
                     //@ts-ignore
                     to: this.transaction?.to,
                     value: parseEther(this.leftAmountToken),
-                    chainId: (this.transaction?.network.symbol === 'bsc') ? bsc.id : mainnet.id,
+                    chainId: chainId,
                     data: '0x'
                 }),
                 timer,
@@ -1303,8 +1660,27 @@ export class PaymentStep extends LitElement {
 
             } else if (error.message.indexOf('not match the target chain') !== -1) {
 
+                let chainName = this.transaction?.network.symbol || '';
+
+                switch (this.transaction?.network.symbol) {
+                    case 'bsc':
+                        chainName = 'BNB';
+                        break;
+                    case 'ethereum':
+                        chainName = 'Ethereum Mainnet';
+                        break;
+                    case 'polygon':
+                        chainName = 'Polygon';
+                        break;
+                    case 'avalanche':
+                        chainName = 'Avalanche';
+                        break;
+                    default:
+                        break;
+                }
+
                 messageTitle = 'Transaction Canceled'
-                messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the ${(this.transaction?.network.symbol === 'bsc') ? 'BNB' : 'Ethereum Mainnet'} network manually and try again.`
+                messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the ${chainName} network manually and try again.`
 
             } else if (error.message.indexOf('Timeout error') !== -1) {
 

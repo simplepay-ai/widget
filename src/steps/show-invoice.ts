@@ -267,7 +267,7 @@ export class ShowInvoice extends LitElement {
                                                 <p>${this.tokenPrice} <span>${this.selectedToken.symbol}</span></p>
 
                                                 <token-icon
-                                                        .id=${this.selectedToken.symbol}
+                                                        .id=${this.selectedToken.symbol.replace('x', '')}
                                                         width="25"
                                                         height="25"
                                                         class="tokenIcon"
@@ -342,7 +342,7 @@ export class ShowInvoice extends LitElement {
                                                                                             ${this.selectedToken.symbol}</p>
 
                                                                                         <token-icon
-                                                                                                .id=${this.selectedToken.symbol}
+                                                                                                .id=${this.selectedToken.symbol.replace('x', '')}
                                                                                                 width="25"
                                                                                                 height="25"
                                                                                                 class="tokenIcon"
@@ -549,7 +549,7 @@ export class ShowInvoice extends LitElement {
                                                 <div class="tokenContent">
                                                     <div class="tokenIconWrapper">
                                                         <token-icon
-                                                                .id=${token.symbol}
+                                                                .id=${token.symbol.replace('x', '')}
                                                                 width="32"
                                                                 height="32"
                                                                 class="tokenIcon"
@@ -643,7 +643,7 @@ export class ShowInvoice extends LitElement {
                                                                 <div class="addressWrapper">
                                                                     <div class="tokenIconWrapper">
                                                                         <token-icon
-                                                                                .id=${item.cryptocurrency.symbol}
+                                                                                .id=${item.cryptocurrency.symbol.replace('x', '')}
                                                                                 width="32"
                                                                                 height="32"
                                                                                 class="tokenIcon"

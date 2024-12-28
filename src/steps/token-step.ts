@@ -154,7 +154,7 @@ export class TokenStep extends LitElement {
                                                             <div class="tokenContent">
                                                                 <div class="tokenIconWrapper">
                                                                     <token-icon
-                                                                            .id=${token.symbol}
+                                                                            .id=${token.symbol.replace('x', '')}
                                                                             width="32"
                                                                             height="32"
                                                                             class="tokenIcon"
@@ -214,7 +214,7 @@ export class TokenStep extends LitElement {
                                         <div class="tokenContent">
                                             <div class="tokenIconWrapper">
                                                 <token-icon
-                                                        .id=${token.symbol}
+                                                        .id=${token.symbol.replace('x', '')}
                                                         width="32"
                                                         height="32"
                                                         class="tokenIcon"

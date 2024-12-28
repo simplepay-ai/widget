@@ -255,7 +255,7 @@
     background: #ffffff; /* Fallback */
     background: var(--sp-widget-bg-color);
     border: 1px solid #cccccc; /* Fallback */
-    border: 1px solid var(--sp-widget-hint-color);
+    border: 1px solid var(--sp-widget-border-color);
     width: 42px;
     height: 42px;
     border-radius: 50%;
