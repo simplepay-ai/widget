@@ -338,6 +338,10 @@ export class ProcessingStep extends LitElement {
             case 'bsc':
             case 'polygon':
             case 'avalanche':
+            case 'zksync':
+            case 'arbitrum':
+            case 'optimism':
+            case 'base':
                 return 27;
             case 'tron':
                 return 24;
@@ -357,6 +361,10 @@ export class ProcessingStep extends LitElement {
             case 'bsc':
             case 'polygon':
             case 'avalanche':
+            case 'zksync':
+            case 'arbitrum':
+            case 'optimism':
+            case 'base':
                 return 3000;
             case 'tron':
                 return 3000;

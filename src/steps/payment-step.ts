@@ -13,7 +13,7 @@ import {
     writeContract,
     WriteContractErrorType
 } from "@wagmi/core";
-import {bsc, mainnet, polygon, avalanche} from "@wagmi/core/chains";
+import {bsc, mainnet, polygon, avalanche, zksync, arbitrum, optimism, base} from "@wagmi/core/chains";
 import {parseEther, parseUnits} from "viem";
 //@ts-ignore
 import style from "../styles/payment-step.css?inline";
@@ -1233,6 +1233,18 @@ export class PaymentStep extends LitElement {
                     case 'avalanche':
                         chainId = avalanche.id;
                         break;
+                    case 'zksync':
+                        chainId = zksync.id;
+                        break;
+                    case 'arbitrum':
+                        chainId = arbitrum.id;
+                        break;
+                    case 'optimism':
+                        chainId = optimism.id;
+                        break;
+                    case 'base':
+                        chainId = base.id;
+                        break;
                     default:
                         break;
                 }
@@ -1397,6 +1409,338 @@ export class PaymentStep extends LitElement {
 
                             messageTitle = 'Transaction Canceled'
                             messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the Ethereum Mainnet network manually and try again.`
+
+                        } else if (error.message.indexOf('Timeout error') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
+
+                        } else {
+
+                            messageTitle = 'Transaction Canceled';
+                            messageText = 'Something went wrong with the transaction. Please try again later.'
+
+                        }
+
+                        const options = {
+                            detail: {
+                                notificationData: {
+                                    title: messageTitle,
+                                    text: messageText,
+                                    buttonText: 'Confirm'
+                                },
+                                notificationShow: true
+                            },
+                            bubbles: true,
+                            composed: true
+                        };
+                        this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                        this.checkingTransaction = false;
+                        this.updatePaymentAwaiting(false);
+                        return;
+
+                    }
+
+                }
+
+                break;
+            case 'zksync':
+
+                if (this.transaction?.cryptocurrency.symbol === 'USDT') {
+                    try {
+
+                        const hashTransaction = await Promise.race([
+                            writeContract(this.walletConnectorConfig, {
+                                abi: ABI_USDT_ETH,
+                                address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
+                                functionName: 'transfer',
+                                args: [
+                                    this.transaction?.to,
+                                    parseUnits(this.leftAmountToken, 6)
+                                ],
+                                chainId: zksync.id,
+                            }),
+                            timer,
+                        ]);
+
+                        if (hashTransaction) {
+                            this.checkingTransaction = true;
+                            this.updatePaymentAwaiting(false);
+                        }
+
+                        return;
+
+                    } catch (e) {
+
+                        const error = e as WriteContractErrorType;
+
+                        let messageTitle = '';
+                        let messageText = '';
+
+                        if (error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+
+                        } else if (error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+
+                        } else if (error.message.indexOf('not match the target chain') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the zkSync Mainnet network manually and try again.`
+
+                        } else if (error.message.indexOf('Timeout error') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
+
+                        } else {
+
+                            messageTitle = 'Transaction Canceled';
+                            messageText = 'Something went wrong with the transaction. Please try again later.'
+
+                        }
+
+                        const options = {
+                            detail: {
+                                notificationData: {
+                                    title: messageTitle,
+                                    text: messageText,
+                                    buttonText: 'Confirm'
+                                },
+                                notificationShow: true
+                            },
+                            bubbles: true,
+                            composed: true
+                        };
+                        this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                        this.checkingTransaction = false;
+                        this.updatePaymentAwaiting(false);
+                        return;
+
+                    }
+
+                }
+
+                break;
+            case 'arbitrum':
+
+                if (this.transaction?.cryptocurrency.symbol === 'USDT') {
+                    try {
+
+                        const hashTransaction = await Promise.race([
+                            writeContract(this.walletConnectorConfig, {
+                                abi: ABI_USDT_ETH,
+                                address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
+                                functionName: 'transfer',
+                                args: [
+                                    this.transaction?.to,
+                                    parseUnits(this.leftAmountToken, 6)
+                                ],
+                                chainId: arbitrum.id,
+                            }),
+                            timer,
+                        ]);
+
+                        if (hashTransaction) {
+                            this.checkingTransaction = true;
+                            this.updatePaymentAwaiting(false);
+                        }
+
+                        return;
+
+                    } catch (e) {
+
+                        const error = e as WriteContractErrorType;
+
+                        let messageTitle = '';
+                        let messageText = '';
+
+                        if (error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+
+                        } else if (error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+
+                        } else if (error.message.indexOf('not match the target chain') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the Arbitrum One network manually and try again.`
+
+                        } else if (error.message.indexOf('Timeout error') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
+
+                        } else {
+
+                            messageTitle = 'Transaction Canceled';
+                            messageText = 'Something went wrong with the transaction. Please try again later.'
+
+                        }
+
+                        const options = {
+                            detail: {
+                                notificationData: {
+                                    title: messageTitle,
+                                    text: messageText,
+                                    buttonText: 'Confirm'
+                                },
+                                notificationShow: true
+                            },
+                            bubbles: true,
+                            composed: true
+                        };
+                        this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                        this.checkingTransaction = false;
+                        this.updatePaymentAwaiting(false);
+                        return;
+
+                    }
+
+                }
+
+                break;
+            case 'optimism':
+
+                if (this.transaction?.cryptocurrency.symbol === 'USDT') {
+                    try {
+
+                        const hashTransaction = await Promise.race([
+                            writeContract(this.walletConnectorConfig, {
+                                abi: ABI_USDT_ETH,
+                                address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
+                                functionName: 'transfer',
+                                args: [
+                                    this.transaction?.to,
+                                    parseUnits(this.leftAmountToken, 6)
+                                ],
+                                chainId: optimism.id,
+                            }),
+                            timer,
+                        ]);
+
+                        if (hashTransaction) {
+                            this.checkingTransaction = true;
+                            this.updatePaymentAwaiting(false);
+                        }
+
+                        return;
+
+                    } catch (e) {
+
+                        const error = e as WriteContractErrorType;
+
+                        let messageTitle = '';
+                        let messageText = '';
+
+                        if (error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+
+                        } else if (error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+
+                        } else if (error.message.indexOf('not match the target chain') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the OP Mainnet network manually and try again.`
+
+                        } else if (error.message.indexOf('Timeout error') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
+
+                        } else {
+
+                            messageTitle = 'Transaction Canceled';
+                            messageText = 'Something went wrong with the transaction. Please try again later.'
+
+                        }
+
+                        const options = {
+                            detail: {
+                                notificationData: {
+                                    title: messageTitle,
+                                    text: messageText,
+                                    buttonText: 'Confirm'
+                                },
+                                notificationShow: true
+                            },
+                            bubbles: true,
+                            composed: true
+                        };
+                        this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                        this.checkingTransaction = false;
+                        this.updatePaymentAwaiting(false);
+                        return;
+
+                    }
+
+                }
+
+                break;
+            case 'base':
+
+                if (this.transaction?.cryptocurrency.symbol === 'USDT') {
+                    try {
+
+                        const hashTransaction = await Promise.race([
+                            writeContract(this.walletConnectorConfig, {
+                                abi: ABI_USDT_ETH,
+                                address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
+                                functionName: 'transfer',
+                                args: [
+                                    this.transaction?.to,
+                                    parseUnits(this.leftAmountToken, 6)
+                                ],
+                                chainId: base.id,
+                            }),
+                            timer,
+                        ]);
+
+                        if (hashTransaction) {
+                            this.checkingTransaction = true;
+                            this.updatePaymentAwaiting(false);
+                        }
+
+                        return;
+
+                    } catch (e) {
+
+                        const error = e as WriteContractErrorType;
+
+                        let messageTitle = '';
+                        let messageText = '';
+
+                        if (error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+
+                        } else if (error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+
+                        } else if (error.message.indexOf('not match the target chain') !== -1) {
+
+                            messageTitle = 'Transaction Canceled'
+                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the Base network manually and try again.`
 
                         } else if (error.message.indexOf('Timeout error') !== -1) {
 
@@ -1622,9 +1966,32 @@ export class PaymentStep extends LitElement {
                 case 'avalanche':
                     chainId = avalanche.id;
                     break;
+                case 'zksync':
+                    chainId = zksync.id;
+                    break;
+                case 'arbitrum':
+                    chainId = arbitrum.id;
+                    break;
+                case 'optimism':
+                    chainId = optimism.id;
+                    break;
+                case 'base':
+                    chainId = base.id;
+                    break;
                 default:
                     break;
             }
+
+            // const estimatedFees: any = await estimateFeesPerGas(this.walletConnectorConfig)
+            // const estimatedGas: any = await estimateGas(this.walletConnectorConfig, {
+            //     to: this.transaction?.to,
+            //     value: parseEther(this.leftAmountToken),
+            // })
+            // const gasPrice = await getGasPrice(this.walletConnectorConfig)
+
+            // maxFeePerGas: parseGwei(estimatedFees.formatted.maxFeePerGas),
+            // gas: parseGwei(estimatedGas),
+            // gasPrice: gasPrice,
 
             const hashTransaction = await Promise.race([
                 sendTransaction(this.walletConnectorConfig, {
@@ -1632,7 +1999,7 @@ export class PaymentStep extends LitElement {
                     to: this.transaction?.to,
                     value: parseEther(this.leftAmountToken),
                     chainId: chainId,
-                    data: '0x'
+                    data: '0x',
                 }),
                 timer,
             ]);
@@ -1674,6 +2041,18 @@ export class PaymentStep extends LitElement {
                         break;
                     case 'avalanche':
                         chainName = 'Avalanche';
+                        break;
+                    case 'zksync':
+                        chainName = 'zkSync';
+                        break;
+                    case 'arbitrum':
+                        chainName = 'Arbitrum One';
+                        break;
+                    case 'optimism':
+                        chainName = 'OP Mainnet';
+                        break;
+                    case 'base':
+                        chainName = 'Base';
                         break;
                     default:
                         break;

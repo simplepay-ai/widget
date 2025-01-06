@@ -9,7 +9,7 @@ import {
     connect,
     injected, createStorage, reconnect, getAccount, disconnect,
 } from "@wagmi/core";
-import {mainnet, bsc, polygon, avalanche} from '@wagmi/core/chains'
+import {mainnet, bsc, polygon, avalanche, zksync, arbitrum, optimism, base} from '@wagmi/core/chains'
 import {coinbaseWallet, metaMask, walletConnect} from "@wagmi/connectors";
 import {Cryptocurrency, Invoice, InvoiceProduct, Network} from "@simplepay-ai/api-client";
 //@ts-ignore
@@ -132,7 +132,7 @@ export class NewWalletStep extends LitElement {
                             <div class="stepContent">
 
                                 ${
-                                        (['bsc', 'ethereum', 'polygon', 'avalanche'].includes(this.selectedNetwork?.symbol || ''))
+                                        (['bsc', 'ethereum', 'polygon', 'avalanche', 'zksync', 'arbitrum', 'optimism', 'base'].includes(this.selectedNetwork?.symbol || ''))
                                                 ? html`
                                                     <div @click=${() => this.selectWalletType('MetaMask')}
                                                          class=${`
@@ -531,7 +531,7 @@ export class NewWalletStep extends LitElement {
     }
 
     private async checkConnectorConfig() {
-        if (!['bsc', 'ethereum', 'polygon', 'avalanche'].includes(this.selectedNetwork?.symbol || '')) {
+        if (!['bsc', 'ethereum', 'polygon', 'avalanche', 'zksync', 'arbitrum', 'optimism', 'base'].includes(this.selectedNetwork?.symbol || '')) {
             return;
         }
 
@@ -544,7 +544,7 @@ export class NewWalletStep extends LitElement {
     private createNewConnectorConfig() {
 
         const config = createConfig({
-            chains: [mainnet, bsc, polygon, avalanche],
+            chains: [mainnet, bsc, polygon, avalanche, zksync, arbitrum, optimism, base],
             connectors: [
                 injected(),
                 metaMask(),
@@ -582,6 +582,34 @@ export class NewWalletStep extends LitElement {
                     http('https://avalanche-c-chain-rpc.publicnode.com'),
                     http('https://avax.meowrpc.com'),
                     http('https://avalanche.drpc.org'),
+                ]),
+                [base.id]: fallback([
+                    http('https://base.rpc.subquery.network/public'),
+                    http('https://base.meowrpc.com'),
+                    http('https://base-rpc.publicnode.com'),
+                    http('https://base.api.onfinality.io/public'),
+                    http('https://base.blockpi.network/v1/rpc/public'),
+                ]),
+                [zksync.id]: fallback([
+                    http('https://api.zan.top/zksync-mainnet'),
+                    http('https://1rpc.io/zksync2-era'),
+                    http('https://endpoints.omniatech.io/v1/zksync-era/mainnet/public'),
+                    http('https://mainnet.era.zksync.io'),
+                    http('https://zksync.meowrpc.com'),
+                ]),
+                [arbitrum.id]: fallback([
+                    http('https://endpoints.omniatech.io/v1/arbitrum/one/public'),
+                    http('https://arbitrum.llamarpc.com'),
+                    http('https://arbitrum.drpc.org'),
+                    http('https://arbitrum.meowrpc.com'),
+                    http('https://api.zan.top/arb-one'),
+                ]),
+                [optimism.id]: fallback([
+                    http('https://optimism.llamarpc.com'),
+                    http('https://endpoints.omniatech.io/v1/op/mainnet/public'),
+                    http('https://optimism.api.onfinality.io/public'),
+                    http('https://optimism.rpc.subquery.network/public'),
+                    http('https://mainnet.optimism.io'),
                 ])
             }
         })
