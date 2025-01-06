@@ -7,7 +7,6 @@ import {customElement} from 'lit/decorators.js';
 import {roundUpAmount} from "../util.ts";
 import {WalletType} from "../types.ts";
 import {
-    estimateFeesPerGas,
     estimateGas,
     getGasPrice,
     sendTransaction,
@@ -17,7 +16,7 @@ import {
     WriteContractErrorType
 } from "@wagmi/core";
 import {bsc, mainnet, polygon, avalanche, zksync, arbitrum, optimism, base} from "@wagmi/core/chains";
-import {parseEther, parseGwei, parseUnits} from "viem";
+import {Address, parseEther, parseUnits} from "viem";
 //@ts-ignore
 import style from "../styles/payment-step.css?inline";
 
@@ -1989,7 +1988,7 @@ export class PaymentStep extends LitElement {
             // maxFeePerGas: parseGwei(estimatedFees.formatted.maxFeePerGas),
 
             const estimatedGas: any = await estimateGas(this.walletConnectorConfig, {
-                to: this.transaction?.to,
+                to: this.transaction?.to as Address,
                 value: parseEther(this.leftAmountToken),
             })
             // console.log('estimatedGas', estimatedGas)
