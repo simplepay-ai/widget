@@ -7,6 +7,9 @@ import {customElement} from 'lit/decorators.js';
 import {roundUpAmount} from "../util.ts";
 import {WalletType} from "../types.ts";
 import {
+    estimateFeesPerGas,
+    estimateGas,
+    getGasPrice,
     sendTransaction,
     SendTransactionErrorType,
     switchChain,
@@ -14,7 +17,7 @@ import {
     WriteContractErrorType
 } from "@wagmi/core";
 import {bsc, mainnet, polygon, avalanche, zksync, arbitrum, optimism, base} from "@wagmi/core/chains";
-import {parseEther, parseUnits} from "viem";
+import {parseEther, parseGwei, parseUnits} from "viem";
 //@ts-ignore
 import style from "../styles/payment-step.css?inline";
 
@@ -1983,16 +1986,15 @@ export class PaymentStep extends LitElement {
             }
 
             // const estimatedFees: any = await estimateFeesPerGas(this.walletConnectorConfig)
-            // const estimatedGas: any = await estimateGas(this.walletConnectorConfig, {
-            //     to: this.transaction?.to,
-            //     value: parseEther(this.leftAmountToken),
-            // })
-            // const gasPrice = await getGasPrice(this.walletConnectorConfig)
-
             // maxFeePerGas: parseGwei(estimatedFees.formatted.maxFeePerGas),
-            // gas: parseGwei(estimatedGas),
-            // gasPrice: gasPrice,
 
+            const estimatedGas: any = await estimateGas(this.walletConnectorConfig, {
+                to: this.transaction?.to,
+                value: parseEther(this.leftAmountToken),
+            })
+            // console.log('estimatedGas', estimatedGas)
+            const gasPrice = await getGasPrice(this.walletConnectorConfig)
+            // console.log('gasPrice', gasPrice)
             const hashTransaction = await Promise.race([
                 sendTransaction(this.walletConnectorConfig, {
                     //@ts-ignore
@@ -2000,6 +2002,8 @@ export class PaymentStep extends LitElement {
                     value: parseEther(this.leftAmountToken),
                     chainId: chainId,
                     data: '0x',
+                    gas: estimatedGas,
+                    gasPrice: gasPrice,
                 }),
                 timer,
             ]);
