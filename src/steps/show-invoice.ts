@@ -5,6 +5,11 @@ import {Cryptocurrency, Invoice, InvoiceProduct, Network, Transaction} from "@si
 //@ts-ignore
 import style from "../styles/show-invoice.css?inline";
 
+interface NetworkOption {
+    value: string;
+    label: string;
+}
+
 @customElement('show-invoice')
 export class ShowInvoice extends LitElement {
 
@@ -70,10 +75,40 @@ export class ShowInvoice extends LitElement {
     @property({attribute: false, type: Object})
     activeTransaction: Transaction | null = null;
 
+    @property({attribute: false, type: Array})
+    private filteredTokens: Cryptocurrency[] = [];
+
+    @property({attribute: false, type: Array})
+    private networksList: NetworkOption[] = [];
+
+    @property({attribute: false, type: String})
+    private tokenSearch = '';
+
+    @property({attribute: false, type: String})
+    private networkSearch = '';
+
     connectedCallback() {
         super.connectedCallback();
 
         this.leftAmount = Number(this.invoice?.total!) - Number(this.invoice?.paid!);
+
+        this.filteredTokens = this.tokens;
+
+        const allNetworks: NetworkOption[] = [];
+        for (let token of this.tokens) {
+            if (token.networks && token.networks.length > 0) {
+                for (let network of token.networks) {
+                    const check = allNetworks.find((item) => item.value === network.symbol);
+                    if (!check) {
+                        allNetworks.push({
+                            label: network.name,
+                            value: network.symbol
+                        });
+                    }
+                }
+            }
+        }
+        this.networksList = allNetworks;
 
         if (this.invoice?.payload?.products && this.invoice?.payload?.products.length > 0) {
             this.invoiceProducts = this.invoice?.payload?.products;
@@ -124,6 +159,10 @@ export class ShowInvoice extends LitElement {
 
         if (changedProperties.has('invoice') && this.invoice) {
             this.leftAmount = Number(this.invoice?.total!) - Number(this.invoice?.paid!);
+        }
+
+        if (changedProperties.has('tokenSearch')) {
+            this.filteredTokens = this.filterTokens(this.tokenSearch);
         }
     }
 
@@ -223,10 +262,12 @@ export class ShowInvoice extends LitElement {
                                                                              width="800px"
                                                                              height="800px" viewBox="0 0 24 24" fill="none">
                                                                             <path d="M15.5777 3.38197L17.5777 4.43152C19.7294 5.56066 20.8052 6.12523 21.4026 7.13974C22 8.15425 22 9.41667 22 11.9415V12.0585C22 14.5833 22 15.8458 21.4026 16.8603C20.8052 17.8748 19.7294 18.4393 17.5777 19.5685L15.5777 20.618C13.8221 21.5393 12.9443 22 12 22C11.0557 22 10.1779 21.5393 8.42229 20.618L6.42229 19.5685C4.27063 18.4393 3.19479 17.8748 2.5974 16.8603C2 15.8458 2 14.5833 2 12.0585V11.9415C2 9.41667 2 8.15425 2.5974 7.13974C3.19479 6.12523 4.27063 5.56066 6.42229 4.43152L8.42229 3.38197C10.1779 2.46066 11.0557 2 12 2C12.9443 2 13.8221 2.46066 15.5777 3.38197Z"
-                                                                                  stroke="var(--sp-widget-active-color)" stroke-width="1"
+                                                                                  stroke="var(--sp-widget-active-color)"
+                                                                                  stroke-width="1"
                                                                                   stroke-linecap="round"/>
                                                                             <path d="M21 7.5L17 9.5M12 12L3 7.5M12 12V21.5M12 12C12 12 14.7426 10.6287 16.5 9.75C16.6953 9.65237 17 9.5 17 9.5M17 9.5V13M17 9.5L7.5 4.5"
-                                                                                  stroke="var(--sp-widget-active-color)" stroke-width="1"
+                                                                                  stroke="var(--sp-widget-active-color)"
+                                                                                  stroke-width="1"
                                                                                   stroke-linecap="round"/>
                                                                         </svg>
                                                                     `
@@ -427,7 +468,7 @@ export class ShowInvoice extends LitElement {
                                     </div>
                                 ` : ''
                 }
-                
+
                 <div class="productModal ${(this.showProductModal) ? 'show' : ''}">
 
                     <div @click=${() => this.closeProductModal()}
@@ -467,10 +508,12 @@ export class ShowInvoice extends LitElement {
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="800px"
                                                                              height="800px" viewBox="0 0 24 24" fill="none">
                                                                             <path d="M15.5777 3.38197L17.5777 4.43152C19.7294 5.56066 20.8052 6.12523 21.4026 7.13974C22 8.15425 22 9.41667 22 11.9415V12.0585C22 14.5833 22 15.8458 21.4026 16.8603C20.8052 17.8748 19.7294 18.4393 17.5777 19.5685L15.5777 20.618C13.8221 21.5393 12.9443 22 12 22C11.0557 22 10.1779 21.5393 8.42229 20.618L6.42229 19.5685C4.27063 18.4393 3.19479 17.8748 2.5974 16.8603C2 15.8458 2 14.5833 2 12.0585V11.9415C2 9.41667 2 8.15425 2.5974 7.13974C3.19479 6.12523 4.27063 5.56066 6.42229 4.43152L8.42229 3.38197C10.1779 2.46066 11.0557 2 12 2C12.9443 2 13.8221 2.46066 15.5777 3.38197Z"
-                                                                                  stroke="var(--sp-widget-active-color)" stroke-width="1"
+                                                                                  stroke="var(--sp-widget-active-color)"
+                                                                                  stroke-width="1"
                                                                                   stroke-linecap="round"/>
                                                                             <path d="M21 7.5L17 9.5M12 12L3 7.5M12 12V21.5M12 12C12 12 14.7426 10.6287 16.5 9.75C16.6953 9.65237 17 9.5 17 9.5M17 9.5V13M17 9.5L7.5 4.5"
-                                                                                  stroke="var(--sp-widget-active-color)" stroke-width="1"
+                                                                                  stroke="var(--sp-widget-active-color)"
+                                                                                  stroke-width="1"
                                                                                   stroke-linecap="round"/>
                                                                         </svg>
                                                                     `
@@ -523,72 +566,133 @@ export class ShowInvoice extends LitElement {
                                 </div>
                             </div>
 
+                            <div class="tokensFilters">
+
+                                <div class="tokenInputWrapper">
+                                    <input
+                                            class="tokenInput"
+                                            type="text"
+                                            .value=${this.tokenSearch}
+                                            @input=${(event: CustomEvent | any) => {
+                                                this.tokenSearch = event.target.value;
+                                            }}
+                                            placeholder= ${`Search token`}
+                                    />
+                                </div>
+
+                                <div class="networkSelectWrapper">
+                                    <select id="networkFilter"
+                                            @change=${(event: CustomEvent | any) => {
+                                                this.networkSearch = event.target.value;
+                                            }}
+                                            .value=${this.networkSearch}
+                                    >
+                                        <option value=""
+                                                selected
+                                        >
+                                            All chains
+                                        </option>
+                                        ${
+                                                this.networksList &&
+                                                this.networksList.map((network) => {
+                                                    return html`
+                                                        <option value=${network.value}>
+                                                            ${network.label}
+                                                        </option>
+                                                    `
+                                                })
+                                        }
+                                    </select>
+                                </div>
+
+                            </div>
+
                             <div class="tokensList">
-                                ${this.tokens &&
-                                this.tokens.map((token: Cryptocurrency) => {
-                                    return token.networks?.map((network) => {
-                                        const networkStandart = getTokenStandart(network.symbol);
+                                ${
 
-                                        let formatPrice = 0;
-                                        let leftPrice = (this.invoice) ? Number(this.invoice.total) - Number(this.invoice.paid) : 0;
+                                        (this.filteredTokens && this.filteredTokens.length > 0)
+                                                ?
+                                                this.filteredTokens.map((token: Cryptocurrency) => {
+                                                    if (token.networks && token.networks.length > 0) {
+                                                        return token.networks.filter((network) => {
+                                                            if (this.networkSearch === '') {
+                                                                return network;
+                                                            }
 
-                                        //@ts-ignore
-                                        const price = leftPrice / token.rates['usd'];
-                                        formatPrice = roundUpAmount(price.toString(), token.stable);
+                                                            return network.symbol === this.networkSearch;
 
-                                        return html`
-                                            <div
-                                                    @click=${() => {
-                                                        this.dispatchTokenSelect(token, network);
-                                                        this.closeTokenModal();
-                                                    }}
-                                                    class=${`tokenItem
+                                                        }).map((network) => {
+                                                            const networkStandart = getTokenStandart(network.symbol);
+
+                                                            let formatPrice = 0;
+                                                            let leftPrice = (this.invoice) ? Number(this.invoice.total) - Number(this.invoice.paid) : 0;
+
+                                                            //@ts-ignore
+                                                            const price = leftPrice / token.rates['usd'];
+                                                            formatPrice = roundUpAmount(price.toString(), token.stable);
+
+                                                            return html`
+                                                                <div
+                                                                        @click=${() => {
+                                                                            this.dispatchTokenSelect(token, network);
+                                                                            this.closeTokenModal();
+                                                                        }}
+                                                                        class=${`tokenItem
                                                         ${this.selectedToken?.id === token.id && this.selectedNetwork?.id === network.id ? 'selected' : ''}
                                                     `}
-                                            >
-                                                <div class="tokenContent">
-                                                    <div class="tokenIconWrapper">
-                                                        <token-icon
-                                                                .id=${token.symbol.replace('x', '')}
-                                                                width="32"
-                                                                height="32"
-                                                                class="tokenIcon"
-                                                        ></token-icon>
+                                                                >
+                                                                    <div class="tokenContent">
+                                                                        <div class="tokenIconWrapper">
+                                                                            <token-icon
+                                                                                    .id=${token.symbol.replace('x', '')}
+                                                                                    width="32"
+                                                                                    height="32"
+                                                                                    class="tokenIcon"
+                                                                            ></token-icon>
 
-                                                        <network-icon
-                                                                .id=${network.symbol}
-                                                                width="16"
-                                                                height="16"
-                                                                class="networkIcon"
-                                                        ></network-icon>
-                                                    </div>
-
-                                                    <div class="info">
-                                                        <div class="leftSection">
-                                                            <p>${token.symbol}</p>
-
-                                                            ${networkStandart
-                                                                    ? html`
-                                                                        <div class="badge">
-                                                                            ${networkStandart}
+                                                                            <network-icon
+                                                                                    .id=${network.symbol}
+                                                                                    width="16"
+                                                                                    height="16"
+                                                                                    class="networkIcon"
+                                                                            ></network-icon>
                                                                         </div>
-                                                                    `
-                                                                    : ''}
-                                                        </div>
 
-                                                        ${
-                                                                (formatPrice !== 0)
-                                                                        ? html`
-                                                                            <p>~${formatPrice} ${token.symbol}</p>
-                                                                        `
-                                                                        : ''
-                                                        }
+                                                                        <div class="info">
+                                                                            <div class="leftSection">
+                                                                                <p>${token.symbol}</p>
+
+                                                                                ${networkStandart
+                                                                                        ? html`
+                                                                                            <div class="badge">
+                                                                                                ${networkStandart}
+                                                                                            </div>
+                                                                                        `
+                                                                                        : ''}
+                                                                            </div>
+
+                                                                            ${
+                                                                                    (formatPrice !== 0)
+                                                                                            ? html`
+                                                                                                <p>~${formatPrice}
+                                                                                                    ${token.symbol}</p>
+                                                                                            `
+                                                                                            : ''
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            `;
+                                                        });
+                                                    }
+                                                })
+                                                :
+                                                html`
+                                                    <div class="tokensListEmpty">
+                                                        <p>No tokens found</p>
                                                     </div>
-                                                </div>
-                                            </div>
-                                        `;
-                                    });
-                                })}
+                                                `
+                                }
                             </div>
                         </div>
                     </div>
@@ -699,6 +803,24 @@ export class ShowInvoice extends LitElement {
         `;
     }
 
+    private filterTokens(tokenName: string) {
+
+        if (this.tokens.length === 0) {
+            return [];
+        }
+
+        return this.tokens
+            .filter((token) => {
+
+                if (tokenName === '') {
+                    return token;
+                }
+
+                return token.symbol.toLowerCase().includes(tokenName.toLowerCase()) || token.name.toLowerCase().includes(tokenName.toLowerCase());
+
+            });
+    }
+
     private openProductModal() {
         this.showProductModal = true;
 
@@ -736,6 +858,7 @@ export class ShowInvoice extends LitElement {
     }
 
     private closeTokenModal() {
+
         this.showTokenModalContent = false;
 
         setTimeout(() => {
@@ -743,6 +866,10 @@ export class ShowInvoice extends LitElement {
 
             setTimeout(() => {
                 this.showTokenModal = false;
+
+                this.tokenSearch = '';
+                this.networkSearch = '';
+
             }, 200)
         }, 200)
     }

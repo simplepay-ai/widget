@@ -1020,7 +1020,7 @@ stroke: #007bff; /* Fallback */age svg path {
     border-radius: 12px 12px 0 0;
     overflow: hidden;
     height: auto;
-    max-height: 50%;
+    max-height: 75%;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -1128,6 +1128,186 @@ stroke: #007bff; /* Fallback */age svg path {
     color: var(--sp-widget-function-button-hover-text-color);
 }
 
+.stepWrapper .tokenModal .tokensFilters {
+    width: 100%;
+    margin-top: 20px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+}
+
+.stepWrapper .tokenModal .tokensFilters .networkSelectWrapper {
+    position: relative;
+    display: flex;
+    width: 150px;
+    min-width: 150px;
+}
+
+.stepWrapper .tokenModal .tokensFilters .networkSelectWrapper select{
+    width: 100%;
+    height: 35px;
+    padding: 8px 12px;
+    color: #333333; /* Fallback */
+    color: var(--sp-widget-input-color);
+    border: 1px solid #cccccc; /* Fallback */
+    border: 1px solid var(--sp-widget-input-border-color);
+    background: #f8f9fa; /* Fallback */
+    background: var(--sp-widget-input-bg-color);
+    border-radius: 6px;
+}
+
+/*.stepWrapper .tokenModal .tokensFilters .networkSelectWrapper select{*/
+/*    -webkit-box-flex: 1;*/
+/*    -ms-flex: 1;*/
+/*    flex: 1;*/
+/*    height: 35px;*/
+/*    padding: 8px 12px;*/
+/*    color: #333333; !* Fallback *!*/
+/*    color: var(--sp-widget-input-color);*/
+/*    border: 1px solid #cccccc; !* Fallback *!*/
+/*    border: 1px solid var(--sp-widget-input-border-color);*/
+/*    background: #f8f9fa; !* Fallback *!*/
+/*    background: var(--sp-widget-input-bg-color);*/
+/*    border-radius: 6px;*/
+/*    !*appearance: none;*!*/
+/*    !*-webkit-appearance: none;*!*/
+/*    !*-moz-appearance: none;*!*/
+/*    cursor: pointer;*/
+/*    outline: none;*/
+/*}*/
+
+/*.stepWrapper .tokenModal .tokensFilters .networkSelectWrapper::after {*/
+/*    content: "▼";*/
+/*    font-size: 12px;*/
+/*    color: #888;*/
+/*    position: absolute;*/
+/*    right: 16px;*/
+/*    top: 50%;*/
+/*    transform: translateY(-50%);*/
+/*    pointer-events: none;*/
+/*}*/
+
+/*.stepWrapper .tokenModal .tokensFilters .networkSelect {*/
+/*    width: 100%;*/
+/*    height: 35px;*/
+/*    padding: 8px 12px;*/
+/*    font-size: 14px;*/
+/*    color: #333333; !* Fallback *!*/
+/*    color: var(--sp-widget-input-color);*/
+/*    border: 1px solid #cccccc; !* Fallback *!*/
+/*    border: 1px solid var(--sp-widget-input-border-color);*/
+/*    background: #f8f9fa; !* Fallback *!*/
+/*    background: var(--sp-widget-input-bg-color);*/
+/*    border-radius: 6px;*/
+/*    appearance: none;*/
+/*    -webkit-appearance: none;*/
+/*    -moz-appearance: none;*/
+/*    cursor: pointer;*/
+/*    outline: none;*/
+/*}*/
+
+/* Custom arrow */
+
+/*.stepWrapper .tokenModal .tokensFilters .networkSelectWrapper::after {*/
+/*    content: "▼";*/
+/*    font-size: 12px;*/
+/*    color: #888;*/
+/*    position: absolute;*/
+/*    right: 16px;*/
+/*    top: 50%;*/
+/*    transform: translateY(-50%);*/
+/*    pointer-events: none;*/
+/*}*/
+
+/* Option styling */
+/*.stepWrapper .tokenModal .tokensFilters .networkSelect option {*/
+/*    background: #f8f9fa; !* Fallback *!*/
+/*    background: var(--sp-widget-input-bg-color);*/
+/*    color: #333333; !* Fallback *!*/
+/*    color: var(--sp-widget-input-color);*/
+/*    padding: 12px;*/
+/*}*/
+
+/* Focus state */
+/*.stepWrapper .tokenModal .tokensFilters .networkSelect:focus {*/
+/*    border: 1px solid #007bff; !* Fallback *!*/
+/*    border: 1px solid var(--sp-widget-input-active-border-color);*/
+/*}*/
+
+/* Hover state */
+/*.stepWrapper .tokenModal .tokensFilters .networkSelect::-webkit-input-placeholder {*/
+/*    color: #999999; !* Fallback *!*/
+/*    color: var(--sp-widget-input-placeholder-color);*/
+/*}*/
+/*.stepWrapper .tokenModal .tokensFilters .networkSelect::-moz-placeholder {*/
+/*    color: #999999; !* Fallback *!*/
+/*    color: var(--sp-widget-input-placeholder-color);*/
+/*}*/
+/*.stepWrapper .tokenModal .tokensFilters .networkSelect:-ms-input-placeholder {*/
+/*    color: #999999; !* Fallback *!*/
+/*    color: var(--sp-widget-input-placeholder-color);*/
+/*}*/
+
+.stepWrapper .tokenModal .tokensFilters .tokenInputWrapper{
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+}
+
+.stepWrapper .tokenModal .tokensFilters .tokenInput {
+    height: 35px;
+    width: 100%;
+    border-radius: 6px;
+    border: 1px solid #cccccc; /* Fallback */
+    border: 1px solid var(--sp-widget-input-border-color);
+    background: #f8f9fa; /* Fallback */
+    background: var(--sp-widget-input-bg-color);
+    padding: 8px 12px;
+    font-size: 14px;
+    line-height: 18px;
+    color: #333333; /* Fallback */
+    color: var(--sp-widget-input-color);
+    outline: none;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 50ms;
+    transition-duration: 50ms;
+}
+
+.stepWrapper .tokenModal .tokensFilters .tokenInput::-webkit-input-placeholder {
+    font-size: 14px;
+    line-height: 18px;
+    color: #999999; /* Fallback */
+    color: var(--sp-widget-input-placeholder-color);
+}
+
+.stepWrapper .tokenModal .tokensFilters .tokenInput::-moz-placeholder {
+    font-size: 14px;
+    line-height: 18px;
+    color: #999999; /* Fallback */
+    color: var(--sp-widget-input-placeholder-color);
+}
+
+.stepWrapper .tokenModal .tokensFilters .tokenInput:-ms-input-placeholder {
+    font-size: 14px;
+    line-height: 18px;
+    color: #999999; /* Fallback */
+    color: var(--sp-widget-input-placeholder-color);
+}
+
+.stepWrapper .tokenModal .tokensFilters .tokenInput:focus-visible {
+    border: 1px solid #007bff; /* Fallback */
+    border: 1px solid var(--sp-widget-input-active-border-color);
+}
+
 .stepWrapper .tokenModal .tokensList {
     margin-top: 20px;
     -webkit-box-flex: 1;
@@ -1144,7 +1324,7 @@ stroke: #007bff; /* Fallback */age svg path {
     flex-direction: column;
     gap: 8px;
     width: 100%;
-    padding: 0 4px;
+    padding: 0 4px 0 0;
 }
 
 .stepWrapper .tokenModal .tokensList::-webkit-scrollbar {
@@ -1344,6 +1524,18 @@ stroke: #007bff; /* Fallback */age svg path {
     border: 1px solid var(--sp-widget-badge-border-color);
     font-size: 10px;
     border-radius: 4px;
+}
+
+.stepWrapper .tokenModal .tokensListEmpty{
+    margin: 20px;
+}
+
+.stepWrapper .tokenModal .tokensListEmpty p{
+    text-align: center;
+    font-size: 13px;
+    font-weight: 400;
+    color: #666666; /* Fallback */
+    color: var(--sp-widget-secondary-text-color);
 }
 
 .stepWrapper .transactionsModal {

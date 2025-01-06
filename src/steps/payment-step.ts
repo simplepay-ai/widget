@@ -799,6 +799,11 @@ export class PaymentStep extends LitElement {
         }
     }
 
+    disconnectedCallback() {
+        super.disconnectedCallback()
+        this.updatePaymentAwaiting(false);
+    }
+
     updated(changedProperties: Map<string | symbol, unknown>): void {
         super.updated(changedProperties);
 
@@ -1991,9 +1996,8 @@ export class PaymentStep extends LitElement {
                 to: this.transaction?.to as Address,
                 value: parseEther(this.leftAmountToken),
             })
-            // console.log('estimatedGas', estimatedGas)
             const gasPrice = await getGasPrice(this.walletConnectorConfig)
-            // console.log('gasPrice', gasPrice)
+
             const hashTransaction = await Promise.race([
                 sendTransaction(this.walletConnectorConfig, {
                     //@ts-ignore
@@ -2012,6 +2016,7 @@ export class PaymentStep extends LitElement {
                 this.updatePaymentAwaiting(false);
             }
         } catch (e) {
+            console.log('e', e)
             const error = e as SendTransactionErrorType;
             console.log('sendTransaction error message', error.message)
 
