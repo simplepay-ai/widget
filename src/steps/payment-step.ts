@@ -2023,7 +2023,7 @@ export class PaymentStep extends LitElement {
                 messageTitle = 'Transaction Canceled'
                 messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
 
-            } else if (error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1) {
+            } else if (error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1 || error.message.indexOf('resource not found') !== -1) {
 
                 messageTitle = 'Transaction Canceled'
                 messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
