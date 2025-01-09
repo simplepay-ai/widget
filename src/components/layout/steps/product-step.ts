@@ -1,50 +1,27 @@
 import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {Product} from "@simplepay-ai/api-client";
-import {ICartProduct} from "../types.ts";
 //@ts-ignore
-import style from "../styles/cart-step.css?inline";
+import style from "../../../styles/product-step.css?inline";
 
-@customElement('cart-step')
-export class CartStep extends LitElement {
+@customElement('product-step')
+export class ProductStep extends LitElement {
 
     static styles = unsafeCSS(style);
 
     @property({type: Array})
     products: Product[] = [];
 
-    @property({type: Array})
-    cart: ICartProduct[] = [];
+    @property({type: String})
+    invoiceProductId: string = '';
 
     @property({type: Boolean})
     creatingInvoice: boolean = false;
 
-    @property({attribute: false, type: Number})
-    cartSum: number = 0;
-
-    updated(changedProperties: Map<string | symbol, unknown>): void {
-        super.updated(changedProperties);
-
-        if (changedProperties.has('cart')) {
-
-            let result = 0;
-            if (this.cart.length > 0) {
-                for (let cartProduct of this.cart) {
-                    const product = this.products.find((item) => item.id === cartProduct.id);
-                    if (product) {
-                        const productSum = cartProduct.count * product.prices[0].price;
-                        result += productSum;
-                    }
-                }
-            }
-            this.cartSum = result;
-
-        }
-    }
-
     render() {
         return html`
             <div class="stepWrapper">
+
 
                 ${this.creatingInvoice
                         ? html`
@@ -66,9 +43,9 @@ export class CartStep extends LitElement {
                             </div>
                         `
                         : html`
-                            <step-header
-                                    .title= ${'Select cart products'}
-                            ></step-header>
+                            <main-header
+                                    .title= ${'Select product'}
+                            ></main-header>
 
                             <div class="stepContent">
 
@@ -77,7 +54,12 @@ export class CartStep extends LitElement {
                                                 ? html`
                                                     ${
                                                             this.products.map((item: Product) => html`
-                                                                <div class="productItem">
+                                                                <div class=${`
+                                                    productItem
+                                                    ${(this.invoiceProductId === item.id) ? 'selected' : ''}
+                                                    `}
+                                                                     @click=${() => this.SelectProduct(item.id)}
+                                                                >
 
                                                                     <div class=${`imageWrapper`}>
 
@@ -105,56 +87,15 @@ export class CartStep extends LitElement {
 
                                                                     <div class="info">
                                                                         <p class="name">${item.name}</p>
+                                                                        <p class="description">${item.description}</p>
+                                                                    </div>
+
+                                                                    <div class="priceWrapper">
                                                                         <p class="price">${item.prices[0].price}
                                                                             ${item.prices[0].currency.symbol}</p>
                                                                     </div>
 
-                                                                    <div class="controls">
-
-                                                                        ${
-                                                                                (this.cart.find((product) => product.id === item.id))
-                                                                                        ? html`
-                                                                                            <div class="button"
-                                                                                                 @click=${() => this.dispatchRemoveFromCart(item.id)}>
-                                                                                                <svg xmlns="http://www.w3.org/2000/svg"
-                                                                                                     width="24" height="24"
-                                                                                                     viewBox="0 0 24 24" fill="none"
-                                                                                                     stroke="currentColor"
-                                                                                                     stroke-width="1.5"
-                                                                                                     stroke-linecap="round"
-                                                                                                     stroke-linejoin="round">
-                                                                                                    <path d="M5 12h14"/>
-                                                                                                </svg>
-                                                                                            </div>
-                                                                                        `
-                                                                                        : ''
-                                                                        }
-
-                                                                        <div class="button"
-                                                                             @click=${() => this.dispatchAddToCart(item.id)}>
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                                 height="24"
-                                                                                 viewBox="0 0 24 24" fill="none"
-                                                                                 stroke="currentColor"
-                                                                                 stroke-width="1.5" stroke-linecap="round"
-                                                                                 stroke-linejoin="round">
-                                                                                <path d="M5 12h14"/>
-                                                                                <path d="M12 5v14"/>
-                                                                            </svg>
-                                                                        </div>
-
-                                                                    </div>
-
                                                                 </div>
-
-                                                                ${
-                                                                        (this.cart.find((product) => product.id === item.id))
-                                                                                ? html`
-                                                                                    <p class="cartText">In cart
-                                                                                            x${this.cart.find((product) => product.id === item.id)?.count}</p>
-                                                                                `
-                                                                                : ''
-                                                                }
                                                             `)
                                                     }
                                                 `
@@ -192,20 +133,22 @@ export class CartStep extends LitElement {
                                 <button
                                         class="mainButton"
                                         @click=${this.dispatchNextStep}
-                                        .disabled=${this.cart.length === 0}
+                                        .disabled=${!this.invoiceProductId}
                                 >
                                     Create
                                 </button>
                             </div>
                         `
                 }
+
             </div>
         `;
     }
 
     private dispatchNextStep() {
 
-        if (this.cartSum < 1) {
+        const product = this.products.find((item) => item.id === this.invoiceProductId);
+        if (!product || product.prices[0].price < 1) {
             const options = {
                 detail: {
                     notificationData: {
@@ -238,33 +181,21 @@ export class CartStep extends LitElement {
         this.dispatchEvent(prevStepEvent);
     }
 
-    private dispatchAddToCart(productId: string) {
-        const addToCartEvent = new CustomEvent('addToCart', {
+    private SelectProduct(productId: string) {
+        const updateInvoiceProductIdConfigEvent = new CustomEvent('updateInvoiceProductId', {
             detail: {
-                productId: productId
+                invoiceProductId: productId
             },
             bubbles: true,
             composed: true
         });
 
-        this.dispatchEvent(addToCartEvent);
-    }
-
-    private dispatchRemoveFromCart(productId: string) {
-        const removeFromCartEvent = new CustomEvent('removeFromCart', {
-            detail: {
-                productId: productId
-            },
-            bubbles: true,
-            composed: true
-        });
-
-        this.dispatchEvent(removeFromCartEvent);
+        this.dispatchEvent(updateInvoiceProductIdConfigEvent);
     }
 }
 
 declare global {
     interface HTMLElementTagNameMap {
-        'cart-step': CartStep;
+        'product-step': ProductStep;
     }
 }

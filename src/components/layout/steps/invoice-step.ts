@@ -1,17 +1,17 @@
 import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
-import {getTokenStandart, roundUpAmount} from "../util.ts";
+import {getTokenStandart, roundUpAmount} from "../../../lib/util.ts";
 import {Cryptocurrency, Invoice, InvoiceProduct, Network, Transaction} from "@simplepay-ai/api-client";
 //@ts-ignore
-import style from "../styles/show-invoice.css?inline";
+import style from "../../../styles/invoice-step.css?inline";
 
 interface NetworkOption {
     value: string;
     label: string;
 }
 
-@customElement('show-invoice')
-export class ShowInvoice extends LitElement {
+@customElement('invoice-step')
+export class InvoiceStep extends LitElement {
 
     static styles = unsafeCSS(style);
 
@@ -939,6 +939,6 @@ export class ShowInvoice extends LitElement {
 
 declare global {
     interface HTMLElementTagNameMap {
-        'show-invoice': ShowInvoice;
+        'invoice-step': InvoiceStep;
     }
 }

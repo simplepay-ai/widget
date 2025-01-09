@@ -1,11 +1,11 @@
 import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
-import {InvoiceType} from "../types.ts";
+import {InvoiceType} from "../../../lib/types.ts";
 //@ts-ignore
-import style from "../styles/type-select.css?inline";
+import style from "../../../styles/select-type-step.css?inline";
 
-@customElement('type-select')
-export class TypeSelect extends LitElement {
+@customElement('select-type-step')
+export class SelectTypeStep extends LitElement {
 
     static styles = unsafeCSS(style);
 
@@ -16,9 +16,9 @@ export class TypeSelect extends LitElement {
         return html`
             <div class="stepWrapper">
 
-                <step-header
+                <main-header
                         .title= ${'Select invoice type'}
-                ></step-header>
+                ></main-header>
 
                 <div class="stepContent">
 
@@ -111,6 +111,6 @@ export class TypeSelect extends LitElement {
 
 declare global {
     interface HTMLElementTagNameMap {
-        'type-select': TypeSelect;
+        'select-type-step': SelectTypeStep;
     }
 }

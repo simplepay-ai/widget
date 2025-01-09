@@ -1,10 +1,10 @@
 import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import { customElement } from 'lit/decorators.js';
 //@ts-ignore
-import style from "../styles/step-header.css?inline";
+import style from "../../styles/main-header.css?inline";
 
-@customElement('step-header')
-export class StepHeader extends LitElement {
+@customElement('main-header')
+export class MainHeader extends LitElement {
 
     static styles = unsafeCSS(style);
 
@@ -167,6 +167,6 @@ export class StepHeader extends LitElement {
 
 declare global {
     interface HTMLElementTagNameMap {
-        'step-header': StepHeader;
+        'main-header': MainHeader;
     }
 }

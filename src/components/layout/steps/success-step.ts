@@ -3,9 +3,9 @@ import {Invoice, InvoiceProduct, Transaction} from '@simplepay-ai/api-client';
 import QRCode from 'corcojs-qrcode';
 import {PropertyValues} from 'lit';
 import {customElement, html, LitElement, property, query, unsafeCSS} from 'lit-element';
-import {getTokenStandart, roundUpAmount} from "../util.ts";
+import {getTokenStandart, roundUpAmount} from "../../../lib/util.ts";
 //@ts-ignore
-import style from "../styles/success-step.css?inline";
+import style from "../../../styles/success-step.css?inline";
 
 @customElement('success-step')
 export class SuccessStep extends LitElement {
@@ -94,7 +94,7 @@ export class SuccessStep extends LitElement {
     render() {
         return html`
             <div class=${`stepWrapper`}>
-                <step-header
+                <main-header
                         .title=${`${this.transaction?.status} transaction`}
                         .hasBackButton=${this.hasReturnBack}
                         .hasShareButton=${true}
@@ -102,7 +102,7 @@ export class SuccessStep extends LitElement {
                             title: 'New Invoice',
                             url: this.qrCodeUrl
                         } : null}
-                ></step-header>
+                ></main-header>
 
                 <div class="stepContent">
                     <div class="topContent">

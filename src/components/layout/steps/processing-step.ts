@@ -3,9 +3,9 @@ import {Invoice, InvoiceProduct, Transaction} from '@simplepay-ai/api-client';
 import QRCode from 'corcojs-qrcode';
 import {PropertyValues} from 'lit';
 import {customElement, html, LitElement, property, query, unsafeCSS} from 'lit-element';
-import {getTokenStandart, roundUpAmount} from "../util.ts";
+import {getTokenStandart, roundUpAmount} from "../../../lib/util.ts";
 //@ts-ignore
-import style from "../styles/processing-step.css?inline";
+import style from "../../../styles/processing-step.css?inline";
 
 @customElement('processing-step')
 export class ProcessingStep extends LitElement {
@@ -99,7 +99,7 @@ export class ProcessingStep extends LitElement {
     render() {
         return html`
             <div class=${`stepWrapper`}>
-                <step-header
+                <main-header
                         .title= ${'Proсessing transaction'}
                         .hasBackButton=${this.hasReturnBack}
                         .hasShareButton=${true}
@@ -107,7 +107,7 @@ export class ProcessingStep extends LitElement {
                             title: 'New Invoice',
                             url: this.qrCodeUrl
                         }}
-                ></step-header>
+                ></main-header>
 
                 <div class="stepContent">
                     <div class="topInfo">
@@ -321,12 +321,12 @@ export class ProcessingStep extends LitElement {
                     </div>
                 </div>
 
-                <step-footer
+                <main-footer
                         .price=${this.amountUSD}
                         .hasExplorerButton=${true}
                         .explorerLink=${this.qrCodeUrl}
                         .productsInfo=${this.invoiceProducts}
-                ></step-footer>
+                ></main-footer>
             </div>
         `;
     }

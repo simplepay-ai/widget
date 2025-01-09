@@ -2,10 +2,10 @@ import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {App} from "@simplepay-ai/api-client";
 //@ts-ignore
-import style from "../styles/new-set-price-step.css?inline";
+import style from "../../../styles/price-step.css?inline";
 
-@customElement('new-set-price-step')
-export class NewSetPriceStep extends LitElement {
+@customElement('price-step')
+export class PriceStep extends LitElement {
 
     static styles = unsafeCSS(style);
 
@@ -15,11 +15,11 @@ export class NewSetPriceStep extends LitElement {
     @property({type: String})
     price: string = '';
 
-    @property({attribute: false, type: Boolean})
-    numpadButtonsActive = false;
-
     @property({type: Boolean})
     creatingInvoice: boolean = false;
+
+    @property({attribute: false, type: Boolean})
+    numpadButtonsActive = false;
 
     @property({attribute: false, type: String})
     private priceValue = '0';
@@ -250,6 +250,6 @@ export class NewSetPriceStep extends LitElement {
 
 declare global {
     interface HTMLElementTagNameMap {
-        'new-set-price-step': NewSetPriceStep;
+        'price-step': PriceStep;
     }
 }

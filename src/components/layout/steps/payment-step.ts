@@ -4,8 +4,8 @@ import QRCode from 'corcojs-qrcode';
 import {PropertyValues} from 'lit';
 import {html, LitElement, property, query, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
-import {roundUpAmount} from "../util.ts";
-import {WalletType} from "../types.ts";
+import {roundUpAmount} from "../../../lib/util.ts";
+import {WalletType} from "../../../lib/types.ts";
 import {
     estimateGas,
     getGasPrice,
@@ -18,7 +18,7 @@ import {
 import {bsc, mainnet, polygon, avalanche, zksync, arbitrum, optimism, base} from "@wagmi/core/chains";
 import {Address, parseEther, parseUnits} from "viem";
 //@ts-ignore
-import style from "../styles/payment-step.css?inline";
+import style from "../../../styles/payment-step.css?inline";
 
 const ABI_USDT_BSC = [
     {
@@ -819,12 +819,12 @@ export class PaymentStep extends LitElement {
     render() {
         return html`
             <div class=${`stepWrapper`}>
-                <step-header
+                <main-header
                         .title= ${'Awaiting for Payment'}
                         .hasBackButton=${this.hasReturnBack}
                         .showAddress=${true}
                         .walletAddress=${this.transaction?.from}
-                ></step-header>
+                ></main-header>
 
                 ${
                         (this.cancelingTransaction)
@@ -1200,7 +1200,7 @@ export class PaymentStep extends LitElement {
                                 : ''
                 }
 
-                <step-footer
+                <main-footer
                         .price=${this.leftAmount}
                         .hasButton=${false}
                         .hasCancelButton=${true}
@@ -1213,7 +1213,7 @@ export class PaymentStep extends LitElement {
                         1000}
                         .buttonDisabled=${this.cancelingTransaction || this.connectorPaymentAwaiting || this.checkingTransaction}
                         @footerCancelClick=${this.dispatchCancelTransaction}
-                ></step-footer>
+                ></main-footer>
             </div>
         `;
     }
@@ -1257,8 +1257,6 @@ export class PaymentStep extends LitElement {
                 }
 
                 await switchChain(this.walletConnectorConfig, {chainId: chainId})
-
-                // await switchChain(this.walletConnectorConfig, {chainId: (this.transaction?.network.symbol === 'bsc') ? bsc.id : mainnet.id})
             } catch (e) {
 
                 const options = {

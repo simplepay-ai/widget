@@ -1,7 +1,7 @@
 import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
-import {checkWalletAddress, getTokenStandart} from "../util.ts";
-import {WalletType} from "../types.ts";
+import {checkWalletAddress, getTokenStandart} from "../../../lib/util.ts";
+import {WalletType} from "../../../lib/types.ts";
 import {
     createConfig,
     http,
@@ -13,10 +13,10 @@ import {mainnet, bsc, polygon, avalanche, zksync, arbitrum, optimism, base} from
 import {coinbaseWallet, metaMask, walletConnect} from "@wagmi/connectors";
 import {Cryptocurrency, Invoice, InvoiceProduct, Network} from "@simplepay-ai/api-client";
 //@ts-ignore
-import style from "../styles/new-wallet-step.css?inline";
+import style from "../../../styles/wallet-step.css?inline";
 
-@customElement('new-wallet-step')
-export class NewWalletStep extends LitElement {
+@customElement('wallet-step')
+export class WalletStep extends LitElement {
 
     static styles = unsafeCSS(style);
 
@@ -97,7 +97,7 @@ export class NewWalletStep extends LitElement {
     render() {
         return html`
             <div class=${`stepWrapper`}>
-                <step-header
+                <main-header
                         .title= ${'Connect wallet'}
                         .hasBackButton=${true}
                         .backButtonDisabled=${this.creatingTransaction}
@@ -107,7 +107,7 @@ export class NewWalletStep extends LitElement {
                             networkStandart: getTokenStandart(this.selectedNetwork?.symbol || ''),
                             networkSymbol: this.selectedNetwork?.symbol
                         }}"
-                ></step-header>
+                ></main-header>
 
                 ${this.creatingTransaction
                         ? html`
@@ -518,14 +518,14 @@ export class NewWalletStep extends LitElement {
                         `
                 }
 
-                <step-footer
+                <main-footer
                         .price=${Number(this.invoice?.total!) - Number(this.invoice?.paid!)}
                         .hasButton=${true}
                         .buttonDisabled=${this.buttonDisabled || this.creatingTransaction}
                         .buttonText=${'Confirm'}
                         .products=${this.invoiceProducts}
                         @footerButtonClick=${this.dispatchNextStep}
-                ></step-footer>
+                ></main-footer>
             </div>
         `;
     }
@@ -794,11 +794,6 @@ export class NewWalletStep extends LitElement {
                             cancelChecker
                         ]);
 
-                        // connectResult = await connect(this.walletConnectorConfig, {
-                        //     connector: walletConnect({
-                        //         projectId: 'b385e1eebef135dccafa0f1efaf09e85',
-                        //     })
-                        // });
                     }
 
                 } catch (e) {
@@ -848,15 +843,6 @@ export class NewWalletStep extends LitElement {
                                         }
                                     },
                                 })
-                                // injected({
-                                //     target() {
-                                //         return {
-                                //             id: 'windowProvider',
-                                //             name: 'Window Provider',
-                                //             provider: window.ethereum,
-                                //         }
-                                //     },
-                                // })
                             ]
                         }),
                         timer,
@@ -886,45 +872,6 @@ export class NewWalletStep extends LitElement {
                             cancelChecker
                         ]);
                     }
-
-                    // let injectedConnector = null;
-                    // for (let connection of connections.values()) {
-                    //     if (connection.connector.type === 'injected' && connection.connector['connect'] !== undefined) {
-                    //         injectedConnector = connection.connector;
-                    //     }
-                    // }
-                    //
-                    // if (injectedConnector) {
-                    //
-                    //     const reconnectResult: any = await Promise.race([
-                    //         await reconnect(this.walletConnectorConfig, {
-                    //             connectors: [
-                    //                 injected(),
-                    //             ]
-                    //         }),
-                    //         timer,
-                    //         cancelChecker
-                    //     ]);
-                    //
-                    //     if(reconnectResult && reconnectResult.length > 0){
-                    //         connectResult = reconnectResult[0];
-                    //     }
-                    //
-                    // }
-                    //
-                    // if(!injectedConnector || !connectResult){
-                    //     connectResult = await Promise.race([
-                    //         connect(this.walletConnectorConfig, {
-                    //             connector: injected()
-                    //         }),
-                    //         timer,
-                    //         cancelChecker
-                    //     ]);
-                    //
-                    //     // connectResult = await connect(this.walletConnectorConfig, {
-                    //     //     connector: injected()
-                    //     // })
-                    // }
 
                 } catch (e) {
                     console.log('injected connection error', e)
@@ -998,29 +945,6 @@ export class NewWalletStep extends LitElement {
 
         }
 
-        // console.log('walletConnectorConfig', this.walletConnectorConfig)
-        //
-        // switch (type) {
-        //     case "MetaMask":
-        //
-        //         const {connector}: any = getAccount(this.walletConnectorConfig);
-        //         const provider = await connector.getProvider();
-        //         console.log('provider', provider)
-        //
-        //         this.providerInfo = {
-        //             name: 'MetaMask',
-        //             image: ''
-        //         };
-        //         break;
-        //     case "WalletConnect":
-        //         break;
-        //     case "Injected":
-        //         break;
-        //     default:
-        //         this.providerInfo = null;
-        //         break;
-        // }
-
         this.updateWalletAddress(connectResult.accounts[0]);
         this.updateWalletType(type);
         this.openApproveAddressModal();
@@ -1057,7 +981,6 @@ export class NewWalletStep extends LitElement {
 
     private approveWallet() {
         this.dispatchNextStep();
-        // this.hideApproveAddressModal();
     }
 
     private async disconnectWallet() {
@@ -1068,42 +991,6 @@ export class NewWalletStep extends LitElement {
         })
 
         this.hideApproveAddressModal();
-
-        // if (this.walletType === 'MetaMask') {
-        //
-        //     let metaMaskConnectorMobile = null;
-        //     for (let connection of this.walletConnectorConfig.state.connections.values()) {
-        //         if (connection.connector.type === 'metaMask' && connection.connector['disconnect'] !== undefined) {
-        //             metaMaskConnectorMobile = connection.connector;
-        //         }
-        //     }
-        //
-        //     const connectors = this.walletConnectorConfig.connectors;
-        //     const metaMaskConnectorDesk = connectors?.find((item: any) => item.id === 'io.metamask' && item.type === 'injected');
-        //
-        //     if (metaMaskConnectorMobile && metaMaskConnectorMobile['disconnect']) {
-        //         await metaMaskConnectorMobile.disconnect();
-        //     }
-        //
-        //     if (metaMaskConnectorDesk && metaMaskConnectorDesk['disconnect']) {
-        //         await metaMaskConnectorDesk.disconnect();
-        //     }
-        // } else {
-        //     const state = this.walletConnectorConfig.state;
-        //     const currentConnection = state.connections.get(state.current);
-        //     const connector = currentConnection.connector;
-        //
-        //     if (connector && connector['disconnect']) {
-        //         await connector.disconnect();
-        //     }
-        // }
-        //
-        // this.hideApproveAddressModal();
-
-        // const connectors = this.walletConnectorConfig.connectors;
-        // await connectors[0].disconnect();
-        //
-        // this.hideApproveAddressModal();
     }
 
     private selectCustomWallet() {
@@ -1159,7 +1046,6 @@ export class NewWalletStep extends LitElement {
         try {
             navigator.clipboard.readText().then((clipText) => {
                 this.inputValue = clipText;
-                // this.updateWalletAddress(clipText);
             });
         } catch (error) {
             console.log('Paste data error', error);
@@ -1173,13 +1059,7 @@ export class NewWalletStep extends LitElement {
         this.showWalletModalError = false;
         this.walletModalErrorText = '';
 
-        // if (address === '') {
-        //     this.updateWalletAddress('');
-        //     return;
-        // }
-
         this.inputValue = address;
-        // this.updateWalletAddress(address);
     }
 
     private dispatchNextStep() {
@@ -1231,6 +1111,6 @@ export class NewWalletStep extends LitElement {
 
 declare global {
     interface HTMLElementTagNameMap {
-        'new-wallet-step': NewWalletStep;
+        'wallet-step': WalletStep;
     }
 }

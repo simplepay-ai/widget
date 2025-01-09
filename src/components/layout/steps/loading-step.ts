@@ -1,7 +1,7 @@
 import {html, LitElement, unsafeCSS} from 'lit-element';
 import { customElement } from 'lit/decorators.js';
 //@ts-ignore
-import style from "../styles/loading-step.css?inline";
+import style from "../../../styles/loading-step.css?inline";
 
 @customElement('loading-step')
 export class LoadingStep extends LitElement {

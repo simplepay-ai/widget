@@ -3,22 +3,18 @@ import {Currency, Product} from "@simplepay-ai/api-client";
 export type AppTheme = 'light' | 'dark' | 'custom';
 
 export type AppStep =
-    | 'loading'
-    | 'error'
-    | 'preview'
-    | 'setPrice'
-    | 'setToken'
-    | 'setWallet'
-    | 'payment'
-    | 'processing'
-    | 'success'
-
-    | 'typeSelect'
-    | 'newSetPrice'
-    | 'setProduct'
-    | 'setCart'
-    | 'showInvoice'
-    | 'setNewWallet';
+    | 'loadingStep'
+    | 'errorStep'
+    | 'selectTypeStep'
+    | 'priceStep'
+    | 'productStep'
+    | 'cartStep'
+    | 'invoiceStep'
+    | 'walletStep'
+    | 'paymentStep'
+    | 'processingStep'
+    | 'successStep'
+;
 
 export type CurrentPriceStep = 'priceEnter' | 'messageEnter';
 

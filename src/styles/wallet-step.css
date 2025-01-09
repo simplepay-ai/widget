@@ -127,6 +127,7 @@
     display: block;
     width: 30px;
     height: 30px;
+    min-width: 30px;
 }
 
 .stepWrapper .stepContent .walletType .spinner {
@@ -360,7 +361,7 @@
     border-radius: 6px;
     border: 1px solid #cccccc; /* Fallback */
     border: 1px solid var(--sp-widget-input-border-color);
-    background: #ffffff; /* Fallback */
+    background: #f8f9fa; /* Fallback */
     background: var(--sp-widget-input-bg-color);
     padding: 8px 12px;
     font-size: 16px;
@@ -376,7 +377,21 @@
     transition-duration: 50ms;
 }
 
-.stepWrapper .stepContent .walletModal .contentWrapper .content .inputWrapper input::placeholder {
+.stepWrapper .stepContent .walletModal .contentWrapper .content .inputWrapper input::-webkit-input-placeholder {
+    font-size: 14px;
+    line-height: 20px;
+    color: #999999; /* Fallback */
+    color: var(--sp-widget-input-placeholder-color);
+}
+
+.stepWrapper .stepContent .walletModal .contentWrapper .content .inputWrapper input::-moz-placeholder {
+    font-size: 14px;
+    line-height: 20px;
+    color: #999999; /* Fallback */
+    color: var(--sp-widget-input-placeholder-color);
+}
+
+.stepWrapper .stepContent .walletModal .contentWrapper .content .inputWrapper input:-ms-input-placeholder {
     font-size: 14px;
     line-height: 20px;
     color: #999999; /* Fallback */
@@ -388,7 +403,7 @@
     border: 1px solid var(--sp-widget-input-active-border-color);
 }
 
-.stepWrapper .stepContent .walletModal .content.stepWrapper .stepContent .walletModal .contentWrapper .content .inputWrapper .input {
+.stepWrapper .stepContent .walletModal .contentWrapper .content .inputWrapper .input {
     margin-top: 4px;
     display: -webkit-box;
     display: -ms-flexbox;
@@ -403,6 +418,7 @@
     padding: 11px;
     width: 42px;
     height: 42px;
+    min-width: 42px;
     border: 1px solid #cccccc; /* Fallback */
     border: 1px solid var(--sp-widget-function-button-border-color);
     border-radius: 6px;

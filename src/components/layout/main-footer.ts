@@ -1,12 +1,12 @@
 import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
-import {IProduct} from "../types.ts";
+import {IProduct} from "../../lib/types.ts";
 import {Invoice, InvoiceProduct} from "@simplepay-ai/api-client";
 //@ts-ignore
-import style from "../styles/step-footer.css?inline";
+import style from "../../styles/main-footer.css?inline";
 
-@customElement('step-footer')
-export class StepFooter extends LitElement {
+@customElement('main-footer')
+export class MainFooter extends LitElement {
 
     static styles = unsafeCSS(style);
 
@@ -397,6 +397,6 @@ export class StepFooter extends LitElement {
 
 declare global {
     interface HTMLElementTagNameMap {
-        'step-footer': StepFooter;
+        'main-footer': MainFooter;
     }
 }
