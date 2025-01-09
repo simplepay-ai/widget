@@ -84,8 +84,20 @@ export class ProcessingStep extends LitElement {
         super.firstUpdated(_changedProperties);
 
         if (this.transaction) {
-            const networkSymbol =
-                this.transaction?.network.symbol === 'bsc' ? 'bnb' : this.transaction?.network.symbol;
+
+            let networkSymbol = this.transaction?.network.symbol
+
+            switch (this.transaction?.network.symbol) {
+                case 'bsc':
+                    networkSymbol = 'bnb'
+                    break;
+                case 'zksync':
+                    networkSymbol = 'zksync-era'
+                    break;
+                default:
+                    break;
+            }
+
             this.qrCodeUrl = `https://blockchair.com/${networkSymbol}/transaction/${this.transaction.hash}?from=simplepay`;
 
             const qr = QRCode(0, 'H');

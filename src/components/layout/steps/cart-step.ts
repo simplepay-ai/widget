@@ -19,6 +19,9 @@ export class CartStep extends LitElement {
     @property({type: Boolean})
     creatingInvoice: boolean = false;
 
+    @property({type: Boolean})
+    createInvoiceTypeSelected: boolean = false;
+
     @property({attribute: false, type: Number})
     cartSum: number = 0;
 
@@ -183,12 +186,20 @@ export class CartStep extends LitElement {
                             </div>
 
                             <div class="stepFooter">
-                                <button
-                                        class="secondaryButton"
-                                        @click=${() => this.dispatchPrevStep()}
-                                >
-                                    Back
-                                </button>
+
+                                ${
+                                        (!this.createInvoiceTypeSelected)
+                                                ? html`
+                                                    <button
+                                                            class="secondaryButton"
+                                                            @click=${() => this.dispatchPrevStep()}
+                                                    >
+                                                        Back
+                                                    </button>
+                                                `
+                                                : ''
+                                }
+
                                 <button
                                         class="mainButton"
                                         @click=${this.dispatchNextStep}

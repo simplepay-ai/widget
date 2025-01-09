@@ -71,6 +71,9 @@ export class PaymentApp extends LitElement {
     @property({type: String})
     transactionId: string = '';
 
+    @property({type: String})
+    createInvoiceType: InvoiceType | '' = '';
+
     ///////////////////
 
     @property({attribute: false, type: String})
@@ -172,6 +175,9 @@ export class PaymentApp extends LitElement {
 
     @property({attribute: false})
     private onlyTransaction: boolean = false;
+
+    @property({attribute: false})
+    private createInvoiceTypeSelected: boolean = false;
 
     constructor() {
         super();
@@ -335,9 +341,42 @@ export class PaymentApp extends LitElement {
             return;
         }
 
-        this.appInfo = await this.getApp();
-        this.appProducts = products;
-        this.goToStep('selectTypeStep');
+        const appInfoResult = await this.getApp();
+        if(appInfoResult !== 'error'){
+            this.appInfo = await this.getApp();
+            this.appProducts = products;
+
+            if(this.createInvoiceType){
+                switch (this.createInvoiceType) {
+                    case "request":
+                        this.invoiceType = this.createInvoiceType;
+                        this.createInvoiceTypeSelected = true;
+                        this.goToStep('priceStep');
+                        return;
+                    case "item":
+                        this.invoiceType = this.createInvoiceType;
+                        this.createInvoiceTypeSelected = true;
+                        this.goToStep('productStep');
+                        return;
+                    case "cart":
+                        this.invoiceType = this.createInvoiceType;
+                        this.createInvoiceTypeSelected = true;
+                        this.goToStep('cartStep');
+                        return;
+                }
+            }
+
+            this.goToStep('selectTypeStep');
+            return;
+        }else{
+            this.errorTitle = 'Error';
+            this.errorText =
+                'Failed to retrieve app data. Please try again later.';
+            this.goToStep('errorStep');
+            this.dispatchErrorEvent('Fetch App Error', 'Failed to retrieve app data. Please try again later.');
+
+            return;
+        }
     }
 
     updated(changedProperties: Map<string | symbol, unknown>): void {
@@ -385,6 +424,7 @@ export class PaymentApp extends LitElement {
                                 .appInfo=${this.appInfo}
                                 .price=${this.invoicePrice}
                                 .creatingInvoice=${this.creatingInvoice}
+                                .createInvoiceTypeSelected=${this.createInvoiceTypeSelected}
                                 @updatePrice=${(event: CustomEvent) => (this.invoicePrice = event.detail.price)}
                                 @nextStep=${this.nextStep}
                                 @prevStep=${this.prevStep}
@@ -398,6 +438,7 @@ export class PaymentApp extends LitElement {
                                 .products=${this.appProducts}
                                 .invoiceProductId=${this.invoiceProductId}
                                 .creatingInvoice=${this.creatingInvoice}
+                                .createInvoiceTypeSelected=${this.createInvoiceTypeSelected}
                                 @updateInvoiceProductId=${(event: CustomEvent) => (this.invoiceProductId = event.detail.invoiceProductId)}
                                 @nextStep=${this.nextStep}
                                 @prevStep=${this.prevStep}
@@ -412,6 +453,7 @@ export class PaymentApp extends LitElement {
                                 .products=${this.appProducts}
                                 .cart=${this.invoiceCart}
                                 .creatingInvoice=${this.creatingInvoice}
+                                .createInvoiceTypeSelected=${this.createInvoiceTypeSelected}
                                 @addToCart=${(event: CustomEvent) => this.addToCart(event.detail.productId)}
                                 @removeFromCart=${(event: CustomEvent) => this.removeFromCart(event.detail.productId)}
                                 @nextStep=${this.nextStep}
@@ -776,11 +818,7 @@ export class PaymentApp extends LitElement {
         try {
             return await this.API.app.get(this.appId);
         } catch (error) {
-            this.errorTitle = 'Error';
-            this.errorText =
-                'Failed to retrieve app data. Please try again later.';
-            this.goToStep('errorStep');
-            this.dispatchErrorEvent('Fetch App Error', 'Failed to retrieve app data. Please try again later.');
+            return 'error';
         }
     }
 

@@ -18,6 +18,9 @@ export class ProductStep extends LitElement {
     @property({type: Boolean})
     creatingInvoice: boolean = false;
 
+    @property({type: Boolean})
+    createInvoiceTypeSelected: boolean = false;
+
     render() {
         return html`
             <div class="stepWrapper">
@@ -124,12 +127,20 @@ export class ProductStep extends LitElement {
                             </div>
 
                             <div class="stepFooter">
-                                <button
-                                        class="secondaryButton"
-                                        @click=${() => this.dispatchPrevStep()}
-                                >
-                                    Back
-                                </button>
+
+                                ${
+                                        (!this.createInvoiceTypeSelected)
+                                                ? html`
+                                                    <button
+                                                            class="secondaryButton"
+                                                            @click=${() => this.dispatchPrevStep()}
+                                                    >
+                                                        Back
+                                                    </button>
+                                                `
+                                                : ''
+                                }
+
                                 <button
                                         class="mainButton"
                                         @click=${this.dispatchNextStep}
