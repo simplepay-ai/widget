@@ -38,6 +38,7 @@ import themesConfig from '../themesConfig.json';
 //@ts-ignore
 import style from "./styles/payment-app.css?inline";
 
+
 @customElement('payment-app')
 export class PaymentApp extends LitElement {
 
