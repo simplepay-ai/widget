@@ -13,7 +13,7 @@ import {
     AppTheme,
     ICartProduct,
     INotification, InvoiceType, IOpenButton,
-    OpenMode,
+    OpenMode, ViewMode,
     WalletType
 } from './lib/types.ts';
 import './components/layout/main-header.ts';
@@ -45,7 +45,13 @@ export class PaymentApp extends LitElement {
     static styles = unsafeCSS(style);
 
     @property({type: String})
-    modal: string = '';
+    viewMode: ViewMode = 'relative';
+
+    @property({type: String | null})
+    trigger: string | null = null;
+
+    @property({type: String | null})
+    triggerConfig: string | null = null;
 
     @property({type: String})
     tokenSymbol: string = '';
@@ -192,37 +198,6 @@ export class PaymentApp extends LitElement {
     async connectedCallback() {
         super.connectedCallback();
 
-        if (this.modal) {
-
-            const modalParams = JSON.parse(this.modal);
-            this.openMode = (modalParams.open) ? modalParams.open : 'auto'
-
-            if (modalParams.open === 'modal' && modalParams?.config) {
-
-                const configKeys = Object.keys(modalParams.config);
-
-                if (modalParams.config && configKeys.indexOf('triggerId') !== -1) {
-                    this.openMode = 'trigger';
-
-                    const triggerElement = document.getElementById(`${modalParams.config.triggerId}`);
-                    if (triggerElement) {
-                        triggerElement.addEventListener('click', () => this.openPaymentModal());
-                    }
-                }
-
-                if (modalParams.config && (configKeys.indexOf('backgroundColor') !== -1 || configKeys.indexOf('textColor') !== -1 || configKeys.indexOf('title') !== -1)) {
-
-                    this.openMode = 'button';
-
-                    this.openButtonParams = {
-                        backgroundColor: (modalParams.config.backgroundColor) ? modalParams.config.backgroundColor : '#3b82f6',
-                        textColor: (modalParams.config.textColor) ? modalParams.config.textColor : '#ffffff',
-                        title: (modalParams.config.title) ? modalParams.config.title : 'Pay in crypto'
-                    }
-                }
-            }
-        }
-
         switch (this.theme) {
             case "light":
             case "dark":
@@ -233,6 +208,54 @@ export class PaymentApp extends LitElement {
             default:
                 this.setTheme('light');
                 break;
+        }
+
+        if(this.viewMode !== 'modal' && this.viewMode !== 'relative'){
+            this.errorTitle = 'Error';
+            this.errorText =
+                'Invalid viewMode: the provided attribute is not valid. Please ensure it matches one of the supported view modes: modal or relative (default).';
+            this.goToStep('errorStep');
+            this.dispatchErrorEvent('View Mode Error', 'Invalid viewMode: the provided attribute is not valid. Please ensure it matches one of the supported view modes: modal or relative (default).');
+
+            return;
+        }
+
+        if(this.viewMode === 'modal'){
+            console.log(1)
+            this.openMode = 'modal'
+        }
+
+        if(this.viewMode === 'modal' && this.trigger === ''){
+            this.errorTitle = 'Error';
+            this.errorText =
+                'Invalid trigger: the provided attribute is empty.';
+            this.goToStep('errorStep');
+            this.dispatchErrorEvent('Trigger Error', 'Invalid trigger: the provided attribute is empty.');
+
+            return;
+        }
+
+        if(this.viewMode === 'modal' && this.trigger !== null && this.trigger !== '' && this.trigger !== 'button'){
+            console.log(2)
+            this.openMode = 'trigger';
+
+            const triggerElement = document.getElementById(`${this.trigger}`);
+            if (triggerElement) {
+                triggerElement.addEventListener('click', () => this.openPaymentModal());
+            }
+        }
+
+        if(this.viewMode === 'modal' && this.trigger !== null && this.trigger !== '' && this.trigger === 'button'){
+            console.log(3)
+            this.openMode = 'button'
+
+            const buttonParams = (this.triggerConfig) ? JSON.parse(this.triggerConfig) : null;
+
+            this.openButtonParams = {
+                backgroundColor: (buttonParams && buttonParams.backgroundColor) ? buttonParams.backgroundColor : '#3b82f6',
+                textColor: (buttonParams && buttonParams.textColor) ? buttonParams.textColor : '#ffffff',
+                title: (buttonParams && buttonParams.title) ? buttonParams.title : 'Pay in crypto'
+            }
         }
 
         if(this.clientId){

@@ -22,6 +22,8 @@ export type WalletType = 'MetaMask' | 'Coinbase' | 'WalletConnect' | 'Injected' 
 
 export type OpenMode = 'auto' | 'modal' | 'button' | 'trigger'
 
+export type ViewMode = 'modal' | 'relative'
+
 export type InvoiceType = 'request' | 'item' | 'cart'
 
 export interface IOpenButton{
