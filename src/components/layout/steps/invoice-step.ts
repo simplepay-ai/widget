@@ -90,7 +90,8 @@ export class InvoiceStep extends LitElement {
     connectedCallback() {
         super.connectedCallback();
 
-        this.leftAmount = Number(this.invoice?.total!) - Number(this.invoice?.paid!);
+        const left = Number(this.invoice?.total!) - Number(this.invoice?.paid!)
+        this.leftAmount = (left < 0) ? 0 : left;
 
         this.filteredTokens = this.tokens;
 
@@ -158,7 +159,9 @@ export class InvoiceStep extends LitElement {
         }
 
         if (changedProperties.has('invoice') && this.invoice) {
-            this.leftAmount = Number(this.invoice?.total!) - Number(this.invoice?.paid!);
+            const left = Number(this.invoice?.total!) - Number(this.invoice?.paid!)
+            this.leftAmount = (left < 0) ? 0 : left;
+            // this.leftAmount = Number(this.invoice?.total!) - Number(this.invoice?.paid!);
         }
 
         if (changedProperties.has('tokenSearch')) {

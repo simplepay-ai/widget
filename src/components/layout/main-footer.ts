@@ -65,9 +65,6 @@ export class MainFooter extends LitElement {
     progressCurrent: number = 252;
 
     @property({ attribute: false })
-    totalSum: number = 0;
-
-    @property({ attribute: false })
     productInfoOpen: boolean = false;
 
     @property({ attribute: false })
@@ -88,12 +85,6 @@ export class MainFooter extends LitElement {
 
             setInterval(() => this.calcTimer(oneStep), 1000);
         }
-
-        // if(this.productsInfo && this.productsInfo.length > 0){
-        //     for(let product of this.productsInfo){
-        //         this.totalSum += product.count * product.prices[0].price
-        //     }
-        // }
     }
 
     render() {

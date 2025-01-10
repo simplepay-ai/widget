@@ -23,7 +23,7 @@ export class SuccessFooter extends LitElement {
 
         if (this.invoice) {
             const leftNumber = Number(this.invoice.total) - Number(this.invoice.paid);
-            this.leftPaid = parseFloat(leftNumber.toString()).toFixed(2);
+            this.leftPaid = (leftNumber < 0) ? '0' : parseFloat(leftNumber.toString()).toFixed(2);
         }
     }
 
