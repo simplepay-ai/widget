@@ -72,7 +72,7 @@ export class PaymentApp extends LitElement {
     transactionId: string = '';
 
     @property({type: String})
-    createInvoiceType: InvoiceType | '' = '';
+    paymentType: InvoiceType | '' = '';
 
     ///////////////////
 
@@ -177,7 +177,7 @@ export class PaymentApp extends LitElement {
     private onlyTransaction: boolean = false;
 
     @property({attribute: false})
-    private createInvoiceTypeSelected: boolean = false;
+    private paymentTypeSelected: boolean = false;
 
     constructor() {
         super();
@@ -235,7 +235,26 @@ export class PaymentApp extends LitElement {
                 break;
         }
 
-        this.clientId = this.clientId ? this.clientId : generateUUID();
+        if(this.clientId){
+
+            const isUUID = this.checkUUID(this.clientId);
+            const isNumber = Boolean( Number(this.clientId) );
+
+            if(!isUUID && !isNumber){
+                this.errorTitle = 'Error';
+                this.errorText =
+                    'Invalid clientId: it must be either a number or a valid UUID v4 format.';
+                this.goToStep('errorStep');
+                this.dispatchErrorEvent('Client ID Error', 'Invalid clientId: it must be either a number or a valid UUID v4 format.');
+
+                return;
+            }
+
+        }else{
+            this.clientId = generateUUID();
+        }
+
+        // this.clientId = this.clientId ? this.clientId : generateUUID();
 
         if(this.invoiceId || this.transactionId) {
 
@@ -243,18 +262,62 @@ export class PaymentApp extends LitElement {
 
             if (this.transactionId) {
                 this.onlyTransaction = true;
-                this.getTransaction(this.transactionId).then(() => {
-                    this.getInvoice(this.transaction?.invoiceId || '').then(async () => {
-                        this.tokens = await this.getTokens(this.invoice?.app?.id || '')
-                        this.getInvoiceTransactions(this.invoice?.id || '').then(() => {
-                            this.subscribeInvoice(this.invoice?.id || '')
-                        });
-                    })
+                this.getTransaction(this.transactionId).then((data) => {
+
+                    if(data === 'error'){
+                        this.errorTitle = 'Error';
+                        this.errorText =
+                            'Failed to retrieve transaction data. Please try again later.';
+                        this.goToStep('errorStep');
+                        this.dispatchErrorEvent('Fetch Transaction Error', 'Failed to retrieve transaction data. Please try again later.');
+                        return;
+                    }
+
+                    if(this.transaction){
+                        this.getInvoice(this.transaction?.invoiceId || '').then(async (data) => {
+
+                            if(data === 'error'){
+                                this.errorTitle = 'Error';
+                                this.errorText =
+                                    'Failed to retrieve invoice data. Please try again later.';
+                                this.goToStep('errorStep');
+                                this.dispatchErrorEvent('Fetch Invoice Error', 'Failed to retrieve invoice data. Please try again later.');
+                                return;
+                            }
+
+
+                            this.tokens = await this.getTokens(this.invoice?.app?.id || '')
+
+                            if (this.tokens && this.tokens.length === 0) {
+                                this.errorTitle = 'Error';
+                                this.errorText =
+                                    'Currently, there are no tokens available for selection as a payment option on this project.';
+                                this.goToStep('errorStep');
+                                this.dispatchErrorEvent('Empty Tokens', 'Currently, there are no tokens available for selection as a payment option on this project.');
+
+                                return;
+                            }
+
+                            this.getInvoiceTransactions(this.invoice?.id || '').then(() => {
+                                this.subscribeInvoice(this.invoice?.id || '')
+                            });
+                        })
+                    }
                 });
                 return;
             } else {
 
-                this.getInvoice(this.invoiceId).then(async () => {
+                this.getInvoice(this.invoiceId).then(async (data) => {
+
+                    if(data === 'error'){
+                        this.errorTitle = 'Error';
+                        this.errorText =
+                            'Failed to retrieve invoice data. Please try again later.';
+                        this.goToStep('errorStep');
+                        this.dispatchErrorEvent('Fetch Invoice Error', 'Failed to retrieve invoice data. Please try again later.');
+                        return;
+                    }
+
                     this.tokens = await this.getTokens(this.invoice?.app?.id || '')
 
                     if (this.tokens && this.tokens.length === 0) {
@@ -309,11 +372,13 @@ export class PaymentApp extends LitElement {
 
                     }
                 }).then(() => {
-                    this.getInvoiceTransactions(this.invoiceId).then(() => {
-                        this.subscribeInvoice(this.invoiceId).then(() => {
-                            this.goToStep('invoiceStep');
-                        })
-                    });
+                    if(this.invoice){
+                        this.getInvoiceTransactions(this.invoiceId).then(() => {
+                            this.subscribeInvoice(this.invoiceId).then(() => {
+                                this.goToStep('invoiceStep');
+                            })
+                        });
+                    }
                 });
 
                 return;
@@ -346,21 +411,21 @@ export class PaymentApp extends LitElement {
             this.appInfo = await this.getApp();
             this.appProducts = products;
 
-            if(this.createInvoiceType){
-                switch (this.createInvoiceType) {
+            if(this.paymentType){
+                switch (this.paymentType) {
                     case "request":
-                        this.invoiceType = this.createInvoiceType;
-                        this.createInvoiceTypeSelected = true;
+                        this.invoiceType = this.paymentType;
+                        this.paymentTypeSelected = true;
                         this.goToStep('priceStep');
                         return;
                     case "item":
-                        this.invoiceType = this.createInvoiceType;
-                        this.createInvoiceTypeSelected = true;
+                        this.invoiceType = this.paymentType;
+                        this.paymentTypeSelected = true;
                         this.goToStep('productStep');
                         return;
                     case "cart":
-                        this.invoiceType = this.createInvoiceType;
-                        this.createInvoiceTypeSelected = true;
+                        this.invoiceType = this.paymentType;
+                        this.paymentTypeSelected = true;
                         this.goToStep('cartStep');
                         return;
                 }
@@ -424,7 +489,7 @@ export class PaymentApp extends LitElement {
                                 .appInfo=${this.appInfo}
                                 .price=${this.invoicePrice}
                                 .creatingInvoice=${this.creatingInvoice}
-                                .createInvoiceTypeSelected=${this.createInvoiceTypeSelected}
+                                .paymentTypeSelected=${this.paymentTypeSelected}
                                 @updatePrice=${(event: CustomEvent) => (this.invoicePrice = event.detail.price)}
                                 @nextStep=${this.nextStep}
                                 @prevStep=${this.prevStep}
@@ -438,7 +503,7 @@ export class PaymentApp extends LitElement {
                                 .products=${this.appProducts}
                                 .invoiceProductId=${this.invoiceProductId}
                                 .creatingInvoice=${this.creatingInvoice}
-                                .createInvoiceTypeSelected=${this.createInvoiceTypeSelected}
+                                .paymentTypeSelected=${this.paymentTypeSelected}
                                 @updateInvoiceProductId=${(event: CustomEvent) => (this.invoiceProductId = event.detail.invoiceProductId)}
                                 @nextStep=${this.nextStep}
                                 @prevStep=${this.prevStep}
@@ -453,7 +518,7 @@ export class PaymentApp extends LitElement {
                                 .products=${this.appProducts}
                                 .cart=${this.invoiceCart}
                                 .creatingInvoice=${this.creatingInvoice}
-                                .createInvoiceTypeSelected=${this.createInvoiceTypeSelected}
+                                .paymentTypeSelected=${this.paymentTypeSelected}
                                 @addToCart=${(event: CustomEvent) => this.addToCart(event.detail.productId)}
                                 @removeFromCart=${(event: CustomEvent) => this.removeFromCart(event.detail.productId)}
                                 @nextStep=${this.nextStep}
@@ -611,6 +676,11 @@ export class PaymentApp extends LitElement {
                 </div>
             `;
         }
+    }
+
+    private checkUUID(id: string) {
+        const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        return uuidV4Regex.test(id);
     }
 
     private addToCart(productId: string){
@@ -886,7 +956,7 @@ export class PaymentApp extends LitElement {
         const invoiceParams: any = {
             appId: this.appId,
             type: 'payment',
-            clientId: generateUUID(),
+            clientId: this.clientId,
             currency: 'USD',
         }
 
@@ -1006,10 +1076,6 @@ export class PaymentApp extends LitElement {
         try {
             this.invoice = await this.API.invoice.get(invoiceId, true);
         } catch (e) {
-            this.errorTitle = 'Error';
-            this.errorText =
-                'Failed to retrieve invoice data. Please try again later.';
-            this.dispatchErrorEvent('Fetch Invoice Error', 'Failed to retrieve invoice data. Please try again later.');
             return 'error';
         }
     }
@@ -1017,10 +1083,6 @@ export class PaymentApp extends LitElement {
         try {
             this.transaction = await this.API.transaction.get(transactionId);
         } catch (e) {
-            this.errorTitle = 'Error';
-            this.errorText =
-                'Failed to retrieve transaction data. Please try again later.';
-            this.dispatchErrorEvent('Fetch Transaction Error', 'Failed to retrieve transaction data. Please try again later.');
             return 'error';
         }
     }

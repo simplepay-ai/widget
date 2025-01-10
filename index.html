@@ -43,18 +43,34 @@
     <payment-app
             theme="dark"
             appId="fbc58e4a-af6f-451e-858d-44c9cf8c1d2f"
-            createInvoiceType="cart"
     ></payment-app>
 
-    <!--    modal='{"open": "modal","config": {"backgroundColor": "","textColor": "","title": ""},"config": { "triggerId": "" }}'-->
-    <!--    tokenSymbol="ETH" networkSymbol="ethereum"-->
-    <!--    clientId="fbc58e4a-af6f-451e-858d-44c9cf8c1d2f"-->
+    <!--    theme="light"-->
+
+    viewMode = modal | relative (default)
+
+    if viewMode === modal
+    {
+
+        trigger = 'someId' | 'button' - error if empty
+
+        if trigger === button
+        {
+            triggerConfig = { "backgroundColor": "","textColor": "","title": "Pay In Crypto", }
+        }
+
+    }
+
+    <!--    clientId="fbc58e4a-af6f-451e-858d-44c9cf8c1d2f" - type = uuid | number-->
     <!--    appId="fbc58e4a-af6f-451e-858d-44c9cf8c1d2f"-->
+    <!--    paymentType="request | item | cart"-->
     <!--    invoiceId=""-->
     <!--    transactionId=""-->
-    <!--    theme="light"-->
     <!--    backToStoreUrl="https://console.simplepay.ai/settings"-->
-    <!--    createInvoiceType="request | item | cart"-->
+
+    <!--    ??? tokenSymbol="ETH" networkSymbol="ethereum"-->
+    <!--    --- modal='{"open": "modal","config": {"backgroundColor": "","textColor": "","title": ""},"config": { "triggerId": "" }}'-->
+
 
 </div>
 

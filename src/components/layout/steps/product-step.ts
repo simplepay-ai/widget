@@ -19,7 +19,7 @@ export class ProductStep extends LitElement {
     creatingInvoice: boolean = false;
 
     @property({type: Boolean})
-    createInvoiceTypeSelected: boolean = false;
+    paymentTypeSelected: boolean = false;
 
     render() {
         return html`
@@ -129,7 +129,7 @@ export class ProductStep extends LitElement {
                             <div class="stepFooter">
 
                                 ${
-                                        (!this.createInvoiceTypeSelected)
+                                        (!this.paymentTypeSelected)
                                                 ? html`
                                                     <button
                                                             class="secondaryButton"

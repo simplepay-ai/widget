@@ -19,7 +19,7 @@ export class PriceStep extends LitElement {
     creatingInvoice: boolean = false;
 
     @property({type: Boolean})
-    createInvoiceTypeSelected: boolean = false;
+    paymentTypeSelected: boolean = false;
 
     @property({attribute: false, type: Boolean})
     numpadButtonsActive = false;
@@ -122,7 +122,7 @@ export class PriceStep extends LitElement {
                                 <div class="buttonsWrapper">
 
                                     ${
-                                            (!this.createInvoiceTypeSelected)
+                                            (!this.paymentTypeSelected)
                                             ? html`
                                                         <button class="secondaryButton"
                                                                 @click=${() => this.dispatchPrevStep()}

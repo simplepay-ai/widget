@@ -20,7 +20,7 @@ export class CartStep extends LitElement {
     creatingInvoice: boolean = false;
 
     @property({type: Boolean})
-    createInvoiceTypeSelected: boolean = false;
+    paymentTypeSelected: boolean = false;
 
     @property({attribute: false, type: Number})
     cartSum: number = 0;
@@ -188,7 +188,7 @@ export class CartStep extends LitElement {
                             <div class="stepFooter">
 
                                 ${
-                                        (!this.createInvoiceTypeSelected)
+                                        (!this.paymentTypeSelected)
                                                 ? html`
                                                     <button
                                                             class="secondaryButton"
