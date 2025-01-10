@@ -118,7 +118,7 @@ export class MainFooter extends LitElement {
 
                                         <div class="price">
                                             <p>Total:</p>
-                                            <p>${this.price ? `${this.price} USD` : '0 USD'}</p>
+                                            <p>${this.price ? `${ parseFloat(this.price).toFixed(2) } USD` : '0 USD'}</p>
                                         </div>
                                     </div>
                                 `

@@ -27,6 +27,15 @@ export class SuccessFooter extends LitElement {
         }
     }
 
+    updated(changedProperties: Map<string | symbol, unknown>): void {
+        super.updated(changedProperties);
+
+        if (changedProperties.has('invoice') && this.invoice) {
+            const leftNumber = Number(this.invoice.total) - Number(this.invoice.paid);
+            this.leftPaid = (leftNumber < 0) ? '0' : parseFloat(leftNumber.toString()).toFixed(2);
+        }
+    }
+
     render() {
         return html`
             <div class=${`stepFooter`}>
