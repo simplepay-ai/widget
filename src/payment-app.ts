@@ -47,10 +47,10 @@ export class PaymentApp extends LitElement {
     @property({type: String})
     viewMode: ViewMode = 'relative';
 
-    @property({type: String | null})
+    @property({type: String})
     trigger: string | null = null;
 
-    @property({type: String | null})
+    @property({type: String})
     triggerConfig: string | null = null;
 
     @property({type: String})
@@ -221,7 +221,6 @@ export class PaymentApp extends LitElement {
         }
 
         if(this.viewMode === 'modal'){
-            console.log(1)
             this.openMode = 'modal'
         }
 
@@ -236,7 +235,6 @@ export class PaymentApp extends LitElement {
         }
 
         if(this.viewMode === 'modal' && this.trigger !== null && this.trigger !== '' && this.trigger !== 'button'){
-            console.log(2)
             this.openMode = 'trigger';
 
             const triggerElement = document.getElementById(`${this.trigger}`);
@@ -246,7 +244,6 @@ export class PaymentApp extends LitElement {
         }
 
         if(this.viewMode === 'modal' && this.trigger !== null && this.trigger !== '' && this.trigger === 'button'){
-            console.log(3)
             this.openMode = 'button'
 
             const buttonParams = (this.triggerConfig) ? JSON.parse(this.triggerConfig) : null;
@@ -276,8 +273,6 @@ export class PaymentApp extends LitElement {
         }else{
             this.clientId = generateUUID();
         }
-
-        // this.clientId = this.clientId ? this.clientId : generateUUID();
 
         if(this.invoiceId || this.transactionId) {
 
