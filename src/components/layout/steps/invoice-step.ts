@@ -128,8 +128,8 @@ export class InvoiceStep extends LitElement {
         super.updated(changedProperties);
 
         if (changedProperties.has('tokens')) {
-            const filteredTokens = this.tokens.filter((item) => item.networks && item.networks.length > 0);
-            this.tokensEmpty = filteredTokens.length === 0;
+            const filTokens = this.tokens.filter((item) => item.networks && item.networks.length > 0);
+            this.tokensEmpty = filTokens.length === 0;
         }
 
         if ((changedProperties.has('selectedToken') || changedProperties.has('selectedNetwork') || changedProperties.has('leftAmount'))) {
@@ -624,7 +624,8 @@ export class InvoiceStep extends LitElement {
                                         (this.tokensEmpty)
                                                 ? html`
                                                     <div class="emptyTokens">
-                                                        <p>No tokens are currently available in this store, but you can add them to get started!</p>
+                                                        <p>No tokens are currently available in this store, but you can add them
+                                                            to get started!</p>
 
                                                         <a href="https://console.simplepay.ai/settings/tokens-edit">
                                                             Add tokens
@@ -632,92 +633,94 @@ export class InvoiceStep extends LitElement {
                                                     </div>
                                                 `
                                                 :
-                                                ''
-                                }
+                                                html`
+                                                    ${
 
-                                ${
+                                                            (this.filteredTokens && this.filteredTokens.length > 0)
+                                                                    ?
+                                                                    this.filteredTokens.map((token: Cryptocurrency) => {
+                                                                        if (token.networks && token.networks.length > 0) {
+                                                                            return token.networks.filter((network) => {
+                                                                                if (this.networkSearch === '') {
+                                                                                    return network;
+                                                                                }
 
-                                        (this.filteredTokens && this.filteredTokens.length > 0)
-                                                ?
-                                                this.filteredTokens.map((token: Cryptocurrency) => {
-                                                    if (token.networks && token.networks.length > 0) {
-                                                        return token.networks.filter((network) => {
-                                                            if (this.networkSearch === '') {
-                                                                return network;
-                                                            }
+                                                                                return network.symbol === this.networkSearch;
 
-                                                            return network.symbol === this.networkSearch;
+                                                                            }).map((network) => {
+                                                                                const networkStandart = getTokenStandart(network.symbol);
 
-                                                        }).map((network) => {
-                                                            const networkStandart = getTokenStandart(network.symbol);
+                                                                                let formatPrice = 0;
+                                                                                let leftPrice = (this.invoice) ? Number(this.invoice.total) - Number(this.invoice.paid) : 0;
 
-                                                            let formatPrice = 0;
-                                                            let leftPrice = (this.invoice) ? Number(this.invoice.total) - Number(this.invoice.paid) : 0;
+                                                                                //@ts-ignore
+                                                                                const price = leftPrice / token.rates['usd'];
+                                                                                formatPrice = roundUpAmount(price.toString(), token.stable);
 
-                                                            //@ts-ignore
-                                                            const price = leftPrice / token.rates['usd'];
-                                                            formatPrice = roundUpAmount(price.toString(), token.stable);
-
-                                                            return html`
-                                                                <div
-                                                                        @click=${() => {
-                                                                            this.dispatchTokenSelect(token, network);
-                                                                            this.closeTokenModal();
-                                                                        }}
-                                                                        class=${`tokenItem
+                                                                                return html`
+                                                                                    <div
+                                                                                            @click=${() => {
+                                                                                                this.dispatchTokenSelect(token, network);
+                                                                                                this.closeTokenModal();
+                                                                                            }}
+                                                                                            class=${`tokenItem
                                                         ${this.selectedToken?.id === token.id && this.selectedNetwork?.id === network.id ? 'selected' : ''}
                                                     `}
-                                                                >
-                                                                    <div class="tokenContent">
-                                                                        <div class="tokenIconWrapper">
-                                                                            <token-icon
-                                                                                    .id=${token.symbol.replace('x', '')}
-                                                                                    width="32"
-                                                                                    height="32"
-                                                                                    class="tokenIcon"
-                                                                            ></token-icon>
+                                                                                    >
+                                                                                        <div class="tokenContent">
+                                                                                            <div class="tokenIconWrapper">
+                                                                                                <token-icon
+                                                                                                        .id=${token.symbol.replace('x', '')}
+                                                                                                        width="32"
+                                                                                                        height="32"
+                                                                                                        class="tokenIcon"
+                                                                                                ></token-icon>
 
-                                                                            <network-icon
-                                                                                    .id=${network.symbol}
-                                                                                    width="16"
-                                                                                    height="16"
-                                                                                    class="networkIcon"
-                                                                            ></network-icon>
-                                                                        </div>
-
-                                                                        <div class="info">
-                                                                            <div class="leftSection">
-                                                                                <p>${token.symbol}</p>
-
-                                                                                ${networkStandart
-                                                                                        ? html`
-                                                                                            <div class="badge">
-                                                                                                ${networkStandart}
+                                                                                                <network-icon
+                                                                                                        .id=${network.symbol}
+                                                                                                        width="16"
+                                                                                                        height="16"
+                                                                                                        class="networkIcon"
+                                                                                                ></network-icon>
                                                                                             </div>
-                                                                                        `
-                                                                                        : ''}
-                                                                            </div>
 
-                                                                            ${
-                                                                                    (formatPrice !== 0)
-                                                                                            ? html`
-                                                                                                <p>~${formatPrice}
-                                                                                                    ${token.symbol}</p>
-                                                                                            `
-                                                                                            : ''
-                                                                            }
+                                                                                            <div class="info">
+                                                                                                <div class="leftSection">
+                                                                                                    <p>
+                                                                                                        ${token.symbol}</p>
+
+                                                                                                    ${networkStandart
+                                                                                                            ? html`
+                                                                                                                <div class="badge">
+                                                                                                                    ${networkStandart}
+                                                                                                                </div>
+                                                                                                            `
+                                                                                                            : ''}
+                                                                                                </div>
+
+                                                                                                ${
+                                                                                                        (formatPrice !== 0)
+                                                                                                                ? html`
+                                                                                                                    <p>
+                                                                                                                            ~${formatPrice}
+                                                                                                                        ${token.symbol}</p>
+                                                                                                                `
+                                                                                                                : ''
+                                                                                                }
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                `;
+                                                                            });
+                                                                        }
+                                                                    })
+                                                                    :
+                                                                    html`
+                                                                        <div class="tokensListEmpty">
+                                                                            <p>No tokens found</p>
                                                                         </div>
-                                                                    </div>
-                                                                </div>
-                                                            `;
-                                                        });
+                                                                    `
                                                     }
-                                                })
-                                                :
-                                                html`
-                                                    <div class="tokensListEmpty">
-                                                        <p>No tokens found</p>
-                                                    </div>
                                                 `
                                 }
                             </div>

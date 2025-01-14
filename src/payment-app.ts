@@ -306,15 +306,15 @@ export class PaymentApp extends LitElement {
 
                             this.tokens = await this.getTokens(this.invoice?.app?.id || '')
 
-                            if (this.tokens && this.tokens.length === 0) {
-                                this.errorTitle = 'Error';
-                                this.errorText =
-                                    'Currently, there are no tokens available for selection as a payment option on this project.';
-                                this.goToStep('errorStep');
-                                this.dispatchErrorEvent('Empty Tokens', 'Currently, there are no tokens available for selection as a payment option on this project.');
-
-                                return;
-                            }
+                            // if (this.tokens && this.tokens.length === 0) {
+                            //     this.errorTitle = 'Error';
+                            //     this.errorText =
+                            //         'Currently, there are no tokens available for selection as a payment option on this project.';
+                            //     this.goToStep('errorStep');
+                            //     this.dispatchErrorEvent('Empty Tokens', 'Currently, there are no tokens available for selection as a payment option on this project.');
+                            //
+                            //     return;
+                            // }
 
                             this.getInvoiceTransactions(this.invoice?.id || '').then(() => {
                                 this.subscribeInvoice(this.invoice?.id || '')
@@ -338,15 +338,15 @@ export class PaymentApp extends LitElement {
 
                     this.tokens = await this.getTokens(this.invoice?.app?.id || '')
 
-                    if (this.tokens && this.tokens.length === 0) {
-                        this.errorTitle = 'Error';
-                        this.errorText =
-                            'Currently, there are no tokens available for selection as a payment option on this project.';
-                        this.goToStep('errorStep');
-                        this.dispatchErrorEvent('Empty Tokens', 'Currently, there are no tokens available for selection as a payment option on this project.');
-
-                        return;
-                    }
+                    // if (this.tokens && this.tokens.length === 0) {
+                    //     this.errorTitle = 'Error';
+                    //     this.errorText =
+                    //         'Currently, there are no tokens available for selection as a payment option on this project.';
+                    //     this.goToStep('errorStep');
+                    //     this.dispatchErrorEvent('Empty Tokens', 'Currently, there are no tokens available for selection as a payment option on this project.');
+                    //
+                    //     return;
+                    // }
                     if (this.tokens && this.tokens.length > 0) {
 
                         const defaultToken = this.tokens?.find((item: Cryptocurrency) => item.symbol === this.tokenSymbol && item);
