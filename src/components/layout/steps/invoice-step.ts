@@ -87,6 +87,9 @@ export class InvoiceStep extends LitElement {
     @property({attribute: false, type: String})
     private networkSearch = '';
 
+    @property({attribute: false, type: Boolean})
+    private tokensEmpty = false;
+
     connectedCallback() {
         super.connectedCallback();
 
@@ -123,6 +126,11 @@ export class InvoiceStep extends LitElement {
 
     updated(changedProperties: Map<string | symbol, unknown>): void {
         super.updated(changedProperties);
+
+        if (changedProperties.has('tokens')) {
+            const filteredTokens = this.tokens.filter((item) => item.networks && item.networks.length > 0);
+            this.tokensEmpty = filteredTokens.length === 0;
+        }
 
         if ((changedProperties.has('selectedToken') || changedProperties.has('selectedNetwork') || changedProperties.has('leftAmount'))) {
 
@@ -611,6 +619,22 @@ export class InvoiceStep extends LitElement {
                             </div>
 
                             <div class="tokensList">
+
+                                ${
+                                        (this.tokensEmpty)
+                                                ? html`
+                                                    <div class="emptyTokens">
+                                                        <p>No tokens are currently available in this store, but you can add them to get started!</p>
+
+                                                        <a href="https://console.simplepay.ai/settings/tokens-edit">
+                                                            Add tokens
+                                                        </a>
+                                                    </div>
+                                                `
+                                                :
+                                                ''
+                                }
+
                                 ${
 
                                         (this.filteredTokens && this.filteredTokens.length > 0)
