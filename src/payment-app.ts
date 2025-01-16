@@ -746,6 +746,8 @@ export class PaymentApp extends LitElement {
     }
 
     private openPaymentModal() {
+
+        document.body.style.overflow = 'hidden';
         this.showPaymentModal = true;
 
         setTimeout(() => {
@@ -765,6 +767,7 @@ export class PaymentApp extends LitElement {
 
             setTimeout(() => {
                 this.showPaymentModal = false;
+                document.body.style.overflow = 'auto';
             }, 200)
         }, 200)
     }
