@@ -258,7 +258,7 @@ export class InvoiceStep extends LitElement {
                             }
 
                             ${
-                                    (this.invoiceProducts.length === 1 && this.invoiceProducts[0].count === 1)
+                                    (this.invoiceProducts.length === 1 && (this.invoiceProducts[0].count === 1 || !this.invoiceProducts[0].count))
                                             ? html`
                                                 <div class="productImage">
 
@@ -534,14 +534,13 @@ export class InvoiceStep extends LitElement {
                                                 </div>
 
                                                 <div class="info">
-                                                    <p class="name">${item.product.name}</p>
-                                                    <p class="description">${item.product.description}</p>
+                                                    <p class="name">${item.product.name || ''}</p>
+                                                    <p class="description">${item.product.description || ''}</p>
                                                 </div>
 
                                                 <div class="priceWrapper">
-                                                    <p class="price">${item.product.prices[0].price}
-                                                        ${item.product.prices[0].currency.symbol}</p>
-                                                    <p class="count">Count: ${item.count}</p>
+                                                    <p class="price">${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].price) ? item.product.prices[0].price : ''} ${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].currency.symbol) ? item.product.prices[0].currency.symbol : ''}</p>
+                                                    <p class="count">Count: ${item.count || '---'}</p>
                                                 </div>
 
                                             </div>

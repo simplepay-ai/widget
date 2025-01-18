@@ -1057,12 +1057,14 @@
     color: var(--sp-widget-text-color);
     font-size: 14px;
     font-weight: 500;
+    min-height: 14px;
 }
 
 .stepWrapper .productModal .productsList .productItem .info .description {
     font-size: 12px;
     color: #666666; /* Fallback */
     color: var(--sp-widget-secondary-text-color);
+    min-height: 14px;
 }
 
 .stepWrapper .productModal .productsList .productItem .priceWrapper .price {
@@ -1071,6 +1073,7 @@
     font-size: 14px;
     font-weight: 500;
     text-align: end;
+    min-height: 14px;
 }
 
 .stepWrapper .productModal .productsList .productItem .priceWrapper .count {
@@ -1078,4 +1081,5 @@
     color: #666666; /* Fallback */
     color: var(--sp-widget-secondary-text-color);
     text-align: end;
+    min-height: 14px;
 }

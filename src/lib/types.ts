@@ -14,6 +14,7 @@ export type AppStep =
     | 'paymentStep'
     | 'processingStep'
     | 'successStep'
+    | 'createdInvoiceStep'
 ;
 
 export type CurrentPriceStep = 'priceEnter' | 'messageEnter';

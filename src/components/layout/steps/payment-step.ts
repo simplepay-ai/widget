@@ -1130,16 +1130,16 @@ export class PaymentStep extends LitElement {
                                                                                     </div>
 
                                                                                     <div class="info">
-                                                                                        <p class="name">${item.product.name}</p>
+                                                                                        <p class="name">${item.product.name || ''}</p>
                                                                                         <p class="description">
-                                                                                            ${item.product.description}</p>
+                                                                                            ${item.product.description || ''}</p>
                                                                                     </div>
 
                                                                                     <div class="priceWrapper">
                                                                                         <p class="price">
-                                                                                            ${parseFloat(item.product.prices[0].price.toString()).toFixed(2)}
-                                                                                            ${item.product.prices[0].currency.symbol}</p>
-                                                                                        <p class="count">Count: ${item.count}</p>
+                                                                                            ${ (item.product.prices && item.product.prices.length > 0 && item.product.prices[0].price) ? parseFloat(item.product.prices[0].price.toString()).toFixed(2) : ''}
+                                                                                            ${ (item.product.prices && item.product.prices.length > 0 && item.product.prices[0].currency.symbol) ? item.product.prices[0].currency.symbol : '' }</p>
+                                                                                        <p class="count">Count: ${item.count || '---'}</p>
                                                                                     </div>
 
                                                                                 </div>

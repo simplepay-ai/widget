@@ -337,7 +337,7 @@ export class ProcessingStep extends LitElement {
                         .price=${Number(this.invoice?.total!) - Number(this.invoice?.paid!)}
                         .hasExplorerButton=${true}
                         .explorerLink=${this.qrCodeUrl}
-                        .productsInfo=${this.invoiceProducts}
+                        .products=${this.invoiceProducts}
                 ></main-footer>
             </div>
         `;

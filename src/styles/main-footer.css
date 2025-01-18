@@ -607,6 +607,7 @@
     color: var(--sp-widget-text-color);
     font-size: 14px;
     font-weight: 500;
+    min-height: 14px;
 }
 
 .fullProductInfo .contentWrapper .content .productsList .productItem .info .description {
@@ -621,6 +622,7 @@
     font-size: 14px;
     font-weight: 500;
     text-align: end;
+    min-height: 14px;
 }
 
 .fullProductInfo .contentWrapper .content .productsList .productItem .priceWrapper .count {

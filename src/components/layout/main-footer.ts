@@ -1,6 +1,5 @@
 import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
-import {IProduct} from "../../lib/types.ts";
 import {Invoice, InvoiceProduct} from "@simplepay-ai/api-client";
 //@ts-ignore
 import style from "../../styles/main-footer.css?inline";
@@ -9,9 +8,6 @@ import style from "../../styles/main-footer.css?inline";
 export class MainFooter extends LitElement {
 
     static styles = unsafeCSS(style);
-
-    @property({ type: Array })
-    productsInfo: IProduct[] = [];
 
     @property({ type: Array })
     products: InvoiceProduct[] = [];
@@ -73,6 +69,8 @@ export class MainFooter extends LitElement {
     async connectedCallback() {
         super.connectedCallback();
 
+        console.log('products', this.products)
+
         if(this.hasTimer) {
 
             this.timerTimeStartLocal = this.timerTimeStart;
@@ -132,7 +130,7 @@ export class MainFooter extends LitElement {
                                         <div class=${`image ${ ((this.products.length === 1 && this.products[0].count > 1) || this.products.length > 1) && 'placeholder' }`}>
                                             
                                             ${
-                                                    (this.products.length === 1 && this.products[0].count === 1 && this.products[0].product.image)
+                                                    (this.products.length === 1 && (this.products[0].count === 1 || !this.products[0].count) && this.products[0].product.image)
                                                         ? html`
                                                                 <img
                                                                         src=${ this.products[0].product.image }
@@ -317,13 +315,13 @@ export class MainFooter extends LitElement {
                                                         </div>
 
                                                         <div class="info">
-                                                            <p class="name">${item.product.name}</p>
-                                                            <p class="description">${item.product.description}</p>
+                                                            <p class="name">${item.product.name || ''}</p>
+                                                            <p class="description">${item.product.description || ''}</p>
                                                         </div>
 
                                                         <div class="priceWrapper">
-                                                            <p class="price">${item.product.prices[0].price} ${item.product.prices[0].currency.symbol}</p>
-                                                            <p class="count">Count: ${item.count}</p>
+                                                            <p class="price">${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].price) ? item.product.prices[0].price : ''} ${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].currency.symbol) ? item.product.prices[0].currency.symbol : ''}</p>
+                                                            <p class="count">Count: ${item.count || '---'}</p>
                                                         </div>
 
                                                     </div>

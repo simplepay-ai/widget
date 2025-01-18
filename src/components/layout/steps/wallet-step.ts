@@ -92,6 +92,7 @@ export class WalletStep extends LitElement {
         if(this.invoice?.products && this.invoice.products.length > 0){
             this.invoiceProducts = this.invoice.products;
         }
+
     }
 
     render() {

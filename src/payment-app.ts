@@ -33,11 +33,11 @@ import './components/layout/steps/product-step.ts';
 import './components/layout/steps/cart-step.ts';
 import './components/layout/steps/invoice-step.ts';
 import './components/layout/steps/wallet-step.ts';
+import './components/layout/steps/created-invoice-step.ts';
 import {checkWalletAddress, generateUUID} from "./lib/util.ts";
 import themesConfig from '../themesConfig.json';
 //@ts-ignore
 import style from "./styles/payment-app.css?inline";
-
 
 @customElement('payment-app')
 export class PaymentApp extends LitElement {
@@ -184,6 +184,9 @@ export class PaymentApp extends LitElement {
 
     @property({attribute: false})
     private paymentTypeSelected: boolean = false;
+
+    @property({attribute: false})
+    private newAppInvoice: Invoice | null = null;
 
     constructor() {
         super();
@@ -418,48 +421,52 @@ export class PaymentApp extends LitElement {
             apiKey: this.appId
         });
 
-        const products = await this.getProducts();
-        if (products === 'error') {
-            this.goToStep('errorStep');
-            return;
-        }
-
         const appInfoResult = await this.getApp();
-        if(appInfoResult !== 'error'){
-            this.appInfo = await this.getApp();
-            this.appProducts = products;
-
-            if(this.paymentType){
-                switch (this.paymentType) {
-                    case "request":
-                        this.invoiceType = this.paymentType;
-                        this.paymentTypeSelected = true;
-                        this.goToStep('priceStep');
-                        return;
-                    case "item":
-                        this.invoiceType = this.paymentType;
-                        this.paymentTypeSelected = true;
-                        this.goToStep('productStep');
-                        return;
-                    case "cart":
-                        this.invoiceType = this.paymentType;
-                        this.paymentTypeSelected = true;
-                        this.goToStep('cartStep');
-                        return;
-                }
-            }
-
-            this.goToStep('selectTypeStep');
-            return;
-        }else{
+        if(appInfoResult === 'error'){
             this.errorTitle = 'Error';
             this.errorText =
                 'Failed to retrieve app data. Please try again later.';
             this.goToStep('errorStep');
             this.dispatchErrorEvent('Fetch App Error', 'Failed to retrieve app data. Please try again later.');
-
             return;
         }
+
+        const products = await this.getProducts();
+        if (products === 'error') {
+            this.errorTitle = 'Error';
+            this.errorText =
+                'Failed to retrieve app products data. Please try again later.';
+            this.goToStep('errorStep');
+            this.dispatchErrorEvent('Fetch Products Error', 'Failed to retrieve app products data. Please try again later.');
+            return;
+        }
+
+        this.appInfo = appInfoResult;//await this.getApp();
+        this.appProducts = products;
+
+        if(this.paymentType){
+            switch (this.paymentType) {
+                case "request":
+                    this.invoiceType = this.paymentType;
+                    this.paymentTypeSelected = true;
+                    this.goToStep('priceStep');
+                    return;
+                case "item":
+                    this.invoiceType = this.paymentType;
+                    this.paymentTypeSelected = true;
+                    this.goToStep('productStep');
+                    return;
+                case "cart":
+                    this.invoiceType = this.paymentType;
+                    this.paymentTypeSelected = true;
+                    this.goToStep('cartStep');
+                    return;
+            }
+        }
+
+        this.goToStep('selectTypeStep');
+
+        return;
     }
 
     updated(changedProperties: Map<string | symbol, unknown>): void {
@@ -543,6 +550,15 @@ export class PaymentApp extends LitElement {
                                 @prevStep=${this.prevStep}
                                 @updateNotification=${(event: CustomEvent) => this.updateNotification(event)}
                         ></cart-step>`
+                    : ''
+            }
+
+            ${this.appStep === 'createdInvoiceStep'
+                    ? html`
+                        <created-invoice-step
+                                .invoice=${this.newAppInvoice}
+                                @prevStep=${this.prevStep}
+                        ></created-invoice-step>`
                     : ''
             }
 
@@ -868,6 +884,30 @@ export class PaymentApp extends LitElement {
             return;
         }
 
+        if (this.appStep === 'createdInvoiceStep') {
+
+            if(this.paymentType){
+
+                switch (this.paymentType) {
+                    case "request":
+                        this.goToStep('priceStep');
+                        return;
+                    case "item":
+                        this.goToStep('productStep');
+                        return;
+                    case "cart":
+                        this.goToStep('cartStep');
+                        return;
+                    default:
+                        this.goToStep('selectTypeStep');
+                        return;
+                }
+            }
+
+            this.goToStep('selectTypeStep');
+            return;
+        }
+
         if (this.appStep === 'walletStep') {
             this.goToStep('invoiceStep');
             return;
@@ -937,10 +977,6 @@ export class PaymentApp extends LitElement {
             const result: Product[] = await this.API.product.list(this.appId);
             return result;
         } catch (error) {
-            this.errorTitle = 'Error';
-            this.errorText =
-                'Failed to retrieve app products data. Please try again later.';
-            this.dispatchErrorEvent('Fetch Products Error', 'Failed to retrieve app products data. Please try again later.');
             return 'error';
         }
     }
@@ -1003,7 +1039,15 @@ export class PaymentApp extends LitElement {
             const fullInvoice = await this.API.invoice.get(invoice.id, true);
 
             if (fullInvoice.id) {
+                this.newAppInvoice = fullInvoice;
                 this.dispatchInvoiceCreatedEvent(fullInvoice.id);
+
+                this.goToStep('createdInvoiceStep');
+
+                this.creatingInvoice = false;
+                this.invoicePrice = '0';
+                this.invoiceProductId = '';
+                this.invoiceCart = [];
             }
         } catch (e) {
 

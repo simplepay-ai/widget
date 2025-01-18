@@ -949,6 +949,7 @@ stroke: #007bff; /* Fallback */age svg path {
     color: var(--sp-widget-text-color);
     font-size: 14px;
     font-weight: 500;
+    min-height: 14px;
 }
 
 .stepWrapper .productModal .productsList .productItem .info .description {
@@ -963,6 +964,7 @@ stroke: #007bff; /* Fallback */age svg path {
     font-size: 14px;
     font-weight: 500;
     text-align: end;
+    min-height: 14px;
 }
 
 .stepWrapper .productModal .productsList .productItem .priceWrapper .count {
