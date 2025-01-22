@@ -203,7 +203,22 @@ export class InvoiceStep extends LitElement {
                                                                 <div class="icon">
                                                                     <img src=${logo} alt="SimpleID Logo">
                                                                 </div>
-                                                                <p>olapuh84@gmail.com</p>
+                                                                ${
+                                                                        (this.user?.identity?.traits?.email)
+                                                                    ? 
+                                                                                html`
+                                                                                    <p>${this.user?.identity?.traits?.email}</p>
+                                                                                `
+                                                                                :''
+                                                                }
+                                                                ${
+                                                                        (!this.user?.identity?.traits?.email && this.user?.authentication_methods.length > 0 && this.user?.authentication_methods[0].provider === "telegram")
+                                                                                ?
+                                                                                html`
+                                                                                    <p>Telegram Account</p>
+                                                                                `
+                                                                                :''
+                                                                }
                                                             </div>
                                                             `
                                                             : html`
