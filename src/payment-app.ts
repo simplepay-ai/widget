@@ -38,6 +38,7 @@ import {checkWalletAddress, generateUUID} from "./lib/util.ts";
 import themesConfig from '../themesConfig.json';
 //@ts-ignore
 import style from "./styles/payment-app.css?inline";
+import axios from "axios";
 
 @customElement('payment-app')
 export class PaymentApp extends LitElement {
@@ -79,6 +80,9 @@ export class PaymentApp extends LitElement {
 
     @property({type: String})
     paymentType: InvoiceType | '' = '';
+
+    @property({type: String})
+    experimental: string = '';
 
     ///////////////////
 
@@ -188,6 +192,12 @@ export class PaymentApp extends LitElement {
     @property({attribute: false})
     private newAppInvoice: Invoice | null = null;
 
+    @property({attribute: false, type: Boolean})
+    private isExperimentalMode: boolean = false;
+
+    @property({attribute: false})
+    private user: any = null;
+
     constructor() {
         super();
 
@@ -200,6 +210,8 @@ export class PaymentApp extends LitElement {
 
     async connectedCallback() {
         super.connectedCallback();
+
+        this.isExperimentalMode = this.experimental === 'true';
 
         switch (this.theme) {
             case "light":
@@ -571,6 +583,8 @@ export class PaymentApp extends LitElement {
                                 .tokens=${this.tokens}
                                 .tokenAvailable=${this.tokenAvailable}
                                 .transactions=${this.invoiceTransactions}
+                                .experimentalMode=${this.isExperimentalMode}
+                                .user=${this.user}
                                 @nextStep=${this.nextStep}
                                 @updateSelectedToken=${(event: CustomEvent) => {
                                     this.selectedToken = event.detail.token;
@@ -582,6 +596,7 @@ export class PaymentApp extends LitElement {
                                         this.transaction = transaction
                                     }
                                 }}
+                                @login=${this.login}
                         >
                         </invoice-step>`
                     : ''}
@@ -710,6 +725,20 @@ export class PaymentApp extends LitElement {
                 </div>
             `;
         }
+    }
+
+    private login(){
+        console.log('login')
+        axios.get('https://api.simplepay.ai/id/sessions/whoami', { withCredentials: true })
+            .then((response) => {
+                this.user = response.data;
+            })
+            .catch(() => {
+                this.user = null;
+                const idApp = 'https://id.simplepay.ai/login';
+                const returnHref = location.origin + '/';
+                location.href = `${idApp}?return_to=${returnHref}`
+            })
     }
 
     private checkUUID(id: string) {

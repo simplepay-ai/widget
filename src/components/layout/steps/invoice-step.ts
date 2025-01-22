@@ -4,6 +4,8 @@ import {getTokenStandart, roundUpAmount} from "../../../lib/util.ts";
 import {Cryptocurrency, Invoice, InvoiceProduct, Network, Transaction} from "@simplepay-ai/api-client";
 //@ts-ignore
 import style from "../../../styles/invoice-step.css?inline";
+//@ts-ignore
+import logo from "../../../assets/logo.jpg";
 
 interface NetworkOption {
     value: string;
@@ -32,6 +34,12 @@ export class InvoiceStep extends LitElement {
 
     @property({type: Boolean})
     tokenAvailable: boolean = false;
+
+    @property({type: Boolean})
+    experimentalMode: boolean = false;
+
+    @property({type: Object})
+    user: any = null;
 
     @property({attribute: false, type: Array})
     invoiceProducts: InvoiceProduct[] = [];
@@ -182,6 +190,44 @@ export class InvoiceStep extends LitElement {
             <div class=${`stepWrapper`}>
 
                 <div class="mainSection">
+
+                    ${
+                            (this.experimentalMode)
+                            ? html`
+                                        <div class="authentication">
+
+                                            ${
+                                                    (this.user)
+                                                    ? html`
+                                                            <div class="userInfo">
+                                                                <div class="icon">
+                                                                    <img src=${logo} alt="SimpleID Logo">
+                                                                </div>
+                                                                <p>olapuh84@gmail.com</p>
+                                                            </div>
+                                                            `
+                                                            : html`
+                                                                <button class="loginButton"
+                                                                        @click=${() => this.dispatchLogin()}
+                                                                >
+
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                                         stroke-linejoin="round">
+                                                                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                                                                        <polyline points="10 17 15 12 10 7"/>
+                                                                        <line x1="15" x2="3" y1="12" y2="12"/>
+                                                                    </svg>
+
+                                                                    Login
+                                                                </button>
+                                                            `
+                                            }
+
+                                        </div>
+                                    `
+                                    : ''
+                    }
 
                     <div class="merchantInfo">
 
@@ -539,7 +585,9 @@ export class InvoiceStep extends LitElement {
                                                 </div>
 
                                                 <div class="priceWrapper">
-                                                    <p class="price">${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].price) ? item.product.prices[0].price : ''} ${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].currency.symbol) ? item.product.prices[0].currency.symbol : ''}</p>
+                                                    <p class="price">
+                                                        ${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].price) ? item.product.prices[0].price : ''}
+                                                        ${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].currency.symbol) ? item.product.prices[0].currency.symbol : ''}</p>
                                                     <p class="count">Count: ${item.count || '---'}</p>
                                                 </div>
 
@@ -949,6 +997,15 @@ export class InvoiceStep extends LitElement {
 
             this.dispatchEvent(nextStepEvent);
         }
+    }
+
+    private dispatchLogin() {
+        const loginEvent = new CustomEvent('login', {
+            bubbles: true,
+            composed: true
+        });
+
+        this.dispatchEvent(loginEvent);
     }
 
     private dispatchSelectTransaction(transactionId: string) {
