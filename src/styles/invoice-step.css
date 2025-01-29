@@ -62,6 +62,7 @@
 }
 
 .stepWrapper .mainSection .authentication .loginButton{
+    min-width: 78px;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -100,6 +101,75 @@
     height: 16px;
     color: #007bff;
     color: var(--sp-widget-active-color);
+}
+
+.stepWrapper .mainSection .authentication .loginButton .spinner {
+    width: 16px;
+    height: 16px;
+    margin: 0 auto;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    /* Fallback for older browsers */
+    text-align: center;
+}
+
+/* Fallback for older browsers */
+.stepWrapper .mainSection .authentication .loginButton .spinner:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+.stepWrapper .mainSection .authentication .loginButton .spinner svg {
+    width: 20px;
+    height: 20px;
+    -webkit-animation: spin 1s linear infinite;
+    animation: spin 1s linear infinite;
+    /* Fallback for older browsers */
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.stepWrapper .mainSection .authentication .loginButton .spinner circle {
+    stroke: #000000; /* Fallback color */
+    stroke: var(--sp-widget-active-color, #000000);
+    opacity: 0.25;
+}
+
+.stepWrapper .mainSection .authentication .loginButton .spinner path {
+    fill: #000000; /* Fallback color */
+    fill: var(--sp-widget-active-color, #000000);
+    opacity: 0.75;
+}
+
+@-webkit-keyframes spin {
+    from {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    from {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
 }
 
 @media (hover: hover) and (pointer: fine) {

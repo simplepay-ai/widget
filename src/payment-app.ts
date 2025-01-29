@@ -198,6 +198,9 @@ export class PaymentApp extends LitElement {
     @property({attribute: false})
     private user: any = null;
 
+    @property({attribute: false, type: Boolean})
+    private loginLoading: boolean = false;
+
     constructor() {
         super();
 
@@ -585,6 +588,7 @@ export class PaymentApp extends LitElement {
                                 .transactions=${this.invoiceTransactions}
                                 .experimentalMode=${this.isExperimentalMode}
                                 .user=${this.user}
+                                .loginLoading=${this.loginLoading}
                                 @nextStep=${this.nextStep}
                                 @updateSelectedToken=${(event: CustomEvent) => {
                                     this.selectedToken = event.detail.token;
@@ -728,17 +732,32 @@ export class PaymentApp extends LitElement {
     }
 
     private login(){
-        console.log('login')
+
+        this.loginLoading = true;
+
         axios.get('https://api.simplepay.ai/id/sessions/whoami', { withCredentials: true })
             .then((response) => {
                 this.user = response.data;
+                this.loginLoading = false;
+
+                this.saveInvoice();
             })
             .catch(() => {
                 this.user = null;
                 const idApp = 'https://id.simplepay.ai/login';
                 const returnHref = location.origin + '/';
                 location.href = `${idApp}?return_to=${returnHref}`
+
+                this.loginLoading = false;
             })
+    }
+
+    private async saveInvoice(){
+        if(this.API && this.user){
+            await (this.API as Client).user.invoice.link({
+                invoiceId: this.invoice?.id || ''
+            })
+        }
     }
 
     private checkUUID(id: string) {
