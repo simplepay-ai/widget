@@ -336,7 +336,10 @@ export class PaymentApp extends LitElement {
 
                             this.getInvoiceTransactions(this.invoice?.id || '').then(() => {
                                 this.subscribeInvoice(this.invoice?.id || '')
-                                this.checkUser();
+
+                                if(this.isExperimentalMode) {
+                                    this.checkUser();
+                                }
                             });
                         })
                     }
@@ -413,7 +416,11 @@ export class PaymentApp extends LitElement {
                         this.getInvoiceTransactions(this.invoiceId).then(() => {
                             this.subscribeInvoice(this.invoiceId).then(() => {
                                 this.goToStep('invoiceStep');
-                                this.checkUser();
+
+                                if(this.isExperimentalMode){
+                                    this.checkUser();
+                                }
+
                             })
                         });
                     }
