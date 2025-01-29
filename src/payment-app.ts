@@ -336,6 +336,7 @@ export class PaymentApp extends LitElement {
 
                             this.getInvoiceTransactions(this.invoice?.id || '').then(() => {
                                 this.subscribeInvoice(this.invoice?.id || '')
+                                this.checkUser();
                             });
                         })
                     }
@@ -412,6 +413,7 @@ export class PaymentApp extends LitElement {
                         this.getInvoiceTransactions(this.invoiceId).then(() => {
                             this.subscribeInvoice(this.invoiceId).then(() => {
                                 this.goToStep('invoiceStep');
+                                this.checkUser();
                             })
                         });
                     }
@@ -731,7 +733,7 @@ export class PaymentApp extends LitElement {
         }
     }
 
-    private login(){
+    private async login(){
 
         this.loginLoading = true;
 
@@ -752,10 +754,28 @@ export class PaymentApp extends LitElement {
             })
     }
 
+    private checkUser(){
+        this.loginLoading = true;
+
+        axios.get('https://api.simplepay.ai/id/sessions/whoami', { withCredentials: true })
+            .then((response) => {
+                this.user = response.data;
+                this.loginLoading = false;
+
+                this.saveInvoice();
+            })
+            .catch(() => {
+                this.user = null;
+                this.loginLoading = false;
+            })
+    }
+
     private async saveInvoice(){
         if(this.API && this.user){
-            await (this.API as Client).user.invoice.link({
-                invoiceId: this.invoice?.id || ''
+            await (this.API as Client).app.get(this.invoice?.app?.id || '').then(async () => {
+                await (this.API as Client).user.invoice.link({
+                    invoiceId: this.invoice?.id || ''
+                })
             })
         }
     }
