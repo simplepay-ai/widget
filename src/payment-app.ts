@@ -754,7 +754,7 @@ export class PaymentApp extends LitElement {
             .catch(() => {
                 this.user = null;
                 const idApp = 'https://id.simplepay.ai/login';
-                const returnHref = location.origin + '/';
+                const returnHref = location.href;
                 location.href = `${idApp}?return_to=${returnHref}`
 
                 this.loginLoading = false;
