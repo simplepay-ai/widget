@@ -1,7 +1,7 @@
 import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {checkWalletAddress, getTokenStandart} from "../../../lib/util.ts";
-import {WalletType} from "../../../lib/types.ts";
+import {AppTheme, WalletType} from "../../../lib/types.ts";
 import {
     createConfig,
     http,
@@ -22,6 +22,9 @@ import {ChainNetwork} from "@tronweb3/tronwallet-abstract-adapter";
 export class WalletStep extends LitElement {
 
     static styles = unsafeCSS(style);
+
+    @property({type: String})
+    theme: AppTheme = 'light';
 
     @property({type: Object})
     invoice: Invoice | null = null;
@@ -727,7 +730,21 @@ export class WalletStep extends LitElement {
         const wcAdapter = new WalletConnectAdapter({
             network: ChainNetwork.Mainnet,
             options: {
-                projectId: 'b385e1eebef135dccafa0f1efaf09e85'
+                projectId: 'b385e1eebef135dccafa0f1efaf09e85',
+            },
+            web3ModalConfig: {
+                themeMode: (this.theme === 'custom') ? 'light' : this.theme,
+                explorerRecommendedWalletIds: [
+                    'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96',
+                    '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0',
+                    '38f5d18bd8522c244bdd70cb4a68e0e718865155811c043f052fb9f1c51de662',
+                    '971e689d0a5be527bac79629b4ee9b925e82208e5168b733496a09c0faed0709',
+                    '8a0ee50d1f22f6651afcae7eb4253e52a3310b90af5daef78a8c4929a9bb99d4',
+                    '0b415a746fb9ee99cce155c2ceca0c6f6061b1dbca2d722b3ba16381d0562150',
+                    'c03dfee351b6fcc421b4494ea33b9d4b92a984f87aa76d1663bb28705e95034a',
+                    '15c8b91ade1a4e58f3ce4e7a0dd7f42b47db0c8df7e0d84f63eb39bcb96c4e0f',
+                    '20459438007b75f4f4acb98bf29aa3b800550309646d375da5fd4aac6c2a2c66',
+                ],
             }
         })
         if (wcAdapter) {

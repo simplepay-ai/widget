@@ -636,6 +636,7 @@ export class PaymentApp extends LitElement {
                                 .tronWalletConnect=${this.tronWalletConnect}
                                 .tronLinkConfig=${this.tronLinkConfig}
                                 .tronWeb=${this.tronWeb}
+                                .theme=${this.theme}
                                 @updateNotification=${(event: CustomEvent) =>
                                         this.updateNotification(event)}
                                 @updateWalletType=${(event: CustomEvent) =>
