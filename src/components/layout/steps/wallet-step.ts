@@ -843,7 +843,7 @@ export class WalletStep extends LitElement {
         const timer = new Promise((_, reject) => {
             setTimeout(() => {
                 reject(new Error())
-            }, 10000)
+            }, 40000)
         });
         const cancelChecker = new Promise((_, reject) => {
             const checkCancel = setInterval(() => {
@@ -872,6 +872,7 @@ export class WalletStep extends LitElement {
                         cancelChecker
                     ]);
                 } catch (e) {
+                    console.log('error', e)
                     this.connectingType = '';
                     this.connectingInProcess = false;
 
