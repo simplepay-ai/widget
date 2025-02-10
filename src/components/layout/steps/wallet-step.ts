@@ -14,6 +14,9 @@ import {coinbaseWallet, metaMask, walletConnect} from "@wagmi/connectors";
 import {Cryptocurrency, Invoice, InvoiceProduct, Network} from "@simplepay-ai/api-client";
 //@ts-ignore
 import style from "../../../styles/wallet-step.css?inline";
+import TronWeb from "tronweb";
+import {TronLinkAdapter, WalletConnectAdapter} from "@tronweb3/tronwallet-adapters";
+import {ChainNetwork} from "@tronweb3/tronwallet-abstract-adapter";
 
 @customElement('wallet-step')
 export class WalletStep extends LitElement {
@@ -40,6 +43,15 @@ export class WalletStep extends LitElement {
 
     @property({type: Object})
     walletConnectorConfig: any;
+
+    @property({type: Object})
+    tronWalletConnect: any;
+
+    @property({type: Object})
+    tronLinkConfig: any;
+
+    @property({type: Object})
+    tronWeb: any;
 
     @property({attribute: false, type: String})
     private inputValue = '';
@@ -83,13 +95,19 @@ export class WalletStep extends LitElement {
     async connectedCallback() {
         super.connectedCallback();
 
-        await this.checkConnectorConfig();
+        if (['bsc', 'ethereum', 'polygon', 'avalanche', 'zksync', 'arbitrum', 'optimism', 'base'].includes(this.selectedNetwork?.symbol || '')) {
+            await this.checkConnectorConfig();
+        }
 
-        if(this.invoice?.payload?.products && this.invoice?.payload?.products.length > 0){
+        if (['tron'].includes(this.selectedNetwork?.symbol || '')) {
+            this.checkTronConfigs();
+        }
+
+        if (this.invoice?.payload?.products && this.invoice?.payload?.products.length > 0) {
             this.invoiceProducts = this.invoice?.payload?.products;
         }
 
-        if(this.invoice?.products && this.invoice.products.length > 0){
+        if (this.invoice?.products && this.invoice.products.length > 0) {
             this.invoiceProducts = this.invoice.products;
         }
 
@@ -344,57 +362,81 @@ export class WalletStep extends LitElement {
                                                         </div>
 
                                                     </div>
+                                                `
+                                                : ''
+                                }
 
-                                                    <div class="addressModal ${(this.showApproveAddressModal) ? 'show' : ''}">
+                                ${
+                                        (['tron'].includes(this.selectedNetwork?.symbol || ''))
+                                                ? html`
+                                                    <div @click=${() => this.selectWalletType('TronLink')}
+                                                         class=${`
+                                                         walletType
+                                                         ${(this.connectingInProcess && this.connectingType === 'TronLink') ? 'inProcess' : ''}
+                                                         ${(this.connectingInProcess && this.connectingType !== 'TronLink') ? 'waiting' : ''}
+                                                         `}
+                                                    >
+                                                        <p>TronLink</p>
+                                                        <svg class="typeIcon" xmlns="http://www.w3.org/2000/svg" width="26"
+                                                             height="26" viewBox="0 0 26 26" fill="none">
+                                                            <rect width="26" height="26" rx="6" fill="#135DCD"/>
+                                                            <mask id="mask0_12_18" style="mask-type:alpha"
+                                                                  maskUnits="userSpaceOnUse" x="0" y="0" width="26" height="26">
+                                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                      d="M2.92288 0C1.30853 0 0 1.43954 0 3.21535V22.7846C0 24.5605 1.30853 26 2.92288 26H23.0771C24.6913 26 26 24.5605 26 22.7846V3.21535C26 1.43954 24.6913 0 23.0771 0H2.92288Z"
+                                                                      fill="white"/>
+                                                            </mask>
+                                                            <g mask="url(#mask0_12_18)">
+                                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                      d="M22.2767 20.4777L34.5747 18.2553L20.4683 35.4043L22.2767 20.4777ZM20.7448 19.7316L18.8422 35.4046L8.57463 9.68123L20.7448 19.7316ZM21.3583 17.7022L9.68081 8.29797L28.7659 11.7083L21.3583 17.7022ZM30.8061 12.4467L34.8508 16.2655L23.787 18.2552L30.8061 12.4467ZM31.33 10.375L4.97876 5.53198L18.8475 40.383L38.1702 16.8702L31.33 10.375Z"
+                                                                      fill="white"/>
+                                                            </g>
+                                                        </svg>
 
-                                                        <div @click=${this.hideApproveAddressModal}
-                                                             class="overlay ${(this.showApproveAddressModalOverlay) ? 'show' : ''}"></div>
-
-                                                        <div class="contentWrapper ${(this.showApproveAddressModalContent) ? 'show' : ''}">
-                                                            <div class="content">
-                                                                <div class="titleWrapper">
-                                                                    <p>Approve the Wallet to Continue</p>
-                                                                    <div class="closeButton"
-                                                                         @click=${this.hideApproveAddressModal}
-                                                                    >
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                             height="24"
-                                                                             viewBox="0 0 24 24"
-                                                                             fill="none" stroke="currentColor" stroke-width="2"
-                                                                             stroke-linecap="round"
-                                                                             stroke-linejoin="round">
-                                                                            <path d="M18 6 6 18"/>
-                                                                            <path d="m6 6 12 12"/>
-                                                                        </svg>
-                                                                    </div>
-                                                                </div>
-
-                                                                <p class="text">
-                                                                    Please confirm if you'd like to proceed using this wallet
-                                                                    address to continue with the transaction.
-                                                                </p>
-
-                                                                <p class="address">
-                                                                    ${this.walletAddress}
-                                                                </p>
-
-                                                                <div class="buttonsWrapper">
-                                                                    <button class="secondaryButton"
-                                                                            @click=${this.disconnectWallet}
-                                                                    >
-                                                                        No
-                                                                    </button>
-
-                                                                    <button class="mainButton"
-                                                                            @click=${this.approveWallet}
-                                                                    >
-                                                                        Continue
-                                                                    </button>
-
-                                                                </div>
-                                                            </div>
+                                                        <div class="spinner">
+                                                            <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    fill="none"
+                                                                    viewBox="0 0 24 24"
+                                                            >
+                                                                <circle cx="12" cy="12" r="10" stroke-width="4"/>
+                                                                <path
+                                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                                />
+                                                            </svg>
                                                         </div>
+                                                    </div>
+                                                    <div @click=${() => this.selectWalletType('WalletConnectTron')}
+                                                         class=${`
+                                                         walletType walletConnect
+                                                         ${(this.connectingInProcess && this.connectingType === 'WalletConnectTron') ? 'inProcess' : ''}
+                                                         ${(this.connectingInProcess && this.connectingType !== 'WalletConnectTron') ? 'waiting' : ''}
+                                                         `}
+                                                    >
+                                                        <p>WalletConnect</p>
+                                                        <svg class="typeIcon" xmlns="http://www.w3.org/2000/svg" width="68"
+                                                             height="35"
+                                                             viewBox="0 0 68 35" fill="none">
+                                                            <g clip-path="url(#clip0_6067_204)">
+                                                                <path d="M50.4609 16.1674L56.4597 10.1686C42.9015 -3.38955 26.0548 -3.38955 12.4966 10.1686L18.4954 16.1674C28.8068 5.85594 40.1564 5.85594 50.4679 16.1674H50.4609Z"
+                                                                      fill="#202020"/>
+                                                                <path d="M48.4623 30.1435L34.4721 16.1533L20.482 30.1435L6.4918 16.1533L0.5 22.1451L20.482 42.1341L34.4721 28.1439L48.4623 42.1341L68.4443 22.1451L62.4525 16.1533L48.4623 30.1435Z"
+                                                                      fill="#202020"/>
+                                                            </g>
+                                                        </svg>
 
+                                                        <div class="spinner">
+                                                            <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    fill="none"
+                                                                    viewBox="0 0 24 24"
+                                                            >
+                                                                <circle cx="12" cy="12" r="10" stroke-width="4"/>
+                                                                <path
+                                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                                />
+                                                            </svg>
+                                                        </div>
                                                     </div>
                                                 `
                                                 : ''
@@ -514,6 +556,57 @@ export class WalletStep extends LitElement {
                                     </div>
 
                                 </div>
+                                <div class="addressModal ${(this.showApproveAddressModal) ? 'show' : ''}">
+
+                                    <div @click=${this.hideApproveAddressModal}
+                                         class="overlay ${(this.showApproveAddressModalOverlay) ? 'show' : ''}"></div>
+
+                                    <div class="contentWrapper ${(this.showApproveAddressModalContent) ? 'show' : ''}">
+                                        <div class="content">
+                                            <div class="titleWrapper">
+                                                <p>Approve the Wallet to Continue</p>
+                                                <div class="closeButton"
+                                                     @click=${this.hideApproveAddressModal}
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                         height="24"
+                                                         viewBox="0 0 24 24"
+                                                         fill="none" stroke="currentColor" stroke-width="2"
+                                                         stroke-linecap="round"
+                                                         stroke-linejoin="round">
+                                                        <path d="M18 6 6 18"/>
+                                                        <path d="m6 6 12 12"/>
+                                                    </svg>
+                                                </div>
+                                            </div>
+
+                                            <p class="text">
+                                                Please confirm if you'd like to proceed using this wallet
+                                                address to continue with the transaction.
+                                            </p>
+
+                                            <p class="address">
+                                                ${this.walletAddress}
+                                            </p>
+
+                                            <div class="buttonsWrapper">
+                                                <button class="secondaryButton"
+                                                        @click=${this.disconnectWallet}
+                                                >
+                                                    No
+                                                </button>
+
+                                                <button class="mainButton"
+                                                        @click=${this.approveWallet}
+                                                >
+                                                    Continue
+                                                </button>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
 
                             </div>
                         `
@@ -529,6 +622,17 @@ export class WalletStep extends LitElement {
                 ></main-footer>
             </div>
         `;
+    }
+
+    private checkTronConfigs() {
+        if (!['tron'].includes(this.selectedNetwork?.symbol || '')) {
+            return;
+        }
+
+        if (!this.tronWeb || !this.tronWalletConnect || !this.tronLinkConfig) {
+            this.createNewTronConfigs();
+            return;
+        }
     }
 
     private async checkConnectorConfig() {
@@ -618,6 +722,93 @@ export class WalletStep extends LitElement {
         this.updateWalletConnectorConfig(config);
     }
 
+    private createNewTronConfigs() {
+
+        const wcAdapter = new WalletConnectAdapter({
+            network: ChainNetwork.Mainnet,
+            options: {
+                projectId: 'b385e1eebef135dccafa0f1efaf09e85'
+            }
+        })
+        if (wcAdapter) {
+            wcAdapter.on('connect', (address) => {
+                if (address) {
+                    this.updateWalletAddress(address);
+                    this.updateWalletType("WalletConnectTron");
+                    this.openApproveAddressModal();
+                } else {
+                    this.connectingType = '';
+                    this.connectingInProcess = false;
+
+                    const options = {
+                        detail: {
+                            notificationData: {
+                                title: 'No Wallet Addresses Found',
+                                text: 'No addresses were found in your wallet. Please add an address or try connecting a different wallet.',
+                                buttonText: 'Confirm'
+                            },
+                            notificationShow: true
+                        },
+                        bubbles: true,
+                        composed: true
+                    };
+                    this.dispatchEvent(new CustomEvent('updateNotification', options));
+                }
+            });
+            wcAdapter.on('disconnect', () => {
+                this.updateWalletAddress('');
+                this.updateWalletType('');
+            });
+            this.updateTronWalletConnect(wcAdapter);
+        }
+
+        const tronLinkAdapter = new TronLinkAdapter({
+            openTronLinkAppOnMobile: true
+        })
+        if (tronLinkAdapter) {
+            tronLinkAdapter.on('connect', (address) => {
+                if (address) {
+                    this.updateWalletAddress(address);
+                    this.updateWalletType("TronLink");
+                    this.openApproveAddressModal();
+                } else {
+                    this.connectingType = '';
+                    this.connectingInProcess = false;
+
+                    const options = {
+                        detail: {
+                            notificationData: {
+                                title: 'No Wallet Addresses Found',
+                                text: 'No addresses were found in your wallet. Please add an address or try connecting a different wallet.',
+                                buttonText: 'Confirm'
+                            },
+                            notificationShow: true
+                        },
+                        bubbles: true,
+                        composed: true
+                    };
+                    this.dispatchEvent(new CustomEvent('updateNotification', options));
+                }
+            });
+            tronLinkAdapter.on('disconnect', () => {
+                this.updateWalletAddress('');
+                this.updateWalletType('');
+            });
+            this.updateTronLinkConfig(tronLinkAdapter);
+        }
+
+        const newTronWeb = new TronWeb.TronWeb({
+            fullHost: 'https://api.trongrid.io',
+            headers: {
+                "TRON-PRO-API-KEY": '6cd36e88-edf1-4c10-9cb1-5d088cfdc821'
+            },
+        });
+        if (newTronWeb) {
+            this.updateTronWeb(newTronWeb);
+        }
+
+    }
+
     private async selectWalletType(type: WalletType) {
 
         if (this.connectingInProcess && type === this.connectingType) {
@@ -632,7 +823,11 @@ export class WalletStep extends LitElement {
         this.updateWalletAddress('');
         this.updateWalletType('');
 
-        const timer = new Promise((_, reject) => setTimeout(() => reject(new Error()), 40000));
+        const timer = new Promise((_, reject) => {
+            setTimeout(() => {
+                reject(new Error())
+            }, 10000)
+        });
         const cancelChecker = new Promise((_, reject) => {
             const checkCancel = setInterval(() => {
                 if (!this.connectingInProcess) {
@@ -641,6 +836,92 @@ export class WalletStep extends LitElement {
                 }
             }, 100);
         });
+
+        if (type === 'WalletConnectTron') {
+
+            if (this.tronWalletConnect?.address) {
+
+                this.updateWalletAddress(this.tronWalletConnect.address);
+                this.updateWalletType("WalletConnectTron");
+                this.openApproveAddressModal();
+                return;
+
+            } else {
+
+                try {
+                    await Promise.race([
+                        this.tronWalletConnect.connect(),
+                        timer,
+                        cancelChecker
+                    ]);
+                } catch (e) {
+                    this.connectingType = '';
+                    this.connectingInProcess = false;
+
+                    const options = {
+                        detail: {
+                            notificationData: {
+                                title: 'Wallet Connection Not Confirmed',
+                                text: 'The wallet connection was not confirmed. Please try again to continue.',
+                                buttonText: 'Confirm'
+                            },
+                            notificationShow: true
+                        },
+                        bubbles: true,
+                        composed: true
+                    };
+                    this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                    return;
+                }
+
+            }
+
+            return;
+        }
+
+        if (type === 'TronLink') {
+
+            if (this.tronLinkConfig?.address) {
+
+                this.updateWalletAddress(this.tronLinkConfig.address);
+                this.updateWalletType("TronLink");
+                this.openApproveAddressModal();
+                return;
+
+            } else {
+
+                try {
+                    await Promise.race([
+                        this.tronLinkConfig.connect(),
+                        timer,
+                        cancelChecker
+                    ]);
+                } catch (e) {
+                    this.connectingType = '';
+                    this.connectingInProcess = false;
+
+                    const options = {
+                        detail: {
+                            notificationData: {
+                                title: 'Wallet Connection Not Confirmed',
+                                text: 'The wallet connection was not confirmed. Please try again to continue.',
+                                buttonText: 'Confirm'
+                            },
+                            notificationShow: true
+                        },
+                        bubbles: true,
+                        composed: true
+                    };
+                    this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                    return;
+                }
+
+            }
+
+            return;
+        }
 
         const state = this.walletConnectorConfig?.state
         const connections = state?.connections;
@@ -986,12 +1267,30 @@ export class WalletStep extends LitElement {
 
     private async disconnectWallet() {
 
-        const {connector} = getAccount(this.walletConnectorConfig)
-        await disconnect(this.walletConnectorConfig, {
-            connector,
-        })
+        if (['bsc', 'ethereum', 'polygon', 'avalanche', 'zksync', 'arbitrum', 'optimism', 'base'].includes(this.selectedNetwork?.symbol || '')) {
+            const {connector} = getAccount(this.walletConnectorConfig)
+            await disconnect(this.walletConnectorConfig, {
+                connector,
+            })
 
-        this.hideApproveAddressModal();
+            this.hideApproveAddressModal();
+            return;
+        }
+
+        if (['tron'].includes(this.selectedNetwork?.symbol || '')) {
+
+            if(this.tronWalletConnect){
+                await this.tronWalletConnect.disconnect()
+            }
+
+            if(this.tronLinkConfig){
+                await this.tronLinkConfig.disconnect()
+            }
+
+            this.hideApproveAddressModal();
+            return;
+        }
+
     }
 
     private selectCustomWallet() {
@@ -1107,6 +1406,42 @@ export class WalletStep extends LitElement {
         });
 
         this.dispatchEvent(updateWalletConnectorConfigEvent);
+    }
+
+    private updateTronWalletConnect(config: any) {
+        const updateTronWalletConnectEvent = new CustomEvent('updateTronWalletConnect', {
+            detail: {
+                tronWalletConnect: config
+            },
+            bubbles: true,
+            composed: true
+        });
+
+        this.dispatchEvent(updateTronWalletConnectEvent);
+    }
+
+    private updateTronLinkConfig(config: any) {
+        const updateTronLinkConfigEvent = new CustomEvent('updateTronLinkConfig', {
+            detail: {
+                tronLinkConfig: config
+            },
+            bubbles: true,
+            composed: true
+        });
+
+        this.dispatchEvent(updateTronLinkConfigEvent);
+    }
+
+    private updateTronWeb(config: any) {
+        const updateTronWebEvent = new CustomEvent('updateTronWeb', {
+            detail: {
+                tronWeb: config
+            },
+            bubbles: true,
+            composed: true
+        });
+
+        this.dispatchEvent(updateTronWebEvent);
     }
 }
 

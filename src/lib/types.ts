@@ -19,7 +19,7 @@ export type AppStep =
 
 export type CurrentPriceStep = 'priceEnter' | 'messageEnter';
 
-export type WalletType = 'MetaMask' | 'Coinbase' | 'WalletConnect' | 'Injected' | 'Custom'
+export type WalletType = 'MetaMask' | 'Coinbase' | 'WalletConnect' | 'WalletConnectTron' | 'TronLink' | 'Injected' | 'Custom'
 
 export type OpenMode = 'auto' | 'modal' | 'button' | 'trigger'
 

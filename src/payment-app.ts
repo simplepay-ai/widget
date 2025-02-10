@@ -201,6 +201,15 @@ export class PaymentApp extends LitElement {
     @property({attribute: false, type: Boolean})
     private loginLoading: boolean = false;
 
+    @property({attribute: false, type: Object})
+    private tronWalletConnect = null;
+
+    @property({attribute: false, type: Object})
+    private tronLinkConfig = null;
+
+    @property({attribute: false, type: Object})
+    private tronWeb = null;
+
     constructor() {
         super();
 
@@ -624,6 +633,9 @@ export class PaymentApp extends LitElement {
                                 .selectedToken=${this.selectedToken}
                                 .selectedNetwork=${this.selectedNetwork}
                                 .walletConnectorConfig=${this.walletConnectorConfig}
+                                .tronWalletConnect=${this.tronWalletConnect}
+                                .tronLinkConfig=${this.tronLinkConfig}
+                                .tronWeb=${this.tronWeb}
                                 @updateNotification=${(event: CustomEvent) =>
                                         this.updateNotification(event)}
                                 @updateWalletType=${(event: CustomEvent) =>
@@ -632,6 +644,15 @@ export class PaymentApp extends LitElement {
                                         (this.walletAddress = event.detail.walletAddress)}
                                 @updateWalletConnectorConfig=${(event: CustomEvent) => {
                                     this.walletConnectorConfig = event.detail.walletConnectorConfig
+                                }}
+                                @updateTronWalletConnect=${(event: CustomEvent) => {
+                                    this.tronWalletConnect = event.detail.tronWalletConnect
+                                }}
+                                @updateTronLinkConfig=${(event: CustomEvent) => {
+                                    this.tronLinkConfig = event.detail.tronLinkConfig
+                                }}
+                                @updateTronWeb=${(event: CustomEvent) => {
+                                    this.tronWeb = event.detail.tronWeb
                                 }}
                                 @nextStep=${this.nextStep}
                                 @returnBack=${this.prevStep}
@@ -649,6 +670,9 @@ export class PaymentApp extends LitElement {
                                 .connectorPaymentAwaiting=${this.connectorPaymentAwaiting}
                                 .walletType=${this.walletType}
                                 .walletConnectorConfig=${(this.walletType === 'Custom') ? null : this.walletConnectorConfig}
+                                .tronWalletConnect=${(this.walletType === 'Custom') ? null : this.tronWalletConnect}
+                                .tronLinkConfig=${(this.walletType === 'Custom') ? null : this.tronLinkConfig}
+                                .tronWeb=${(this.walletType === 'Custom') ? null : this.tronWeb}
                                 .hasReturnBack=${!this.onlyTransaction}
                                 @cancelTransaction=${this.cancelTransaction}
                                 @updatePaymentAwaiting=${(event: CustomEvent) =>

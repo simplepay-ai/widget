@@ -69,8 +69,6 @@ export class MainFooter extends LitElement {
     async connectedCallback() {
         super.connectedCallback();
 
-        console.log('products', this.products)
-
         if(this.hasTimer) {
 
             this.timerTimeStartLocal = this.timerTimeStart;

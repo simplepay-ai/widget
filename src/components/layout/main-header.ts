@@ -109,12 +109,8 @@ export class MainHeader extends LitElement {
                             ? html`
                                   <div class="badge withAddress">
                                       <div class="network"></div>
-
-                                      ${this.walletAddress.slice(0, 6)}
-                                      ...${this.walletAddress.slice(
-                                          this.walletAddress.length - 4,
-                                          this.walletAddress.length
-                                      )}
+                                      
+                                      ${`${this.walletAddress.slice(0, 4)}...${this.walletAddress.slice(this.walletAddress.length - 4, this.walletAddress.length)}`}
                                   </div>
                               `
                             : ''}

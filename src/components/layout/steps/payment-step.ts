@@ -758,6 +758,15 @@ export class PaymentStep extends LitElement {
     @property({type: Object})
     walletConnectorConfig: any;
 
+    @property({type: Object})
+    tronLinkConfig: any;
+
+    @property({type: Object})
+    tronWalletConnect: any;
+
+    @property({type: Object})
+    tronWeb: any;
+
     @property({attribute: false})
     tokenStandart: string = '';
 
@@ -808,6 +817,7 @@ export class PaymentStep extends LitElement {
         super.updated(changedProperties);
 
         if(this.invoice){
+
             const left = Number(this.invoice?.total!) - Number(this.invoice?.paid!);
             this.leftAmount = parseFloat(left.toString()).toFixed(2);
 
@@ -1222,7 +1232,7 @@ export class PaymentStep extends LitElement {
 
         this.updatePaymentAwaiting(true);
 
-        if (this.walletType !== 'MetaMask') {
+        if (this.walletType !== 'MetaMask' && this.walletType !== 'WalletConnectTron' && this.walletType !== 'TronLink') {
             try {
 
                 let chainId = 0;
@@ -1278,9 +1288,197 @@ export class PaymentStep extends LitElement {
             }
         }
 
-        const timer = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Timeout error')), 40000)
-        );
+        const timer = new Promise((_, reject) => {
+            setTimeout(() => {
+                reject(new Error())
+            }, 40000)
+        });
+
+        if(this.walletType === "WalletConnectTron" || this.walletType === 'TronLink'){
+
+            if (this.transaction?.cryptocurrency.symbol === 'USDT') {
+
+                try {
+
+                    let contractAddress = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
+                    let functionSelector = "transfer(address,uint256)"
+                    let from =  this.transaction?.from;
+                    let to = this.transaction?.to;
+                    let amount = this.tronWeb.toSun(this.leftAmountToken);
+                    let parameter = [{type:'address',value:to},{type:'uint256',value:amount}]
+                    let options = {
+                        feeLimit:100000000
+                    }
+
+                    const transactionBuild = await this.tronWeb.transactionBuilder.triggerSmartContract(
+                        contractAddress,
+                        functionSelector,
+                        options,
+                        parameter,
+                        from
+                    );
+
+                    let signedTransaction;
+                    switch (this.walletType) {
+                        case "TronLink":
+                            signedTransaction = await this.tronLinkConfig.signTransaction(transactionBuild.transaction);
+                            break;
+                        case "WalletConnectTron":
+                            signedTransaction = await this.tronWalletConnect.signTransaction(transactionBuild.transaction);
+                            break;
+                        default:
+                            break;
+                    }
+
+                    const hashTransaction = await Promise.race([
+                        this.tronWeb.trx.sendRawTransaction(signedTransaction),
+                        timer,
+                    ]);
+
+                    if (hashTransaction) {
+                        this.checkingTransaction = true;
+                        this.updatePaymentAwaiting(false);
+                    }
+
+                    return;
+
+                } catch (error: any) {
+
+                    console.log('error', error)
+                    const errorMessage = (error.message) ? error.message.toLowerCase() : '';
+
+                    let messageTitle = '';
+                    let messageText = '';
+
+                    if (errorMessage.indexOf('rejected') !== -1
+                        || errorMessage.indexOf('not support') !== -1) {
+
+                        messageTitle = 'Transaction Canceled'
+                        messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+
+                    } else if (errorMessage.indexOf('balance') !== -1) {
+
+                        messageTitle = 'Transaction Canceled'
+                        messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+
+                    }else if (errorMessage.indexOf('timeout') !== -1) {
+
+                        messageTitle = 'Transaction Canceled'
+                        messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
+
+                    } else {
+
+                        messageTitle = 'Transaction Canceled';
+                        messageText = 'Something went wrong with the transaction. Please try again later.'
+
+                    }
+
+                    const options = {
+                        detail: {
+                            notificationData: {
+                                title: messageTitle,
+                                text: messageText,
+                                buttonText: 'Confirm'
+                            },
+                            notificationShow: true
+                        },
+                        bubbles: true,
+                        composed: true
+                    };
+                    this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                    this.checkingTransaction = false;
+                    this.updatePaymentAwaiting(false);
+                    return;
+
+                }
+
+            }else{
+
+                try {
+                    const transactionBuild = await this.tronWeb.transactionBuilder.sendTrx(
+                        this.transaction?.to,
+                        this.tronWeb.toSun(this.leftAmountToken),
+                        this.transaction?.from,
+                    );
+
+                    let signedTransaction;
+                    switch (this.walletType) {
+                        case "TronLink":
+                            signedTransaction = await this.tronLinkConfig.signTransaction(transactionBuild);
+                            break;
+                        case "WalletConnectTron":
+                            signedTransaction = await this.tronWalletConnect.signTransaction(transactionBuild);
+                            break;
+                        default:
+                            break;
+                    }
+
+                    const hashTransaction = await Promise.race([
+                        await this.tronWeb.trx.sendRawTransaction(signedTransaction),
+                        timer,
+                    ]);
+                    if (hashTransaction) {
+                        this.checkingTransaction = true;
+                        this.updatePaymentAwaiting(false);
+                    }
+
+                } catch (error: any) {
+
+                    console.log('error', error)
+
+                    const errorMessage = (error.message) ? error.message.toLowerCase() : '';
+
+                    let messageTitle = '';
+                    let messageText = '';
+
+                    if (errorMessage.indexOf('rejected') !== -1
+                        || errorMessage.indexOf('not support') !== -1) {
+
+                        messageTitle = 'Transaction Canceled'
+                        messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+
+                    } else if (errorMessage.indexOf('balance') !== -1) {
+
+                        messageTitle = 'Transaction Canceled'
+                        messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+
+                    }else if (errorMessage.indexOf('timeout') !== -1) {
+
+                        messageTitle = 'Transaction Canceled'
+                        messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
+
+                    } else {
+
+                        messageTitle = 'Transaction Canceled';
+                        messageText = 'Something went wrong with the transaction. Please try again later.'
+
+                    }
+
+                    const options = {
+                        detail: {
+                            notificationData: {
+                                title: messageTitle,
+                                text: messageText,
+                                buttonText: 'Confirm'
+                            },
+                            notificationShow: true
+                        },
+                        bubbles: true,
+                        composed: true
+                    };
+                    this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                    this.checkingTransaction = false;
+                    this.updatePaymentAwaiting(false);
+                    return;
+
+                }
+
+            }
+
+            return;
+        }
 
         switch (this.transaction?.network.symbol) {
             case 'bsc':
