@@ -4,7 +4,7 @@ import {
     HttpError,
     Invoice, InvoiceCreateErrors, InvoiceEventType,
     Network, Product, Transaction, TransactionCreateErrors, TransactionEventType,
-    ValidationError, WsClient, TransactionStatus
+    ValidationError, WsClient, TransactionStatus, UserProfile
 } from '@simplepay-ai/api-client';
 import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
@@ -197,6 +197,9 @@ export class PaymentApp extends LitElement {
 
     @property({attribute: false})
     private user: any = null;
+
+    @property({attribute: false})
+    private userProfile: UserProfile | null = null;
 
     @property({attribute: false, type: Boolean})
     private loginLoading: boolean = false;
@@ -515,6 +518,10 @@ export class PaymentApp extends LitElement {
             }
         }
 
+        if(changedProperties.has('user')){
+            this.getUserProfile();
+        }
+
     }
 
     render() {
@@ -606,6 +613,7 @@ export class PaymentApp extends LitElement {
                                 .transactions=${this.invoiceTransactions}
                                 .experimentalMode=${this.isExperimentalMode}
                                 .user=${this.user}
+                                .userProfile=${this.userProfile}
                                 .loginLoading=${this.loginLoading}
                                 @nextStep=${this.nextStep}
                                 @updateSelectedToken=${(event: CustomEvent) => {
@@ -773,8 +781,6 @@ export class PaymentApp extends LitElement {
             .then((response) => {
                 this.user = response.data;
                 this.loginLoading = false;
-
-                this.saveInvoice();
             })
             .catch(() => {
                 this.user = null;
@@ -794,12 +800,23 @@ export class PaymentApp extends LitElement {
                 this.user = response.data;
                 this.loginLoading = false;
 
-                this.saveInvoice();
+                // this.saveInvoice();
             })
             .catch(() => {
                 this.user = null;
                 this.loginLoading = false;
             })
+    }
+
+    private async getUserProfile(){
+        if(this.API){
+            try{
+                this.userProfile = await this.API.user.profile.get();
+            }catch (e) {
+                console.log('getUserProfile error', e)
+                this.userProfile = null;
+            }
+        }
     }
 
     private async saveInvoice(){
@@ -1184,7 +1201,17 @@ export class PaymentApp extends LitElement {
         }
 
         try {
-            this.transaction = await this.API.transaction.create(transactionParams);
+
+            const newTransaction = await this.API.transaction.create(transactionParams);
+
+            if(newTransaction){
+                this.transaction = newTransaction;
+
+                if(this.user){
+                    await this.saveInvoice();
+                }
+            }
+
         }catch (e) {
             if (e instanceof ValidationError) {
                 const error = e as ValidationError<TransactionCreateErrors>;

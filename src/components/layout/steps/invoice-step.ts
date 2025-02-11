@@ -1,7 +1,7 @@
 import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {getTokenStandart, roundUpAmount} from "../../../lib/util.ts";
-import {Cryptocurrency, Invoice, InvoiceProduct, Network, Transaction} from "@simplepay-ai/api-client";
+import {Cryptocurrency, Invoice, InvoiceProduct, Network, Transaction, UserProfile} from "@simplepay-ai/api-client";
 //@ts-ignore
 import style from "../../../styles/invoice-step.css?inline";
 //@ts-ignore
@@ -40,6 +40,9 @@ export class InvoiceStep extends LitElement {
 
     @property({type: Object})
     user: any = null;
+
+    @property({type: Object})
+    userProfile: UserProfile | null = null;
 
     @property({type: Boolean})
     loginLoading: boolean = false;
@@ -101,6 +104,9 @@ export class InvoiceStep extends LitElement {
     @property({attribute: false, type: Boolean})
     private tokensEmpty = false;
 
+    @property({attribute: false, type: String})
+    private userName = '';
+
     connectedCallback() {
         super.connectedCallback();
 
@@ -133,6 +139,7 @@ export class InvoiceStep extends LitElement {
             this.invoiceProducts = this.invoice.products;
         }
 
+        this.userName = this.getUserName();
     }
 
     updated(changedProperties: Map<string | symbol, unknown>): void {
@@ -186,6 +193,10 @@ export class InvoiceStep extends LitElement {
         if (changedProperties.has('tokenSearch')) {
             this.filteredTokens = this.filterTokens(this.tokenSearch);
         }
+
+        if(changedProperties.has('user') || changedProperties.has('userProfile')){
+            this.userName = this.getUserName();
+        }
     }
 
     render() {
@@ -204,24 +215,9 @@ export class InvoiceStep extends LitElement {
                                                             ? html`
                                                                 <div class="userInfo">
                                                                     <div class="icon">
-                                                                        <img src=${logo} alt="SimpleID Logo">
+                                                                        <img src=${ (this.userProfile && this.userProfile.image) ? this.userProfile.image : logo} alt="SimpleID Logo">
                                                                     </div>
-                                                                    ${
-                                                                            (this.user?.identity?.traits?.email)
-                                                                                    ?
-                                                                                    html`
-                                                                                        <p>${this.user?.identity?.traits?.email}</p>
-                                                                                    `
-                                                                                    : ''
-                                                                    }
-                                                                    ${
-                                                                            (!this.user?.identity?.traits?.email && this.user?.authentication_methods.length > 0 && this.user?.authentication_methods[0].provider === "telegram")
-                                                                                    ?
-                                                                                    html`
-                                                                                        <p>Telegram Account</p>
-                                                                                    `
-                                                                                    : ''
-                                                                    }
+                                                                    <p>${this.userName}</p>
                                                                 </div>
                                                             `
                                                             : html`
@@ -916,6 +912,22 @@ export class InvoiceStep extends LitElement {
 
             </div>
         `;
+    }
+
+    private getUserName(){
+
+        if(this.userProfile && this.userProfile.username){
+            return this.userProfile.username
+        }
+
+        if(this.user && this.user?.identity?.traits?.email){
+            return this.user?.identity?.traits?.email
+        }
+
+        if(this.user && !this.user?.identity?.traits?.email && this.user?.authentication_methods.length > 0 && this.user?.authentication_methods[0].provider === "telegram"){
+            return 'Telegram Account';
+        }
+
     }
 
     private filterTokens(tokenName: string) {
