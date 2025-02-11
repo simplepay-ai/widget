@@ -1202,15 +1202,7 @@ export class PaymentApp extends LitElement {
 
         try {
 
-            const newTransaction = await this.API.transaction.create(transactionParams);
-
-            if(newTransaction){
-                this.transaction = newTransaction;
-
-                if(this.user){
-                    await this.saveInvoice();
-                }
-            }
+            this.transaction = await this.API.transaction.create(transactionParams);
 
         }catch (e) {
             if (e instanceof ValidationError) {
@@ -1230,6 +1222,10 @@ export class PaymentApp extends LitElement {
             };
             this.notificationShow = true;
             this.creatingTransaction = false;
+        }
+
+        if(this.user){
+            await this.saveInvoice();
         }
 
     }
