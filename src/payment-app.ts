@@ -221,6 +221,9 @@ export class PaymentApp extends LitElement {
     @property({attribute: false, type: Object})
     private tronWeb = null;
 
+    @property({attribute: false, type: Object})
+    activeTransaction: Transaction | null = null;
+
     constructor() {
         super();
 
@@ -543,6 +546,11 @@ export class PaymentApp extends LitElement {
             this.getUserProfile();
         }
 
+        if (changedProperties.has('transactions') && this.invoiceTransactions.length > 0) {
+            const transaction = this.invoiceTransactions.find((item) => item.status === 'created' || item.status === 'processing' || item.status === 'confirming')
+            this.activeTransaction = (transaction) ? transaction : null;
+        }
+
     }
 
     render() {
@@ -762,13 +770,16 @@ export class PaymentApp extends LitElement {
                             <div class="leftSection">
                                 
                                 <invoice-info
+                                        .currentStep=${this.paymentPageStep}
                                         .invoice=${this.invoice}
                                         .user=${this.user}
                                         .userProfile=${this.userProfile}
                                         .loginLoading=${this.loginLoading}
                                         .hasTransactions=${ (this.invoiceTransactions) ? this.invoiceTransactions.length > 0 : false }
                                         @login=${this.login}
-                                        @goToTransactions=${() => (this.goToPaymentPageStep('transactionsHistoryStep'))}
+                                        @goToStep=${(event: CustomEvent) => {
+                                            this.goToPaymentPageStep(event.detail.stepName)
+                                        }}
                                 >
                                 </invoice-info>
                                 
@@ -777,6 +788,48 @@ export class PaymentApp extends LitElement {
 <!--                            <div class="separator"></div>-->
 
                             <div class="rightSection">
+                                
+                                ${
+                                        (this.paymentPageStep === 'invoiceStep' && this.invoice?.status === 'active' && !this.activeTransaction)
+                                        ? html`
+                                                Create Transaction Form
+                                                ` : ''
+                                }
+
+                                ${
+                                        (this.paymentPageStep === 'invoiceStep' && this.invoice?.status === 'active' && this.activeTransaction)
+                                                ? html`
+                                                Has Active Transaction Message
+                                                ` : ''
+                                }
+
+                                ${
+                                        (this.paymentPageStep === 'awaitingPaymentStep')
+                                                ? html`
+                                                Awaiting Payment Step
+                                                ` : ''
+                                }
+
+                                ${
+                                        (this.paymentPageStep === 'processingTransactionStep')
+                                                ? html`
+                                                    Processing Transaction Step
+                                                ` : ''
+                                }
+
+                                ${
+                                        (this.paymentPageStep === 'successTransactionStep')
+                                                ? html`
+                                                    Final Transaction Step
+                                                ` : ''
+                                }
+
+                                ${
+                                        (this.paymentPageStep === 'transactionsHistoryStep' || this.invoice?.status !== 'active')
+                                                ? html`
+                                                    Transactions History
+                                                ` : ''
+                                }
 
                             </div>
                             

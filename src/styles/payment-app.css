@@ -160,13 +160,13 @@
 }
 
 .paymentPage .paymentPageContent{
-    padding: 32px;
+    padding: 64px 32px;
     display: flex;
-    gap: 16px;
+    gap: 54px;
     justify-content: space-between;
     height: 100%;
     width: 100%;
-    max-width: 1080px;
+    max-width: 1024px;
     margin: 0 auto;
 }
 

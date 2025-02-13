@@ -5,11 +5,15 @@ import style from "../../styles/payment-page-styles/invoice-info.css?inline";
 import {Invoice, InvoiceProduct, UserProfile} from "@simplepay-ai/api-client";
 //@ts-ignore
 import logo from "../../assets/logo.jpg";
+import {PaymentPageStep} from "../../lib/types.ts";
 
 @customElement('invoice-info')
 export class InvoiceInfo extends LitElement {
 
     static styles = unsafeCSS(style);
+
+    @property({type: String})
+    currentStep: PaymentPageStep | '' = '';
 
     @property({type: Object})
     invoice: Invoice | null = null;
@@ -96,13 +100,16 @@ export class InvoiceInfo extends LitElement {
         this.dispatchEvent(loginEvent);
     }
 
-    private dispatchTransactionsStep() {
-        const toTransactionsEvent = new CustomEvent('goToTransactions', {
+    private dispatchStepChange(step: PaymentPageStep) {
+        const changeStepEventEvent = new CustomEvent('goToStep', {
+            detail: {
+                stepName: step,
+            },
             bubbles: true,
             composed: true
         });
 
-        this.dispatchEvent(toTransactionsEvent);
+        this.dispatchEvent(changeStepEventEvent);
     }
 
     render() {
@@ -308,12 +315,23 @@ export class InvoiceInfo extends LitElement {
                     }
 
                     ${
-                            (this.hasTransactions)
+                            (this.hasTransactions && this.invoice?.status === 'active' && this.currentStep !== 'transactionsHistoryStep')
                                     ? html`
                                         <button class="mainButton"
-                                                @click=${() => this.dispatchTransactionsStep()}
+                                                @click=${() => this.dispatchStepChange('transactionsHistoryStep')}
                                         >
                                             Transactions History
+                                        </button>
+                                    ` : ''
+                    }
+
+                    ${
+                            (this.invoice?.status === 'active' && this.currentStep !== 'invoiceStep')
+                                    ? html`
+                                        <button class="mainButton"
+                                                @click=${() => this.dispatchStepChange('invoiceStep')}
+                                        >
+                                            Create Transaction
                                         </button>
                                     ` : ''
                     }
