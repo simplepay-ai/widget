@@ -5,7 +5,7 @@ import {PropertyValues} from 'lit';
 import {customElement, html, LitElement, property, query, unsafeCSS} from 'lit-element';
 import {getTokenStandart, roundUpAmount} from "../../../lib/util.ts";
 //@ts-ignore
-import style from "../../../styles/success-step.css?inline";
+import style from "../../../styles/widget-styles/success-step.css?inline";
 
 @customElement('success-step')
 export class SuccessStep extends LitElement {

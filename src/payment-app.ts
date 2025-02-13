@@ -13,31 +13,36 @@ import {
     AppTheme,
     ICartProduct,
     INotification, InvoiceType, IOpenButton,
-    OpenMode, ViewMode,
+    OpenMode, PaymentPageStep, ViewMode,
     WalletType
 } from './lib/types.ts';
-import './components/layout/main-header.ts';
-import './components/layout/main-footer.ts';
-import './components/layout/success-footer.ts';
-import './components/layout/steps/loading-step.ts';
-import './components/layout/steps/error-step.ts';
-import './components/layout/steps/payment-step.ts';
-import './components/layout/steps/success-step.ts';
-import './components/layout/steps/processing-step.ts';
+import './components/widget-layout/main-header.ts';
+import './components/widget-layout/main-footer.ts';
+import './components/widget-layout/success-footer.ts';
+import './components/widget-layout/steps/loading-step.ts';
+import './components/widget-layout/steps/error-step.ts';
+import './components/widget-layout/steps/payment-step.ts';
+import './components/widget-layout/steps/success-step.ts';
+import './components/widget-layout/steps/processing-step.ts';
 import './components/ui/token-icon.ts';
 import './components/ui/network-icon.ts';
 import './components/ui/custom-notification.ts';
-import './components/layout/steps/select-type-step.ts';
-import './components/layout/steps/price-step.ts';
-import './components/layout/steps/product-step.ts';
-import './components/layout/steps/cart-step.ts';
-import './components/layout/steps/invoice-step.ts';
-import './components/layout/steps/wallet-step.ts';
-import './components/layout/steps/created-invoice-step.ts';
+import './components/widget-layout/steps/select-type-step.ts';
+import './components/widget-layout/steps/price-step.ts';
+import './components/widget-layout/steps/product-step.ts';
+import './components/widget-layout/steps/cart-step.ts';
+import './components/widget-layout/steps/invoice-step.ts';
+import './components/widget-layout/steps/wallet-step.ts';
+import './components/widget-layout/steps/created-invoice-step.ts';
+
+import './components/payment-page-layout/loading-step-payment-page.ts';
+import './components/payment-page-layout/error-step-payment-page.ts';
+import './components/payment-page-layout/payment-page.ts';
+
 import {checkWalletAddress, generateUUID} from "./lib/util.ts";
 import themesConfig from '../themesConfig.json';
 //@ts-ignore
-import style from "./styles/payment-app.css?inline";
+import style from "./styles/widget-styles/payment-app.css?inline";
 import axios from "axios";
 
 @customElement('payment-app')
@@ -98,6 +103,9 @@ export class PaymentApp extends LitElement {
 
     @property({attribute: false})
     private appStep: AppStep = 'loadingStep';
+
+    @property({attribute: false})
+    private paymentPageStep: PaymentPageStep = 'loadingStep';
 
     @property({attribute: false})
     private tokens: Cryptocurrency[] | undefined = [];
@@ -240,12 +248,12 @@ export class PaymentApp extends LitElement {
                 break;
         }
 
-        if(this.viewMode !== 'modal' && this.viewMode !== 'relative'){
+        if(this.viewMode !== 'modal' && this.viewMode !== 'paymentPage' && this.viewMode !== 'relative'){
             this.errorTitle = 'Error';
             this.errorText =
                 'Invalid viewMode: the provided attribute is not valid. Please ensure it matches one of the supported view modes: modal or relative (default).';
-            this.goToStep('errorStep');
-            this.dispatchErrorEvent('View Mode Error', 'Invalid viewMode: the provided attribute is not valid. Please ensure it matches one of the supported view modes: modal or relative (default).');
+            this.goToWidgetStep('errorStep');
+            this.dispatchErrorEvent('View Mode Error', 'Invalid viewMode: the provided attribute is not valid. Please ensure it matches one of the supported view modes: modal, paymentPage or relative (default).');
 
             return;
         }
@@ -258,7 +266,7 @@ export class PaymentApp extends LitElement {
             this.errorTitle = 'Error';
             this.errorText =
                 'Invalid trigger: the provided attribute is empty.';
-            this.goToStep('errorStep');
+            this.goToWidgetStep('errorStep');
             this.dispatchErrorEvent('Trigger Error', 'Invalid trigger: the provided attribute is empty.');
 
             return;
@@ -285,6 +293,10 @@ export class PaymentApp extends LitElement {
             }
         }
 
+        if(this.viewMode === 'paymentPage'){
+            this.openMode = 'paymentPage'
+        }
+
         if(this.clientId){
 
             const isUUID = this.checkUUID(this.clientId);
@@ -294,7 +306,8 @@ export class PaymentApp extends LitElement {
                 this.errorTitle = 'Error';
                 this.errorText =
                     'Invalid clientId: it must be either a number or a valid UUID v4 format.';
-                this.goToStep('errorStep');
+                this.goToWidgetStep('errorStep');
+                this.goToPaymentPageStep('errorStep')
                 this.dispatchErrorEvent('Client ID Error', 'Invalid clientId: it must be either a number or a valid UUID v4 format.');
 
                 return;
@@ -316,7 +329,8 @@ export class PaymentApp extends LitElement {
                         this.errorTitle = 'Error';
                         this.errorText =
                             'Failed to retrieve transaction data. Please try again later.';
-                        this.goToStep('errorStep');
+                        this.goToWidgetStep('errorStep');
+                        this.goToPaymentPageStep('errorStep')
                         this.dispatchErrorEvent('Fetch Transaction Error', 'Failed to retrieve transaction data. Please try again later.');
                         return;
                     }
@@ -328,7 +342,8 @@ export class PaymentApp extends LitElement {
                                 this.errorTitle = 'Error';
                                 this.errorText =
                                     'Failed to retrieve invoice data. Please try again later.';
-                                this.goToStep('errorStep');
+                                this.goToWidgetStep('errorStep');
+                                this.goToPaymentPageStep('errorStep')
                                 this.dispatchErrorEvent('Fetch Invoice Error', 'Failed to retrieve invoice data. Please try again later.');
                                 return;
                             }
@@ -340,7 +355,7 @@ export class PaymentApp extends LitElement {
                             //     this.errorTitle = 'Error';
                             //     this.errorText =
                             //         'Currently, there are no tokens available for selection as a payment option on this project.';
-                            //     this.goToStep('errorStep');
+                            //     this.goToWidgetStep('errorStep');
                             //     this.dispatchErrorEvent('Empty Tokens', 'Currently, there are no tokens available for selection as a payment option on this project.');
                             //
                             //     return;
@@ -365,7 +380,8 @@ export class PaymentApp extends LitElement {
                         this.errorTitle = 'Error';
                         this.errorText =
                             'Failed to retrieve invoice data. Please try again later.';
-                        this.goToStep('errorStep');
+                        this.goToWidgetStep('errorStep');
+                        this.goToPaymentPageStep('errorStep')
                         this.dispatchErrorEvent('Fetch Invoice Error', 'Failed to retrieve invoice data. Please try again later.');
                         return;
                     }
@@ -376,7 +392,7 @@ export class PaymentApp extends LitElement {
                     //     this.errorTitle = 'Error';
                     //     this.errorText =
                     //         'Currently, there are no tokens available for selection as a payment option on this project.';
-                    //     this.goToStep('errorStep');
+                    //     this.goToWidgetStep('errorStep');
                     //     this.dispatchErrorEvent('Empty Tokens', 'Currently, there are no tokens available for selection as a payment option on this project.');
                     //
                     //     return;
@@ -411,7 +427,8 @@ export class PaymentApp extends LitElement {
                                     'The token name and network you entered is incorrect. Please verify the token name and network and try again.';
                             }
 
-                            this.goToStep('errorStep');
+                            this.goToWidgetStep('errorStep');
+                            this.goToPaymentPageStep('errorStep')
 
                             return;
                         }
@@ -427,7 +444,8 @@ export class PaymentApp extends LitElement {
                     if(this.invoice){
                         this.getInvoiceTransactions(this.invoiceId).then(() => {
                             this.subscribeInvoice(this.invoiceId).then(() => {
-                                this.goToStep('invoiceStep');
+                                this.goToWidgetStep('invoiceStep');
+                                this.goToPaymentPageStep('invoiceStep')
 
                                 if(this.isExperimentalMode){
                                     this.checkUser();
@@ -448,7 +466,8 @@ export class PaymentApp extends LitElement {
             this.errorText =
                 'You did not pass the appId. In order to continue, the appId field must be filled in.';
 
-            this.goToStep('errorStep');
+            this.goToWidgetStep('errorStep');
+            this.goToPaymentPageStep('errorStep')
 
             return;
         }
@@ -462,7 +481,8 @@ export class PaymentApp extends LitElement {
             this.errorTitle = 'Error';
             this.errorText =
                 'Failed to retrieve app data. Please try again later.';
-            this.goToStep('errorStep');
+            this.goToWidgetStep('errorStep');
+            this.goToPaymentPageStep('errorStep')
             this.dispatchErrorEvent('Fetch App Error', 'Failed to retrieve app data. Please try again later.');
             return;
         }
@@ -472,7 +492,8 @@ export class PaymentApp extends LitElement {
             this.errorTitle = 'Error';
             this.errorText =
                 'Failed to retrieve app products data. Please try again later.';
-            this.goToStep('errorStep');
+            this.goToWidgetStep('errorStep');
+            this.goToPaymentPageStep('errorStep')
             this.dispatchErrorEvent('Fetch Products Error', 'Failed to retrieve app products data. Please try again later.');
             return;
         }
@@ -485,22 +506,22 @@ export class PaymentApp extends LitElement {
                 case "request":
                     this.invoiceType = this.paymentType;
                     this.paymentTypeSelected = true;
-                    this.goToStep('priceStep');
+                    this.goToWidgetStep('priceStep');
                     return;
                 case "item":
                     this.invoiceType = this.paymentType;
                     this.paymentTypeSelected = true;
-                    this.goToStep('productStep');
+                    this.goToWidgetStep('productStep');
                     return;
                 case "cart":
                     this.invoiceType = this.paymentType;
                     this.paymentTypeSelected = true;
-                    this.goToStep('cartStep');
+                    this.goToWidgetStep('cartStep');
                     return;
             }
         }
 
-        this.goToStep('selectTypeStep');
+        this.goToWidgetStep('selectTypeStep');
 
         return;
     }
@@ -525,7 +546,7 @@ export class PaymentApp extends LitElement {
     }
 
     render() {
-        const content = html`
+        const widgetContent = html`
             ${this.appStep === 'loadingStep'
                     ? html`
                         <loading-step></loading-step>`
@@ -719,11 +740,32 @@ export class PaymentApp extends LitElement {
                     @updateNotification=${this.updateNotification}
             ></custom-notification>
         `
+        const paymentPageContent = html`
+
+            ${this.paymentPageStep === 'loadingStep'
+                    ? html`
+                        <loading-step-payment-page></loading-step-payment-page>`
+                    : ''}
+
+            ${this.paymentPageStep === 'errorStep'
+                    ? html`
+                        <error-step-payment-page
+                                .title=${this.errorTitle}
+                                .text=${this.errorText}
+                        ></error-step-payment-page>`
+                    : ''}
+
+            ${['invoiceStep', 'transactionsHistoryStep', 'awaitingPaymentStep', 'processingTransactionStep', 'successTransactionStep'].includes(this.paymentPageStep)
+                    ? html`
+                        <payment-page
+                        ></payment-page>`
+                    : ''}
+        `
 
         if (this.openMode === 'auto') {
             return html`
                 <div class=${`stepWrapper`}>
-                    ${content}
+                    ${widgetContent}
                 </div>
             `;
         }
@@ -733,7 +775,7 @@ export class PaymentApp extends LitElement {
                 <div class="paymentModal show">
                     <div class="paymentModalOverlay show"></div>
                     <div class="paymentModalContent show">
-                        ${content}
+                        ${widgetContent}
                     </div>
                 </div>
             `;
@@ -753,7 +795,7 @@ export class PaymentApp extends LitElement {
                          @click=${() => this.closePaymentModal()}
                     ></div>
                     <div class="paymentModalContent ${(this.showPaymentModalContent) ? 'show' : ''}">
-                        ${content}
+                        ${widgetContent}
                     </div>
                 </div>
             `;
@@ -766,8 +808,16 @@ export class PaymentApp extends LitElement {
                          @click=${() => this.closePaymentModal()}
                     ></div>
                     <div class="paymentModalContent ${(this.showPaymentModalContent) ? 'show' : ''}">
-                        ${content}
+                        ${widgetContent}
                     </div>
+                </div>
+            `;
+        }
+
+        if (this.openMode === 'paymentPage') {
+            return html`
+                <div class="paymentPage">
+                    ${paymentPageContent}
                 </div>
             `;
         }
@@ -930,13 +980,13 @@ export class PaymentApp extends LitElement {
         if (this.appStep === 'selectTypeStep' && this.invoiceType) {
             switch (this.invoiceType) {
                 case "request":
-                    this.goToStep('priceStep');
+                    this.goToWidgetStep('priceStep');
                     return;
                 case "item":
-                    this.goToStep('productStep');
+                    this.goToWidgetStep('productStep');
                     return;
                 case "cart":
-                    this.goToStep('cartStep');
+                    this.goToWidgetStep('cartStep');
                     return;
                 default:
                     return;
@@ -962,7 +1012,7 @@ export class PaymentApp extends LitElement {
 
         if (this.appStep === 'invoiceStep' && this.selectedToken && this.selectedNetwork) {
             this.creatingTransaction = false;
-            this.goToStep('walletStep');
+            this.goToWidgetStep('walletStep');
             return;
         }
 
@@ -987,17 +1037,17 @@ export class PaymentApp extends LitElement {
     private async prevStep() {
 
         if (this.appStep === 'priceStep') {
-            this.goToStep('selectTypeStep');
+            this.goToWidgetStep('selectTypeStep');
             return;
         }
 
         if (this.appStep === 'productStep') {
-            this.goToStep('selectTypeStep');
+            this.goToWidgetStep('selectTypeStep');
             return;
         }
 
         if (this.appStep === 'cartStep') {
-            this.goToStep('selectTypeStep');
+            this.goToWidgetStep('selectTypeStep');
             return;
         }
 
@@ -1007,31 +1057,31 @@ export class PaymentApp extends LitElement {
 
                 switch (this.paymentType) {
                     case "request":
-                        this.goToStep('priceStep');
+                        this.goToWidgetStep('priceStep');
                         return;
                     case "item":
-                        this.goToStep('productStep');
+                        this.goToWidgetStep('productStep');
                         return;
                     case "cart":
-                        this.goToStep('cartStep');
+                        this.goToWidgetStep('cartStep');
                         return;
                     default:
-                        this.goToStep('selectTypeStep');
+                        this.goToWidgetStep('selectTypeStep');
                         return;
                 }
             }
 
-            this.goToStep('selectTypeStep');
+            this.goToWidgetStep('selectTypeStep');
             return;
         }
 
         if (this.appStep === 'walletStep') {
-            this.goToStep('invoiceStep');
+            this.goToWidgetStep('invoiceStep');
             return;
         }
 
         if (this.appStep === 'paymentStep') {
-            this.goToStep('invoiceStep');
+            this.goToWidgetStep('invoiceStep');
             this.onlyTransaction = false;
             this.transaction = null;
             this.cancelingTransaction = false;
@@ -1040,7 +1090,7 @@ export class PaymentApp extends LitElement {
         }
 
         if (this.appStep === 'processingStep') {
-            this.goToStep('invoiceStep');
+            this.goToWidgetStep('invoiceStep');
             this.onlyTransaction = false;
             this.transaction = null;
             this.cancelingTransaction = false;
@@ -1049,7 +1099,7 @@ export class PaymentApp extends LitElement {
         }
 
         if (this.appStep === 'successStep') {
-            this.goToStep('invoiceStep');
+            this.goToWidgetStep('invoiceStep');
             this.onlyTransaction = false;
             this.transaction = null;
             this.cancelingTransaction = false;
@@ -1058,8 +1108,12 @@ export class PaymentApp extends LitElement {
         }
     }
 
-    private goToStep(stepName: AppStep) {
+    private goToWidgetStep(stepName: AppStep) {
         this.appStep = stepName;
+    }
+
+    private goToPaymentPageStep(stepName: PaymentPageStep) {
+        this.paymentPageStep = stepName;
     }
 
     private async getApp() {
@@ -1084,7 +1138,8 @@ export class PaymentApp extends LitElement {
             this.errorTitle = 'Error';
             this.errorText =
                 'Failed to retrieve token data. Please try again later.';
-            this.goToStep('errorStep');
+            this.goToWidgetStep('errorStep');
+            this.goToPaymentPageStep('errorStep')
             this.dispatchErrorEvent('Fetch Tokens Error', 'Failed to retrieve token data. Please try again later.');
         }
     }
@@ -1159,7 +1214,7 @@ export class PaymentApp extends LitElement {
                 this.newAppInvoice = fullInvoice;
                 this.dispatchInvoiceCreatedEvent(fullInvoice.id);
 
-                this.goToStep('createdInvoiceStep');
+                this.goToWidgetStep('createdInvoiceStep');
 
                 this.creatingInvoice = false;
                 this.invoicePrice = '0';
@@ -1375,12 +1430,14 @@ export class PaymentApp extends LitElement {
         switch (transactionStatus) {
             case "processing":
                 if(this.appStep !== 'paymentStep'){
-                    this.goToStep('paymentStep');
+                    this.goToWidgetStep('paymentStep');
+                    this.goToPaymentPageStep('awaitingPaymentStep')
                 }
                 return;
             case "confirming":
                 if(this.appStep !== 'processingStep'){
-                    this.goToStep('processingStep');
+                    this.goToWidgetStep('processingStep');
+                    this.goToPaymentPageStep('processingTransactionStep')
                 }
                 return;
             case "rejected":
@@ -1388,7 +1445,8 @@ export class PaymentApp extends LitElement {
             case "success":
             case "expired":
                 if(this.appStep !== 'successStep'){
-                    this.goToStep('successStep');
+                    this.goToWidgetStep('successStep');
+                    this.goToPaymentPageStep('successTransactionStep')
                 }
                 return;
             default:

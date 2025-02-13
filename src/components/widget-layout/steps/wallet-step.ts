@@ -13,7 +13,7 @@ import {mainnet, bsc, polygon, avalanche, zksync, arbitrum, optimism, base} from
 import {coinbaseWallet, metaMask, walletConnect} from "@wagmi/connectors";
 import {Cryptocurrency, Invoice, InvoiceProduct, Network} from "@simplepay-ai/api-client";
 //@ts-ignore
-import style from "../../../styles/wallet-step.css?inline";
+import style from "../../../styles/widget-styles/wallet-step.css?inline";
 import TronWeb from "tronweb";
 import {TronLinkAdapter, WalletConnectAdapter} from "@tronweb3/tronwallet-adapters";
 import {ChainNetwork} from "@tronweb3/tronwallet-abstract-adapter";

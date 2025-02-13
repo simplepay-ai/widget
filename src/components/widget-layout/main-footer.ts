@@ -2,7 +2,7 @@ import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {Invoice, InvoiceProduct} from "@simplepay-ai/api-client";
 //@ts-ignore
-import style from "../../styles/main-footer.css?inline";
+import style from "../../styles/widget-styles/main-footer.css?inline";
 
 @customElement('main-footer')
 export class MainFooter extends LitElement {

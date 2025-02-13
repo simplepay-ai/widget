@@ -2,7 +2,7 @@ import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {INotification} from '../../lib/types.ts';
 //@ts-ignore
-import style from "../../styles/custom-notification.css?inline";
+import style from "../../styles/widget-styles/custom-notification.css?inline";
 
 @customElement('custom-notification')
 export class CustomNotification extends LitElement {

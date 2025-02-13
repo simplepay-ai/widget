@@ -3,7 +3,7 @@ import {customElement} from 'lit/decorators.js';
 import {Product} from "@simplepay-ai/api-client";
 import {ICartProduct} from "../../../lib/types.ts";
 //@ts-ignore
-import style from "../../../styles/cart-step.css?inline";
+import style from "../../../styles/widget-styles/cart-step.css?inline";
 
 @customElement('cart-step')
 export class CartStep extends LitElement {

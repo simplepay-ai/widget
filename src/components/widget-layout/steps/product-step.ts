@@ -2,7 +2,7 @@ import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {Product} from "@simplepay-ai/api-client";
 //@ts-ignore
-import style from "../../../styles/product-step.css?inline";
+import style from "../../../styles/widget-styles/product-step.css?inline";
 
 @customElement('product-step')
 export class ProductStep extends LitElement {

@@ -1,7 +1,7 @@
 import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import { customElement } from 'lit/decorators.js';
 //@ts-ignore
-import style from "../../../styles/error-step.css?inline";
+import style from "../../../styles/widget-styles/error-step.css?inline";
 
 @customElement('error-step')
 export class ErrorStep extends LitElement {

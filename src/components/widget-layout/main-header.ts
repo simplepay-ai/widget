@@ -1,7 +1,7 @@
 import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import { customElement } from 'lit/decorators.js';
 //@ts-ignore
-import style from "../../styles/main-header.css?inline";
+import style from "../../styles/widget-styles/main-header.css?inline";
 
 @customElement('main-header')
 export class MainHeader extends LitElement {

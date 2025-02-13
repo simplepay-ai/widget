@@ -20,35 +20,41 @@
         height: 100dvh;
     }
 
-    .appContainer {
-        margin: 0 auto;
+    .appContainer{
         width: 100%;
-        height: 700px;
-        max-width: 390px;
-        border-radius: 6px;
-        overflow: hidden;
+        height: 100%;
     }
 
-    @media (max-width: 768px) {
-        .appContainer {
-            height: 100%;
-            max-width: unset;
-            border-radius: 0;
-            border: 0;
-        }
-    }
+    /*.appContainer {*/
+    /*    margin: 0 auto;*/
+    /*    width: 100%;*/
+    /*    height: 700px;*/
+    /*    max-width: 390px;*/
+    /*    border-radius: 6px;*/
+    /*    overflow: hidden;*/
+    /*}*/
+
+    /*@media (max-width: 768px) {*/
+    /*    .appContainer {*/
+    /*        height: 100%;*/
+    /*        max-width: unset;*/
+    /*        border-radius: 0;*/
+    /*        border: 0;*/
+    /*    }*/
+    /*}*/
 </style>
 
 <div class="appContainer">
     <payment-app
             theme="dark"
             invoiceId="fd0cde2b-e53c-4582-85fe-d6c9ca9e3265"
-            experimental="true"
+            experimental="false"
+            viewMode="paymentPage"
     />
 
     <!--    theme="light"-->
 
-    <!--    viewMode="modal | relative (default)"-->
+    <!--    viewMode="modal | paymentPage | relative (default)"-->
     <!--    trigger="someId | button"-->
     <!--    triggerConfig='{ "backgroundColor": "black","textColor": "white","title": "CryptoPay" }'-->
 

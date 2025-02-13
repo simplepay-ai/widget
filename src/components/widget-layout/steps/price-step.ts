@@ -2,7 +2,7 @@ import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {App} from "@simplepay-ai/api-client";
 //@ts-ignore
-import style from "../../../styles/price-step.css?inline";
+import style from "../../../styles/widget-styles/price-step.css?inline";
 
 @customElement('price-step')
 export class PriceStep extends LitElement {

@@ -1,10 +1,10 @@
 import {html, LitElement, unsafeCSS} from 'lit-element';
 import { customElement } from 'lit/decorators.js';
 //@ts-ignore
-import style from "../../../styles/loading-step.css?inline";
+import style from "../../styles/payment-page-styles/loading-step-payment-page.css?inline";
 
-@customElement('loading-step')
-export class LoadingStep extends LitElement {
+@customElement('loading-step-payment-page')
+export class LoadingStepPaymentPage extends LitElement {
 
     static styles = unsafeCSS(style);
 
@@ -26,6 +26,6 @@ export class LoadingStep extends LitElement {
 
 declare global {
     interface HTMLElementTagNameMap {
-        'loading-step': LoadingStep;
+        'loading-step-payment-page': LoadingStepPaymentPage;
     }
 }

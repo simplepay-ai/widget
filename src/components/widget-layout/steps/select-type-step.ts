@@ -2,7 +2,7 @@ import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {InvoiceType} from "../../../lib/types.ts";
 //@ts-ignore
-import style from "../../../styles/select-type-step.css?inline";
+import style from "../../../styles/widget-styles/select-type-step.css?inline";
 
 @customElement('select-type-step')
 export class SelectTypeStep extends LitElement {

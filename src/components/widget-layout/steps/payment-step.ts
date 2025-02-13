@@ -18,7 +18,7 @@ import {
 import {bsc, mainnet, polygon, avalanche, zksync, arbitrum, optimism, base} from "@wagmi/core/chains";
 import {Address, parseEther, parseUnits} from "viem";
 //@ts-ignore
-import style from "../../../styles/payment-step.css?inline";
+import style from "../../../styles/widget-styles/payment-step.css?inline";
 
 const ABI_USDT_BSC = [
     {

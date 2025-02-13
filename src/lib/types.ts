@@ -1,9 +1,9 @@
-import {Currency, Product} from "@simplepay-ai/api-client";
+// import {Currency, Product} from "@simplepay-ai/api-client";
 
 export type AppTheme = 'light' | 'dark' | 'custom';
 
 export type AppStep =
-    | 'loadingStep'
+    'loadingStep'
     | 'errorStep'
     | 'selectTypeStep'
     | 'priceStep'
@@ -17,13 +17,22 @@ export type AppStep =
     | 'createdInvoiceStep'
 ;
 
-export type CurrentPriceStep = 'priceEnter' | 'messageEnter';
+export type PaymentPageStep =
+    'loadingStep'
+    | 'errorStep'
+    | 'invoiceStep'
+    | 'transactionsHistoryStep'
+    | 'awaitingPaymentStep'
+    | 'processingTransactionStep'
+    | 'successTransactionStep';
+
+// export type CurrentPriceStep = 'priceEnter' | 'messageEnter';
 
 export type WalletType = 'MetaMask' | 'Coinbase' | 'WalletConnect' | 'WalletConnectTron' | 'TronLink' | 'Injected' | 'Custom'
 
-export type OpenMode = 'auto' | 'modal' | 'button' | 'trigger'
+export type OpenMode = 'auto' | 'paymentPage' | 'modal' | 'button' | 'trigger'
 
-export type ViewMode = 'modal' | 'relative'
+export type ViewMode = 'modal' | 'paymentPage' | 'relative'
 
 export type InvoiceType = 'request' | 'item' | 'cart'
 
@@ -33,10 +42,10 @@ export interface IOpenButton{
     title: string;
 }
 
-export interface IProviderInfo{
-    name: string;
-    image: string;
-}
+// export interface IProviderInfo{
+//     name: string;
+//     image: string;
+// }
 
 export interface INotification {
     title?: string;
@@ -44,16 +53,16 @@ export interface INotification {
     buttonText?: string;
 }
 
-export interface IProduct {
-    id: string;
-    name: string;
-    description: string | null;
-    image: string | null;
-    createdAt: string;
-    updatedAt: string | null;
-    prices: IProductPrice[];
-    count: number;
-}
+// export interface IProduct {
+//     id: string;
+//     name: string;
+//     description: string | null;
+//     image: string | null;
+//     createdAt: string;
+//     updatedAt: string | null;
+//     prices: IProductPrice[];
+//     count: number;
+// }
 //
 // export interface ICustomProduct {
 //     name: string;
@@ -63,16 +72,16 @@ export interface IProduct {
 //     count: number;
 // }
 
-export interface IProductPrice {
-    currency: Currency;
-    price: number;
-}
+// export interface IProductPrice {
+//     currency: Currency;
+//     price: number;
+// }
 
-export interface IProductInvoice {
-    id?: string,
-    product?: Product,
-    count: number
-}
+// export interface IProductInvoice {
+//     id?: string,
+//     product?: Product,
+//     count: number
+// }
 
 export interface ICartProduct{
     id: string;

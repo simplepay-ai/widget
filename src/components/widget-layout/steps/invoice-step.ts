@@ -3,7 +3,7 @@ import {customElement} from 'lit/decorators.js';
 import {getTokenStandart, roundUpAmount} from "../../../lib/util.ts";
 import {Cryptocurrency, Invoice, InvoiceProduct, Network, Transaction, UserProfile} from "@simplepay-ai/api-client";
 //@ts-ignore
-import style from "../../../styles/invoice-step.css?inline";
+import style from "../../../styles/widget-styles/invoice-step.css?inline";
 //@ts-ignore
 import logo from "../../../assets/logo.jpg";
 
