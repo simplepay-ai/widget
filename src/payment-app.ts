@@ -37,12 +37,12 @@ import './components/widget-layout/steps/created-invoice-step.ts';
 
 import './components/payment-page-layout/loading-step-payment-page.ts';
 import './components/payment-page-layout/error-step-payment-page.ts';
-import './components/payment-page-layout/payment-page.ts';
+import './components/payment-page-layout/invoice-info.ts';
 
 import {checkWalletAddress, generateUUID} from "./lib/util.ts";
 import themesConfig from '../themesConfig.json';
 //@ts-ignore
-import style from "./styles/widget-styles/payment-app.css?inline";
+import style from "./styles/payment-app.css?inline";
 import axios from "axios";
 
 @customElement('payment-app')
@@ -757,9 +757,38 @@ export class PaymentApp extends LitElement {
 
             ${['invoiceStep', 'transactionsHistoryStep', 'awaitingPaymentStep', 'processingTransactionStep', 'successTransactionStep'].includes(this.paymentPageStep)
                     ? html`
-                        <payment-page
-                        ></payment-page>`
+                        <div class=${`paymentPageContent`}>
+                            
+                            <div class="leftSection">
+                                
+                                <invoice-info
+                                        .invoice=${this.invoice}
+                                        .user=${this.user}
+                                        .userProfile=${this.userProfile}
+                                        .loginLoading=${this.loginLoading}
+                                        .hasTransactions=${ (this.invoiceTransactions) ? this.invoiceTransactions.length > 0 : false }
+                                        @login=${this.login}
+                                        @goToTransactions=${() => (this.goToPaymentPageStep('transactionsHistoryStep'))}
+                                >
+                                </invoice-info>
+                                
+                            </div>
+                            
+<!--                            <div class="separator"></div>-->
+
+                            <div class="rightSection">
+
+                            </div>
+                            
+                        </div>`
                     : ''}
+
+            <toast-notification
+                    .active=${this.notificationShow}
+                    .data=${this.notificationData}
+                    .dark=${this.theme === 'dark'}
+                    @updateNotification=${this.updateNotification}
+            ></toast-notification>
         `
 
         if (this.openMode === 'auto') {
@@ -816,7 +845,7 @@ export class PaymentApp extends LitElement {
 
         if (this.openMode === 'paymentPage') {
             return html`
-                <div class="paymentPage">
+                <div class=${`paymentPage ${this.theme}`}>
                     ${paymentPageContent}
                 </div>
             `;

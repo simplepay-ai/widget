@@ -1,0 +1,461 @@
+* {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 14px;
+    font-weight: 450;
+    background: transparent;
+    margin: 0;
+    padding: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.invoiceInfoWrapper{
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    gap: 18px;
+}
+
+.invoiceInfoWrapper .merchantInfo .topInfo{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+}
+
+.invoiceInfoWrapper .merchantInfo .topInfo .image{
+    width: 40px;
+    height: 40px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    overflow: hidden;
+    border: 1px solid #cccccc; /* Fallback */
+    border: 1px solid var(--sp-widget-border-color);
+    background: #ffffff; /* Fallback */
+    background: var(--sp-widget-bg-color);
+    border-radius: 50%;
+}
+
+.invoiceInfoWrapper .merchantInfo .topInfo .image img {
+    width: 40px;
+    height: 40px;
+    -o-object-fit: cover;
+    object-fit: cover;
+}
+
+.invoiceInfoWrapper .merchantInfo .topInfo .image.placeholder svg {
+    width: 20px;
+    height: 20px;
+    -o-object-fit: cover;
+    object-fit: cover;
+    color: #007bff; /* Fallback */
+    color: var(--sp-widget-active-color);
+}
+
+.invoiceInfoWrapper .merchantInfo .topInfo .name{
+    font-size: 20px;
+    line-height: 1.2;
+    font-weight: 400;
+    color: #333333; /* Fallback */
+    color: var(--sp-widget-text-color);
+    text-align: center;
+}
+
+.invoiceInfoWrapper .merchantInfo .description{
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 400;
+    color: #666666; /* Fallback */
+    color: var(--sp-widget-secondary-text-color);
+}
+
+.invoiceInfoWrapper .mainInfo{
+    flex: 1;
+    padding-top: 36px;
+    display: flex;
+    flex-direction: column;
+}
+
+.invoiceInfoWrapper .mainInfo .infoRow{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.invoiceInfoWrapper .mainInfo .infoRow .infoTitle{
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 400;
+    color: var(--sp-widget-text-color);
+}
+
+.invoiceInfoWrapper .mainInfo .infoRow .infoValue{
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 400;
+    color: var(--sp-widget-secondary-text-color);
+    text-transform: capitalize;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.invoiceInfoWrapper .mainInfo .infoRow .infoValue .circle {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.invoiceInfoWrapper .mainInfo .infoRow .infoValue.active{
+    color: #2563EBFF;
+}
+.invoiceInfoWrapper .mainInfo .infoRow .infoValue.closed{
+    color: #F87171FF;
+}
+.invoiceInfoWrapper .mainInfo .infoRow .infoValue.success{
+    color: #16A34AFF;
+}
+.invoiceInfoWrapper .mainInfo .infoRow .infoValue.canceled{
+    color: #DC2626FF;
+}
+
+.invoiceInfoWrapper .mainInfo .infoRow .infoValue.active .circle {
+    background: #2563EBFF;
+}
+.invoiceInfoWrapper .mainInfo .infoRow .infoValue.closed .circle {
+    background: #F87171FF;
+}
+.invoiceInfoWrapper .mainInfo .infoRow .infoValue.success .circle {
+    background: #16A34AFF;
+}
+.invoiceInfoWrapper .mainInfo .infoRow .infoValue.canceled .circle {
+    background: #DC2626FF;
+}
+
+.invoiceInfoWrapper .mainInfo .priceInfo{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 36px;
+}
+
+.invoiceInfoWrapper .mainInfo .priceInfo .leftWrapper{
+    text-align: right;
+}
+.invoiceInfoWrapper .mainInfo .priceInfo .leftWrapper p{
+    color: var(--sp-widget-secondary-text-color) !important;
+}
+
+.invoiceInfoWrapper .mainInfo .priceInfo p:first-child{
+    font-size: 16px;
+    line-height: 1.2;
+    font-weight: 500;
+    color: var(--sp-widget-text-color);
+}
+
+.invoiceInfoWrapper .mainInfo .priceInfo p:last-child{
+    font-weight: 800;
+    line-height: 1.2;
+    font-size: 30px;
+    margin-top: 4px;
+    color: var(--sp-widget-text-color);
+}
+
+.invoiceInfoWrapper .mainInfo .productsInfo{
+    margin-top: 54px;
+    flex: 1;
+    overflow: auto;
+    max-height: 350px;
+    padding-right: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.invoiceInfoWrapper .mainInfo .productsInfo::-webkit-scrollbar {
+    width: 2px;
+}
+
+.invoiceInfoWrapper .mainInfo .productsInfo::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.invoiceInfoWrapper .mainInfo .productsInfo::-webkit-scrollbar-thumb {
+    background: var(--sp-widget-scroll-color);
+}
+
+.invoiceInfoWrapper .mainInfo .productsInfo .productItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.invoiceInfoWrapper .mainInfo .productsInfo .productItem .imageWrapper {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    border: 1px solid #cccccc; /* Fallback */
+    background: #f8f9fa; /* Fallback */
+    border: 1px solid var(--sp-widget-border-color);
+    background: var(--sp-widget-secondary-bg-color);
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.invoiceInfoWrapper .mainInfo .productsInfo .productItem .imageWrapper img {
+    width: 50px;
+    height: 50px;
+    -o-object-fit: cover;
+    object-fit: cover;
+}
+
+.invoiceInfoWrapper .mainInfo .productsInfo .productItem .imageWrapper.placeholder svg {
+    width: 38px;
+    height: 38px;
+    -o-object-fit: cover;
+    object-fit: cover;
+}
+
+.invoiceInfoWrapper .mainInfo .productsInfo .productItem .imageWrapper.placeholder svg path {
+    stroke: #007bff; /* Fallback */
+    stroke: var(--sp-widget-active-color);
+}
+
+.invoiceInfoWrapper .mainInfo .productsInfo .productItem .info {
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+}
+
+.invoiceInfoWrapper .mainInfo .productsInfo .productItem .info .name {
+    color: #333333; /* Fallback */
+    color: var(--sp-widget-text-color);
+    font-size: 16px;
+    font-weight: 500;
+    min-height: 16px;
+}
+
+.invoiceInfoWrapper .mainInfo .productsInfo .productItem .info .count {
+    margin-top: 4px;
+    font-size: 14px;
+    color: #666666; /* Fallback */
+    color: var(--sp-widget-secondary-text-color);
+}
+
+.invoiceInfoWrapper .mainInfo .productsInfo .productItem .priceWrapper .total {
+    color: #333333; /* Fallback */
+    color: var(--sp-widget-text-color);
+    font-size: 16px;
+    font-weight: 700;
+    text-align: end;
+    min-height: 16px;
+}
+
+.invoiceInfoWrapper .mainInfo .productsInfo .productItem .priceWrapper .price {
+    margin-top: 4px;
+    font-size: 14px;
+    color: #666666; /* Fallback */
+    color: var(--sp-widget-secondary-text-color);
+    text-align: end;
+}
+
+.invoiceInfoWrapper .buttonsWrapper{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.invoiceInfoWrapper .buttonsWrapper .userInfo{
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    gap: 4px;
+    padding: 4px;
+    background: #007bff; /* Fallback */
+    background: var(--sp-widget-badge-bg-color);
+    border: 1px solid #0056b3; /* Fallback */
+    border: 1px solid var(--sp-widget-badge-border-color);
+    border-radius: 4px;
+}
+
+.invoiceInfoWrapper .buttonsWrapper .userInfo .icon{
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    min-width: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.invoiceInfoWrapper .buttonsWrapper .userInfo .icon img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.invoiceInfoWrapper .buttonsWrapper .userInfo p{
+    font-size: 12px;
+    font-weight: 500;
+    color: #ffffff; /* Fallback */
+    color: var(--sp-widget-badge-text-color);
+}
+
+.invoiceInfoWrapper .buttonsWrapper button{
+    flex: 1;
+    max-width: 250px;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    height: 40px;
+    padding: 16px 8px;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+.invoiceInfoWrapper .buttonsWrapper button:disabled{
+    cursor: default;
+    touch-action: none;
+}
+
+.invoiceInfoWrapper .buttonsWrapper button.mainButton{
+    color: var(--sp-widget-primary-button-text-color);
+    background: var(--sp-widget-primary-button-color);
+    border: 1px solid var(--sp-widget-primary-button-border-color);
+}
+
+.invoiceInfoWrapper .buttonsWrapper button.secondaryButton{
+    color: var(--sp-widget-cancel-button-text-color);
+    background: var(--sp-widget-cancel-button-color);
+    border: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .invoiceInfoWrapper .buttonsWrapper button.mainButton:hover {
+        color: var(--sp-widget-primary-button-hover-text-color);
+        background: var(--sp-widget-primary-button-hover-color);
+        border: 1px solid var(--sp-widget-primary-button-hover-border-color);
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .invoiceInfoWrapper .buttonsWrapper button.secondaryButton:not(:disabled):hover {
+        background: var(--sp-widget-cancel-button-hover-color);
+        border: 0;
+    }
+}
+
+.invoiceInfoWrapper .buttonsWrapper button.loginButton{
+    gap: 8px;
+}
+
+.invoiceInfoWrapper .buttonsWrapper button.loginButton img{
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.invoiceInfoWrapper .buttonsWrapper button.loginButton .spinner {
+    width: 16px;
+    height: 16px;
+    margin: 0 auto;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    /* Fallback for older browsers */
+    text-align: center;
+}
+
+/* Fallback for older browsers */
+.invoiceInfoWrapper .buttonsWrapper button.loginButton .spinner:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+.invoiceInfoWrapper .buttonsWrapper button.loginButton .spinner svg {
+    width: 20px;
+    height: 20px;
+    -webkit-animation: spin 1s linear infinite;
+    animation: spin 1s linear infinite;
+    /* Fallback for older browsers */
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.invoiceInfoWrapper .buttonsWrapper button.loginButton .spinner circle {
+    stroke: #000000; /* Fallback color */
+    stroke: var(--sp-widget-active-color, #000000);
+    opacity: 0.25;
+}
+
+.invoiceInfoWrapper .buttonsWrapper button.loginButton .spinner path {
+    fill: #000000; /* Fallback color */
+    fill: var(--sp-widget-active-color, #000000);
+    opacity: 0.75;
+}
+
+@-webkit-keyframes spin {
+    from {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    from {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}

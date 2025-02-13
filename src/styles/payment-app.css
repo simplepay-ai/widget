@@ -151,6 +151,35 @@
 .paymentPage{
     width: 100%;
     height: 100svh;
-    background: var(--sp-widget-secondary-bg-color);
+    background: var(--sp-widget-bg-color);
     overflow: hidden;
+}
+
+.paymentPage.dark{
+    background: var(--sp-widget-secondary-bg-color);
+}
+
+.paymentPage .paymentPageContent{
+    padding: 32px;
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    height: 100%;
+    width: 100%;
+    max-width: 1080px;
+    margin: 0 auto;
+}
+
+.paymentPage .paymentPageContent .leftSection{
+    flex: 1;
+}
+
+.paymentPage .paymentPageContent .rightSection{
+    flex: 1;
+}
+
+.paymentPage .paymentPageContent .separator{
+    width: 2px;
+    background-color: var(--sp-widget-border-color);
+    border-radius: 0.5rem;
 }
