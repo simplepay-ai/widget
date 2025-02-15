@@ -192,6 +192,12 @@
     flex: 1;
 }
 
+.paymentPage .paymentPageContent .rightSection .createTransactionForm{
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
 .paymentPage .paymentPageContent .separator{
     width: 2px;
     background-color: var(--sp-widget-border-color);

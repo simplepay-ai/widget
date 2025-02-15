@@ -1,0 +1,485 @@
+* {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 14px;
+    font-weight: 450;
+    background: transparent;
+    margin: 0;
+    padding: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.formWrapper{
+    background: var(--sp-widget-bg-color);
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--sp-widget-border-color);
+    width: 100%;
+}
+
+.formWrapper .addressSelect .title{
+    font-size: 18px;
+    line-height: 1.2;
+    font-weight: 700;
+    color: var(--sp-widget-text-color);
+    text-transform: capitalize;
+}
+
+.formWrapper .addressSelect .connectorsList{
+    margin-top: 16px;
+}
+
+
+.formWrapper .addressSelect .connectorsList .walletType {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: pointer;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    height: 50px;
+    padding: 10px 20px;
+    border: 1px solid var(--sp-widget-function-button-border-color);
+    border-radius: 8px;
+    background: var(--sp-widget-function-button-color);
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+.formWrapper .addressSelect .connectorsList .walletType:not(:last-child) {
+    margin-bottom: 8px;
+}
+
+.formWrapper .addressSelect .connectorsList .walletType svg.typeIcon {
+    display: block;
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+}
+
+.formWrapper .addressSelect .connectorsList .walletType .spinner {
+    display: none;
+    width: 30px;
+}
+
+.formWrapper .addressSelect .connectorsList .walletType.custom svg.typeIcon {
+    color: var(--sp-widget-active-color);
+}
+
+.formWrapper .addressSelect .connectorsList .walletType.walletConnect svg.typeIcon path {
+    fill: var(--sp-widget-active-color);
+}
+
+.formWrapper .addressSelect .connectorsList .walletType.coinbase svg.typeIcon {
+    width: 25px;
+    margin: 0 2.5px;
+}
+
+.formWrapper .addressSelect .connectorsList .walletType.inProcess svg.typeIcon {
+    display: none;
+}
+
+.formWrapper .addressSelect .connectorsList .walletType.inProcess .spinner {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.formWrapper .addressSelect .connectorsList .walletType.waiting {
+    opacity: 0.6;
+    -ms-touch-action: none;
+    touch-action: none;
+    pointer-events: none;
+}
+
+.formWrapper .addressSelect .connectorsList .walletType p {
+    display: block;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--sp-widget-function-button-text-color);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .formWrapper .addressSelect .connectorsList .walletType:hover {
+        border: 1px solid var(--sp-widget-function-button-hover-border-color);
+        background: var(--sp-widget-function-button-hover-color);
+    }
+
+    .formWrapper .addressSelect .connectorsList .walletType:hover.selected {
+        border: 1px solid var(--sp-widget-active-color);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .formWrapper .addressSelect .connectorsList .walletType.injected {
+        opacity: 0.4;
+        -ms-touch-action: none;
+        touch-action: none;
+        pointer-events: none;
+    }
+}
+
+.formWrapper .addressSelect .selectToken{
+    margin: 20px;
+}
+
+.formWrapper .addressSelect .selectToken p{
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 400;
+    color: var(--sp-widget-secondary-text-color);
+}
+
+.formWrapper .addressEnter .header{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.formWrapper .addressEnter .header p{
+    font-size: 18px;
+    line-height: 1.2;
+    font-weight: 700;
+    color: var(--sp-widget-text-color);
+    text-transform: capitalize;
+}
+
+.formWrapper .addressEnter .header button {
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    background: var(--sp-widget-back-button-color);
+    border: 1px solid var(--sp-widget-back-button-border-color);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+.formWrapper .addressEnter .header button svg {
+    stroke: var(--sp-widget-back-button-text-color);
+    width: 16px;
+    height: 16px;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+@media(hover: hover) and (pointer: fine) {
+    .formWrapper .addressEnter .header button:hover {
+        background: var(--sp-widget-back-button-hover-color);
+        border: 1px solid var(--sp-widget-back-button-hover-border-color);
+    }
+
+    .formWrapper .addressEnter .header button:hover svg {
+        stroke: var(--sp-widget-back-button-hover-text-color);
+    }
+}
+
+.formWrapper .addressEnter .addressForm .inputWrapper {
+    margin-top: 1rem;
+}
+
+.formWrapper .addressEnter .addressForm .inputWrapper input {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    height: 40px;
+    width: 100%;
+    border-radius: 6px;
+    border: 1px solid var(--sp-widget-input-border-color);
+    background: var(--sp-widget-input-bg-color);
+    padding: 8px 12px;
+    font-size: 16px;
+    line-height: 20px;
+    color: var(--sp-widget-input-color);
+    outline: none;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 50ms;
+    transition-duration: 50ms;
+}
+
+.formWrapper .addressEnter .addressForm .inputWrapper input::-webkit-input-placeholder {
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--sp-widget-input-placeholder-color);
+}
+
+.formWrapper .addressEnter .addressForm .inputWrapper input::-moz-placeholder {
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--sp-widget-input-placeholder-color);
+}
+
+.formWrapper .addressEnter .addressForm .inputWrapper input:-ms-input-placeholder {
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--sp-widget-input-placeholder-color);
+}
+
+.formWrapper .addressEnter .addressForm .inputWrapper input:focus-visible {
+    border: 1px solid var(--sp-widget-input-active-border-color);
+}
+
+.formWrapper .addressEnter .addressForm .inputWrapper .input {
+    margin-top: 4px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    gap: 4px;
+}
+
+.formWrapper .addressEnter .addressForm .inputWrapper .input .pasteButton {
+    padding: 11px;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border: 1px solid var(--sp-widget-function-button-border-color);
+    border-radius: 6px;
+    color: var(--sp-widget-function-button-text-color);
+    background: var(--sp-widget-function-button-color);
+    cursor: pointer;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 12px;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+.formWrapper .addressEnter .addressForm .inputWrapper .input .pasteButton svg {
+    width: 16px;
+    height: 16px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .formWrapper .addressEnter .addressForm .inputWrapper .input .pasteButton:hover {
+        border: 1px solid var(--sp-widget-function-button-hover-border-color);
+        color: var(--sp-widget-function-button-hover-text-color);
+        background: var(--sp-widget-function-button-hover-color);
+    }
+}
+
+.formWrapper .addressEnter .addressForm .inputWrapper .descriptionText {
+    padding-left: 8px;
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--sp-widget-secondary-text-color);
+    text-align: left;
+}
+
+.formWrapper .addressEnter .addressForm .inputWrapper .descriptionText.error {
+    color: var(--sp-widget-destructive-text-color);
+}
+
+.formWrapper .addressEnter .addressForm .mainButton {
+    max-width: 250px;
+    margin: 16px auto 0;
+    width: 100%;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    height: 40px;
+    padding: 16px 8px;
+    color: var(--sp-widget-primary-button-text-color);
+    background: var(--sp-widget-primary-button-color);
+    border: 1px solid var(--sp-widget-primary-button-border-color);
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .formWrapper .addressEnter .addressForm .mainButton:hover {
+        color: var(--sp-widget-primary-button-hover-text-color);
+        background: var(--sp-widget-primary-button-hover-color);
+        border: 1px solid var(--sp-widget-primary-button-hover-border-color);
+    }
+}
+
+.formWrapper .addressEnter .addressForm .mainButton:disabled {
+    pointer-events: none;
+    -ms-touch-action: none;
+    touch-action: none;
+    opacity: 0.5;
+}
+
+.formWrapper .addressResult .connectedInfo{
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.formWrapper .addressResult .connectedInfo p{
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 500;
+    color: var(--sp-widget-text-color);
+}
+
+.formWrapper .addressResult .connectedInfo p:not(:first-child){
+    color: var(--sp-widget-active-color);
+}
+
+.formWrapper .addressResult .connectedInfo .icon{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.formWrapper .addressResult .addressInfo{
+    margin-top: 16px;
+}
+
+.formWrapper .addressResult .addressInfo p:first-child{
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 500;
+    color: var(--sp-widget-text-color);
+}
+
+.formWrapper .addressResult .addressInfo p:last-child{
+    margin-top: 4px;
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 400;
+    color: var(--sp-widget-secondary-text-color);
+}
+
+.formWrapper .addressResult .buttonWrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 16px;
+}
+
+.formWrapper .addressResult button{
+    flex: 1;
+    max-width: 250px;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    height: 40px;
+    padding: 16px 8px;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+.formWrapper .addressResult button.mainButton{
+    color: var(--sp-widget-primary-button-text-color);
+    background: var(--sp-widget-primary-button-color);
+    border: 1px solid var(--sp-widget-primary-button-border-color);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .formWrapper .addressResult button.mainButton:hover {
+        color: var(--sp-widget-primary-button-hover-text-color);
+        background: var(--sp-widget-primary-button-hover-color);
+        border: 1px solid var(--sp-widget-primary-button-hover-border-color);
+    }
+}
+
+.formWrapper .addressResult .connectedInfo .icon svg.typeIcon {
+    display: block;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+}
+
+.formWrapper .addressResult .connectedInfo .customWalletIcon svg.typeIcon,
+.formWrapper .addressResult .connectedInfo .injectedIcon svg.typeIcon{
+    color: var(--sp-widget-active-color);
+}
+
+.formWrapper .addressResult .connectedInfo .walletConnectIcon svg.typeIcon path {
+    fill: var(--sp-widget-active-color);
+}
+
+.formWrapper .addressResult .connectedInfo .coinbaseIcon svg.typeIcon {
+    width: 25px;
+}

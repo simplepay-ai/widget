@@ -39,6 +39,7 @@ import './components/payment-page-layout/loading-step-payment-page.ts';
 import './components/payment-page-layout/error-step-payment-page.ts';
 import './components/payment-page-layout/invoice-info.ts';
 import './components/payment-page-layout/token-select-form.ts';
+import './components/payment-page-layout/address-form.ts';
 
 import {checkWalletAddress, generateUUID} from "./lib/util.ts";
 import themesConfig from '../themesConfig.json';
@@ -252,7 +253,7 @@ export class PaymentApp extends LitElement {
                 break;
         }
 
-        if(this.viewMode !== 'modal' && this.viewMode !== 'paymentPage' && this.viewMode !== 'relative'){
+        if (this.viewMode !== 'modal' && this.viewMode !== 'paymentPage' && this.viewMode !== 'relative') {
             this.errorTitle = 'Error';
             this.errorText =
                 'Invalid viewMode: the provided attribute is not valid. Please ensure it matches one of the supported view modes: modal or relative (default).';
@@ -262,11 +263,11 @@ export class PaymentApp extends LitElement {
             return;
         }
 
-        if(this.viewMode === 'modal'){
+        if (this.viewMode === 'modal') {
             this.openMode = 'modal'
         }
 
-        if(this.viewMode === 'modal' && this.trigger === ''){
+        if (this.viewMode === 'modal' && this.trigger === '') {
             this.errorTitle = 'Error';
             this.errorText =
                 'Invalid trigger: the provided attribute is empty.';
@@ -276,7 +277,7 @@ export class PaymentApp extends LitElement {
             return;
         }
 
-        if(this.viewMode === 'modal' && this.trigger !== null && this.trigger !== '' && this.trigger !== 'button'){
+        if (this.viewMode === 'modal' && this.trigger !== null && this.trigger !== '' && this.trigger !== 'button') {
             this.openMode = 'trigger';
 
             const triggerElement = document.getElementById(`${this.trigger}`);
@@ -285,7 +286,7 @@ export class PaymentApp extends LitElement {
             }
         }
 
-        if(this.viewMode === 'modal' && this.trigger !== null && this.trigger !== '' && this.trigger === 'button'){
+        if (this.viewMode === 'modal' && this.trigger !== null && this.trigger !== '' && this.trigger === 'button') {
             this.openMode = 'button'
 
             const buttonParams = (this.triggerConfig) ? JSON.parse(this.triggerConfig) : null;
@@ -297,16 +298,16 @@ export class PaymentApp extends LitElement {
             }
         }
 
-        if(this.viewMode === 'paymentPage'){
+        if (this.viewMode === 'paymentPage') {
             this.openMode = 'paymentPage'
         }
 
-        if(this.clientId){
+        if (this.clientId) {
 
             const isUUID = this.checkUUID(this.clientId);
-            const isNumber = Boolean( Number(this.clientId) );
+            const isNumber = Boolean(Number(this.clientId));
 
-            if(!isUUID && !isNumber){
+            if (!isUUID && !isNumber) {
                 this.errorTitle = 'Error';
                 this.errorText =
                     'Invalid clientId: it must be either a number or a valid UUID v4 format.';
@@ -317,11 +318,11 @@ export class PaymentApp extends LitElement {
                 return;
             }
 
-        }else{
+        } else {
             this.clientId = generateUUID();
         }
 
-        if(this.invoiceId || this.transactionId) {
+        if (this.invoiceId || this.transactionId) {
 
             this.API = new Client();
 
@@ -329,7 +330,7 @@ export class PaymentApp extends LitElement {
                 this.onlyTransaction = true;
                 this.getTransaction(this.transactionId).then((data) => {
 
-                    if(data === 'error'){
+                    if (data === 'error') {
                         this.errorTitle = 'Error';
                         this.errorText =
                             'Failed to retrieve transaction data. Please try again later.';
@@ -339,10 +340,10 @@ export class PaymentApp extends LitElement {
                         return;
                     }
 
-                    if(this.transaction){
+                    if (this.transaction) {
                         this.getInvoice(this.transaction?.invoiceId || '').then(async (data) => {
 
-                            if(data === 'error'){
+                            if (data === 'error') {
                                 this.errorTitle = 'Error';
                                 this.errorText =
                                     'Failed to retrieve invoice data. Please try again later.';
@@ -368,7 +369,7 @@ export class PaymentApp extends LitElement {
                             this.getInvoiceTransactions(this.invoice?.id || '').then(() => {
                                 this.subscribeInvoice(this.invoice?.id || '')
 
-                                if(this.isExperimentalMode) {
+                                if (this.isExperimentalMode) {
                                     this.checkUser();
                                 }
                             });
@@ -380,7 +381,7 @@ export class PaymentApp extends LitElement {
 
                 this.getInvoice(this.invoiceId).then(async (data) => {
 
-                    if(data === 'error'){
+                    if (data === 'error') {
                         this.errorTitle = 'Error';
                         this.errorText =
                             'Failed to retrieve invoice data. Please try again later.';
@@ -445,13 +446,13 @@ export class PaymentApp extends LitElement {
 
                     }
                 }).then(() => {
-                    if(this.invoice){
+                    if (this.invoice) {
                         this.getInvoiceTransactions(this.invoiceId).then(() => {
                             this.subscribeInvoice(this.invoiceId).then(() => {
                                 this.goToWidgetStep('invoiceStep');
                                 this.goToPaymentPageStep('invoiceStep')
 
-                                if(this.isExperimentalMode){
+                                if (this.isExperimentalMode) {
                                     this.checkUser();
                                 }
 
@@ -481,7 +482,7 @@ export class PaymentApp extends LitElement {
         });
 
         const appInfoResult = await this.getApp();
-        if(appInfoResult === 'error'){
+        if (appInfoResult === 'error') {
             this.errorTitle = 'Error';
             this.errorText =
                 'Failed to retrieve app data. Please try again later.';
@@ -505,7 +506,7 @@ export class PaymentApp extends LitElement {
         this.appInfo = appInfoResult;//await this.getApp();
         this.appProducts = products;
 
-        if(this.paymentType){
+        if (this.paymentType) {
             switch (this.paymentType) {
                 case "request":
                     this.invoiceType = this.paymentType;
@@ -537,13 +538,13 @@ export class PaymentApp extends LitElement {
             this.goToTransactionStep(this.transaction.status);
         }
 
-        if((changedProperties.has('transaction') || changedProperties.has('invoice')) && this.transaction && this.onlyTransaction){
-            if(this.invoice?.id){
+        if ((changedProperties.has('transaction') || changedProperties.has('invoice')) && this.transaction && this.onlyTransaction) {
+            if (this.invoice?.id) {
                 this.goToTransactionStep(this.transaction.status);
             }
         }
 
-        if(changedProperties.has('user')){
+        if (changedProperties.has('user')) {
             this.getUserProfile();
         }
 
@@ -652,7 +653,7 @@ export class PaymentApp extends LitElement {
                                 }}
                                 @updateSelectedTransaction=${(event: CustomEvent) => {
                                     const transaction = this.invoiceTransactions.find((item) => item.id === event.detail.transactionId);
-                                    if(transaction){
+                                    if (transaction) {
                                         this.transaction = transaction
                                     }
                                 }}
@@ -741,7 +742,7 @@ export class PaymentApp extends LitElement {
                                 @returnBack=${this.prevStep}
                         ></success-step>`
                     : ''}
-            
+
             <custom-notification
                     .active=${this.notificationShow}
                     .data=${this.notificationData}
@@ -767,59 +768,89 @@ export class PaymentApp extends LitElement {
             ${['invoiceStep', 'transactionsHistoryStep', 'awaitingPaymentStep', 'processingTransactionStep', 'successTransactionStep'].includes(this.paymentPageStep)
                     ? html`
                         <div class=${`paymentPageContent`}>
-                            
+
                             <div class="leftSection">
-                                
+
                                 <invoice-info
                                         .currentStep=${this.paymentPageStep}
                                         .invoice=${this.invoice}
                                         .user=${this.user}
                                         .userProfile=${this.userProfile}
                                         .loginLoading=${this.loginLoading}
-                                        .hasTransactions=${ (this.invoiceTransactions) ? this.invoiceTransactions.length > 0 : false }
+                                        .hasTransactions=${(this.invoiceTransactions) ? this.invoiceTransactions.length > 0 : false}
                                         @login=${this.login}
                                         @goToStep=${(event: CustomEvent) => {
                                             this.goToPaymentPageStep(event.detail.stepName)
                                         }}
                                 >
                                 </invoice-info>
-                                
+
                             </div>
-                            
-<!--                            <div class="separator"></div>-->
+
+                            <!--                            <div class="separator"></div>-->
 
                             <div class="rightSection">
-                                
+
                                 ${
                                         (this.paymentPageStep === 'invoiceStep' && this.invoice?.status === 'active' && !this.activeTransaction)
-                                        ? html`
-                                            <div class="createTransactionForm">
-                                                <token-select-form
-                                                        .tokens=${this.tokens}
-                                                        .invoice=${this.invoice}
-                                                        .selectedToken=${this.selectedToken}
-                                                        .selectedNetwork=${this.selectedNetwork}
-                                                        .tokenAvailable=${this.tokenAvailable}
-                                                        @updateSelectedToken=${(event: CustomEvent) => {
-                                                            this.selectedToken = event.detail.token;
-                                                            this.selectedNetwork = event.detail.network;
-                                                        }}
-                                                ></token-select-form>
-                                            </div>
+                                                ? html`
+                                                    <div class="createTransactionForm">
+                                                        <token-select-form
+                                                                .tokens=${this.tokens}
+                                                                .invoice=${this.invoice}
+                                                                .selectedToken=${this.selectedToken}
+                                                                .selectedNetwork=${this.selectedNetwork}
+                                                                .tokenAvailable=${this.tokenAvailable}
+                                                                @updateSelectedToken=${(event: CustomEvent) => {
+                                                                    this.selectedToken = event.detail.token;
+                                                                    this.selectedNetwork = event.detail.network;
+                                                                }}
+                                                        ></token-select-form>
+
+                                                        <address-form
+                                                                .walletAddress=${this.walletAddress}
+                                                                .walletType=${this.walletType}
+                                                                .selectedToken=${this.selectedToken}
+                                                                .selectedNetwork=${this.selectedNetwork}
+                                                                .walletConnectorConfig=${this.walletConnectorConfig}
+                                                                .tronWalletConnect=${this.tronWalletConnect}
+                                                                .tronLinkConfig=${this.tronLinkConfig}
+                                                                .tronWeb=${this.tronWeb}
+                                                                .theme=${this.theme}
+                                                                @updateWalletType=${(event: CustomEvent) =>
+                                                                        (this.walletType = event.detail.walletType)}
+                                                                @updateWalletAddress=${(event: CustomEvent) =>{
+                                                                    console.log('@updateWalletAddress', event.detail.walletAddress)
+                                                                    this.walletAddress = event.detail.walletAddress
+                                                                }}
+                                                                @updateWalletConnectorConfig=${(event: CustomEvent) => {
+                                                                    this.walletConnectorConfig = event.detail.walletConnectorConfig
+                                                                }}
+                                                                @updateTronWalletConnect=${(event: CustomEvent) => {
+                                                                    this.tronWalletConnect = event.detail.tronWalletConnect
+                                                                }}
+                                                                @updateTronLinkConfig=${(event: CustomEvent) => {
+                                                                    this.tronLinkConfig = event.detail.tronLinkConfig
+                                                                }}
+                                                                @updateTronWeb=${(event: CustomEvent) => {
+                                                                    this.tronWeb = event.detail.tronWeb
+                                                                }}
+                                                        ></address-form>
+                                                    </div>
                                                 ` : ''
                                 }
 
                                 ${
                                         (this.paymentPageStep === 'invoiceStep' && this.invoice?.status === 'active' && this.activeTransaction)
                                                 ? html`
-                                                Has Active Transaction Message
+                                                    Has Active Transaction Message
                                                 ` : ''
                                 }
 
                                 ${
                                         (this.paymentPageStep === 'awaitingPaymentStep')
                                                 ? html`
-                                                Awaiting Payment Step
+                                                    Awaiting Payment Step
                                                 ` : ''
                                 }
 
@@ -845,7 +876,7 @@ export class PaymentApp extends LitElement {
                                 }
 
                             </div>
-                            
+
                         </div>`
                     : ''}
 
@@ -918,11 +949,11 @@ export class PaymentApp extends LitElement {
         }
     }
 
-    private async login(){
+    private async login() {
 
         this.loginLoading = true;
 
-        axios.get('https://api.simplepay.ai/id/sessions/whoami', { withCredentials: true })
+        axios.get('https://api.simplepay.ai/id/sessions/whoami', {withCredentials: true})
             .then((response) => {
                 this.user = response.data;
                 this.loginLoading = false;
@@ -937,10 +968,10 @@ export class PaymentApp extends LitElement {
             })
     }
 
-    private checkUser(){
+    private checkUser() {
         this.loginLoading = true;
 
-        axios.get('https://api.simplepay.ai/id/sessions/whoami', { withCredentials: true })
+        axios.get('https://api.simplepay.ai/id/sessions/whoami', {withCredentials: true})
             .then((response) => {
                 this.user = response.data;
                 this.loginLoading = false;
@@ -953,21 +984,21 @@ export class PaymentApp extends LitElement {
             })
     }
 
-    private async getUserProfile(){
-        if(this.API && this.user){
-            try{
+    private async getUserProfile() {
+        if (this.API && this.user) {
+            try {
                 this.userProfile = await this.API.user.profile.get();
-            }catch (e) {
+            } catch (e) {
                 console.log('getUserProfile error', e)
                 this.userProfile = null;
             }
-        }else{
+        } else {
             this.userProfile = null;
         }
     }
 
-    private async saveInvoice(){
-        if(this.API && this.user){
+    private async saveInvoice() {
+        if (this.API && this.user) {
             await (this.API as Client).app.get(this.invoice?.app?.id || '').then(async () => {
                 await (this.API as Client).user.invoice.link({
                     invoiceId: this.invoice?.id || ''
@@ -981,7 +1012,7 @@ export class PaymentApp extends LitElement {
         return uuidV4Regex.test(id);
     }
 
-    private addToCart(productId: string){
+    private addToCart(productId: string) {
         if (productId) {
             const check = this.invoiceCart.find((item: ICartProduct) => item.id === productId);
 
@@ -1005,7 +1036,7 @@ export class PaymentApp extends LitElement {
         }
     }
 
-    private removeFromCart(productId: string){
+    private removeFromCart(productId: string) {
         if (productId) {
 
             const check = this.invoiceCart.find((item: ICartProduct) => item.id === productId);
@@ -1113,7 +1144,7 @@ export class PaymentApp extends LitElement {
             return;
         }
 
-        if(this.appStep === 'walletStep' && this.walletAddress && !checkWalletAddress(this.walletAddress, this.selectedNetwork?.type || '')){
+        if (this.appStep === 'walletStep' && this.walletAddress && !checkWalletAddress(this.walletAddress, this.selectedNetwork?.type || '')) {
             this.notificationData = {
                 title: 'Invalid Wallet Address',
                 text: 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.',
@@ -1125,7 +1156,7 @@ export class PaymentApp extends LitElement {
             return;
         }
 
-        if(this.appStep === 'walletStep' && this.walletAddress && checkWalletAddress(this.walletAddress, this.selectedNetwork?.type || '')){
+        if (this.appStep === 'walletStep' && this.walletAddress && checkWalletAddress(this.walletAddress, this.selectedNetwork?.type || '')) {
             this.createTransaction();
             return;
         }
@@ -1150,7 +1181,7 @@ export class PaymentApp extends LitElement {
 
         if (this.appStep === 'createdInvoiceStep') {
 
-            if(this.paymentType){
+            if (this.paymentType) {
 
                 switch (this.paymentType) {
                     case "request":
@@ -1341,6 +1372,7 @@ export class PaymentApp extends LitElement {
         }
 
     }
+
     private async createTransaction() {
 
         this.creatingTransaction = true;
@@ -1356,7 +1388,7 @@ export class PaymentApp extends LitElement {
 
             this.transaction = await this.API.transaction.create(transactionParams);
 
-        }catch (e) {
+        } catch (e) {
             if (e instanceof ValidationError) {
                 const error = e as ValidationError<TransactionCreateErrors>;
                 console.log(error.errors);
@@ -1376,11 +1408,12 @@ export class PaymentApp extends LitElement {
             this.creatingTransaction = false;
         }
 
-        if(this.user){
+        if (this.user) {
             await this.saveInvoice();
         }
 
     }
+
     private async cancelTransaction() {
 
         if (!this.transaction?.id) {
@@ -1419,6 +1452,7 @@ export class PaymentApp extends LitElement {
             return 'error';
         }
     }
+
     private async getTransaction(transactionId: string) {
         try {
             this.transaction = await this.API.transaction.get(transactionId);
@@ -1426,13 +1460,14 @@ export class PaymentApp extends LitElement {
             return 'error';
         }
     }
-    private async getInvoiceTransactions(invoiceId: string){
+
+    private async getInvoiceTransactions(invoiceId: string) {
 
         try {
             this.invoiceTransactions = await this.API.transaction.list({
                 invoiceId
             })
-        }catch (e) {
+        } catch (e) {
             this.notificationData = {
                 title: 'Get Invoice Transactions Failed',
                 text: 'Failed to retrieve transactions of invoice.',
@@ -1445,8 +1480,8 @@ export class PaymentApp extends LitElement {
 
     }
 
-    private async subscribeInvoice(invoiceId: string){
-        if(!invoiceId){
+    private async subscribeInvoice(invoiceId: string) {
+        if (!invoiceId) {
             return;
         }
 
@@ -1460,7 +1495,7 @@ export class PaymentApp extends LitElement {
 
         transactionsChannel.on(TransactionEventType.Created, (transactionData) => {
 
-            if(this.transaction && this.transaction.id === transactionData.id){
+            if (this.transaction && this.transaction.id === transactionData.id) {
                 this.transaction = transactionData;
             }
 
@@ -1469,7 +1504,7 @@ export class PaymentApp extends LitElement {
         })
         transactionsChannel.on(TransactionEventType.Processing, (transactionData) => {
 
-            if(this.transaction && this.transaction.id === transactionData.id){
+            if (this.transaction && this.transaction.id === transactionData.id) {
                 this.transaction = transactionData;
             }
 
@@ -1478,7 +1513,7 @@ export class PaymentApp extends LitElement {
         })
         transactionsChannel.on(TransactionEventType.Confirming, (transactionData) => {
 
-            if(this.transaction && this.transaction.id === transactionData.id){
+            if (this.transaction && this.transaction.id === transactionData.id) {
                 this.transaction = transactionData;
             }
 
@@ -1487,7 +1522,7 @@ export class PaymentApp extends LitElement {
         })
         transactionsChannel.on(TransactionEventType.Rejected, (transactionData) => {
 
-            if(this.transaction && this.transaction.id === transactionData.id){
+            if (this.transaction && this.transaction.id === transactionData.id) {
                 this.transaction = transactionData;
             }
 
@@ -1496,7 +1531,7 @@ export class PaymentApp extends LitElement {
         })
         transactionsChannel.on(TransactionEventType.Expired, (transactionData) => {
 
-            if(this.transaction && this.transaction.id === transactionData.id){
+            if (this.transaction && this.transaction.id === transactionData.id) {
                 this.transaction = transactionData;
             }
 
@@ -1505,7 +1540,7 @@ export class PaymentApp extends LitElement {
         })
         transactionsChannel.on(TransactionEventType.Canceled, (transactionData) => {
 
-            if(this.transaction && this.transaction.id === transactionData.id){
+            if (this.transaction && this.transaction.id === transactionData.id) {
                 this.transaction = transactionData;
             }
 
@@ -1514,7 +1549,7 @@ export class PaymentApp extends LitElement {
         })
         transactionsChannel.on(TransactionEventType.Success, (transactionData) => {
 
-            if(this.transaction && this.transaction.id === transactionData.id){
+            if (this.transaction && this.transaction.id === transactionData.id) {
                 this.transaction = transactionData;
             }
 
@@ -1523,16 +1558,17 @@ export class PaymentApp extends LitElement {
         })
 
     }
-    private goToTransactionStep(transactionStatus: TransactionStatus){
+
+    private goToTransactionStep(transactionStatus: TransactionStatus) {
         switch (transactionStatus) {
             case "processing":
-                if(this.appStep !== 'paymentStep'){
+                if (this.appStep !== 'paymentStep') {
                     this.goToWidgetStep('paymentStep');
                     this.goToPaymentPageStep('awaitingPaymentStep')
                 }
                 return;
             case "confirming":
-                if(this.appStep !== 'processingStep'){
+                if (this.appStep !== 'processingStep') {
                     this.goToWidgetStep('processingStep');
                     this.goToPaymentPageStep('processingTransactionStep')
                 }
@@ -1541,7 +1577,7 @@ export class PaymentApp extends LitElement {
             case "canceled":
             case "success":
             case "expired":
-                if(this.appStep !== 'successStep'){
+                if (this.appStep !== 'successStep') {
                     this.goToWidgetStep('successStep');
                     this.goToPaymentPageStep('successTransactionStep')
                 }

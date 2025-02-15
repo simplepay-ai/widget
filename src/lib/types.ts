@@ -27,6 +27,7 @@ export type PaymentPageStep =
     | 'successTransactionStep';
 
 export type TokenSelectMode = 'selectedToken' | 'tokensList'
+export type AddressSelectMode = 'addressSelect' | 'addressEnter' | 'addressResult'
 
 // export type CurrentPriceStep = 'priceEnter' | 'messageEnter';
 

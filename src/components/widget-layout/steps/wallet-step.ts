@@ -1323,6 +1323,9 @@ export class WalletStep extends LitElement {
         }
 
         this.updateWalletConnectorConfig(null);
+        this.updateTronWalletConnect(null);
+        this.updateTronLinkConfig(null);
+        this.updateTronWeb(null);
         this.updateWalletAddress(this.inputValue.trim());
         this.updateWalletType('Custom');
 
