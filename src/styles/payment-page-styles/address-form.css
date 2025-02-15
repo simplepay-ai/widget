@@ -75,6 +75,33 @@
 .formWrapper .addressSelect .connectorsList .walletType .spinner {
     display: none;
     width: 30px;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+
+.formWrapper .addressSelect .connectorsList .walletType .spinner svg {
+    width: 20px;
+    height: 20px;
+    -webkit-animation: spin 1s linear infinite;
+    animation: spin 1s linear infinite;
+}
+
+.formWrapper .addressSelect .connectorsList .walletType .spinner circle {
+    stroke: var(--sp-widget-active-color);
+    opacity: 0.25;
+}
+
+.formWrapper .addressSelect .connectorsList .walletType .spinner path {
+    fill: var(--sp-widget-active-color);
+    opacity: 0.75;
 }
 
 .formWrapper .addressSelect .connectorsList .walletType.custom svg.typeIcon {
@@ -482,4 +509,26 @@
 
 .formWrapper .addressResult .connectedInfo .coinbaseIcon svg.typeIcon {
     width: 25px;
+}
+
+@-webkit-keyframes spin {
+    from {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    from {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
 }

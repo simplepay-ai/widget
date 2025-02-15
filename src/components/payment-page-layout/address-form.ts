@@ -5,6 +5,22 @@ import style from "../../styles/payment-page-styles/address-form.css?inline";
 import {AddressSelectMode, AppTheme, WalletType} from "../../lib/types.ts";
 import {Cryptocurrency, Network} from "@simplepay-ai/api-client";
 import {checkWalletAddress} from "../../lib/util.ts";
+import {TronLinkAdapter, WalletConnectAdapter} from "@tronweb3/tronwallet-adapters";
+import {ChainNetwork} from "@tronweb3/tronwallet-abstract-adapter";
+import TronWeb from "tronweb";
+import {
+    connect,
+    createConfig,
+    createStorage,
+    disconnect,
+    fallback,
+    getAccount,
+    http,
+    injected,
+    reconnect
+} from "@wagmi/core";
+import {arbitrum, avalanche, base, bsc, mainnet, optimism, polygon, zksync} from "@wagmi/core/chains";
+import {coinbaseWallet, metaMask, walletConnect} from "@wagmi/connectors";
 
 @customElement('address-form')
 export class AddressForm extends LitElement {
@@ -67,426 +83,425 @@ export class AddressForm extends LitElement {
             return;
         }
 
-        // if (this.connectingInProcess && type === this.connectingType) {
-        //     this.connectingInProcess = false;
-        //     return;
-        // }
+        if (this.connectingInProcess && type === this.connectingType) {
+            this.connectingInProcess = false;
+            return;
+        }
 
-        // this.buttonDisabled = true;
-        // this.connectingType = type;
-        // this.connectingInProcess = true;
-        //
-        // this.updateWalletAddress('');
-        // this.updateWalletType('');
-        //
-        // const timer = new Promise((_, reject) => {
-        //     setTimeout(() => {
-        //         reject(new Error())
-        //     }, 40000)
-        // });
-        // const cancelChecker = new Promise((_, reject) => {
-        //     const checkCancel = setInterval(() => {
-        //         if (!this.connectingInProcess) {
-        //             clearInterval(checkCancel);
-        //             reject(new Error());
-        //         }
-        //     }, 100);
-        // });
-        //
-        // if (type === 'WalletConnectTron') {
-        //
-        //     if (this.tronWalletConnect?.address) {
-        //
-        //         this.updateWalletAddress(this.tronWalletConnect.address);
-        //         this.updateWalletType("WalletConnectTron");
-        //         this.openApproveAddressModal();
-        //         return;
-        //
-        //     } else {
-        //
-        //         try {
-        //             await Promise.race([
-        //                 this.tronWalletConnect.connect(),
-        //                 timer,
-        //                 cancelChecker
-        //             ]);
-        //         } catch (e) {
-        //             console.log('error', e)
-        //             this.connectingType = '';
-        //             this.connectingInProcess = false;
-        //
-        //             const options = {
-        //                 detail: {
-        //                     notificationData: {
-        //                         title: 'Wallet Connection Not Confirmed',
-        //                         text: 'The wallet connection was not confirmed. Please try again to continue.',
-        //                         buttonText: 'Confirm'
-        //                     },
-        //                     notificationShow: true
-        //                 },
-        //                 bubbles: true,
-        //                 composed: true
-        //             };
-        //             this.dispatchEvent(new CustomEvent('updateNotification', options));
-        //
-        //             return;
-        //         }
-        //
-        //     }
-        //
-        //     return;
-        // }
-        //
-        // if (type === 'TronLink') {
-        //
-        //     if (this.tronLinkConfig?.address) {
-        //
-        //         this.updateWalletAddress(this.tronLinkConfig.address);
-        //         this.updateWalletType("TronLink");
-        //         this.openApproveAddressModal();
-        //         return;
-        //
-        //     } else {
-        //
-        //         try {
-        //             await Promise.race([
-        //                 this.tronLinkConfig.connect(),
-        //                 timer,
-        //                 cancelChecker
-        //             ]);
-        //         } catch (e) {
-        //             this.connectingType = '';
-        //             this.connectingInProcess = false;
-        //
-        //             const options = {
-        //                 detail: {
-        //                     notificationData: {
-        //                         title: 'Wallet Connection Not Confirmed',
-        //                         text: 'The wallet connection was not confirmed. Please try again to continue.',
-        //                         buttonText: 'Confirm'
-        //                     },
-        //                     notificationShow: true
-        //                 },
-        //                 bubbles: true,
-        //                 composed: true
-        //             };
-        //             this.dispatchEvent(new CustomEvent('updateNotification', options));
-        //
-        //             return;
-        //         }
-        //
-        //     }
-        //
-        //     return;
-        // }
-        //
-        // const state = this.walletConnectorConfig?.state
-        // const connections = state?.connections;
-        //
-        // let connectResult = null;
-        // switch (type) {
-        //     case "MetaMask":
-        //         try {
-        //
-        //             const reconnectResult: any = await Promise.race([
-        //                 reconnect(this.walletConnectorConfig, {
-        //                     connectors: [
-        //                         metaMask()
-        //                     ]
-        //                 }),
-        //                 timer,
-        //                 cancelChecker
-        //             ]);
-        //
-        //             if (reconnectResult && reconnectResult.length > 0) {
-        //                 connectResult = reconnectResult[0];
-        //             }
-        //
-        //             if (!connectResult) {
-        //
-        //                 connectResult = await Promise.race([
-        //                     connect(this.walletConnectorConfig, {
-        //                         connector: metaMask()
-        //                     }),
-        //                     timer,
-        //                     cancelChecker
-        //                 ]);
-        //             }
-        //
-        //         } catch (e) {
-        //             console.log('metaMask connection error', e)
-        //
-        //             this.connectingType = '';
-        //             this.connectingInProcess = false;
-        //
-        //             const options = {
-        //                 detail: {
-        //                     notificationData: {
-        //                         title: 'Wallet Connection Not Confirmed',
-        //                         text: 'The wallet connection was not confirmed. Please try again to continue.',
-        //                         buttonText: 'Confirm'
-        //                     },
-        //                     notificationShow: true
-        //                 },
-        //                 bubbles: true,
-        //                 composed: true
-        //             };
-        //             this.dispatchEvent(new CustomEvent('updateNotification', options));
-        //
-        //             return;
-        //         }
-        //         break;
-        //     case "Coinbase":
-        //         try {
-        //
-        //             const reconnectResult: any = await Promise.race([
-        //                 reconnect(this.walletConnectorConfig, {
-        //                     connectors: [
-        //                         coinbaseWallet({
-        //                             appName: 'Simple Widget',
-        //                             version: '3',
-        //                         })
-        //                     ]
-        //                 }),
-        //                 timer,
-        //                 cancelChecker
-        //             ]);
-        //
-        //             if (reconnectResult && reconnectResult.length > 0) {
-        //                 connectResult = reconnectResult[0];
-        //             }
-        //
-        //             if (!connectResult) {
-        //
-        //                 connectResult = await Promise.race([
-        //                     connect(this.walletConnectorConfig, {
-        //                         connector: coinbaseWallet({
-        //                             appName: 'Simple Widget',
-        //                             version: '3',
-        //                         })
-        //                     }),
-        //                     timer,
-        //                     cancelChecker
-        //                 ]);
-        //             }
-        //
-        //         } catch (e) {
-        //             console.log('coinbaseWallet connection error', e)
-        //
-        //             this.connectingType = '';
-        //             this.connectingInProcess = false;
-        //
-        //             const options = {
-        //                 detail: {
-        //                     notificationData: {
-        //                         title: 'Wallet Connection Not Confirmed',
-        //                         text: 'The wallet connection was not confirmed. Please try again to continue.',
-        //                         buttonText: 'Confirm'
-        //                     },
-        //                     notificationShow: true
-        //                 },
-        //                 bubbles: true,
-        //                 composed: true
-        //             };
-        //             this.dispatchEvent(new CustomEvent('updateNotification', options));
-        //
-        //             return;
-        //         }
-        //         break;
-        //     case "WalletConnect":
-        //         try {
-        //
-        //             let walletConnectConnector = null;
-        //             for (let connection of connections.values()) {
-        //                 if (connection.connector.type === 'walletConnect' && connection.connector['connect'] !== undefined) {
-        //                     walletConnectConnector = connection.connector;
-        //                 }
-        //             }
-        //
-        //             if (walletConnectConnector) {
-        //
-        //                 const reconnectResult: any = await Promise.race([
-        //                     reconnect(this.walletConnectorConfig, {
-        //                         connectors: [
-        //                             walletConnect({
-        //                                 projectId: 'b385e1eebef135dccafa0f1efaf09e85',
-        //                             })
-        //                         ]
-        //                     }),
-        //                     timer,
-        //                     cancelChecker
-        //                 ]);
-        //
-        //                 if (reconnectResult && reconnectResult.length > 0) {
-        //                     connectResult = reconnectResult[0];
-        //                 }
-        //             }
-        //
-        //             if (!walletConnectConnector || !connectResult) {
-        //                 connectResult = await Promise.race([
-        //                     connect(this.walletConnectorConfig, {
-        //                         connector: walletConnect({
-        //                             projectId: 'b385e1eebef135dccafa0f1efaf09e85',
-        //                         })
-        //                     }),
-        //                     timer,
-        //                     cancelChecker
-        //                 ]);
-        //
-        //             }
-        //
-        //         } catch (e) {
-        //             console.log('walletConnect connection error', e)
-        //
-        //             const walletConnectModals = document.querySelectorAll('wcm-modal');
-        //
-        //             if (walletConnectModals && walletConnectModals.length > 0) {
-        //                 for (let modal of walletConnectModals) {
-        //                     modal?.remove();
-        //                 }
-        //             }
-        //
-        //             this.connectingType = '';
-        //             this.connectingInProcess = false;
-        //
-        //             const options = {
-        //                 detail: {
-        //                     notificationData: {
-        //                         title: 'Wallet Connection Not Confirmed',
-        //                         text: 'The wallet connection was not confirmed. Please try again to continue.',
-        //                         buttonText: 'Confirm'
-        //                     },
-        //                     notificationShow: true
-        //                 },
-        //                 bubbles: true,
-        //                 composed: true
-        //             };
-        //             this.dispatchEvent(new CustomEvent('updateNotification', options));
-        //
-        //             return;
-        //         }
-        //         break;
-        //     case "Injected":
-        //         try {
-        //
-        //             const reconnectResult: any = await Promise.race([
-        //                 reconnect(this.walletConnectorConfig, {
-        //                     connectors: [
-        //                         injected({
-        //                             target() {
-        //                                 //@ts-ignore
-        //                                 return {
-        //                                     id: 'windowProvider',
-        //                                     name: 'Window Provider',
-        //                                     provider: (window as any).okxwallet || window.ethereum,//ethereum
-        //                                 }
-        //                             },
-        //                         })
-        //                     ]
-        //                 }),
-        //                 timer,
-        //                 cancelChecker
-        //             ]);
-        //
-        //             if (reconnectResult && reconnectResult.length > 0) {
-        //                 connectResult = reconnectResult[0];
-        //             }
-        //
-        //             if (!connectResult) {
-        //
-        //                 connectResult = await Promise.race([
-        //                     connect(this.walletConnectorConfig, {
-        //                         connector: injected({
-        //                             target() {
-        //                                 //@ts-ignore
-        //                                 return {
-        //                                     id: 'windowProvider',
-        //                                     name: 'Window Provider',
-        //                                     provider: (window as any).okxwallet || window.ethereum,//ethereum
-        //                                 }
-        //                             },
-        //                         })
-        //                     }),
-        //                     timer,
-        //                     cancelChecker
-        //                 ]);
-        //             }
-        //
-        //         } catch (e) {
-        //             console.log('injected connection error', e)
-        //             this.connectingType = '';
-        //             this.connectingInProcess = false;
-        //
-        //             const options = {
-        //                 detail: {
-        //                     notificationData: {
-        //                         title: 'Wallet Connection Not Confirmed',
-        //                         text: ['The wallet connection was not confirmed. Please try again to continue.', 'Maybe your wallet extension is inactive in browser. Activate it by clicking on its icon in your browser.'],
-        //                         buttonText: 'Confirm'
-        //                     },
-        //                     notificationShow: true
-        //                 },
-        //                 bubbles: true,
-        //                 composed: true
-        //             };
-        //             this.dispatchEvent(new CustomEvent('updateNotification', options));
-        //
-        //             return;
-        //         }
-        //         break;
-        //     default:
-        //         break;
-        // }
-        //
-        // if (!connectResult) {
-        //
-        //     this.connectingType = '';
-        //     this.connectingInProcess = false;
-        //
-        //     const options = {
-        //         detail: {
-        //             notificationData: {
-        //                 title: 'Connection Failed',
-        //                 text: 'Unable to establish a connection with the wallet connector. Please check your wallet and try again.',
-        //                 buttonText: 'Confirm'
-        //             },
-        //             notificationShow: true
-        //         },
-        //         bubbles: true,
-        //         composed: true
-        //     };
-        //     this.dispatchEvent(new CustomEvent('updateNotification', options));
-        //
-        //     return;
-        //
-        // }
-        //
-        // if (connectResult.accounts.length === 0) {
-        //
-        //     this.connectingType = '';
-        //     this.connectingInProcess = false;
-        //
-        //     const options = {
-        //         detail: {
-        //             notificationData: {
-        //                 title: 'No Wallet Addresses Found',
-        //                 text: 'No addresses were found in your wallet. Please add an address or try connecting a different wallet.',
-        //                 buttonText: 'Confirm'
-        //             },
-        //             notificationShow: true
-        //         },
-        //         bubbles: true,
-        //         composed: true
-        //     };
-        //     this.dispatchEvent(new CustomEvent('updateNotification', options));
-        //
-        //     return;
-        //
-        // }
-        //
-        // this.updateWalletAddress(connectResult.accounts[0]);
-        // this.updateWalletType(type);
-        // this.openApproveAddressModal();
+        this.connectingType = type;
+        this.connectingInProcess = true;
+
+        this.updateWalletAddress('');
+        this.updateWalletType('');
+
+        const timer = new Promise((_, reject) => {
+            setTimeout(() => {
+                reject(new Error())
+            }, 40000)
+        });
+        const cancelChecker = new Promise((_, reject) => {
+            const checkCancel = setInterval(() => {
+                if (!this.connectingInProcess) {
+                    clearInterval(checkCancel);
+                    reject(new Error());
+                }
+            }, 100);
+        });
+
+        if (type === 'WalletConnectTron') {
+
+            if (this.tronWalletConnect?.address) {
+
+                this.updateWalletAddress(this.tronWalletConnect.address);
+                this.updateWalletType("WalletConnectTron");
+                this.changeMode('addressResult');
+                return;
+
+            } else {
+
+                try {
+                    await Promise.race([
+                        this.tronWalletConnect.connect(),
+                        timer,
+                        cancelChecker
+                    ]);
+                } catch (e) {
+                    console.log('error', e)
+                    this.connectingType = '';
+                    this.connectingInProcess = false;
+
+                    const options = {
+                        detail: {
+                            notificationData: {
+                                title: 'Wallet Connection Not Confirmed',
+                                text: 'The wallet connection was not confirmed. Please try again to continue.',
+                                buttonText: 'Confirm'
+                            },
+                            notificationShow: true
+                        },
+                        bubbles: true,
+                        composed: true
+                    };
+                    this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                    return;
+                }
+
+            }
+
+            return;
+        }
+
+        if (type === 'TronLink') {
+
+            if (this.tronLinkConfig?.address) {
+
+                this.updateWalletAddress(this.tronLinkConfig.address);
+                this.updateWalletType("TronLink");
+                this.changeMode('addressResult');
+                return;
+
+            } else {
+
+                try {
+                    await Promise.race([
+                        this.tronLinkConfig.connect(),
+                        timer,
+                        cancelChecker
+                    ]);
+                } catch (e) {
+                    this.connectingType = '';
+                    this.connectingInProcess = false;
+
+                    const options = {
+                        detail: {
+                            notificationData: {
+                                title: 'Wallet Connection Not Confirmed',
+                                text: 'The wallet connection was not confirmed. Please try again to continue.',
+                                buttonText: 'Confirm'
+                            },
+                            notificationShow: true
+                        },
+                        bubbles: true,
+                        composed: true
+                    };
+                    this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                    return;
+                }
+
+            }
+
+            return;
+        }
+
+        const state = this.walletConnectorConfig?.state
+        const connections = state?.connections;
+
+        let connectResult = null;
+        switch (type) {
+            case "MetaMask":
+                try {
+
+                    const reconnectResult: any = await Promise.race([
+                        reconnect(this.walletConnectorConfig, {
+                            connectors: [
+                                metaMask()
+                            ]
+                        }),
+                        timer,
+                        cancelChecker
+                    ]);
+
+                    if (reconnectResult && reconnectResult.length > 0) {
+                        connectResult = reconnectResult[0];
+                    }
+
+                    if (!connectResult) {
+
+                        connectResult = await Promise.race([
+                            connect(this.walletConnectorConfig, {
+                                connector: metaMask()
+                            }),
+                            timer,
+                            cancelChecker
+                        ]);
+                    }
+
+                } catch (e) {
+                    console.log('metaMask connection error', e)
+
+                    this.connectingType = '';
+                    this.connectingInProcess = false;
+
+                    const options = {
+                        detail: {
+                            notificationData: {
+                                title: 'Wallet Connection Not Confirmed',
+                                text: 'The wallet connection was not confirmed. Please try again to continue.',
+                                buttonText: 'Confirm'
+                            },
+                            notificationShow: true
+                        },
+                        bubbles: true,
+                        composed: true
+                    };
+                    this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                    return;
+                }
+                break;
+            case "Coinbase":
+                try {
+
+                    const reconnectResult: any = await Promise.race([
+                        reconnect(this.walletConnectorConfig, {
+                            connectors: [
+                                coinbaseWallet({
+                                    appName: 'Simple Widget',
+                                    version: '3',
+                                })
+                            ]
+                        }),
+                        timer,
+                        cancelChecker
+                    ]);
+
+                    if (reconnectResult && reconnectResult.length > 0) {
+                        connectResult = reconnectResult[0];
+                    }
+
+                    if (!connectResult) {
+
+                        connectResult = await Promise.race([
+                            connect(this.walletConnectorConfig, {
+                                connector: coinbaseWallet({
+                                    appName: 'Simple Widget',
+                                    version: '3',
+                                })
+                            }),
+                            timer,
+                            cancelChecker
+                        ]);
+                    }
+
+                } catch (e) {
+                    console.log('coinbaseWallet connection error', e)
+
+                    this.connectingType = '';
+                    this.connectingInProcess = false;
+
+                    const options = {
+                        detail: {
+                            notificationData: {
+                                title: 'Wallet Connection Not Confirmed',
+                                text: 'The wallet connection was not confirmed. Please try again to continue.',
+                                buttonText: 'Confirm'
+                            },
+                            notificationShow: true
+                        },
+                        bubbles: true,
+                        composed: true
+                    };
+                    this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                    return;
+                }
+                break;
+            case "WalletConnect":
+                try {
+
+                    let walletConnectConnector = null;
+                    for (let connection of connections.values()) {
+                        if (connection.connector.type === 'walletConnect' && connection.connector['connect'] !== undefined) {
+                            walletConnectConnector = connection.connector;
+                        }
+                    }
+
+                    if (walletConnectConnector) {
+
+                        const reconnectResult: any = await Promise.race([
+                            reconnect(this.walletConnectorConfig, {
+                                connectors: [
+                                    walletConnect({
+                                        projectId: 'b385e1eebef135dccafa0f1efaf09e85',
+                                    })
+                                ]
+                            }),
+                            timer,
+                            cancelChecker
+                        ]);
+
+                        if (reconnectResult && reconnectResult.length > 0) {
+                            connectResult = reconnectResult[0];
+                        }
+                    }
+
+                    if (!walletConnectConnector || !connectResult) {
+                        connectResult = await Promise.race([
+                            connect(this.walletConnectorConfig, {
+                                connector: walletConnect({
+                                    projectId: 'b385e1eebef135dccafa0f1efaf09e85',
+                                })
+                            }),
+                            timer,
+                            cancelChecker
+                        ]);
+
+                    }
+
+                } catch (e) {
+                    console.log('walletConnect connection error', e)
+
+                    const walletConnectModals = document.querySelectorAll('wcm-modal');
+
+                    if (walletConnectModals && walletConnectModals.length > 0) {
+                        for (let modal of walletConnectModals) {
+                            modal?.remove();
+                        }
+                    }
+
+                    this.connectingType = '';
+                    this.connectingInProcess = false;
+
+                    const options = {
+                        detail: {
+                            notificationData: {
+                                title: 'Wallet Connection Not Confirmed',
+                                text: 'The wallet connection was not confirmed. Please try again to continue.',
+                                buttonText: 'Confirm'
+                            },
+                            notificationShow: true
+                        },
+                        bubbles: true,
+                        composed: true
+                    };
+                    this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                    return;
+                }
+                break;
+            case "Injected":
+                try {
+
+                    const reconnectResult: any = await Promise.race([
+                        reconnect(this.walletConnectorConfig, {
+                            connectors: [
+                                injected({
+                                    target() {
+                                        //@ts-ignore
+                                        return {
+                                            id: 'windowProvider',
+                                            name: 'Window Provider',
+                                            provider: (window as any).okxwallet || window.ethereum,//ethereum
+                                        }
+                                    },
+                                })
+                            ]
+                        }),
+                        timer,
+                        cancelChecker
+                    ]);
+
+                    if (reconnectResult && reconnectResult.length > 0) {
+                        connectResult = reconnectResult[0];
+                    }
+
+                    if (!connectResult) {
+
+                        connectResult = await Promise.race([
+                            connect(this.walletConnectorConfig, {
+                                connector: injected({
+                                    target() {
+                                        //@ts-ignore
+                                        return {
+                                            id: 'windowProvider',
+                                            name: 'Window Provider',
+                                            provider: (window as any).okxwallet || window.ethereum,//ethereum
+                                        }
+                                    },
+                                })
+                            }),
+                            timer,
+                            cancelChecker
+                        ]);
+                    }
+
+                } catch (e) {
+                    console.log('injected connection error', e)
+                    this.connectingType = '';
+                    this.connectingInProcess = false;
+
+                    const options = {
+                        detail: {
+                            notificationData: {
+                                title: 'Wallet Connection Not Confirmed',
+                                text: ['The wallet connection was not confirmed. Please try again to continue.', 'Maybe your wallet extension is inactive in browser. Activate it by clicking on its icon in your browser.'],
+                                buttonText: 'Confirm'
+                            },
+                            notificationShow: true
+                        },
+                        bubbles: true,
+                        composed: true
+                    };
+                    this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+                    return;
+                }
+                break;
+            default:
+                break;
+        }
+
+        if (!connectResult) {
+
+            this.connectingType = '';
+            this.connectingInProcess = false;
+
+            const options = {
+                detail: {
+                    notificationData: {
+                        title: 'Connection Failed',
+                        text: 'Unable to establish a connection with the wallet connector. Please check your wallet and try again.',
+                        buttonText: 'Confirm'
+                    },
+                    notificationShow: true
+                },
+                bubbles: true,
+                composed: true
+            };
+            this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+            return;
+
+        }
+
+        if (connectResult.accounts.length === 0) {
+
+            this.connectingType = '';
+            this.connectingInProcess = false;
+
+            const options = {
+                detail: {
+                    notificationData: {
+                        title: 'No Wallet Addresses Found',
+                        text: 'No addresses were found in your wallet. Please add an address or try connecting a different wallet.',
+                        buttonText: 'Confirm'
+                    },
+                    notificationShow: true
+                },
+                bubbles: true,
+                composed: true
+            };
+            this.dispatchEvent(new CustomEvent('updateNotification', options));
+
+            return;
+
+        }
+
+        this.updateWalletAddress(connectResult.accounts[0]);
+        this.updateWalletType(type);
+        this.changeMode('addressResult');
 
     }
 
@@ -520,7 +535,6 @@ export class AddressForm extends LitElement {
 
             this.customAddressErrorText = 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.';
             this.showCustomAddressErrorError = true;
-            // this.buttonDisabled = true;
 
             return;
         }
@@ -531,7 +545,6 @@ export class AddressForm extends LitElement {
     }
 
     private updateWalletAddress(address: string) {
-        console.log('updateWalletAddress', address)
         const updateWalletAddressEvent = new CustomEvent('updateWalletAddress', {
             detail: {
                 walletAddress: address
@@ -603,9 +616,205 @@ export class AddressForm extends LitElement {
 
     private createConnectorsConfigs(){
 
+        if(!this.selectedNetwork){
+            return;
+        }
+
+        if (['tron'].includes(this.selectedNetwork.symbol)) {
+
+            const wcAdapter = new WalletConnectAdapter({
+                network: ChainNetwork.Mainnet,
+                options: {
+                    projectId: 'b385e1eebef135dccafa0f1efaf09e85',
+                },
+                web3ModalConfig: {
+                    themeMode: (this.theme === 'custom') ? 'light' : this.theme,
+                    explorerRecommendedWalletIds: [
+                        'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96',
+                        '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0',
+                        '38f5d18bd8522c244bdd70cb4a68e0e718865155811c043f052fb9f1c51de662',
+                        '971e689d0a5be527bac79629b4ee9b925e82208e5168b733496a09c0faed0709',
+                        '8a0ee50d1f22f6651afcae7eb4253e52a3310b90af5daef78a8c4929a9bb99d4',
+                        '0b415a746fb9ee99cce155c2ceca0c6f6061b1dbca2d722b3ba16381d0562150',
+                        'c03dfee351b6fcc421b4494ea33b9d4b92a984f87aa76d1663bb28705e95034a',
+                        '15c8b91ade1a4e58f3ce4e7a0dd7f42b47db0c8df7e0d84f63eb39bcb96c4e0f',
+                        '20459438007b75f4f4acb98bf29aa3b800550309646d375da5fd4aac6c2a2c66',
+                    ],
+                }
+            })
+            if (wcAdapter) {
+                wcAdapter.on('connect', (address) => {
+                    if (address) {
+                        this.updateWalletAddress(address);
+                        this.updateWalletType("WalletConnectTron");
+                        this.changeMode('addressResult');
+                    } else {
+                        this.connectingType = '';
+                        this.connectingInProcess = false;
+
+                        const options = {
+                            detail: {
+                                notificationData: {
+                                    title: 'No Wallet Addresses Found',
+                                    text: 'No addresses were found in your wallet. Please add an address or try connecting a different wallet.',
+                                    buttonText: 'Confirm'
+                                },
+                                notificationShow: true
+                            },
+                            bubbles: true,
+                            composed: true
+                        };
+                        this.dispatchEvent(new CustomEvent('updateNotification', options));
+                    }
+                });
+                wcAdapter.on('disconnect', () => {
+                    this.updateWalletAddress('');
+                    this.updateWalletType('');
+                });
+                this.updateTronWalletConnect(wcAdapter);
+            }
+
+            const tronLinkAdapter = new TronLinkAdapter({
+                openTronLinkAppOnMobile: true
+            })
+            if (tronLinkAdapter) {
+                tronLinkAdapter.on('connect', (address) => {
+                    if (address) {
+                        this.updateWalletAddress(address);
+                        this.updateWalletType("TronLink");
+                        this.changeMode('addressResult');
+                    } else {
+                        this.connectingType = '';
+                        this.connectingInProcess = false;
+
+                        const options = {
+                            detail: {
+                                notificationData: {
+                                    title: 'No Wallet Addresses Found',
+                                    text: 'No addresses were found in your wallet. Please add an address or try connecting a different wallet.',
+                                    buttonText: 'Confirm'
+                                },
+                                notificationShow: true
+                            },
+                            bubbles: true,
+                            composed: true
+                        };
+                        this.dispatchEvent(new CustomEvent('updateNotification', options));
+                    }
+                });
+                tronLinkAdapter.on('disconnect', () => {
+                    this.updateWalletAddress('');
+                    this.updateWalletType('');
+                });
+                this.updateTronLinkConfig(tronLinkAdapter);
+            }
+
+            const newTronWeb = new TronWeb.TronWeb({
+                fullHost: 'https://api.trongrid.io',
+                headers: {
+                    "TRON-PRO-API-KEY": '6cd36e88-edf1-4c10-9cb1-5d088cfdc821'
+                },
+            });
+            if (newTronWeb) {
+                this.updateTronWeb(newTronWeb);
+            }
+
+            return;
+        }
+
+        if(['bsc', 'ethereum', 'polygon', 'avalanche', 'zksync', 'arbitrum', 'optimism', 'base'].includes(this.selectedNetwork.symbol)){
+            const config = createConfig({
+                chains: [mainnet, bsc, polygon, avalanche, zksync, arbitrum, optimism, base],
+                connectors: [
+                    injected(),
+                    metaMask(),
+                    coinbaseWallet(),
+                    walletConnect({
+                        projectId: 'b385e1eebef135dccafa0f1efaf09e85',
+                    })
+                ],
+                storage: createStorage({storage: window.localStorage}),
+                transports: {
+                    [mainnet.id]: fallback([
+                        http('https://rpc.ankr.com/eth'),
+                        http('https://eth-pokt.nodies.app'),
+                        http('https://ethereum.callstaticrpc.com'),
+                        http('https://eth.drpc.org'),
+                        http('https://rpc.mevblocker.io'),
+                    ]),
+                    [bsc.id]: fallback([
+                        http('https://binance.llamarpc.com'),
+                        http('https://1rpc.io/bnb'),
+                        http('https://bsc.callstaticrpc.com'),
+                        http('https://bsc-pokt.nodies.app'),
+                        http('https://bsc-rpc.publicnode.com'),
+                    ]),
+                    [polygon.id]: fallback([
+                        http('https://polygon.llamarpc.com'),
+                        http('https://polygon.drpc.org'),
+                        http('https://rpc.ankr.com/polygon'),
+                        http('https://polygon.api.onfinality.io/public'),
+                        http('https://1rpc.io/matic'),
+                    ]),
+                    [avalanche.id]: fallback([
+                        http('https://1rpc.io/avax/c'),
+                        http('https://ava-mainnet.public.blastapi.io/ext/bc/C/rpc'),
+                        http('https://avalanche-c-chain-rpc.publicnode.com'),
+                        http('https://avax.meowrpc.com'),
+                        http('https://avalanche.drpc.org'),
+                    ]),
+                    [base.id]: fallback([
+                        http('https://base.rpc.subquery.network/public'),
+                        http('https://base.meowrpc.com'),
+                        http('https://base-rpc.publicnode.com'),
+                        http('https://base.api.onfinality.io/public'),
+                        http('https://base.blockpi.network/v1/rpc/public'),
+                    ]),
+                    [zksync.id]: fallback([
+                        http('https://api.zan.top/zksync-mainnet'),
+                        http('https://1rpc.io/zksync2-era'),
+                        http('https://endpoints.omniatech.io/v1/zksync-era/mainnet/public'),
+                        http('https://mainnet.era.zksync.io'),
+                        http('https://zksync.meowrpc.com'),
+                    ]),
+                    [arbitrum.id]: fallback([
+                        http('https://endpoints.omniatech.io/v1/arbitrum/one/public'),
+                        http('https://arbitrum.llamarpc.com'),
+                        http('https://arbitrum.drpc.org'),
+                        http('https://arbitrum.meowrpc.com'),
+                        http('https://api.zan.top/arb-one'),
+                    ]),
+                    [optimism.id]: fallback([
+                        http('https://optimism.llamarpc.com'),
+                        http('https://endpoints.omniatech.io/v1/op/mainnet/public'),
+                        http('https://optimism.api.onfinality.io/public'),
+                        http('https://optimism.rpc.subquery.network/public'),
+                        http('https://mainnet.optimism.io'),
+                    ])
+                }
+            })
+            this.updateWalletConnectorConfig(config);
+            return;
+        }
+
     }
 
     private async disconnectConnectors(){
+
+        if(this.walletConnectorConfig){
+            const {connector} = getAccount(this.walletConnectorConfig)
+            await disconnect(this.walletConnectorConfig, {
+                connector,
+            })
+        }
+
+        if(this.tronWalletConnect){
+            await this.tronWalletConnect.disconnect()
+        }
+
+        if(this.tronLinkConfig){
+            await this.tronLinkConfig.disconnect()
+        }
 
     }
 
@@ -623,11 +832,8 @@ export class AddressForm extends LitElement {
         super.updated(changedProperties);
 
         if (changedProperties.has('mode') || changedProperties.has('selectedToken') || changedProperties.has('selectedNetwork')) {
-            await this.disconnectConnectors();
-            this.updateWalletConnectorConfig(null);
-            this.updateTronWalletConnect(null);
-            this.updateTronLinkConfig(null);
-            this.updateTronWeb(null);
+
+            this.connectingInProcess = false;
 
             if(this.mode === 'addressSelect' && this.selectedToken && this.selectedNetwork){
                 this.customAddressValue = '';
@@ -635,6 +841,12 @@ export class AddressForm extends LitElement {
                 this.showCustomAddressErrorError = false;
                 this.updateWalletAddress('');
                 this.updateWalletType('');
+
+                await this.disconnectConnectors();
+                this.updateWalletConnectorConfig(null);
+                this.updateTronWalletConnect(null);
+                this.updateTronLinkConfig(null);
+                this.updateTronWeb(null);
 
                 this.createConnectorsConfigs();
             }

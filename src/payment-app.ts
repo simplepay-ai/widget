@@ -820,7 +820,6 @@ export class PaymentApp extends LitElement {
                                                                 @updateWalletType=${(event: CustomEvent) =>
                                                                         (this.walletType = event.detail.walletType)}
                                                                 @updateWalletAddress=${(event: CustomEvent) =>{
-                                                                    console.log('@updateWalletAddress', event.detail.walletAddress)
                                                                     this.walletAddress = event.detail.walletAddress
                                                                 }}
                                                                 @updateWalletConnectorConfig=${(event: CustomEvent) => {
