@@ -26,6 +26,8 @@ export type PaymentPageStep =
     | 'processingTransactionStep'
     | 'successTransactionStep';
 
+export type TokenSelectMode = 'selectedToken' | 'tokensList'
+
 // export type CurrentPriceStep = 'priceEnter' | 'messageEnter';
 
 export type WalletType = 'MetaMask' | 'Coinbase' | 'WalletConnect' | 'WalletConnectTron' | 'TronLink' | 'Injected' | 'Custom'

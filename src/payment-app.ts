@@ -38,6 +38,7 @@ import './components/widget-layout/steps/created-invoice-step.ts';
 import './components/payment-page-layout/loading-step-payment-page.ts';
 import './components/payment-page-layout/error-step-payment-page.ts';
 import './components/payment-page-layout/invoice-info.ts';
+import './components/payment-page-layout/token-select-form.ts';
 
 import {checkWalletAddress, generateUUID} from "./lib/util.ts";
 import themesConfig from '../themesConfig.json';
@@ -792,7 +793,19 @@ export class PaymentApp extends LitElement {
                                 ${
                                         (this.paymentPageStep === 'invoiceStep' && this.invoice?.status === 'active' && !this.activeTransaction)
                                         ? html`
-                                                Create Transaction Form
+                                            <div class="createTransactionForm">
+                                                <token-select-form
+                                                        .tokens=${this.tokens}
+                                                        .invoice=${this.invoice}
+                                                        .selectedToken=${this.selectedToken}
+                                                        .selectedNetwork=${this.selectedNetwork}
+                                                        .tokenAvailable=${this.tokenAvailable}
+                                                        @updateSelectedToken=${(event: CustomEvent) => {
+                                                            this.selectedToken = event.detail.token;
+                                                            this.selectedNetwork = event.detail.network;
+                                                        }}
+                                                ></token-select-form>
+                                            </div>
                                                 ` : ''
                                 }
 
@@ -941,13 +954,15 @@ export class PaymentApp extends LitElement {
     }
 
     private async getUserProfile(){
-        if(this.API){
+        if(this.API && this.user){
             try{
                 this.userProfile = await this.API.user.profile.get();
             }catch (e) {
                 console.log('getUserProfile error', e)
                 this.userProfile = null;
             }
+        }else{
+            this.userProfile = null;
         }
     }
 

@@ -1,0 +1,579 @@
+* {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 14px;
+    font-weight: 450;
+    background: transparent;
+    margin: 0;
+    padding: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.formWrapper{
+    background: var(--sp-widget-bg-color);
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--sp-widget-border-color);
+    width: 100%;
+}
+
+.formWrapper .selectedToken p{
+    font-size: 18px;
+    line-height: 1.2;
+    font-weight: 700;
+    color: var(--sp-widget-text-color);
+    text-transform: capitalize;
+}
+
+.formWrapper .selectedToken .buttonWrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 16px;
+}
+
+.formWrapper .selectedToken button{
+    flex: 1;
+    max-width: 250px;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    height: 40px;
+    padding: 16px 8px;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+.formWrapper .selectedToken button.mainButton{
+    color: var(--sp-widget-primary-button-text-color);
+    background: var(--sp-widget-primary-button-color);
+    border: 1px solid var(--sp-widget-primary-button-border-color);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .formWrapper .selectedToken button.mainButton:hover {
+        color: var(--sp-widget-primary-button-hover-text-color);
+        background: var(--sp-widget-primary-button-hover-color);
+        border: 1px solid var(--sp-widget-primary-button-hover-border-color);
+    }
+}
+
+.formWrapper .selectedToken .tokenInfo{
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.formWrapper .selectedToken .tokenInfo .amountInfo p:first-child{
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 500;
+    color: var(--sp-widget-text-color);
+}
+
+.formWrapper .selectedToken .tokenInfo .amountInfo p:last-child{
+    margin-top: 4px;
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 400;
+    color: var(--sp-widget-secondary-text-color);
+}
+
+.formWrapper .selectedToken .tokenInfo .cryptoInfo{
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.formWrapper .selectedToken .tokenInfo .cryptoInfo .iconsWrapper{
+    position: relative;
+}
+
+.formWrapper .selectedToken .tokenInfo .cryptoInfo .iconsWrapper .tokenIcon{
+    position: relative;
+    background: var(--sp-widget-bg-color);
+    border: 1px solid var(--sp-widget-border-color);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    -webkit-box-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.formWrapper .selectedToken .tokenInfo .cryptoInfo .iconsWrapper .networkIcon{
+    position: absolute;
+    bottom: -2px;
+    right: -3px;
+    background: var(--sp-widget-bg-color);
+    border: 1px solid var(--sp-widget-border-color);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    -webkit-box-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.formWrapper .selectedToken .tokenInfo .cryptoInfo p{
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 500;
+    color: var(--sp-widget-text-color);
+}
+
+.formWrapper .selectedToken .tokenInfo .cryptoInfo .badge{
+    color: var(--sp-widget-badge-text-color);
+    font-weight: 700;
+    padding: 2px 4px;
+    background: var(--sp-widget-badge-bg-color);
+    border: 1px solid var(--sp-widget-badge-border-color);
+    font-size: 10px;
+    border-radius: 4px;
+}
+
+/*.formWrapper .tokensList{*/
+/*    height: auto;*/
+/*    max-height: 250px;*/
+/*    overflow: auto;*/
+/*    padding-right: 8px;*/
+/*}*/
+
+/*.formWrapper .tokensList::-webkit-scrollbar {*/
+/*    width: 2px;*/
+/*}*/
+
+/*.formWrapper .tokensList::-webkit-scrollbar-track {*/
+/*    background: transparent;*/
+/*}*/
+
+/*.formWrapper .tokensList::-webkit-scrollbar-thumb {*/
+/*    background: #888888; !* Fallback *!*/
+/*    background: var(--sp-widget-scroll-color);*/
+/*}*/
+
+.formWrapper .tokensList .header{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.formWrapper .tokensList .header p{
+    font-size: 18px;
+    line-height: 1.2;
+    font-weight: 700;
+    color: var(--sp-widget-text-color);
+    text-transform: capitalize;
+}
+
+.formWrapper .tokensList .header button {
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    background: var(--sp-widget-back-button-color);
+    border: 1px solid var(--sp-widget-back-button-border-color);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+.formWrapper .tokensList .header button svg {
+    stroke: var(--sp-widget-back-button-text-color);
+    width: 16px;
+    height: 16px;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+@media(hover: hover) and (pointer: fine) {
+    .formWrapper .tokensList .header button:hover {
+        background: var(--sp-widget-back-button-hover-color);
+        border: 1px solid var(--sp-widget-back-button-hover-border-color);
+    }
+
+    .formWrapper .tokensList .header button:hover svg {
+        stroke: var(--sp-widget-back-button-hover-text-color);
+    }
+}
+
+.formWrapper .tokensList .tokensFilters {
+    width: 100%;
+    margin-top: 20px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+}
+
+.formWrapper .tokensList .tokensFilters .networkSelectWrapper {
+    position: relative;
+    display: flex;
+    width: 150px;
+    min-width: 150px;
+}
+
+.formWrapper .tokensList .tokensFilters .networkSelectWrapper select{
+    width: 100%;
+    height: 35px;
+    padding: 8px 12px;
+    color: var(--sp-widget-input-color);
+    border: 1px solid var(--sp-widget-input-border-color);
+    background: var(--sp-widget-input-bg-color);
+    border-radius: 6px;
+}
+
+.formWrapper .tokensList .tokensFilters .tokenInputWrapper{
+    display: flex;
+    flex: 1;
+}
+
+.formWrapper .tokensList .tokensFilters .tokenInput {
+    height: 35px;
+    width: 100%;
+    border-radius: 6px;
+    border: 1px solid var(--sp-widget-input-border-color);
+    background: var(--sp-widget-input-bg-color);
+    padding: 8px 12px;
+    font-size: 14px;
+    line-height: 18px;
+    color: var(--sp-widget-input-color);
+    outline: none;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 50ms;
+    transition-duration: 50ms;
+}
+
+.formWrapper .tokensList .tokensFilters .tokenInput::-webkit-input-placeholder {
+    font-size: 14px;
+    line-height: 18px;
+    color: var(--sp-widget-input-placeholder-color);
+}
+
+.formWrapper .tokensList .tokensFilters .tokenInput::-moz-placeholder {
+    font-size: 14px;
+    line-height: 18px;
+    color: var(--sp-widget-input-placeholder-color);
+}
+
+.formWrapper .tokensList .tokensFilters .tokenInput:-ms-input-placeholder {
+    font-size: 14px;
+    line-height: 18px;
+    color: var(--sp-widget-input-placeholder-color);
+}
+
+.formWrapper .tokensList .tokensFilters .tokenInput:focus-visible {
+    border: 1px solid var(--sp-widget-input-active-border-color);
+}
+
+.formWrapper .tokensList .tokens {
+    margin-top: 20px;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    padding: 0 4px 0 0;
+    max-height: 250px;
+}
+
+.formWrapper .tokensList .tokens::-webkit-scrollbar {
+    width: 2px;
+}
+
+.formWrapper .tokensList .tokens::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.formWrapper .tokensList .tokens::-webkit-scrollbar-thumb {
+    background: var(--sp-widget-scroll-color);
+}
+
+.formWrapper .tokensList .tokens .emptyTokens p{
+    text-align: center;
+    margin: 20px auto 40px;
+    color: var(--sp-widget-secondary-text-color);
+    max-width: 350px;
+}
+
+.formWrapper .tokensList .tokens .emptyTokens a{
+    max-width: 250px;
+    margin: 0 auto;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    height: 40px;
+    padding: 16px 8px;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+    color: var(--sp-widget-primary-button-text-color);
+    background: var(--sp-widget-primary-button-color);
+    border: 1px solid var(--sp-widget-primary-button-border-color);
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 50ms;
+    transition-duration: 50ms;
+}
+
+.formWrapper .tokensList .tokens .emptyTokens a:hover{
+    color: var(--sp-widget-primary-button-hover-text-color);
+    background: var(--sp-widget-primary-button-hover-color);
+    border: 1px solid var(--sp-widget-primary-button-hover-border-color);
+}
+
+.formWrapper .tokensList .tokens .tokenItem {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: pointer;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--sp-widget-function-button-border-color);
+    border-radius: 8px;
+    background: var(--sp-widget-function-button-color);
+    outline: 2px solid transparent;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 50ms;
+    transition-duration: 50ms;
+}
+
+.formWrapper .tokensList .tokens .tokenItem.selected {
+    border: 1px solid var(--sp-widget-active-color);
+}
+
+.formWrapper .tokensList .tokens .tokenItem:hover {
+    background: var(--sp-widget-function-button-hover-color);
+    border: 1px solid var(--sp-widget-function-button-hover-border-color);
+}
+
+.formWrapper .tokensList .tokens .tokenItem:hover.selected {
+    border: 1px solid var(--sp-widget-active-color);
+}
+
+.formWrapper .tokensList .tokens .tokenItem .tokenContent {
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    gap: 8px;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.formWrapper .tokensList .tokens .tokenItem .tokenContent img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    -o-object-fit: cover;
+    object-fit: cover;
+    border: 1px solid var(--sp-widget-border-color);
+    background: var(--sp-widget-bg-color);
+}
+
+.formWrapper .tokensList .tokens .tokenItem .tokenContent .tokenIconWrapper {
+    position: relative;
+}
+
+.formWrapper .tokensList .tokens .tokenItem .tokenContent .tokenIconWrapper .tokenIcon {
+    position: relative;
+    background: var(--sp-widget-bg-color);
+    border: 1px solid var(--sp-widget-border-color);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.formWrapper .tokensList .tokens .tokenItem .tokenContent .tokenIconWrapper .tokenIcon svg {
+    width: 16px;
+    height: 16px;
+    stroke: var(--sp-widget-active-color);
+}
+
+.formWrapper .tokensList .tokens .tokenItem .tokenContent .tokenIconWrapper .networkIcon {
+    position: absolute;
+    bottom: -2px;
+    right: -3px;
+    background: var(--sp-widget-bg-color);
+    border: 1px solid var(--sp-widget-border-color);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.formWrapper .tokensList .tokens .tokenItem .tokenContent .tokenIconWrapper .networkIcon svg {
+    width: 16px;
+    height: 16px;
+    stroke: var(--sp-widget-active-color);
+}
+
+.formWrapper .tokensList .tokens .tokenItem .tokenContent .info {
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+
+.formWrapper .tokensList .tokens .tokenItem .tokenContent .info .leftSection {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    gap: 8px;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.formWrapper .tokensList .tokens .tokenItem .tokenContent .info .leftSection p {
+    font-weight: 500;
+    color: var(--sp-widget-text-color);
+}
+
+.formWrapper .tokensList .tokens .tokenItem .tokenContent .info p {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--sp-widget-secondary-text-color);
+}
+
+.formWrapper .tokensList .tokens .tokenItem .tokenContent .badge {
+    color: var(--sp-widget-badge-text-color);
+    font-weight: 700;
+    padding: 2px 4px;
+    background: var(--sp-widget-badge-bg-color);
+    border: 1px solid var(--sp-widget-badge-border-color);
+    font-size: 10px;
+    border-radius: 4px;
+}
+
+.formWrapper .tokensList .tokensEmpty{
+    margin: 20px;
+}
+
+.formWrapper .tokensList .tokensEmpty p{
+    text-align: center;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--sp-widget-secondary-text-color);
+}

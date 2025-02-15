@@ -13,8 +13,8 @@
 .invoiceInfoWrapper{
     display: flex;
     flex-direction: column;
-    min-height: 100%;
-    gap: 18px;
+    gap: 54px;
+    height: 100%;
 }
 
 .invoiceInfoWrapper .merchantInfo .topInfo{
@@ -80,16 +80,20 @@
 
 .invoiceInfoWrapper .mainInfo{
     flex: 1;
-    padding-top: 36px;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    gap: 54px;
 }
 
 .invoiceInfoWrapper .mainInfo .infoRow{
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 18px;
+}
+
+.invoiceInfoWrapper .mainInfo .infoRow:not(:first-child){
+    margin-top: 18px;
 }
 
 .invoiceInfoWrapper .mainInfo .infoRow .infoTitle{
@@ -146,7 +150,6 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-top: 36px;
 }
 
 .invoiceInfoWrapper .mainInfo .priceInfo .leftWrapper{
@@ -172,10 +175,8 @@
 }
 
 .invoiceInfoWrapper .mainInfo .productsInfo{
-    margin-top: 54px;
     flex: 1;
     overflow: auto;
-    max-height: 350px;
     padding-right: 8px;
     display: flex;
     flex-direction: column;

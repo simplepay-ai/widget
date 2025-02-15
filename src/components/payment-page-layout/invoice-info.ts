@@ -156,22 +156,24 @@ export class InvoiceInfo extends LitElement {
 
                 <div class="mainInfo">
 
-                    <div class="infoRow">
-                        <p class="infoTitle">
-                            Status
-                        </p>
-                        <div class=${`infoValue ${this.invoice?.status}`}>
-                            <div class="circle"></div>
-                            ${this.invoice?.status}
+                    <div>
+                        <div class="infoRow">
+                            <p class="infoTitle">
+                                Status
+                            </p>
+                            <div class=${`infoValue ${this.invoice?.status}`}>
+                                <div class="circle"></div>
+                                ${this.invoice?.status}
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="infoRow">
-                        <p class="infoTitle">
-                            Created Date
-                        </p>
-                        <div class="infoValue">
-                            ${`${new Date(this.invoice?.createdAt!).toDateString()} ${new Date(this.invoice?.createdAt!).toTimeString().split(':')[0]}:${new Date(this.invoice?.createdAt!).toTimeString().split(':')[1]}`}
+                        <div class="infoRow">
+                            <p class="infoTitle">
+                                Created Date
+                            </p>
+                            <div class="infoValue">
+                                ${`${new Date(this.invoice?.createdAt!).toDateString()} ${new Date(this.invoice?.createdAt!).toTimeString().split(':')[0]}:${new Date(this.invoice?.createdAt!).toTimeString().split(':')[1]}`}
+                            </div>
                         </div>
                     </div>
 

@@ -160,7 +160,7 @@
 }
 
 .paymentPage .paymentPageContent{
-    padding: 64px 32px;
+    padding: 48px 32px;
     display: flex;
     gap: 54px;
     justify-content: space-between;
@@ -172,6 +172,20 @@
 
 .paymentPage .paymentPageContent .leftSection{
     flex: 1;
+    overflow: auto;
+    padding-right: 8px;
+}
+
+.paymentPage .paymentPageContent .leftSection::-webkit-scrollbar {
+    width: 2px;
+}
+
+.paymentPage .paymentPageContent .leftSection::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.paymentPage .paymentPageContent .leftSection::-webkit-scrollbar-thumb {
+    background: var(--sp-widget-scroll-color);
 }
 
 .paymentPage .paymentPageContent .rightSection{

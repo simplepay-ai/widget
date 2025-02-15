@@ -175,7 +175,7 @@ export class InvoiceStep extends LitElement {
             }
         }
 
-        if (changedProperties.has('selectedTokenSymbol') || changedProperties.has('selectedNetworkSymbol')) {
+        if (changedProperties.has('selectedToken') || changedProperties.has('selectedNetwork')) {
             this.tokenStandart = getTokenStandart(this.selectedNetwork?.symbol || '');
         }
 
