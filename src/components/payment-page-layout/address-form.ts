@@ -78,7 +78,7 @@ export class AddressForm extends LitElement {
 
     private async selectWalletType(type: WalletType) {
 
-        if(type === 'Custom'){
+        if (type === 'Custom') {
             this.changeMode('addressEnter');
             return;
         }
@@ -505,7 +505,7 @@ export class AddressForm extends LitElement {
 
     }
 
-    private changeMode(mode: AddressSelectMode){
+    private changeMode(mode: AddressSelectMode) {
         this.mode = mode;
     }
 
@@ -614,9 +614,9 @@ export class AddressForm extends LitElement {
         this.dispatchEvent(updateTronWebEvent);
     }
 
-    private createConnectorsConfigs(){
+    private createConnectorsConfigs() {
 
-        if(!this.selectedNetwork){
+        if (!this.selectedNetwork) {
             return;
         }
 
@@ -722,7 +722,7 @@ export class AddressForm extends LitElement {
             return;
         }
 
-        if(['bsc', 'ethereum', 'polygon', 'avalanche', 'zksync', 'arbitrum', 'optimism', 'base'].includes(this.selectedNetwork.symbol)){
+        if (['bsc', 'ethereum', 'polygon', 'avalanche', 'zksync', 'arbitrum', 'optimism', 'base'].includes(this.selectedNetwork.symbol)) {
             const config = createConfig({
                 chains: [mainnet, bsc, polygon, avalanche, zksync, arbitrum, optimism, base],
                 connectors: [
@@ -799,20 +799,20 @@ export class AddressForm extends LitElement {
 
     }
 
-    private async disconnectConnectors(){
+    private async disconnectConnectors() {
 
-        if(this.walletConnectorConfig){
+        if (this.walletConnectorConfig) {
             const {connector} = getAccount(this.walletConnectorConfig)
             await disconnect(this.walletConnectorConfig, {
                 connector,
             })
         }
 
-        if(this.tronWalletConnect){
+        if (this.tronWalletConnect) {
             await this.tronWalletConnect.disconnect()
         }
 
-        if(this.tronLinkConfig){
+        if (this.tronLinkConfig) {
             await this.tronLinkConfig.disconnect()
         }
 
@@ -823,7 +823,7 @@ export class AddressForm extends LitElement {
     async connectedCallback() {
         super.connectedCallback();
 
-        if(this.mode === 'addressSelect' && this.selectedToken && this.selectedNetwork){
+        if (this.mode === 'addressSelect' && this.selectedToken && this.selectedNetwork) {
             this.createConnectorsConfigs();
         }
     }
@@ -831,25 +831,42 @@ export class AddressForm extends LitElement {
     async updated(changedProperties: Map<string | symbol, unknown>) {
         super.updated(changedProperties);
 
-        if (changedProperties.has('mode') || changedProperties.has('selectedToken') || changedProperties.has('selectedNetwork')) {
+        if (changedProperties.has('selectedToken') || changedProperties.has('selectedNetwork')) {
+            this.customAddressValue = '';
+            this.customAddressErrorText = '';
+            this.showCustomAddressErrorError = false;
+            this.updateWalletAddress('');
+            this.updateWalletType('');
 
+            await this.disconnectConnectors();
+            this.updateWalletConnectorConfig(null);
+            this.updateTronWalletConnect(null);
+            this.updateTronLinkConfig(null);
+            this.updateTronWeb(null);
+
+            this.changeMode('addressSelect');
+
+            return;
+        }
+
+        if (changedProperties.has('mode') && this.mode === 'addressSelect' && this.selectedToken && this.selectedNetwork) {
+            this.customAddressValue = '';
+            this.customAddressErrorText = '';
+            this.showCustomAddressErrorError = false;
+            this.updateWalletAddress('');
+            this.updateWalletType('');
+
+            await this.disconnectConnectors();
+            this.updateWalletConnectorConfig(null);
+            this.updateTronWalletConnect(null);
+            this.updateTronLinkConfig(null);
+            this.updateTronWeb(null);
+
+            this.createConnectorsConfigs();
+        }
+
+        if (changedProperties.has('mode')) {
             this.connectingInProcess = false;
-
-            if(this.mode === 'addressSelect' && this.selectedToken && this.selectedNetwork){
-                this.customAddressValue = '';
-                this.customAddressErrorText = '';
-                this.showCustomAddressErrorError = false;
-                this.updateWalletAddress('');
-                this.updateWalletType('');
-
-                await this.disconnectConnectors();
-                this.updateWalletConnectorConfig(null);
-                this.updateTronWalletConnect(null);
-                this.updateTronLinkConfig(null);
-                this.updateTronWeb(null);
-
-                this.createConnectorsConfigs();
-            }
         }
     }
 
@@ -1299,7 +1316,7 @@ export class AddressForm extends LitElement {
                                                 Enter Wallet Address
                                             </p>
                                         </div>
-                                        
+
                                         <div class="addressForm">
                                             <div class="inputWrapper">
                                                 <div class="input">
@@ -1346,10 +1363,10 @@ export class AddressForm extends LitElement {
                                         ${(this.showCustomAddressErrorError) ? 'error' : ''}
                                         `}>
                                                     ${
-                                        (this.showCustomAddressErrorError)
-                                                ? this.customAddressErrorText
-                                                : 'Enter the address of the wallet you will use to complete the payment. We need this to track and verify the on-chain transaction as our service is fully decentralized'
-                                }
+                                                            (this.showCustomAddressErrorError)
+                                                                    ? this.customAddressErrorText
+                                                                    : 'Enter the address of the wallet you will use to complete the payment. We need this to track and verify the on-chain transaction as our service is fully decentralized'
+                                                    }
                                                 </p>
                                             </div>
 
@@ -1368,13 +1385,13 @@ export class AddressForm extends LitElement {
                         (this.mode === 'addressResult')
                                 ? html`
                                     <div class="addressResult">
-                                        
+
                                         <div class="connectedInfo">
-                                            
+
                                             <p>Connected by</p>
                                             ${
                                                     (this.walletType === 'Custom')
-                                                    ? html`
+                                                            ? html`
                                                                 <p>Custom Wallet</p>
                                                                 <div class="icon customWalletIcon">
                                                                     <svg class="typeIcon" xmlns="http://www.w3.org/2000/svg" width="24"
@@ -1636,9 +1653,9 @@ export class AddressForm extends LitElement {
                                                                 </div>
                                                             ` : ''
                                             }
-                                            
+
                                         </div>
-                                        
+
                                         <div class="addressInfo">
                                             <p>Address</p>
                                             <p>${this.walletAddress}</p>
@@ -1649,7 +1666,7 @@ export class AddressForm extends LitElement {
                                                 Change
                                             </button>
                                         </div>
-                                        
+
                                     </div>
                                 ` : ''
                 }

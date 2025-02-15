@@ -882,7 +882,6 @@ export class PaymentApp extends LitElement {
             <toast-notification
                     .active=${this.notificationShow}
                     .data=${this.notificationData}
-                    .dark=${this.theme === 'dark'}
                     @updateNotification=${this.updateNotification}
             ></toast-notification>
         `
