@@ -40,6 +40,7 @@ import './components/payment-page-layout/error-step-payment-page.ts';
 import './components/payment-page-layout/invoice-info.ts';
 import './components/payment-page-layout/token-select-form.ts';
 import './components/payment-page-layout/address-form.ts';
+import './components/payment-page-layout/toast-notification.ts';
 
 import {checkWalletAddress, generateUUID} from "./lib/util.ts";
 import themesConfig from '../themesConfig.json';
@@ -128,7 +129,7 @@ export class PaymentApp extends LitElement {
     private notificationShow: boolean = false;
 
     @property({attribute: false})
-    private notificationData: INotification | null = null;
+    private notificationData: INotification | null = null
 
     @property({attribute: false})
     private cancelingTransaction: Boolean = false;
