@@ -198,8 +198,199 @@
     gap: 24px;
 }
 
+.paymentPage .paymentPageContent .rightSection .createTransactionForm button{
+    flex: 1;
+    max-width: 250px;
+    margin: 0 auto;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    max-height: 40px;
+    padding: 16px 8px;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+.paymentPage .paymentPageContent .rightSection .createTransactionForm button.mainButton{
+    color: var(--sp-widget-primary-button-text-color);
+    background: var(--sp-widget-primary-button-color);
+    border: 1px solid var(--sp-widget-primary-button-border-color);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .paymentPage .paymentPageContent .rightSection .createTransactionForm button.mainButton:hover {
+        color: var(--sp-widget-primary-button-hover-text-color);
+        background: var(--sp-widget-primary-button-hover-color);
+        border: 1px solid var(--sp-widget-primary-button-hover-border-color);
+    }
+}
+
+.paymentPage .paymentPageContent .rightSection .createTransactionForm button:disabled {
+    pointer-events: none;
+    -ms-touch-action: none;
+    touch-action: none;
+    opacity: 0.5;
+}
+
 .paymentPage .paymentPageContent .separator{
     width: 2px;
     background-color: var(--sp-widget-border-color);
     border-radius: 0.5rem;
+}
+
+.paymentPage .creatingTransaction{
+    width: 100%;
+    max-width: 410px;
+    margin: 0 auto;
+    min-height: 700px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--sp-widget-bg-color);
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--sp-widget-border-color);
+}
+
+.paymentPage .creatingTransaction .spinner {
+    width: 100%;
+    height: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+
+.paymentPage .creatingTransaction .spinner p {
+    margin-top: 12px;
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 400;
+    color: var(--sp-widget-text-color);
+}
+
+.paymentPage .creatingTransaction .spinner svg {
+    width: 20px;
+    height: 20px;
+    -webkit-animation: spin 1s linear infinite;
+    animation: spin 1s linear infinite;
+}
+
+.paymentPage .creatingTransaction .spinner circle {
+    stroke: var(--sp-widget-active-color);
+    opacity: 0.25;
+}
+
+.paymentPage .creatingTransaction .spinner path {
+    fill: var(--sp-widget-active-color);
+    opacity: 0.75;
+}
+
+.paymentPage .hasActiveTransaction{
+    width: 100%;
+    max-width: 410px;
+    margin: 0 auto;
+    min-height: 700px;
+    display: flex;
+    flex-direction: column;
+    background: var(--sp-widget-bg-color);
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--sp-widget-border-color);
+}
+
+.paymentPage .hasActiveTransaction .message{
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.paymentPage .hasActiveTransaction .message p{
+    font-size: 15px;
+    line-height: 1.2;
+    font-weight: 400;
+    color: var(--sp-widget-secondary-text-color);
+    text-align: center;
+    max-width: 250px;
+}
+
+.paymentPage .hasActiveTransaction button{
+    flex: 1;
+    max-width: 250px;
+    margin: 0 auto;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    max-height: 40px;
+    padding: 16px 8px;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+.paymentPage .hasActiveTransaction button.mainButton{
+    color: var(--sp-widget-primary-button-text-color);
+    background: var(--sp-widget-primary-button-color);
+    border: 1px solid var(--sp-widget-primary-button-border-color);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .paymentPage .hasActiveTransaction button.mainButton:hover {
+        color: var(--sp-widget-primary-button-hover-text-color);
+        background: var(--sp-widget-primary-button-hover-color);
+        border: 1px solid var(--sp-widget-primary-button-hover-border-color);
+    }
+}
+
+@-webkit-keyframes spin {
+    from {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    from {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
 }

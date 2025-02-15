@@ -2,7 +2,7 @@ import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 //@ts-ignore
 import style from "../../styles/payment-page-styles/invoice-info.css?inline";
-import {Invoice, InvoiceProduct, UserProfile} from "@simplepay-ai/api-client";
+import {Invoice, InvoiceProduct, Transaction, UserProfile} from "@simplepay-ai/api-client";
 //@ts-ignore
 import logo from "../../assets/logo.jpg";
 import {PaymentPageStep} from "../../lib/types.ts";
@@ -29,6 +29,9 @@ export class InvoiceInfo extends LitElement {
 
     @property({type: Boolean})
     hasTransactions: boolean = false;
+
+    @property({attribute: false, type: Boolean})
+    hasActiveTransaction: boolean = false;
 
     ///////////////////////
 
@@ -101,7 +104,7 @@ export class InvoiceInfo extends LitElement {
     }
 
     private dispatchStepChange(step: PaymentPageStep) {
-        const changeStepEventEvent = new CustomEvent('goToStep', {
+        const changeStepEvent = new CustomEvent('goToStep', {
             detail: {
                 stepName: step,
             },
@@ -109,8 +112,19 @@ export class InvoiceInfo extends LitElement {
             composed: true
         });
 
-        this.dispatchEvent(changeStepEventEvent);
+        this.dispatchEvent(changeStepEvent);
     }
+
+    private dispatchTransactionStep() {
+        const changeTransactionStepEvent = new CustomEvent('goToTransactionStep', {
+            bubbles: true,
+            composed: true
+        });
+
+        this.dispatchEvent(changeTransactionStepEvent);
+    }
+
+    goToTransactionStep
 
     render() {
         return html`
@@ -215,11 +229,11 @@ export class InvoiceInfo extends LitElement {
                                 this.invoiceProducts && this.invoiceProducts.length > 0 && this.invoiceProducts.map((item: InvoiceProduct) => {
 
                                     let totalPrice = 0;
-                                    
-                                    if(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].price){
+
+                                    if (item.product.prices && item.product.prices.length > 0 && item.product.prices[0].price) {
                                         totalPrice = item.product.prices[0].price;
-                                        
-                                        if(item.count){
+
+                                        if (item.count) {
                                             totalPrice = item.count * item.product.prices[0].price;
                                         }
                                     }
@@ -248,7 +262,7 @@ export class InvoiceInfo extends LitElement {
                                                                     </svg>
                                                                 `
                                                 }
-                                                
+
                                             </div>
 
                                             <div class="info">
@@ -258,7 +272,7 @@ export class InvoiceInfo extends LitElement {
 
                                             <div class="priceWrapper">
                                                 <p class="total">
-                                                    $${ parseFloat(totalPrice.toString()).toFixed(2) } total
+                                                        $${parseFloat(totalPrice.toString()).toFixed(2)} total
                                                 </p>
                                                 <p class="price">
                                                         $${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].price) ? item.product.prices[0].price : ''}
@@ -317,24 +331,34 @@ export class InvoiceInfo extends LitElement {
                     }
 
                     ${
-                            (this.hasTransactions && this.invoice?.status === 'active' && this.currentStep !== 'transactionsHistoryStep')
+                            (this.invoice?.status === 'active')
                                     ? html`
-                                        <button class="mainButton"
-                                                @click=${() => this.dispatchStepChange('transactionsHistoryStep')}
-                                        >
-                                            Transactions History
-                                        </button>
-                                    ` : ''
-                    }
 
-                    ${
-                            (this.invoice?.status === 'active' && this.currentStep !== 'invoiceStep')
-                                    ? html`
-                                        <button class="mainButton"
-                                                @click=${() => this.dispatchStepChange('invoiceStep')}
-                                        >
-                                            Create Transaction
-                                        </button>
+                                        ${
+                                                (this.currentStep === 'transactionsHistoryStep')
+                                                        ? html`
+                                                            <button class="mainButton"
+                                                                    @click=${() => {
+                                                                        if(this.hasActiveTransaction){
+                                                                            this.dispatchTransactionStep();
+                                                                        }else{
+                                                                            this.dispatchStepChange('invoiceStep')   
+                                                                        }
+                                                                    }}
+                                                            >
+                                                                ${(this.hasActiveTransaction) ? 'To Active Transaction' : 'Create Transaction'}
+                                                            </button>
+                                                        ` 
+                                                        :
+                                                        html`
+                                                            <button class="mainButton"
+                                                                    @click=${() => this.dispatchStepChange('transactionsHistoryStep')}
+                                                            >
+                                                                Transactions History
+                                                            </button>
+                                                        `
+                                        }
+
                                     ` : ''
                     }
 

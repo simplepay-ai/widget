@@ -614,14 +614,26 @@ export class AddressForm extends LitElement {
         this.dispatchEvent(updateTronWebEvent);
     }
 
-    private createConnectorsConfigs() {
+    private async createConnectorsConfigs() {
 
         if (!this.selectedNetwork) {
             return;
         }
 
-        if (['tron'].includes(this.selectedNetwork.symbol)) {
+        this.customAddressValue = '';
+        this.customAddressErrorText = '';
+        this.showCustomAddressErrorError = false;
+        this.updateWalletAddress('');
+        this.updateWalletType('');
 
+        await this.disconnectConnectors();
+        this.updateWalletConnectorConfig(null);
+        this.updateTronWalletConnect(null);
+        this.updateTronLinkConfig(null);
+        this.updateTronWeb(null);
+
+        if (['tron'].includes(this.selectedNetwork.symbol)) {
+            console.log('createConnectorsConfigs tron')
             const wcAdapter = new WalletConnectAdapter({
                 network: ChainNetwork.Mainnet,
                 options: {
@@ -723,6 +735,7 @@ export class AddressForm extends LitElement {
         }
 
         if (['bsc', 'ethereum', 'polygon', 'avalanche', 'zksync', 'arbitrum', 'optimism', 'base'].includes(this.selectedNetwork.symbol)) {
+            console.log('createConnectorsConfigs others')
             const config = createConfig({
                 chains: [mainnet, bsc, polygon, avalanche, zksync, arbitrum, optimism, base],
                 connectors: [
@@ -822,51 +835,22 @@ export class AddressForm extends LitElement {
 
     async connectedCallback() {
         super.connectedCallback();
-
-        if (this.mode === 'addressSelect' && this.selectedToken && this.selectedNetwork) {
-            this.createConnectorsConfigs();
-        }
     }
 
     async updated(changedProperties: Map<string | symbol, unknown>) {
         super.updated(changedProperties);
 
         if (changedProperties.has('selectedToken') || changedProperties.has('selectedNetwork')) {
-            this.customAddressValue = '';
-            this.customAddressErrorText = '';
-            this.showCustomAddressErrorError = false;
-            this.updateWalletAddress('');
-            this.updateWalletType('');
-
-            await this.disconnectConnectors();
-            this.updateWalletConnectorConfig(null);
-            this.updateTronWalletConnect(null);
-            this.updateTronLinkConfig(null);
-            this.updateTronWeb(null);
-
             this.changeMode('addressSelect');
-
-            return;
-        }
-
-        if (changedProperties.has('mode') && this.mode === 'addressSelect' && this.selectedToken && this.selectedNetwork) {
-            this.customAddressValue = '';
-            this.customAddressErrorText = '';
-            this.showCustomAddressErrorError = false;
-            this.updateWalletAddress('');
-            this.updateWalletType('');
-
-            await this.disconnectConnectors();
-            this.updateWalletConnectorConfig(null);
-            this.updateTronWalletConnect(null);
-            this.updateTronLinkConfig(null);
-            this.updateTronWeb(null);
-
-            this.createConnectorsConfigs();
+            await this.createConnectorsConfigs();
         }
 
         if (changedProperties.has('mode')) {
             this.connectingInProcess = false;
+
+            if(this.mode === 'addressSelect'){
+                await this.createConnectorsConfigs();
+            }
         }
     }
 

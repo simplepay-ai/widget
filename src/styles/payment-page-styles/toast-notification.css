@@ -57,10 +57,11 @@
 }
 
 .notification .content .titleWrapper p {
-    font-size: 20px;
-    line-height: 28px;
+    font-size: 18px;
+    line-height: 1.2;
     font-weight: 700;
     color: var(--sp-widget-text-color);
+    text-transform: capitalize;
 }
 
 .notification .content .closeButton {

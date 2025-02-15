@@ -41,6 +41,7 @@ import './components/payment-page-layout/invoice-info.ts';
 import './components/payment-page-layout/token-select-form.ts';
 import './components/payment-page-layout/address-form.ts';
 import './components/payment-page-layout/toast-notification.ts';
+import './components/payment-page-layout/transactions-history.ts';
 
 import {checkWalletAddress, generateUUID} from "./lib/util.ts";
 import themesConfig from '../themesConfig.json';
@@ -549,11 +550,10 @@ export class PaymentApp extends LitElement {
             this.getUserProfile();
         }
 
-        if (changedProperties.has('transactions') && this.invoiceTransactions.length > 0) {
+        if (changedProperties.has('invoiceTransactions') && this.invoiceTransactions.length > 0) {
             const transaction = this.invoiceTransactions.find((item) => item.status === 'created' || item.status === 'processing' || item.status === 'confirming')
             this.activeTransaction = (transaction) ? transaction : null;
         }
-
     }
 
     render() {
@@ -779,9 +779,15 @@ export class PaymentApp extends LitElement {
                                         .userProfile=${this.userProfile}
                                         .loginLoading=${this.loginLoading}
                                         .hasTransactions=${(this.invoiceTransactions) ? this.invoiceTransactions.length > 0 : false}
+                                        .hasActiveTransaction=${Boolean(this.activeTransaction)}
                                         @login=${this.login}
                                         @goToStep=${(event: CustomEvent) => {
                                             this.goToPaymentPageStep(event.detail.stepName)
+                                        }}
+                                        @goToTransactionStep=${() => {
+                                            if(this.activeTransaction) {
+                                                this.goToTransactionStep(this.activeTransaction.status)
+                                            }
                                         }}
                                 >
                                 </invoice-info>
@@ -796,46 +802,82 @@ export class PaymentApp extends LitElement {
                                         (this.paymentPageStep === 'invoiceStep' && this.invoice?.status === 'active' && !this.activeTransaction)
                                                 ? html`
                                                     <div class="createTransactionForm">
-                                                        <token-select-form
-                                                                .tokens=${this.tokens}
-                                                                .invoice=${this.invoice}
-                                                                .selectedToken=${this.selectedToken}
-                                                                .selectedNetwork=${this.selectedNetwork}
-                                                                .tokenAvailable=${this.tokenAvailable}
-                                                                @updateSelectedToken=${(event: CustomEvent) => {
-                                                                    this.selectedToken = event.detail.token;
-                                                                    this.selectedNetwork = event.detail.network;
-                                                                }}
-                                                        ></token-select-form>
 
-                                                        <address-form
-                                                                .walletAddress=${this.walletAddress}
-                                                                .walletType=${this.walletType}
-                                                                .selectedToken=${this.selectedToken}
-                                                                .selectedNetwork=${this.selectedNetwork}
-                                                                .walletConnectorConfig=${this.walletConnectorConfig}
-                                                                .tronWalletConnect=${this.tronWalletConnect}
-                                                                .tronLinkConfig=${this.tronLinkConfig}
-                                                                .tronWeb=${this.tronWeb}
-                                                                .theme=${this.theme}
-                                                                @updateWalletType=${(event: CustomEvent) =>
-                                                                        (this.walletType = event.detail.walletType)}
-                                                                @updateWalletAddress=${(event: CustomEvent) =>{
-                                                                    this.walletAddress = event.detail.walletAddress
-                                                                }}
-                                                                @updateWalletConnectorConfig=${(event: CustomEvent) => {
-                                                                    this.walletConnectorConfig = event.detail.walletConnectorConfig
-                                                                }}
-                                                                @updateTronWalletConnect=${(event: CustomEvent) => {
-                                                                    this.tronWalletConnect = event.detail.tronWalletConnect
-                                                                }}
-                                                                @updateTronLinkConfig=${(event: CustomEvent) => {
-                                                                    this.tronLinkConfig = event.detail.tronLinkConfig
-                                                                }}
-                                                                @updateTronWeb=${(event: CustomEvent) => {
-                                                                    this.tronWeb = event.detail.tronWeb
-                                                                }}
-                                                        ></address-form>
+                                                        ${
+                                                                (this.creatingTransaction)
+                                                                        ? html`
+                                                                            <div class="creatingTransaction">
+
+                                                                                <div class="spinner">
+                                                                                    <svg
+                                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                                            fill="none"
+                                                                                            viewBox="0 0 24 24"
+                                                                                    >
+                                                                                        <circle cx="12" cy="12" r="10" stroke-width="4"/>
+                                                                                        <path
+                                                                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                                                        />
+                                                                                    </svg>
+
+                                                                                    <p>Creating transaction ...</p>
+                                                                                </div>
+                                                                                
+                                                                            </div>
+                                                                        ` :
+                                                                        html`
+                                                                            <token-select-form
+                                                                                    .tokens=${this.tokens}
+                                                                                    .invoice=${this.invoice}
+                                                                                    .selectedToken=${this.selectedToken}
+                                                                                    .selectedNetwork=${this.selectedNetwork}
+                                                                                    .tokenAvailable=${this.tokenAvailable}
+                                                                                    @updateSelectedToken=${(event: CustomEvent) => {
+                                                                                        this.selectedToken = event.detail.token;
+                                                                                        this.selectedNetwork = event.detail.network;
+                                                                                    }}
+                                                                            ></token-select-form>
+
+                                                                            <address-form
+                                                                                    .walletAddress=${this.walletAddress}
+                                                                                    .walletType=${this.walletType}
+                                                                                    .selectedToken=${this.selectedToken}
+                                                                                    .selectedNetwork=${this.selectedNetwork}
+                                                                                    .walletConnectorConfig=${this.walletConnectorConfig}
+                                                                                    .tronWalletConnect=${this.tronWalletConnect}
+                                                                                    .tronLinkConfig=${this.tronLinkConfig}
+                                                                                    .tronWeb=${this.tronWeb}
+                                                                                    .theme=${this.theme}
+                                                                                    @updateWalletType=${(event: CustomEvent) =>
+                                                                                            (this.walletType = event.detail.walletType)}
+                                                                                    @updateWalletAddress=${(event: CustomEvent) => {
+                                                                                        this.walletAddress = event.detail.walletAddress
+                                                                                    }}
+                                                                                    @updateWalletConnectorConfig=${(event: CustomEvent) => {
+                                                                                        this.walletConnectorConfig = event.detail.walletConnectorConfig
+                                                                                    }}
+                                                                                    @updateTronWalletConnect=${(event: CustomEvent) => {
+                                                                                        this.tronWalletConnect = event.detail.tronWalletConnect
+                                                                                    }}
+                                                                                    @updateTronLinkConfig=${(event: CustomEvent) => {
+                                                                                        this.tronLinkConfig = event.detail.tronLinkConfig
+                                                                                    }}
+                                                                                    @updateTronWeb=${(event: CustomEvent) => {
+                                                                                        this.tronWeb = event.detail.tronWeb
+                                                                                    }}
+                                                                                    @updateNotification=${(event: CustomEvent) =>
+                                                                                            this.updateNotification(event)}
+                                                                            ></address-form>
+
+                                                                            <button class="mainButton"
+                                                                                    .disabled=${!this.selectedToken || !this.selectedNetwork || !this.walletAddress || !this.walletType}
+                                                                                    @click=${() => this.createTransaction()}
+                                                                            >
+                                                                                Create Transaction
+                                                                            </button>
+                                                                        `
+                                                        }
+
                                                     </div>
                                                 ` : ''
                                 }
@@ -843,7 +885,19 @@ export class PaymentApp extends LitElement {
                                 ${
                                         (this.paymentPageStep === 'invoiceStep' && this.invoice?.status === 'active' && this.activeTransaction)
                                                 ? html`
-                                                    Has Active Transaction Message
+                                                    <div class="hasActiveTransaction">
+
+                                                        <div class="message">
+                                                            <p>This invoice already has active transaction in progress</p>
+                                                        </div>
+                                                        
+                                                        <button class="mainButton"
+                                                                @click=${() => this.goToTransactionStep(this.activeTransaction?.status!)}
+                                                        >
+                                                            To Active Transaction
+                                                        </button>
+
+                                                    </div>
                                                 ` : ''
                                 }
 
@@ -871,7 +925,7 @@ export class PaymentApp extends LitElement {
                                 ${
                                         (this.paymentPageStep === 'transactionsHistoryStep' || this.invoice?.status !== 'active')
                                                 ? html`
-                                                    Transactions History
+                                                    <transactions-history></transactions-history>
                                                 ` : ''
                                 }
 
@@ -1561,25 +1615,46 @@ export class PaymentApp extends LitElement {
     private goToTransactionStep(transactionStatus: TransactionStatus) {
         switch (transactionStatus) {
             case "processing":
-                if (this.appStep !== 'paymentStep') {
-                    this.goToWidgetStep('paymentStep');
-                    this.goToPaymentPageStep('awaitingPaymentStep')
+
+                if(this.openMode === 'paymentPage'){
+                    if(this.paymentPageStep !== 'awaitingPaymentStep'){
+                        this.goToPaymentPageStep('awaitingPaymentStep')
+                    }
+                }else{
+                    if (this.appStep !== 'paymentStep') {
+                        this.goToWidgetStep('paymentStep');
+                    }
                 }
+
                 return;
             case "confirming":
-                if (this.appStep !== 'processingStep') {
-                    this.goToWidgetStep('processingStep');
-                    this.goToPaymentPageStep('processingTransactionStep')
+
+                if(this.openMode === 'paymentPage'){
+                    if(this.paymentPageStep !== 'processingTransactionStep'){
+                        this.goToPaymentPageStep('processingTransactionStep')
+                    }
+                }else{
+                    if (this.appStep !== 'processingStep') {
+                        this.goToWidgetStep('processingStep');
+                    }
                 }
+
                 return;
             case "rejected":
             case "canceled":
             case "success":
             case "expired":
-                if (this.appStep !== 'successStep') {
-                    this.goToWidgetStep('successStep');
-                    this.goToPaymentPageStep('successTransactionStep')
+
+                if(this.openMode === 'paymentPage'){
+                    if(this.paymentPageStep !== 'successTransactionStep'){
+                        this.goToPaymentPageStep('successTransactionStep')
+                    }
+                }else{
+                    if (this.appStep !== 'successStep') {
+                        this.goToWidgetStep('successStep');
+                    }
                 }
+
                 return;
             default:
                 break;
