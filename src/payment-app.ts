@@ -42,6 +42,7 @@ import './components/payment-page-layout/token-select-form.ts';
 import './components/payment-page-layout/address-form.ts';
 import './components/payment-page-layout/toast-notification.ts';
 import './components/payment-page-layout/transactions-history.ts';
+import './components/payment-page-layout/completed-transaction.ts';
 
 import {checkWalletAddress, generateUUID} from "./lib/util.ts";
 import themesConfig from '../themesConfig.json';
@@ -785,7 +786,7 @@ export class PaymentApp extends LitElement {
                                             this.goToPaymentPageStep(event.detail.stepName)
                                         }}
                                         @goToTransactionStep=${() => {
-                                            if(this.activeTransaction) {
+                                            if (this.activeTransaction) {
                                                 this.goToTransactionStep(this.activeTransaction.status)
                                             }
                                         }}
@@ -814,7 +815,8 @@ export class PaymentApp extends LitElement {
                                                                                             fill="none"
                                                                                             viewBox="0 0 24 24"
                                                                                     >
-                                                                                        <circle cx="12" cy="12" r="10" stroke-width="4"/>
+                                                                                        <circle cx="12" cy="12" r="10"
+                                                                                                stroke-width="4"/>
                                                                                         <path
                                                                                                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                                                                                         />
@@ -822,7 +824,7 @@ export class PaymentApp extends LitElement {
 
                                                                                     <p>Creating transaction ...</p>
                                                                                 </div>
-                                                                                
+
                                                                             </div>
                                                                         ` :
                                                                         html`
@@ -890,7 +892,7 @@ export class PaymentApp extends LitElement {
                                                         <div class="message">
                                                             <p>This invoice already has active transaction in progress</p>
                                                         </div>
-                                                        
+
                                                         <button class="mainButton"
                                                                 @click=${() => this.goToTransactionStep(this.activeTransaction?.status!)}
                                                         >
@@ -904,7 +906,8 @@ export class PaymentApp extends LitElement {
                                 ${
                                         (this.paymentPageStep === 'awaitingPaymentStep')
                                                 ? html`
-                                                    Awaiting Payment Step
+                                                    <awaiting-payment-transaction>
+                                                    </awaiting-payment-transaction>
                                                 ` : ''
                                 }
 
@@ -918,14 +921,34 @@ export class PaymentApp extends LitElement {
                                 ${
                                         (this.paymentPageStep === 'successTransactionStep')
                                                 ? html`
-                                                    Final Transaction Step
+                                                    <completed-transaction
+                                                            .invoice=${this.invoice}
+                                                            .transaction=${this.transaction}
+                                                            .backToStoreUrl=${this.backToStoreUrl}
+                                                            @goToStep=${(event: CustomEvent) => {
+                                                                this.goToPaymentPageStep(event.detail.stepName)
+                                                                this.transaction = null;
+                                                            }}
+                                                    ></completed-transaction>
                                                 ` : ''
                                 }
 
                                 ${
-                                        (this.paymentPageStep === 'transactionsHistoryStep' || this.invoice?.status !== 'active')
+                                        (this.paymentPageStep === 'transactionsHistoryStep' || (this.invoice?.status !== 'active' && this.paymentPageStep === 'invoiceStep'))
                                                 ? html`
-                                                    <transactions-history></transactions-history>
+                                                    <transactions-history
+                                                            .invoice=${this.invoice}
+                                                            .transactions=${this.invoiceTransactions}
+                                                            @goToStep=${(event: CustomEvent) => {
+                                                                this.goToPaymentPageStep(event.detail.stepName)
+                                                            }}
+                                                            @updateSelectedTransaction=${(event: CustomEvent) => {
+                                                                const transaction = this.invoiceTransactions.find((item) => item.id === event.detail.transactionId);
+                                                                if (transaction) {
+                                                                    this.transaction = transaction
+                                                                }
+                                                            }}
+                                                    ></transactions-history>
                                                 ` : ''
                                 }
 
@@ -1616,11 +1639,11 @@ export class PaymentApp extends LitElement {
         switch (transactionStatus) {
             case "processing":
 
-                if(this.openMode === 'paymentPage'){
-                    if(this.paymentPageStep !== 'awaitingPaymentStep'){
+                if (this.openMode === 'paymentPage') {
+                    if (this.paymentPageStep !== 'awaitingPaymentStep') {
                         this.goToPaymentPageStep('awaitingPaymentStep')
                     }
-                }else{
+                } else {
                     if (this.appStep !== 'paymentStep') {
                         this.goToWidgetStep('paymentStep');
                     }
@@ -1629,11 +1652,11 @@ export class PaymentApp extends LitElement {
                 return;
             case "confirming":
 
-                if(this.openMode === 'paymentPage'){
-                    if(this.paymentPageStep !== 'processingTransactionStep'){
+                if (this.openMode === 'paymentPage') {
+                    if (this.paymentPageStep !== 'processingTransactionStep') {
                         this.goToPaymentPageStep('processingTransactionStep')
                     }
-                }else{
+                } else {
                     if (this.appStep !== 'processingStep') {
                         this.goToWidgetStep('processingStep');
                     }
@@ -1645,11 +1668,11 @@ export class PaymentApp extends LitElement {
             case "success":
             case "expired":
 
-                if(this.openMode === 'paymentPage'){
-                    if(this.paymentPageStep !== 'successTransactionStep'){
+                if (this.openMode === 'paymentPage') {
+                    if (this.paymentPageStep !== 'successTransactionStep') {
                         this.goToPaymentPageStep('successTransactionStep')
                     }
-                }else{
+                } else {
                     if (this.appStep !== 'successStep') {
                         this.goToWidgetStep('successStep');
                     }

@@ -189,11 +189,10 @@ export class InvoiceInfo extends LitElement {
                                 ${`${new Date(this.invoice?.createdAt!).toDateString()} ${new Date(this.invoice?.createdAt!).toTimeString().split(':')[0]}:${new Date(this.invoice?.createdAt!).toTimeString().split(':')[1]}`}
                             </div>
                         </div>
-                    </div>
 
-                    ${
-                            (this.invoice?.updatedAt !== this.invoice?.createdAt)
-                                    ? html`
+                        ${
+                                (this.invoice?.updatedAt !== this.invoice?.createdAt)
+                                        ? html`
                                         <div class="infoRow">
                                             <p class="infoTitle">
                                                 Last Update
@@ -203,7 +202,8 @@ export class InvoiceInfo extends LitElement {
                                             </div>
                                         </div>
                                     ` : ''
-                    }
+                        }
+                    </div>
 
                     <div class="priceInfo">
 
