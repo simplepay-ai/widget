@@ -1,0 +1,794 @@
+* {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 14px;
+    font-weight: 450;
+    background: transparent;
+    margin: 0;
+    padding: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.processingTransaction {
+    width: 100%;
+    max-width: 410px;
+    margin: 0 auto;
+    min-height: 700px;
+    display: flex;
+    flex-direction: column;
+    background: var(--sp-widget-bg-color);
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--sp-widget-border-color);
+    gap: 24px;
+}
+
+.processingTransaction .header{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.processingTransaction .header p{
+    font-size: 18px;
+    line-height: 1.2;
+    font-weight: 700;
+    color: var(--sp-widget-text-color);
+    text-transform: capitalize;
+}
+
+.processingTransaction .header button {
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    background: var(--sp-widget-back-button-color);
+    border: 1px solid var(--sp-widget-back-button-border-color);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+.processingTransaction .header button svg {
+    stroke: var(--sp-widget-back-button-text-color);
+    width: 16px;
+    height: 16px;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+@media(hover: hover) and (pointer: fine) {
+    .processingTransaction .header button:hover {
+        background: var(--sp-widget-back-button-hover-color);
+        border: 1px solid var(--sp-widget-back-button-hover-border-color);
+    }
+
+    .processingTransaction .header button:hover svg {
+        stroke: var(--sp-widget-back-button-hover-text-color);
+    }
+}
+
+.processingTransaction .linkWrapper{
+    display: flex;
+    justify-content: center;
+}
+
+.processingTransaction .linkWrapper a{
+    text-decoration: none;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    width: 250px;
+}
+
+.processingTransaction .linkWrapper .mainButton {
+    z-index: 2;
+    position: relative;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    height: 40px;
+    padding: 16px 8px;
+    color: var(--sp-widget-primary-button-text-color);
+    background: var(--sp-widget-primary-button-color);
+    border: 1px solid var(--sp-widget-primary-button-border-color);
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+@media(hover: hover) and (pointer: fine) {
+    .processingTransaction .linkWrapper .mainButton:hover {
+        color: var(--sp-widget-primary-button-hover-text-color);
+        background: var(--sp-widget-primary-button-hover-color);
+        border: 1px solid var(--sp-widget-primary-button-hover-border-color);
+    }
+}
+
+.processingTransaction .linkWrapper .mainButton.withIcon {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    gap: 6px;
+}
+
+.processingTransaction .linkWrapper .mainButton.withIcon svg {
+    width: 15px;
+    height: 15px;
+}
+
+.processingTransaction .contentWrapper{
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.processingTransaction .contentWrapper::-webkit-scrollbar {
+    width: 1px;
+}
+
+.processingTransaction .contentWrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.processingTransaction .contentWrapper::-webkit-scrollbar-thumb {
+    background: var(--sp-widget-scroll-color);
+}
+
+.processingTransaction .contentWrapper .topInfo {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+
+.processingTransaction .contentWrapper .topInfo .leftSection {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.processingTransaction .contentWrapper .topInfo .leftSection .linesWrapper {
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    margin: 8px 0;
+    height: 112px;
+}
+
+.processingTransaction .contentWrapper .topInfo .leftSection .linesWrapper .line {
+    position: absolute;
+    width: 1px;
+    height: 58px;
+    left: 3.5px;
+}
+
+.processingTransaction .contentWrapper .topInfo .leftSection .linesWrapper .line:nth-child(1) {
+    top: 0;
+    background: var(--sp-widget-active-color);
+}
+
+.processingTransaction .contentWrapper .topInfo .leftSection .linesWrapper .line:nth-child(2) {
+    height: 44px;
+    bottom: 8px;
+    background: var(--sp-widget-secondary-text-color);
+}
+
+.processingTransaction .contentWrapper .topInfo .leftSection .linesWrapper .dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--sp-widget-active-color);
+    left: 4px;
+}
+
+.processingTransaction .contentWrapper .topInfo .leftSection .linesWrapper .dot:nth-child(3) {
+    top: 0;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+}
+
+.processingTransaction .contentWrapper .topInfo .leftSection .linesWrapper .dot:nth-child(4) {
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.processingTransaction .contentWrapper .topInfo .leftSection .linesWrapper .dot:nth-child(5) {
+    bottom: 0;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+}
+
+.processingTransaction .contentWrapper .topInfo .leftSection .linesWrapper .dot.notActive {
+    background: var(--sp-widget-secondary-text-color);
+}
+
+.processingTransaction .contentWrapper .topInfo .leftSection .infoWrapper {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -webkit-box-align: start;
+    -ms-flex-align: start;
+    align-items: flex-start;
+    margin-left: 16px;
+}
+
+.processingTransaction .contentWrapper .topInfo .leftSection .infoWrapper .infoItem {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    text-align: left;
+    gap: 4px;
+    height: auto;
+}
+
+.processingTransaction .contentWrapper .topInfo .leftSection .infoWrapper .infoItem .title {
+    width: 100%;
+    text-align: left;
+    font-size: 12px;
+    line-height: 1;
+    color: var(--sp-widget-text-color);
+}
+
+.processingTransaction .contentWrapper .topInfo .leftSection .infoWrapper .infoItem .text {
+    width: 100%;
+    text-align: left;
+    font-size: 12px;
+    line-height: 1;
+    color: var(--sp-widget-active-color);
+}
+
+.processingTransaction .contentWrapper .topInfo .leftSection .infoWrapper .infoItem.notActive .text,
+.processingTransaction .contentWrapper .topInfo .leftSection .infoWrapper .infoItem.notActive .title {
+    color: var(--sp-widget-secondary-text-color);
+}
+
+.processingTransaction .contentWrapper .topInfo .rightSection {
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: end;
+    -ms-flex-pack: end;
+    justify-content: flex-end;
+}
+
+.processingTransaction .contentWrapper .topInfo .rightSection .qrcode {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    width: 128px;
+    height: 128px;
+    min-width: 128px;
+}
+
+.processingTransaction .contentWrapper .topInfo .rightSection .qrcode svg {
+    width: 100%;
+    height: 100%;
+}
+
+.processingTransaction .contentWrapper .topInfo .rightSection .qrcode svg rect {
+    fill: transparent;
+}
+
+.processingTransaction .contentWrapper .topInfo .rightSection .qrcode svg path {
+    fill: var(--sp-widget-text-color);
+}
+
+.processingTransaction .contentWrapper .topInfo .rightSection .icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.processingTransaction .contentWrapper .topInfo .rightSection .icon img {
+    width: 100%;
+    height: 100%;
+}
+
+.processingTransaction .contentWrapper .loaderWrapper {
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+}
+
+.processingTransaction .contentWrapper .loaderWrapper .title {
+    font-size: 16px;
+    line-height: 20px;
+    color: var(--sp-widget-text-color);
+    font-weight: 700;
+    text-align: left;
+}
+
+.processingTransaction .contentWrapper .loaderWrapper .text {
+    text-align: center;
+    color: var(--sp-widget-secondary-text-color);
+    font-weight: 500;
+    font-size: 11px;
+    margin-top: 6px;
+}
+
+.processingTransaction .contentWrapper .loaderWrapper .loader {
+    margin-top: 12px;
+    position: relative;
+    width: 100%;
+    height: 6px;
+    border: 1px solid var(--sp-widget-separator-color);
+    border-radius: 4px;
+}
+
+.processingTransaction .contentWrapper .loaderWrapper .loader .progressLine {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    max-width: 99%;
+    height: 100%;
+    background-color: var(--sp-widget-active-color);
+    border-radius: 4px;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 550ms;
+    transition-duration: 550ms;
+}
+
+.processingTransaction .contentWrapper .infoWrapper {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    gap: 2px;
+    color: #666666; /* Fallback */
+    color: var(--sp-widget-secondary-text-color);
+}
+
+.processingTransaction .contentWrapper .infoWrapper > .title {
+    font-size: 16px;
+    line-height: 20px;
+    color: #333333; /* Fallback */
+    color: var(--sp-widget-text-color);
+    font-weight: 700;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    gap: 8px;
+    height: 27px;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem.column {
+    -webkit-box-align: start;
+    -ms-flex-align: start;
+    align-items: flex-start;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: unset;
+    -ms-flex-pack: unset;
+    justify-content: unset;
+    gap: 4px;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .title {
+    font-size: 12px;
+    line-height: 20px;
+    font-weight: 700;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .networkInfo {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    gap: 4px;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .networkInfo .icon {
+    position: relative;
+    background: var(--sp-widget-bg-color);
+    border: 1px solid var(--sp-widget-border-color);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .networkInfo .icon svg {
+    width: 16px;
+    height: 16px;
+    stroke: var(--sp-widget-active-color);
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .networkInfo p {
+    font-size: 12px;
+    line-height: 20px;
+    color: var(--sp-widget-text-color);
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .tokenInfo {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    gap: 4px;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .tokenInfo .icon {
+    position: relative;
+    background: var(--sp-widget-bg-color);
+    border: 1px solid var(--sp-widget-border-color);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .tokenInfo .icon svg {
+    width: 16px;
+    height: 16px;
+    stroke: var(--sp-widget-active-color);
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .tokenInfo p {
+    font-size: 12px;
+    line-height: 20px;
+    color: var(--sp-widget-text-color);
+    font-weight: 700;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .tokenInfo .badge {
+    color: var(--sp-widget-badge-text-color);
+    font-weight: 700;
+    padding: 2px 4px;
+    background: var(--sp-widget-badge-bg-color);
+    border: 1px solid var(--sp-widget-badge-border-color);
+    font-size: 10px;
+    border-radius: 4px;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .amountInfo {
+    font-size: 12px;
+    line-height: 20px;
+    color: var(--sp-widget-text-color);
+    font-weight: 700;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .hashInfo {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .hashInfo .separator {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    background: transparent;
+    width: 4px;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .hashInfo .separator .dot {
+    width: 4px;
+    height: 4px;
+    min-width: 4px;
+    background: var(--sp-widget-secondary-text-color);
+    border-radius: 50%;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .hashInfo .copyButton {
+    padding: 5px;
+    border-radius: 6px;
+    color: var(--sp-widget-text-color);
+    cursor: pointer;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .hashInfo .copyButton > * {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .hashInfo .copyButton > * svg {
+    width: 14px;
+    height: 14px;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .hashInfo .copyButton .active {
+    display: none;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .hashInfo .copyButton.active {
+    color: var(--sp-widget-active-color);
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .hashInfo .copyButton.active svg rect,
+.processingTransaction .contentWrapper .infoWrapper .infoItem .hashInfo .copyButton.active svg path {
+    stroke: var(--sp-widget-active-color);
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .hashInfo .copyButton.active .default {
+    display: none;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .hashInfo .copyButton.active .active {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .hashInfo a {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+    color: var(--sp-widget-active-color);
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .hashInfo a svg {
+    width: 12px;
+    height: 12px;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .hashInfo p {
+    font-size: 12px;
+    line-height: 20px;
+    color: var(--sp-widget-text-color);
+    font-weight: 700;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .copyLine {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .copyLine p {
+    font-size: 12px;
+    line-height: 20px;
+    color: var(--sp-widget-text-color);
+    font-weight: 700;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .copyLine svg {
+    width: 16px;
+    height: 16px;
+    color: var(--sp-widget-active-color);
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .copyLine .activeIcon,
+.processingTransaction .contentWrapper .infoWrapper .infoItem .copyLine .defaultIcon {
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .copyLine .defaultIcon {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .copyLine .activeIcon {
+    display: none;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .copyLine.active {
+    color: var(--sp-widget-active-color);
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .copyLine.active p {
+    color: var(--sp-widget-active-color);
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .copyLine.active svg rect,
+.processingTransaction .contentWrapper .infoWrapper .infoItem .copyLine.active svg path {
+    stroke: var(--sp-widget-active-color);
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .copyLine.active .defaultIcon {
+    display: none;
+}
+
+.processingTransaction .contentWrapper .infoWrapper .infoItem .copyLine.active .activeIcon {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}

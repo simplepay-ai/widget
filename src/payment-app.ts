@@ -44,6 +44,7 @@ import './components/payment-page-layout/toast-notification.ts';
 import './components/payment-page-layout/transactions-history.ts';
 import './components/payment-page-layout/completed-transaction.ts';
 import './components/payment-page-layout/awaiting-payment-transaction.ts';
+import './components/payment-page-layout/processing-transaction.ts';
 
 import {checkWalletAddress, generateUUID} from "./lib/util.ts";
 import themesConfig from '../themesConfig.json';
@@ -556,7 +557,7 @@ export class PaymentApp extends LitElement {
             const transaction = this.invoiceTransactions.find((item) => item.status === 'created' || item.status === 'processing' || item.status === 'confirming')
             this.activeTransaction = (transaction) ? transaction : null;
 
-            if(!transaction){
+            if (!transaction) {
                 this.cancelingTransaction = false;
             }
         }
@@ -789,6 +790,7 @@ export class PaymentApp extends LitElement {
                                         @login=${this.login}
                                         @goToStep=${(event: CustomEvent) => {
                                             this.goToPaymentPageStep(event.detail.stepName)
+                                            this.transaction = null;
                                         }}
                                         @goToTransactionStep=${() => {
                                             if (this.activeTransaction) {
@@ -941,7 +943,14 @@ export class PaymentApp extends LitElement {
                                 ${
                                         (this.paymentPageStep === 'processingTransactionStep')
                                                 ? html`
-                                                    Processing Transaction Step
+                                                    <processing-transaction
+                                                            .invoice=${this.invoice}
+                                                            .transaction=${this.transaction}
+                                                            @goToStep=${(event: CustomEvent) => {
+                                                                this.goToPaymentPageStep(event.detail.stepName)
+                                                                this.transaction = null;
+                                                            }}
+                                                    ></processing-transaction>
                                                 ` : ''
                                 }
 

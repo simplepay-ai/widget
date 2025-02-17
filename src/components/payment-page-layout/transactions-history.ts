@@ -75,20 +75,23 @@ export class TransactionsHistory extends LitElement {
                         Transactions History
                     </p>
                 </div>
+                
+                ${
+                        (Array.isArray(this.transactions) && this.transactions.length > 0)
+                        ? html`
+                                    <div class="transactionsList">
+                                        ${
+                                                this.transactions
+                                                        .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+                                                        .map((item) => {
 
-                <div class="transactionsList">
-                    ${
-                            Array.isArray(this.transactions) && this.transactions
-                                    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-                                    .map((item) => {
+                                                            const date = new Date(item.updatedAt).toDateString()
+                                                            const time = new Date(item.updatedAt).toTimeString()
+                                                            const updateDate = `${date} ${time.split(':')[0]}:${time.split(':')[1]}`
 
-                                        const date = new Date(item.updatedAt).toDateString()
-                                        const time = new Date(item.updatedAt).toTimeString()
-                                        const updateDate = `${date} ${time.split(':')[0]}:${time.split(':')[1]}`
+                                                            const formatPrice = (item.amount) ? roundUpAmount(item.amount, item.cryptocurrency.stable).toString() : '---';
 
-                                        const formatPrice = (item.amount) ? roundUpAmount(item.amount, item.cryptocurrency.stable).toString() : '---';
-
-                                        return html`
+                                                            return html`
                                             <div class="transactionItem"
                                                  @click=${() => this.dispatchSelectTransaction(item.id)}
                                             >
@@ -120,15 +123,15 @@ export class TransactionsHistory extends LitElement {
                                                     </div>
 
                                                     ${
-                                                            (formatPrice !== '---')
-                                                                    ? html`
+                                                                    (formatPrice !== '---')
+                                                                            ? html`
                                                                         <p class="secondary">
                                                                             Amount: ${formatPrice}
                                                                             ${item.cryptocurrency.symbol}
                                                                         </p>
                                                                     `
-                                                                    : ''
-                                                    }
+                                                                            : ''
+                                                            }
                                                 </div>
                                                 <div class="rightSection">
                                                     <div class="status">
@@ -140,9 +143,25 @@ export class TransactionsHistory extends LitElement {
                                                 </div>
                                             </div>
                                         `
-                                    })
-                    }
-                </div>
+                                                        })
+                                        }
+                                    </div>
+                                `
+                                :
+                                html`
+                                    <div class="transactionsEmptyMessage">
+                                        <p>There are no transactions for this invoice yet</p>
+                                        
+                                        <button class="mainButton"
+                                                @click=${() => this.dispatchStepChange('invoiceStep')}
+                                        >
+                                            Create Transaction
+                                        </button>
+                                    </div>
+                                `
+                }
+
+                
             </div>
         `;
     }
