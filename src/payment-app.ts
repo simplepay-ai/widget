@@ -307,6 +307,16 @@ export class PaymentApp extends LitElement {
             this.openMode = 'paymentPage'
         }
 
+        if (this.viewMode === 'paymentPage' && (!this.invoiceId && !this.transactionId)) {
+            this.errorTitle = 'View Mode Error';
+            this.errorText =
+                'The paymentPage display mode is currently available only for viewing invoices and transactions. To access invoice creation options, please use the relative (default) or modal display mode.';
+            this.goToPaymentPageStep('errorStep');
+            this.dispatchErrorEvent('View Mode Error', 'The paymentPage display mode is currently available only for viewing invoices and transactions. To access invoice creation options, please use the relative (default) or modal display mode.');
+
+            return;
+        }
+
         if (this.clientId) {
 
             const isUUID = this.checkUUID(this.clientId);

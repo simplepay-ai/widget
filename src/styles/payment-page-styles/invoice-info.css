@@ -513,3 +513,19 @@
         transform: rotate(360deg);
     }
 }
+
+@media(max-width: 991px){
+    .invoiceInfoWrapper{
+        gap: 24px;
+    }
+
+    .invoiceInfoWrapper .mainInfo{
+        gap: 24px;
+    }
+
+    .invoiceInfoWrapper .mainInfo .productsInfo{
+        flex: unset;
+        height: auto;
+        max-height: 250px;
+    }
+}

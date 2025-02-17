@@ -390,3 +390,20 @@
         transform: rotate(360deg);
     }
 }
+
+@media(max-width: 991px){
+    .paymentPage{
+        height: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
+        min-height: 100svh;
+        display: flex;
+        justify-content: center;
+    }
+
+    .paymentPage .paymentPageContent{
+        padding: 24px 16px;
+        flex-direction: column;
+        max-width: 520px;
+    }
+}
