@@ -18,12 +18,52 @@
     width: 100%;
 }
 
-.formWrapper .selectedToken p{
+.formWrapper .selectedToken .header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.formWrapper .selectedToken .header p{
     font-size: 18px;
     line-height: 1.2;
     font-weight: 700;
     color: var(--sp-widget-text-color);
     text-transform: capitalize;
+}
+
+.formWrapper .selectedToken .header .changeButton{
+    width: max-content;
+    flex: unset;
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 400;
+    background: none;
+    outline: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--sp-widget-active-color);
+    height: auto;
+    padding: 6px 10px;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+.formWrapper .selectedToken .header .changeButton svg{
+    width: 14px;
+    height: 14px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .formWrapper .selectedToken .header .changeButton:hover{
+        background: var(--sp-widget-cancel-button-color);
+    }
 }
 
 .formWrapper .selectedToken .buttonWrapper{
@@ -35,7 +75,6 @@
 
 .formWrapper .selectedToken button{
     flex: 1;
-    max-width: 250px;
     user-select: none;
     display: flex;
     align-items: center;

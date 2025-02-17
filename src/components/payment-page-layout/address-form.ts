@@ -633,7 +633,6 @@ export class AddressForm extends LitElement {
         this.updateTronWeb(null);
 
         if (['tron'].includes(this.selectedNetwork.symbol)) {
-            console.log('createConnectorsConfigs tron')
             const wcAdapter = new WalletConnectAdapter({
                 network: ChainNetwork.Mainnet,
                 options: {
@@ -735,7 +734,6 @@ export class AddressForm extends LitElement {
         }
 
         if (['bsc', 'ethereum', 'polygon', 'avalanche', 'zksync', 'arbitrum', 'optimism', 'base'].includes(this.selectedNetwork.symbol)) {
-            console.log('createConnectorsConfigs others')
             const config = createConfig({
                 chains: [mainnet, bsc, polygon, avalanche, zksync, arbitrum, optimism, base],
                 connectors: [
@@ -816,9 +814,11 @@ export class AddressForm extends LitElement {
 
         if (this.walletConnectorConfig) {
             const {connector} = getAccount(this.walletConnectorConfig)
-            await disconnect(this.walletConnectorConfig, {
-                connector,
-            })
+            if (connector) {
+                await disconnect(this.walletConnectorConfig, {
+                    connector,
+                })
+            }
         }
 
         if (this.tronWalletConnect) {
@@ -848,7 +848,7 @@ export class AddressForm extends LitElement {
         if (changedProperties.has('mode')) {
             this.connectingInProcess = false;
 
-            if(this.mode === 'addressSelect'){
+            if (this.mode === 'addressSelect') {
                 await this.createConnectorsConfigs();
             }
         }
@@ -1370,285 +1370,295 @@ export class AddressForm extends LitElement {
                                 ? html`
                                     <div class="addressResult">
 
-                                        <div class="connectedInfo">
+                                        <div class="header">
+                                            <div class="connectedInfo">
 
-                                            <p>Connected by</p>
-                                            ${
-                                                    (this.walletType === 'Custom')
-                                                            ? html`
-                                                                <p>Custom Wallet</p>
-                                                                <div class="icon customWalletIcon">
-                                                                    <svg class="typeIcon" xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                         height="24"
-                                                                         viewBox="0 0 24 24"
-                                                                         fill="none" stroke="currentColor" stroke-width="1.5"
-                                                                         stroke-linecap="round"
-                                                                         stroke-linejoin="round">
-                                                                        <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/>
-                                                                        <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>
-                                                                    </svg>
-                                                                </div>
-                                                            ` : ''
-                                            }
+                                                <p>Connected by</p>
+                                                ${
+                                                        (this.walletType === 'Custom')
+                                                                ? html`
+                                                                    <p>Custom Wallet</p>
+                                                                    <div class="icon customWalletIcon">
+                                                                        <svg class="typeIcon" xmlns="http://www.w3.org/2000/svg"
+                                                                             width="24"
+                                                                             height="24"
+                                                                             viewBox="0 0 24 24"
+                                                                             fill="none" stroke="currentColor" stroke-width="1.5"
+                                                                             stroke-linecap="round"
+                                                                             stroke-linejoin="round">
+                                                                            <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/>
+                                                                            <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>
+                                                                        </svg>
+                                                                    </div>
+                                                                ` : ''
+                                                }
 
-                                            ${
-                                                    (this.walletType === 'Coinbase')
-                                                            ? html`
-                                                                <p>Coinbase</p>
-                                                                <div class="icon coinbaseIcon">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" role="img"
-                                                                         aria-label="Coinbase Wallet Logo"
-                                                                         viewBox="0 0 32 32"
-                                                                         width="32"
-                                                                         height="32" class="typeIcon"
-                                                                         data-testid="wallet-logo"
-                                                                         fill="none">
-                                                                        <path d="M0 16C0 24.8356 7.16444 32 16 32C24.8356 32 32 24.8356 32 16C32 7.16444 24.8356 0 16 0C7.16444 0 0 7.16444 0 16ZM11.9111 10.8444C11.32 10.8444 10.8444 11.32 10.8444 11.9111V20.0889C10.8444 20.68 11.32 21.1556 11.9111 21.1556H20.0889C20.68 21.1556 21.1556 20.68 21.1556 20.0889V11.9111C21.1556 11.32 20.68 10.8444 20.0889 10.8444H11.9111Z"
-                                                                              fill="#3773f5" fill-rule="evenodd"
-                                                                              clip-rule="evenodd"></path>
-                                                                    </svg>
-                                                                </div>
-                                                            ` : ''
-                                            }
+                                                ${
+                                                        (this.walletType === 'Coinbase')
+                                                                ? html`
+                                                                    <p>Coinbase</p>
+                                                                    <div class="icon coinbaseIcon">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" role="img"
+                                                                             aria-label="Coinbase Wallet Logo"
+                                                                             viewBox="0 0 32 32"
+                                                                             width="32"
+                                                                             height="32" class="typeIcon"
+                                                                             data-testid="wallet-logo"
+                                                                             fill="none">
+                                                                            <path d="M0 16C0 24.8356 7.16444 32 16 32C24.8356 32 32 24.8356 32 16C32 7.16444 24.8356 0 16 0C7.16444 0 0 7.16444 0 16ZM11.9111 10.8444C11.32 10.8444 10.8444 11.32 10.8444 11.9111V20.0889C10.8444 20.68 11.32 21.1556 11.9111 21.1556H20.0889C20.68 21.1556 21.1556 20.68 21.1556 20.0889V11.9111C21.1556 11.32 20.68 10.8444 20.0889 10.8444H11.9111Z"
+                                                                                  fill="#3773f5" fill-rule="evenodd"
+                                                                                  clip-rule="evenodd"></path>
+                                                                        </svg>
+                                                                    </div>
+                                                                ` : ''
+                                                }
 
-                                            ${
-                                                    (this.walletType === 'WalletConnect' || this.walletType === 'WalletConnectTron')
-                                                            ? html`
-                                                                <p>WalletConnect</p>
-                                                                <div class="icon walletConnectIcon">
-                                                                    <svg class="typeIcon" xmlns="http://www.w3.org/2000/svg"
-                                                                         width="68"
-                                                                         height="35"
-                                                                         viewBox="0 0 68 35" fill="none">
-                                                                        <g clip-path="url(#clip0_6067_204)">
-                                                                            <path d="M50.4609 16.1674L56.4597 10.1686C42.9015 -3.38955 26.0548 -3.38955 12.4966 10.1686L18.4954 16.1674C28.8068 5.85594 40.1564 5.85594 50.4679 16.1674H50.4609Z"
-                                                                                  fill="#202020"/>
-                                                                            <path d="M48.4623 30.1435L34.4721 16.1533L20.482 30.1435L6.4918 16.1533L0.5 22.1451L20.482 42.1341L34.4721 28.1439L48.4623 42.1341L68.4443 22.1451L62.4525 16.1533L48.4623 30.1435Z"
-                                                                                  fill="#202020"/>
-                                                                        </g>
-                                                                    </svg>
-                                                                </div>
-                                                            ` : ''
-                                            }
+                                                ${
+                                                        (this.walletType === 'WalletConnect' || this.walletType === 'WalletConnectTron')
+                                                                ? html`
+                                                                    <p>WalletConnect</p>
+                                                                    <div class="icon walletConnectIcon">
+                                                                        <svg class="typeIcon" xmlns="http://www.w3.org/2000/svg"
+                                                                             width="68"
+                                                                             height="35"
+                                                                             viewBox="0 0 68 35" fill="none">
+                                                                            <g clip-path="url(#clip0_6067_204)">
+                                                                                <path d="M50.4609 16.1674L56.4597 10.1686C42.9015 -3.38955 26.0548 -3.38955 12.4966 10.1686L18.4954 16.1674C28.8068 5.85594 40.1564 5.85594 50.4679 16.1674H50.4609Z"
+                                                                                      fill="#202020"/>
+                                                                                <path d="M48.4623 30.1435L34.4721 16.1533L20.482 30.1435L6.4918 16.1533L0.5 22.1451L20.482 42.1341L34.4721 28.1439L48.4623 42.1341L68.4443 22.1451L62.4525 16.1533L48.4623 30.1435Z"
+                                                                                      fill="#202020"/>
+                                                                            </g>
+                                                                        </svg>
+                                                                    </div>
+                                                                ` : ''
+                                                }
 
-                                            ${
-                                                    (this.walletType === 'TronLink')
-                                                            ? html`
-                                                                <p>TronLink</p>
-                                                                <div class="icon tronLinkIcon">
-                                                                    <svg class="typeIcon" xmlns="http://www.w3.org/2000/svg"
-                                                                         width="26"
-                                                                         height="26" viewBox="0 0 26 26" fill="none">
-                                                                        <rect width="26" height="26" rx="6" fill="#135DCD"/>
-                                                                        <mask id="mask0_12_18" style="mask-type:alpha"
-                                                                              maskUnits="userSpaceOnUse" x="0" y="0"
-                                                                              width="26"
-                                                                              height="26">
-                                                                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                                  d="M2.92288 0C1.30853 0 0 1.43954 0 3.21535V22.7846C0 24.5605 1.30853 26 2.92288 26H23.0771C24.6913 26 26 24.5605 26 22.7846V3.21535C26 1.43954 24.6913 0 23.0771 0H2.92288Z"
-                                                                                  fill="white"/>
-                                                                        </mask>
-                                                                        <g mask="url(#mask0_12_18)">
-                                                                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                                  d="M22.2767 20.4777L34.5747 18.2553L20.4683 35.4043L22.2767 20.4777ZM20.7448 19.7316L18.8422 35.4046L8.57463 9.68123L20.7448 19.7316ZM21.3583 17.7022L9.68081 8.29797L28.7659 11.7083L21.3583 17.7022ZM30.8061 12.4467L34.8508 16.2655L23.787 18.2552L30.8061 12.4467ZM31.33 10.375L4.97876 5.53198L18.8475 40.383L38.1702 16.8702L31.33 10.375Z"
-                                                                                  fill="white"/>
-                                                                        </g>
-                                                                    </svg>
-                                                                </div>
-                                                            ` : ''
-                                            }
+                                                ${
+                                                        (this.walletType === 'TronLink')
+                                                                ? html`
+                                                                    <p>TronLink</p>
+                                                                    <div class="icon tronLinkIcon">
+                                                                        <svg class="typeIcon" xmlns="http://www.w3.org/2000/svg"
+                                                                             width="26"
+                                                                             height="26" viewBox="0 0 26 26" fill="none">
+                                                                            <rect width="26" height="26" rx="6" fill="#135DCD"/>
+                                                                            <mask id="mask0_12_18" style="mask-type:alpha"
+                                                                                  maskUnits="userSpaceOnUse" x="0" y="0"
+                                                                                  width="26"
+                                                                                  height="26">
+                                                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                                      d="M2.92288 0C1.30853 0 0 1.43954 0 3.21535V22.7846C0 24.5605 1.30853 26 2.92288 26H23.0771C24.6913 26 26 24.5605 26 22.7846V3.21535C26 1.43954 24.6913 0 23.0771 0H2.92288Z"
+                                                                                      fill="white"/>
+                                                                            </mask>
+                                                                            <g mask="url(#mask0_12_18)">
+                                                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                                      d="M22.2767 20.4777L34.5747 18.2553L20.4683 35.4043L22.2767 20.4777ZM20.7448 19.7316L18.8422 35.4046L8.57463 9.68123L20.7448 19.7316ZM21.3583 17.7022L9.68081 8.29797L28.7659 11.7083L21.3583 17.7022ZM30.8061 12.4467L34.8508 16.2655L23.787 18.2552L30.8061 12.4467ZM31.33 10.375L4.97876 5.53198L18.8475 40.383L38.1702 16.8702L31.33 10.375Z"
+                                                                                      fill="white"/>
+                                                                            </g>
+                                                                        </svg>
+                                                                    </div>
+                                                                ` : ''
+                                                }
 
-                                            ${
-                                                    (this.walletType === 'Injected')
-                                                            ? html`
-                                                                <p>Injected Wallet</p>
-                                                                <div class="icon injectedIcon">
-                                                                    <svg class="typeIcon" xmlns="http://www.w3.org/2000/svg"
-                                                                         width="24"
-                                                                         height="24"
-                                                                         viewBox="0 0 24 24" fill="none"
-                                                                         stroke="currentColor"
-                                                                         stroke-width="1.5" stroke-linecap="round"
-                                                                         stroke-linejoin="round">
-                                                                        <path d="M12 22v-5"/>
-                                                                        <path d="M9 8V2"/>
-                                                                        <path d="M15 8V2"/>
-                                                                        <path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/>
-                                                                    </svg>
-                                                                </div>
-                                                            ` : ''
-                                            }
+                                                ${
+                                                        (this.walletType === 'Injected')
+                                                                ? html`
+                                                                    <p>Injected Wallet</p>
+                                                                    <div class="icon injectedIcon">
+                                                                        <svg class="typeIcon" xmlns="http://www.w3.org/2000/svg"
+                                                                             width="24"
+                                                                             height="24"
+                                                                             viewBox="0 0 24 24" fill="none"
+                                                                             stroke="currentColor"
+                                                                             stroke-width="1.5" stroke-linecap="round"
+                                                                             stroke-linejoin="round">
+                                                                            <path d="M12 22v-5"/>
+                                                                            <path d="M9 8V2"/>
+                                                                            <path d="M15 8V2"/>
+                                                                            <path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/>
+                                                                        </svg>
+                                                                    </div>
+                                                                ` : ''
+                                                }
 
-                                            ${
-                                                    (this.walletType === 'MetaMask')
-                                                            ? html`
-                                                                <p>MetaMask</p>
-                                                                <div class="icon metaMaskIcon">
-                                                                    <svg class="typeIcon" xmlns="http://www.w3.org/2000/svg"
-                                                                         width="36"
-                                                                         height="30"
-                                                                         viewBox="0 0 36 30" fill="none">
-                                                                        <path d="M32.9583 1L19.8242 10.7183L22.2666 4.99099L32.9583 1Z"
-                                                                              fill="#E17726" stroke="#E17726"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M2.66284 1L15.68 10.809L13.3546 4.99098L2.66284 1Z"
-                                                                              fill="#E27625" stroke="#E27625"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M28.2292 23.5334L24.7346 28.872L32.2175 30.9323L34.3611 23.6501L28.2292 23.5334Z"
-                                                                              fill="#E27625" stroke="#E27625"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M1.27271 23.6501L3.40325 30.9323L10.8732 28.872L7.39154 23.5334L1.27271 23.6501Z"
-                                                                              fill="#E27625" stroke="#E27625"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M10.4704 14.5149L8.39185 17.6507L15.7968 17.9876L15.55 10.0186L10.4704 14.5149Z"
-                                                                              fill="#E27625" stroke="#E27625"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M25.1503 14.515L19.9929 9.92798L19.824 17.9877L27.2289 17.6508L25.1503 14.515Z"
-                                                                              fill="#E27625" stroke="#E27625"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M10.8733 28.872L15.3552 26.7081L11.4969 23.7019L10.8733 28.872Z"
-                                                                              fill="#E27625" stroke="#E27625"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M20.2659 26.7081L24.7348 28.872L24.1242 23.7019L20.2659 26.7081Z"
-                                                                              fill="#E27625" stroke="#E27625"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M24.7348 28.8722L20.2659 26.7083L20.6296 29.6108L20.5906 30.8418L24.7348 28.8722Z"
-                                                                              fill="#D5BFB2" stroke="#D5BFB2"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M10.8733 28.8722L15.0305 30.8418L15.0045 29.6108L15.3552 26.7083L10.8733 28.8722Z"
-                                                                              fill="#D5BFB2" stroke="#D5BFB2"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M15.1083 21.7842L11.3928 20.6958L14.017 19.4907L15.1083 21.7842Z"
-                                                                              fill="#233447" stroke="#233447"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M20.5127 21.7842L21.604 19.4907L24.2412 20.6958L20.5127 21.7842Z"
-                                                                              fill="#233447" stroke="#233447"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M10.8732 28.872L11.5228 23.5334L7.3916 23.6501L10.8732 28.872Z"
-                                                                              fill="#CC6228" stroke="#CC6228"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M24.0981 23.5334L24.7347 28.872L28.2293 23.6501L24.0981 23.5334Z"
-                                                                              fill="#CC6228" stroke="#CC6228"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M27.2289 17.6506L19.824 17.9875L20.5125 21.7842L21.6038 19.4906L24.241 20.6957L27.2289 17.6506Z"
-                                                                              fill="#CC6228" stroke="#CC6228"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M11.3928 20.6957L14.017 19.4906L15.1083 21.7842L15.7968 17.9875L8.39185 17.6506L11.3928 20.6957Z"
-                                                                              fill="#CC6228" stroke="#CC6228"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M8.39209 17.6506L11.497 23.7019L11.393 20.6957L8.39209 17.6506Z"
-                                                                              fill="#E27525" stroke="#E27525"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M24.2412 20.6957L24.1243 23.7019L27.2292 17.6506L24.2412 20.6957Z"
-                                                                              fill="#E27525" stroke="#E27525"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M15.7972 17.9875L15.1086 21.7842L15.979 26.2675L16.1739 20.3588L15.7972 17.9875Z"
-                                                                              fill="#E27525" stroke="#E27525"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M19.8242 17.9875L19.4604 20.3459L19.6423 26.2675L20.5127 21.7842L19.8242 17.9875Z"
-                                                                              fill="#E27525" stroke="#E27525"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M20.5127 21.7843L19.6423 26.2676L20.2659 26.7082L24.1243 23.702L24.2412 20.6958L20.5127 21.7843Z"
-                                                                              fill="#F5841F" stroke="#F5841F"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M11.3928 20.6958L11.4968 23.702L15.3551 26.7082L15.9787 26.2676L15.1083 21.7843L11.3928 20.6958Z"
-                                                                              fill="#F5841F" stroke="#F5841F"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M20.5907 30.8417L20.6296 29.6107L20.2919 29.3256H15.3293L15.0045 29.6107L15.0305 30.8417L10.8733 28.8721L12.3283 30.0642L15.2773 32.0986H20.3308L23.2928 30.0642L24.7348 28.8721L20.5907 30.8417Z"
-                                                                              fill="#C0AC9D" stroke="#C0AC9D"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M20.2658 26.7081L19.6422 26.2676H15.9787L15.3552 26.7081L15.0044 29.6107L15.3292 29.3256H20.2918L20.6296 29.6107L20.2658 26.7081Z"
-                                                                              fill="#161616" stroke="#161616"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M33.5168 11.3532L34.6211 5.98873L32.9582 1L20.2659 10.3944L25.1505 14.5149L32.0488 16.5234L33.5688 14.7482L32.9063 14.2687L33.9585 13.3099L33.1531 12.6879L34.2054 11.8845L33.5168 11.3532Z"
-                                                                              fill="#763E1A" stroke="#763E1A"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M1 5.98873L2.11724 11.3532L1.40273 11.8845L2.468 12.6879L1.66255 13.3099L2.71483 14.2687L2.05228 14.7482L3.57225 16.5234L10.4706 14.5149L15.3552 10.3944L2.66287 1L1 5.98873Z"
-                                                                              fill="#763E1A" stroke="#763E1A"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M32.0489 16.5233L25.1506 14.5149L27.2292 17.6507L24.1243 23.7019L28.2295 23.6501H34.3613L32.0489 16.5233Z"
-                                                                              fill="#F5841F" stroke="#F5841F"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M10.4704 14.5149L3.57214 16.5233L1.27271 23.6501H7.39154L11.4967 23.7019L8.39186 17.6507L10.4704 14.5149Z"
-                                                                              fill="#F5841F" stroke="#F5841F"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                        <path d="M19.8241 17.9876L20.2658 10.3943L22.2664 4.99097H13.3545L15.3551 10.3943L15.7968 17.9876L15.9657 20.3718L15.9787 26.2676H19.6422L19.6552 20.3718L19.8241 17.9876Z"
-                                                                              fill="#F5841F" stroke="#F5841F"
-                                                                              stroke-width="0.25"
-                                                                              stroke-linecap="round"
-                                                                              stroke-linejoin="round"/>
-                                                                    </svg>
-                                                                </div>
-                                                            ` : ''
-                                            }
+                                                ${
+                                                        (this.walletType === 'MetaMask')
+                                                                ? html`
+                                                                    <p>MetaMask</p>
+                                                                    <div class="icon metaMaskIcon">
+                                                                        <svg class="typeIcon" xmlns="http://www.w3.org/2000/svg"
+                                                                             width="36"
+                                                                             height="30"
+                                                                             viewBox="0 0 36 30" fill="none">
+                                                                            <path d="M32.9583 1L19.8242 10.7183L22.2666 4.99099L32.9583 1Z"
+                                                                                  fill="#E17726" stroke="#E17726"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M2.66284 1L15.68 10.809L13.3546 4.99098L2.66284 1Z"
+                                                                                  fill="#E27625" stroke="#E27625"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M28.2292 23.5334L24.7346 28.872L32.2175 30.9323L34.3611 23.6501L28.2292 23.5334Z"
+                                                                                  fill="#E27625" stroke="#E27625"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M1.27271 23.6501L3.40325 30.9323L10.8732 28.872L7.39154 23.5334L1.27271 23.6501Z"
+                                                                                  fill="#E27625" stroke="#E27625"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M10.4704 14.5149L8.39185 17.6507L15.7968 17.9876L15.55 10.0186L10.4704 14.5149Z"
+                                                                                  fill="#E27625" stroke="#E27625"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M25.1503 14.515L19.9929 9.92798L19.824 17.9877L27.2289 17.6508L25.1503 14.515Z"
+                                                                                  fill="#E27625" stroke="#E27625"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M10.8733 28.872L15.3552 26.7081L11.4969 23.7019L10.8733 28.872Z"
+                                                                                  fill="#E27625" stroke="#E27625"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M20.2659 26.7081L24.7348 28.872L24.1242 23.7019L20.2659 26.7081Z"
+                                                                                  fill="#E27625" stroke="#E27625"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M24.7348 28.8722L20.2659 26.7083L20.6296 29.6108L20.5906 30.8418L24.7348 28.8722Z"
+                                                                                  fill="#D5BFB2" stroke="#D5BFB2"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M10.8733 28.8722L15.0305 30.8418L15.0045 29.6108L15.3552 26.7083L10.8733 28.8722Z"
+                                                                                  fill="#D5BFB2" stroke="#D5BFB2"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M15.1083 21.7842L11.3928 20.6958L14.017 19.4907L15.1083 21.7842Z"
+                                                                                  fill="#233447" stroke="#233447"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M20.5127 21.7842L21.604 19.4907L24.2412 20.6958L20.5127 21.7842Z"
+                                                                                  fill="#233447" stroke="#233447"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M10.8732 28.872L11.5228 23.5334L7.3916 23.6501L10.8732 28.872Z"
+                                                                                  fill="#CC6228" stroke="#CC6228"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M24.0981 23.5334L24.7347 28.872L28.2293 23.6501L24.0981 23.5334Z"
+                                                                                  fill="#CC6228" stroke="#CC6228"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M27.2289 17.6506L19.824 17.9875L20.5125 21.7842L21.6038 19.4906L24.241 20.6957L27.2289 17.6506Z"
+                                                                                  fill="#CC6228" stroke="#CC6228"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M11.3928 20.6957L14.017 19.4906L15.1083 21.7842L15.7968 17.9875L8.39185 17.6506L11.3928 20.6957Z"
+                                                                                  fill="#CC6228" stroke="#CC6228"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M8.39209 17.6506L11.497 23.7019L11.393 20.6957L8.39209 17.6506Z"
+                                                                                  fill="#E27525" stroke="#E27525"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M24.2412 20.6957L24.1243 23.7019L27.2292 17.6506L24.2412 20.6957Z"
+                                                                                  fill="#E27525" stroke="#E27525"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M15.7972 17.9875L15.1086 21.7842L15.979 26.2675L16.1739 20.3588L15.7972 17.9875Z"
+                                                                                  fill="#E27525" stroke="#E27525"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M19.8242 17.9875L19.4604 20.3459L19.6423 26.2675L20.5127 21.7842L19.8242 17.9875Z"
+                                                                                  fill="#E27525" stroke="#E27525"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M20.5127 21.7843L19.6423 26.2676L20.2659 26.7082L24.1243 23.702L24.2412 20.6958L20.5127 21.7843Z"
+                                                                                  fill="#F5841F" stroke="#F5841F"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M11.3928 20.6958L11.4968 23.702L15.3551 26.7082L15.9787 26.2676L15.1083 21.7843L11.3928 20.6958Z"
+                                                                                  fill="#F5841F" stroke="#F5841F"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M20.5907 30.8417L20.6296 29.6107L20.2919 29.3256H15.3293L15.0045 29.6107L15.0305 30.8417L10.8733 28.8721L12.3283 30.0642L15.2773 32.0986H20.3308L23.2928 30.0642L24.7348 28.8721L20.5907 30.8417Z"
+                                                                                  fill="#C0AC9D" stroke="#C0AC9D"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M20.2658 26.7081L19.6422 26.2676H15.9787L15.3552 26.7081L15.0044 29.6107L15.3292 29.3256H20.2918L20.6296 29.6107L20.2658 26.7081Z"
+                                                                                  fill="#161616" stroke="#161616"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M33.5168 11.3532L34.6211 5.98873L32.9582 1L20.2659 10.3944L25.1505 14.5149L32.0488 16.5234L33.5688 14.7482L32.9063 14.2687L33.9585 13.3099L33.1531 12.6879L34.2054 11.8845L33.5168 11.3532Z"
+                                                                                  fill="#763E1A" stroke="#763E1A"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M1 5.98873L2.11724 11.3532L1.40273 11.8845L2.468 12.6879L1.66255 13.3099L2.71483 14.2687L2.05228 14.7482L3.57225 16.5234L10.4706 14.5149L15.3552 10.3944L2.66287 1L1 5.98873Z"
+                                                                                  fill="#763E1A" stroke="#763E1A"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M32.0489 16.5233L25.1506 14.5149L27.2292 17.6507L24.1243 23.7019L28.2295 23.6501H34.3613L32.0489 16.5233Z"
+                                                                                  fill="#F5841F" stroke="#F5841F"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M10.4704 14.5149L3.57214 16.5233L1.27271 23.6501H7.39154L11.4967 23.7019L8.39186 17.6507L10.4704 14.5149Z"
+                                                                                  fill="#F5841F" stroke="#F5841F"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                            <path d="M19.8241 17.9876L20.2658 10.3943L22.2664 4.99097H13.3545L15.3551 10.3943L15.7968 17.9876L15.9657 20.3718L15.9787 26.2676H19.6422L19.6552 20.3718L19.8241 17.9876Z"
+                                                                                  fill="#F5841F" stroke="#F5841F"
+                                                                                  stroke-width="0.25"
+                                                                                  stroke-linecap="round"
+                                                                                  stroke-linejoin="round"/>
+                                                                        </svg>
+                                                                    </div>
+                                                                ` : ''
+                                                }
 
+                                            </div>
+
+                                            <button class="changeButton"
+                                                    @click=${() => this.changeMode('addressSelect')}
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                     stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+                                                    <path d="m15 5 4 4"/>
+                                                </svg>
+
+                                                Change
+                                            </button>
                                         </div>
 
                                         <div class="addressInfo">
                                             <p>Address</p>
                                             <p>${this.walletAddress}</p>
-                                        </div>
-
-                                        <div class="buttonWrapper" @click=${() => this.changeMode('addressSelect')}>
-                                            <button class="mainButton">
-                                                Change
-                                            </button>
                                         </div>
 
                                     </div>

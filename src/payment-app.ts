@@ -878,12 +878,17 @@ export class PaymentApp extends LitElement {
                                                                                             this.updateNotification(event)}
                                                                             ></address-form>
 
-                                                                            <button class="mainButton"
-                                                                                    .disabled=${!this.selectedToken || !this.selectedNetwork || !this.walletAddress || !this.walletType}
-                                                                                    @click=${() => this.createTransaction()}
-                                                                            >
-                                                                                Create Transaction
-                                                                            </button>
+                                                                            ${
+                                                                                    (this.selectedToken && this.selectedNetwork && this.walletAddress && this.walletType)
+                                                                                            ? html`
+                                                                                                <button class="mainButton"
+                                                                                                        .disabled=${!this.selectedToken || !this.selectedNetwork || !this.walletAddress || !this.walletType}
+                                                                                                        @click=${() => this.createTransaction()}
+                                                                                                >
+                                                                                                    Create Transaction
+                                                                                                </button>
+                                                                                            ` : ''
+                                                                            }
                                                                         `
                                                         }
 
@@ -1354,6 +1359,9 @@ export class PaymentApp extends LitElement {
 
     private goToPaymentPageStep(stepName: PaymentPageStep) {
         this.paymentPageStep = stepName;
+
+        this.cancelingTransaction = false;
+        this.creatingTransaction = false;
     }
 
     private async getApp() {

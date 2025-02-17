@@ -356,7 +356,6 @@
 }
 
 .formWrapper .addressEnter .addressForm .mainButton {
-    max-width: 250px;
     margin: 16px auto 0;
     width: 100%;
     -webkit-user-select: none;
@@ -405,7 +404,14 @@
     opacity: 0.5;
 }
 
+.formWrapper .addressResult .header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .formWrapper .addressResult .connectedInfo{
+    flex: 1;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -426,6 +432,40 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.formWrapper .addressResult .header .changeButton{
+    width: max-content;
+    flex: unset;
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 400;
+    background: none;
+    outline: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--sp-widget-active-color);
+    height: auto;
+    padding: 6px 10px;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+}
+
+.formWrapper .addressResult .header .changeButton svg{
+    width: 14px;
+    height: 14px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .formWrapper .addressResult .header .changeButton:hover{
+        background: var(--sp-widget-cancel-button-color);
+    }
 }
 
 .formWrapper .addressResult .addressInfo{
@@ -456,7 +496,6 @@
 
 .formWrapper .addressResult button{
     flex: 1;
-    max-width: 250px;
     user-select: none;
     display: flex;
     align-items: center;

@@ -32,7 +32,7 @@ export class TokenSelectForm extends LitElement {
     tokenAvailable: boolean = false;
 
     @property({type: String, attribute: false})
-    mode: TokenSelectMode = 'selectedToken';
+    mode: TokenSelectMode = 'tokensList';
 
     @property({attribute: false, type: Array})
     private filteredTokens: Cryptocurrency[] = [];
@@ -174,56 +174,58 @@ export class TokenSelectForm extends LitElement {
                         (this.mode === 'selectedToken')
                                 ? html`
                                     <div class="selectedToken">
-                                        <p class="title">
-                                            ${ (this.selectedToken && this.selectedNetwork) ? 'Selected Token' : 'Select Token' }
-                                        </p>
+                                        <div class="header">
+                                            <p class="title">
+                                                Selected Token
+                                            </p>
 
-                                        ${
-                                                (this.selectedToken && this.selectedNetwork) ?
-                                                        html`
-                                                            <div class="tokenInfo">
-                                                                <div class="amountInfo">
-                                                                    <p>Amount</p>
-                                                                    <p>${`${this.tokenPrice} ${this.selectedToken.symbol}`}</p>
-                                                                </div>
-                                                                <div class="cryptoInfo">
-                                                                    <div class="iconsWrapper">
-                                                                        <token-icon
-                                                                                .id=${this.selectedToken.symbol.replace('x', '')}
-                                                                                width="32"
-                                                                                height="32"
-                                                                                class="tokenIcon"
-                                                                        ></token-icon>
-
-                                                                        <network-icon
-                                                                                .id=${this.selectedNetwork.symbol}
-                                                                                width="16"
-                                                                                height="16"
-                                                                                class="networkIcon"
-                                                                        ></network-icon>
-                                                                    </div>
-
-                                                                    <p>
-                                                                        ${this.selectedToken.name}</p>
-
-                                                                    ${this.tokenStandart
-                                                                            ? html`
-                                                                                        <div class="badge">
-                                                                                            ${this.tokenStandart}
-                                                                                        </div>
-                                                                                    `
-                                                                            : ''}
-                                                                </div>
-                                                            </div>
-                                                        ` : ''
-                                        }
-
-                                        <div class="buttonWrapper">
-                                            <button class="mainButton"
+                                            <button class="changeButton"
                                                     @click=${() => this.changeMode('tokensList')}
                                             >
-                                                ${ (this.selectedToken && this.selectedNetwork) ? 'Change' : 'Select' }
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                     stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+                                                    <path d="m15 5 4 4"/>
+                                                </svg>
+
+                                                Change
                                             </button>
+                                        </div>
+
+                                        <div class="tokenInfo">
+                                            <div class="amountInfo">
+                                                <p>Amount</p>
+                                                <p>${`${this.tokenPrice} ${this.selectedToken?.symbol}`}</p>
+                                            </div>
+                                            <div class="cryptoInfo">
+                                                <div class="iconsWrapper">
+                                                    <token-icon
+                                                            .id=${(this.selectedToken?.symbol) ? this.selectedToken?.symbol?.replace('x', '') : ''}
+                                                            width="32"
+                                                            height="32"
+                                                            class="tokenIcon"
+                                                    ></token-icon>
+
+                                                    <network-icon
+                                                            .id=${this.selectedNetwork?.symbol}
+                                                            width="16"
+                                                            height="16"
+                                                            class="networkIcon"
+                                                    ></network-icon>
+                                                </div>
+
+                                                <p>
+                                                    ${this.selectedToken?.name}</p>
+
+                                                ${this.tokenStandart
+                                                        ? html`
+                                                            <div class="badge">
+                                                                ${this.tokenStandart}
+                                                            </div>
+                                                        `
+                                                        : ''}
+                                            </div>
                                         </div>
                                     </div>
                                 ` : ''
@@ -235,31 +237,39 @@ export class TokenSelectForm extends LitElement {
                                     <div class="tokensList">
 
                                         <div class="header">
-                                            <button
-                                                    @click=${() => {
-                                                        this.changeMode('selectedToken');
-                                                        this.tokenSearch = '';
-                                                        this.networkSearch = '';
-                                                    }}
-                                                    class="backButton"
-                                            >
-                                                <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="24"
-                                                        height="24"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke-width="2"
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                >
-                                                    <path d="m12 19-7-7 7-7"/>
-                                                    <path d="M19 12H5"/>
-                                                </svg>
-                                            </button>
+                                            ${
+                                                    (this.selectedToken)
+                                                    ? html`
+                                                                <button
+                                                                        @click=${() => {
+                                                                            this.changeMode('selectedToken');
+                                                                            this.tokenSearch = '';
+                                                                            this.networkSearch = '';
+                                                                        }}
+                                                                        class="backButton"
+                                                                >
+                                                                    <svg
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            width="24"
+                                                                            height="24"
+                                                                            viewBox="0 0 24 24"
+                                                                            fill="none"
+                                                                            stroke-width="2"
+                                                                            stroke-linecap="round"
+                                                                            stroke-linejoin="round"
+                                                                    >
+                                                                        <path d="m12 19-7-7 7-7"/>
+                                                                        <path d="M19 12H5"/>
+                                                                    </svg>
+                                                                </button> 
+                                                            ` : ''
+                                            }
 
                                             <p class="title">
-                                                Tokens list
+                                                ${
+                                                        (this.selectedToken)
+                                                                ? 'Tokens list' : 'Select Token'
+                                                }
                                             </p>
                                         </div>
                                         <div class="tokensFilters">
@@ -303,7 +313,7 @@ export class TokenSelectForm extends LitElement {
 
                                         </div>
                                         <div class="tokens">
-                                            
+
                                             ${
                                                     (this.tokensEmpty)
                                                             ? html`

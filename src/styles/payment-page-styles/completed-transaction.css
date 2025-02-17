@@ -663,9 +663,8 @@
 
 .completedTransaction .mainButton {
     z-index: 2;
+    width: 100%;
     position: relative;
-    margin: 0 auto;
-    max-width: 250px;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;

@@ -200,8 +200,6 @@
 
 .paymentPage .paymentPageContent .rightSection .createTransactionForm button{
     flex: 1;
-    max-width: 250px;
-    margin: 0 auto;
     user-select: none;
     display: flex;
     align-items: center;
@@ -337,8 +335,6 @@
 
 .paymentPage .hasActiveTransaction button{
     flex: 1;
-    max-width: 250px;
-    margin: 0 auto;
     user-select: none;
     display: flex;
     align-items: center;
