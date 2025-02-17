@@ -780,6 +780,7 @@ export class PaymentApp extends LitElement {
                             <div class="leftSection">
 
                                 <invoice-info
+                                        .theme=${this.theme}
                                         .currentStep=${this.paymentPageStep}
                                         .invoice=${this.invoice}
                                         .user=${this.user}
@@ -801,8 +802,6 @@ export class PaymentApp extends LitElement {
                                 </invoice-info>
 
                             </div>
-
-                            <!--                            <div class="separator"></div>-->
 
                             <div class="rightSection">
 

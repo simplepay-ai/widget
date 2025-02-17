@@ -5,12 +5,15 @@ import style from "../../styles/payment-page-styles/invoice-info.css?inline";
 import {Invoice, InvoiceProduct, Transaction, UserProfile} from "@simplepay-ai/api-client";
 //@ts-ignore
 import logo from "../../assets/logo.jpg";
-import {PaymentPageStep} from "../../lib/types.ts";
+import {AppTheme, PaymentPageStep} from "../../lib/types.ts";
 
 @customElement('invoice-info')
 export class InvoiceInfo extends LitElement {
 
     static styles = unsafeCSS(style);
+
+    @property({type: String})
+    theme: AppTheme = 'light';
 
     @property({type: String})
     currentStep: PaymentPageStep | '' = '';
@@ -303,16 +306,19 @@ export class InvoiceInfo extends LitElement {
                     ${
                             (this.user)
                                     ? html`
-                                        <div class="userInfo">
-                                            <div class="icon">
-                                                <img src=${(this.userProfile && this.userProfile.image) ? this.userProfile.image : logo}
-                                                     alt="SimpleID Logo">
+                                        <div class="userInfoWrapper">
+                                            <p class="title">Login as</p>
+                                            <div class="info">
+                                                <div class="icon">
+                                                    <img src=${(this.userProfile && this.userProfile.image) ? this.userProfile.image : logo}
+                                                         alt="SimpleID Logo">
+                                                </div>
+                                                <p>${this.userName}</p>
                                             </div>
-                                            <p>${this.userName}</p>
                                         </div>
                                     `
                                     : html`
-                                        <button class="secondaryButton loginButton"
+                                        <button class=${`secondaryButton loginButton ${this.theme}`}
                                                 @click=${() => this.dispatchLogin()}
                                                 .disabled=${this.loginLoading}
                                         >
