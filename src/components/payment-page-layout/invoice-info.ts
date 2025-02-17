@@ -2,7 +2,7 @@ import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 //@ts-ignore
 import style from "../../styles/payment-page-styles/invoice-info.css?inline";
-import {Invoice, InvoiceProduct, Transaction, UserProfile} from "@simplepay-ai/api-client";
+import {Invoice, InvoiceProduct, UserProfile} from "@simplepay-ai/api-client";
 //@ts-ignore
 import logo from "../../assets/logo.jpg";
 import {AppTheme, PaymentPageStep} from "../../lib/types.ts";
@@ -126,8 +126,6 @@ export class InvoiceInfo extends LitElement {
 
         this.dispatchEvent(changeTransactionStepEvent);
     }
-
-    goToTransactionStep
 
     render() {
         return html`

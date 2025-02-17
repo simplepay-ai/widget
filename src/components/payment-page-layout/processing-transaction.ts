@@ -3,7 +3,8 @@ import {customElement} from 'lit/decorators.js';
 //@ts-ignore
 import style from "../../styles/payment-page-styles/processing-transaction.css?inline";
 import {PaymentPageStep} from "../../lib/types.ts";
-import {PropertyValues} from "lit/development";
+import {PropertyValues} from "lit";
+//@ts-ignore
 import QRCode from "corcojs-qrcode";
 import {Invoice, Transaction} from "@simplepay-ai/api-client";
 import {getTokenStandart, roundUpAmount} from "../../lib/util.ts";
