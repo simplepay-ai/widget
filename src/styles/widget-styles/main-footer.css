@@ -296,6 +296,13 @@
     transition-duration: 150ms;
 }
 
+.stepFooter .secondaryButton:disabled {
+    pointer-events: none;
+    -ms-touch-action: none;
+    touch-action: none;
+    opacity: .5;
+}
+
 @media(hover: hover) and (pointer: fine) {
     .stepFooter .secondaryButton:hover {
         background: #e9ecef; /* Fallback */
@@ -303,12 +310,13 @@
         border: 1px solid #b3b3b3; /* Fallback */
         border: 1px solid var(--sp-widget-cancel-button-hover-border-color);
     }
-}
 
-.stepFooter .secondaryButton:disabled {
-    pointer-events: none;
-    -ms-touch-action: none;
-    touch-action: none;
+    .stepFooter .secondaryButton:disabled:hover{
+        background: #f8f9fa; /* Fallback */
+        background: var(--sp-widget-cancel-button-color);
+        border: 1px solid #cccccc; /* Fallback */
+        border: 1px solid var(--sp-widget-cancel-button-border-color);
+    }
 }
 
 .stepFooter .timerWrapper {

@@ -43,6 +43,7 @@ import './components/payment-page-layout/address-form.ts';
 import './components/payment-page-layout/toast-notification.ts';
 import './components/payment-page-layout/transactions-history.ts';
 import './components/payment-page-layout/completed-transaction.ts';
+import './components/payment-page-layout/awaiting-payment-transaction.ts';
 
 import {checkWalletAddress, generateUUID} from "./lib/util.ts";
 import themesConfig from '../themesConfig.json';
@@ -554,6 +555,10 @@ export class PaymentApp extends LitElement {
         if (changedProperties.has('invoiceTransactions') && this.invoiceTransactions.length > 0) {
             const transaction = this.invoiceTransactions.find((item) => item.status === 'created' || item.status === 'processing' || item.status === 'confirming')
             this.activeTransaction = (transaction) ? transaction : null;
+
+            if(!transaction){
+                this.cancelingTransaction = false;
+            }
         }
     }
 
@@ -894,7 +899,10 @@ export class PaymentApp extends LitElement {
                                                         </div>
 
                                                         <button class="mainButton"
-                                                                @click=${() => this.goToTransactionStep(this.activeTransaction?.status!)}
+                                                                @click=${() => {
+                                                                    this.transaction = this.activeTransaction;
+                                                                    this.goToTransactionStep(this.activeTransaction?.status!)
+                                                                }}
                                                         >
                                                             To Active Transaction
                                                         </button>
@@ -906,7 +914,26 @@ export class PaymentApp extends LitElement {
                                 ${
                                         (this.paymentPageStep === 'awaitingPaymentStep')
                                                 ? html`
-                                                    <awaiting-payment-transaction>
+                                                    <awaiting-payment-transaction
+                                                            .invoice=${this.invoice}
+                                                            .transaction=${this.transaction}
+                                                            .cancelingTransaction=${this.cancelingTransaction}
+                                                            .connectorPaymentAwaiting=${this.connectorPaymentAwaiting}
+                                                            .walletType=${this.walletType}
+                                                            .walletConnectorConfig=${(this.walletType === 'Custom') ? null : this.walletConnectorConfig}
+                                                            .tronWalletConnect=${(this.walletType === 'Custom') ? null : this.tronWalletConnect}
+                                                            .tronLinkConfig=${(this.walletType === 'Custom') ? null : this.tronLinkConfig}
+                                                            .tronWeb=${(this.walletType === 'Custom') ? null : this.tronWeb}
+                                                            @cancelTransaction=${this.cancelTransaction}
+                                                            @updatePaymentAwaiting=${(event: CustomEvent) =>
+                                                                    (this.connectorPaymentAwaiting = event.detail.connectorPaymentAwaiting)}
+                                                            @updateNotification=${(event: CustomEvent) =>
+                                                                    this.updateNotification(event)}
+                                                            @goToStep=${(event: CustomEvent) => {
+                                                                this.goToPaymentPageStep(event.detail.stepName)
+                                                                this.transaction = null;
+                                                            }}
+                                                    >
                                                     </awaiting-payment-transaction>
                                                 ` : ''
                                 }
@@ -1506,7 +1533,7 @@ export class PaymentApp extends LitElement {
 
         try {
             this.cancelingTransaction = true;
-            await this.API.transaction.cancel(this.transaction?.id);
+            await this.API.transaction.cancel(this.transaction?.id)
         } catch (error) {
 
             this.notificationData = {
