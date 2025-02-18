@@ -342,7 +342,7 @@ export class InvoiceInfo extends LitElement {
                                         </button>
                                     `
                     }
-
+                    
                     ${
                             (this.invoice?.status === 'active')
                                     ? html`
