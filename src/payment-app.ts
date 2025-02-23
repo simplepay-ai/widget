@@ -613,6 +613,7 @@ export class PaymentApp extends LitElement {
             ${this.appStep === 'priceStep'
                     ? html`
                         <price-step
+                                .i18n=${this.i18n}
                                 .appInfo=${this.appInfo}
                                 .price=${this.invoicePrice}
                                 .creatingInvoice=${this.creatingInvoice}
@@ -627,6 +628,7 @@ export class PaymentApp extends LitElement {
             ${this.appStep === 'productStep'
                     ? html`
                         <product-step
+                                .i18n=${this.i18n}
                                 .products=${this.appProducts}
                                 .invoiceProductId=${this.invoiceProductId}
                                 .creatingInvoice=${this.creatingInvoice}
@@ -642,6 +644,7 @@ export class PaymentApp extends LitElement {
             ${this.appStep === 'cartStep'
                     ? html`
                         <cart-step
+                                .i18n=${this.i18n}
                                 .products=${this.appProducts}
                                 .cart=${this.invoiceCart}
                                 .creatingInvoice=${this.creatingInvoice}

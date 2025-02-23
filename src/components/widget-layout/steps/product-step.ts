@@ -3,11 +3,15 @@ import {customElement} from 'lit/decorators.js';
 import {Product} from "@simplepay-ai/api-client";
 //@ts-ignore
 import style from "../../../styles/widget-styles/product-step.css?inline";
+import {I18n} from "i18n-js";
 
 @customElement('product-step')
 export class ProductStep extends LitElement {
 
     static styles = unsafeCSS(style);
+
+    @property({type: Object})
+    i18n: I18n | null = null;
 
     @property({type: Array})
     products: Product[] = [];
@@ -24,8 +28,7 @@ export class ProductStep extends LitElement {
     render() {
         return html`
             <div class="stepWrapper">
-
-
+                
                 ${this.creatingInvoice
                         ? html`
                             <div class="stepContent loading">
@@ -41,13 +44,13 @@ export class ProductStep extends LitElement {
                                         />
                                     </svg>
 
-                                    <p>Creating invoice ...</p>
+                                    <p>${`${this.i18n?.t('enterProductStep.invoiceCreating')} ...`}</p>
                                 </div>
                             </div>
                         `
                         : html`
                             <main-header
-                                    .title= ${'Select product'}
+                                    .title=${this.i18n?.t('enterProductStep.title')}
                             ></main-header>
 
                             <div class="stepContent">
@@ -119,7 +122,7 @@ export class ProductStep extends LitElement {
                                                             </svg>
                                                         </div>
 
-                                                        <p>You currently have no products created in this app</p>
+                                                        <p>${this.i18n?.t('enterProductStep.emptyMessage')}</p>
                                                     </div>
                                                 `
                                 }
@@ -135,7 +138,7 @@ export class ProductStep extends LitElement {
                                                             class="secondaryButton"
                                                             @click=${() => this.dispatchPrevStep()}
                                                     >
-                                                        Back
+                                                        ${this.i18n?.t('enterProductStep.buttons.back')}
                                                     </button>
                                                 `
                                                 : ''
@@ -146,7 +149,7 @@ export class ProductStep extends LitElement {
                                         @click=${this.dispatchNextStep}
                                         .disabled=${!this.invoiceProductId}
                                 >
-                                    Create
+                                    ${this.i18n?.t('enterProductStep.buttons.create')}
                                 </button>
                             </div>
                         `
@@ -163,9 +166,9 @@ export class ProductStep extends LitElement {
             const options = {
                 detail: {
                     notificationData: {
-                        title: 'Minimum Invoice Amount',
-                        text: 'The minimum amount required to create an invoice is 1 USD. Please adjust the amount and try again.',
-                        buttonText: 'Confirm'
+                        title: this.i18n?.t('errors.invoiceAmount.title'),
+                        text: this.i18n?.t('errors.invoiceAmount.text'),
+                        buttonText: this.i18n?.t('errors.buttons.confirm')
                     },
                     notificationShow: true
                 },

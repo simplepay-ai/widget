@@ -4,11 +4,15 @@ import {Product} from "@simplepay-ai/api-client";
 import {ICartProduct} from "../../../lib/types.ts";
 //@ts-ignore
 import style from "../../../styles/widget-styles/cart-step.css?inline";
+import {I18n} from "i18n-js";
 
 @customElement('cart-step')
 export class CartStep extends LitElement {
 
     static styles = unsafeCSS(style);
+
+    @property({type: Object})
+    i18n: I18n | null = null;
 
     @property({type: Array})
     products: Product[] = [];
@@ -64,13 +68,13 @@ export class CartStep extends LitElement {
                                         />
                                     </svg>
 
-                                    <p>Creating invoice ...</p>
+                                    <p>${`${this.i18n?.t('enterCartStep.invoiceCreating')} ...`}</p>
                                 </div>
                             </div>
                         `
                         : html`
                             <main-header
-                                    .title= ${'Select cart products'}
+                                    .title=${this.i18n?.t('enterCartStep.title')}
                             ></main-header>
 
                             <div class="stepContent">
@@ -153,8 +157,9 @@ export class CartStep extends LitElement {
                                                                 ${
                                                                         (this.cart.find((product) => product.id === item.id))
                                                                                 ? html`
-                                                                                    <p class="cartText">In cart
-                                                                                            x${this.cart.find((product) => product.id === item.id)?.count}</p>
+                                                                                    <p class="cartText">
+                                                                                        ${`${this.i18n?.t('enterCartStep.cartCount')} x${this.cart.find((product) => product.id === item.id)?.count}`}
+                                                                                    </p>
                                                                                 `
                                                                                 : ''
                                                                 }
@@ -178,7 +183,7 @@ export class CartStep extends LitElement {
                                                             </svg>
                                                         </div>
 
-                                                        <p>You currently have no products created in this app</p>
+                                                        <p>${this.i18n?.t('enterCartStep.emptyMessage')}</p>
                                                     </div>
                                                 `
                                 }
@@ -194,7 +199,7 @@ export class CartStep extends LitElement {
                                                             class="secondaryButton"
                                                             @click=${() => this.dispatchPrevStep()}
                                                     >
-                                                        Back
+                                                        ${this.i18n?.t('enterCartStep.buttons.back')}
                                                     </button>
                                                 `
                                                 : ''
@@ -205,7 +210,7 @@ export class CartStep extends LitElement {
                                         @click=${this.dispatchNextStep}
                                         .disabled=${this.cart.length === 0}
                                 >
-                                    Create
+                                    ${this.i18n?.t('enterCartStep.buttons.create')}
                                 </button>
                             </div>
                         `
@@ -220,9 +225,9 @@ export class CartStep extends LitElement {
             const options = {
                 detail: {
                     notificationData: {
-                        title: 'Minimum Invoice Amount',
-                        text: 'The minimum amount required to create an invoice is 1 USD. Please adjust the amount and try again.',
-                        buttonText: 'Confirm'
+                        title: this.i18n?.t('errors.invoiceAmount.title'),
+                        text: this.i18n?.t('errors.invoiceAmount.text'),
+                        buttonText: this.i18n?.t('errors.buttons.confirm')
                     },
                     notificationShow: true
                 },

@@ -3,11 +3,15 @@ import {customElement} from 'lit/decorators.js';
 import {App} from "@simplepay-ai/api-client";
 //@ts-ignore
 import style from "../../../styles/widget-styles/price-step.css?inline";
+import {I18n} from "i18n-js";
 
 @customElement('price-step')
 export class PriceStep extends LitElement {
 
     static styles = unsafeCSS(style);
+
+    @property({type: Object})
+    i18n: I18n | null = null;
 
     @property({type: Object})
     appInfo: App | null = null;
@@ -66,14 +70,14 @@ export class PriceStep extends LitElement {
                                         />
                                     </svg>
 
-                                    <p>Creating invoice ...</p>
+                                    <p>${`${this.i18n?.t('enterPriceStep.invoiceCreating')} ...`}</p>
                                 </div>
                             </div>
                         `
                         : html`
                             <div class="header">
 
-                                <p>Invoice from:</p>
+                                <p>${this.i18n?.t('enterPriceStep.title')}:</p>
                                 <div class="merchantInfo">
 
                                     ${
@@ -127,7 +131,7 @@ export class PriceStep extends LitElement {
                                                         <button class="secondaryButton"
                                                                 @click=${() => this.dispatchPrevStep()}
                                                         >
-                                                            Back
+                                                            ${this.i18n?.t('enterPriceStep.buttons.back')}
                                                         </button>
                                                     `
                                                     : ''
@@ -137,7 +141,7 @@ export class PriceStep extends LitElement {
                                             .disabled=${!this.priceValue || Number(this.priceValue) < 1}
                                             @click=${() => this.dispatchNextStep()}
                                     >
-                                        Create
+                                        ${this.i18n?.t('enterPriceStep.buttons.create')}
                                     </button>
 
                                 </div>
