@@ -1,7 +1,16 @@
 import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {getTokenStandart, roundUpAmount} from "../../../lib/util.ts";
-import {Cryptocurrency, Invoice, InvoiceProduct, Network, Transaction, UserProfile} from "@simplepay-ai/api-client";
+import {
+    Cryptocurrency,
+    Invoice,
+    InvoiceProduct,
+    InvoiceStatus,
+    Network,
+    Transaction,
+    UserProfile,
+    TransactionStatus
+} from "@simplepay-ai/api-client";
 //@ts-ignore
 import style from "../../../styles/widget-styles/invoice-step.css?inline";
 //@ts-ignore
@@ -191,14 +200,13 @@ export class InvoiceStep extends LitElement {
         if (changedProperties.has('invoice') && this.invoice) {
             const left = Number(this.invoice?.total!) - Number(this.invoice?.paid!)
             this.leftAmount = (left < 0) ? 0 : left;
-            // this.leftAmount = Number(this.invoice?.total!) - Number(this.invoice?.paid!);
         }
 
         if (changedProperties.has('tokenSearch')) {
             this.filteredTokens = this.filterTokens(this.tokenSearch);
         }
 
-        if(changedProperties.has('user') || changedProperties.has('userProfile')){
+        if (changedProperties.has('user') || changedProperties.has('userProfile')) {
             this.userName = this.getUserName();
         }
     }
@@ -219,7 +227,8 @@ export class InvoiceStep extends LitElement {
                                                             ? html`
                                                                 <div class="userInfo">
                                                                     <div class="icon">
-                                                                        <img src=${ (this.userProfile && this.userProfile.image) ? this.userProfile.image : logo} alt="SimpleID Logo">
+                                                                        <img src=${(this.userProfile && this.userProfile.image) ? this.userProfile.image : logo}
+                                                                             alt="SimpleID Logo">
                                                                     </div>
                                                                     <p>${this.userName}</p>
                                                                 </div>
@@ -255,7 +264,7 @@ export class InvoiceStep extends LitElement {
                                                                                             <line x1="15" x2="3" y1="12" y2="12"/>
                                                                                         </svg>
 
-                                                                                        Login
+                                                                                        ${this.i18n?.t('buttons.login')}
                                                                                     `
                                                                     }
                                                                 </button>
@@ -305,14 +314,19 @@ export class InvoiceStep extends LitElement {
 
                     <div class="productInfo">
 
-                        <div class=${`
-                        status
-                        ${this.invoice?.status}
-                        `}>
-                            <div class="circle"></div>
-                            <p>${this.invoice?.status}</p>
-                        </div>
-
+                        ${
+                                (this.invoice)
+                                        ? html`
+                                            <div class=${`
+                                                status
+                                                ${this.invoice?.status}
+                                                `}>
+                                                <div class="circle"></div>
+                                                <p>${this.getLocaliseInvoiceStatus(this.invoice.status)}</p>
+                                            </div>
+                                        ` : ''
+                        }
+                        
                         <div class=${`
                         card
                         ${(this.invoiceProducts && this.invoiceProducts.length > 0) && 'hasProduct'}
@@ -390,10 +404,10 @@ export class InvoiceStep extends LitElement {
                                             : ''
                             }
 
-                            <p class="title">Amount</p>
+                            <p class="title">${this.i18n?.t('invoiceStep.totalAmount')}</p>
                             <p class="price">${`$${this.invoice?.total}`}</p>
 
-                            <p class="left">Left: $${parseFloat(this.leftAmount.toString()).toFixed(2)}</p>
+                            <p class="left">${this.i18n?.t('invoiceStep.leftAmount')}: $${parseFloat(this.leftAmount.toString()).toFixed(2)}</p>
                         </div>
 
                         ${
@@ -446,7 +460,7 @@ export class InvoiceStep extends LitElement {
                                         ? html`
                                             <div class="transactionsCard"
                                                  @click=${() => this.openTransactionsModal()}>
-                                                Show history
+                                                ${this.i18n?.t('invoiceStep.historyButton')}
                                             </div>
                                         `
                                         : ''
@@ -466,7 +480,7 @@ export class InvoiceStep extends LitElement {
                                                         ? html`
                                                             <div class="tokenInfo">
                                                                 <p class="label">
-                                                                    Token:
+                                                                    ${this.i18n?.t('invoiceStep.tokenTitle')}:
                                                                 </p>
 
                                                                 <div class="tokenCard" @click=${() => this.openTokenModal()}>
@@ -485,7 +499,7 @@ export class InvoiceStep extends LitElement {
                                                                                         ></token-icon>
                                                                                     `
                                                                                     : html`
-                                                                                        <p>Choose token</p>
+                                                                                        <p>${this.i18n?.t('invoiceStep.selectTokenPlaceholder')}</p>
 
                                                                                         <div class="image placeholder">
                                                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24"
@@ -509,7 +523,7 @@ export class InvoiceStep extends LitElement {
                                             ${(this.selectedNetwork.symbol === 'bsc') ? 'uppercase' : 'capitalize'}
                                             `}>
                                                                                         <p class="label">
-                                                                                            Network:
+                                                                                            ${this.i18n?.t('invoiceStep.networkTitle')}:
                                                                                         </p>
 
                                                                                         <div class="value">
@@ -547,7 +561,7 @@ export class InvoiceStep extends LitElement {
                                                             <button class="mainButton"
                                                                     @click=${() => this.dispatchSelectTransaction(this.activeTransaction?.id!)}
                                                             >
-                                                                To active transaction
+                                                                ${this.i18n?.t('buttons.activeTransaction')}
                                                             </button>
                                                         `
                                                         : html`
@@ -555,7 +569,7 @@ export class InvoiceStep extends LitElement {
                                                                     @click=${this.dispatchNextStep}
                                                                     .disabled=${!this.selectedToken || !this.selectedNetwork}
                                                             >
-                                                                Next
+                                                                ${this.i18n?.t('buttons.next')}
                                                             </button>
                                                         `
                                         }
@@ -572,7 +586,7 @@ export class InvoiceStep extends LitElement {
                     <div class="contentWrapper ${(this.showProductModalContent) ? 'show' : ''}">
                         <div class="content">
                             <div class="titleWrapper">
-                                <p>Products</p>
+                                <p>${this.i18n?.t('modals.products.title')}</p>
                                 <div class="closeButton"
                                      @click=${() => this.closeProductModal()}
                                 >
@@ -626,7 +640,7 @@ export class InvoiceStep extends LitElement {
                                                     <p class="price">
                                                         ${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].price) ? item.product.prices[0].price : ''}
                                                         ${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].currency.symbol) ? item.product.prices[0].currency.symbol : ''}</p>
-                                                    <p class="count">Count: ${item.count || '---'}</p>
+                                                    <p class="count">${this.i18n?.t('modals.products.count')}: ${item.count || '---'}</p>
                                                 </div>
 
                                             </div>
@@ -647,7 +661,7 @@ export class InvoiceStep extends LitElement {
                     <div class="contentWrapper ${(this.showTokenModalContent) ? 'show' : ''}">
                         <div class="content">
                             <div class="titleWrapper">
-                                <p>Tokens</p>
+                                <p>${this.i18n?.t('modals.tokens.title')}</p>
                                 <div class="closeButton"
                                      @click=${() => this.closeTokenModal()}
                                 >
@@ -672,7 +686,7 @@ export class InvoiceStep extends LitElement {
                                             @input=${(event: CustomEvent | any) => {
                                                 this.tokenSearch = event.target.value;
                                             }}
-                                            placeholder= ${`Search token`}
+                                            placeholder=${this.i18n?.t('modals.tokens.searchPlaceholder')}
                                     />
                                 </div>
 
@@ -686,7 +700,7 @@ export class InvoiceStep extends LitElement {
                                         <option value=""
                                                 selected
                                         >
-                                            All chains
+                                            ${this.i18n?.t('modals.tokens.allNetworks')}
                                         </option>
                                         ${
                                                 this.networksList &&
@@ -709,11 +723,10 @@ export class InvoiceStep extends LitElement {
                                         (this.tokensEmpty)
                                                 ? html`
                                                     <div class="emptyTokens">
-                                                        <p>No tokens are currently available in this store, but you can add them
-                                                            to get started!</p>
+                                                        <p>${this.i18n?.t('modals.tokens.emptyMessage')}</p>
 
                                                         <a href="https://console.simplepay.ai/settings/tokens-edit">
-                                                            Add tokens
+                                                            ${this.i18n?.t('modals.tokens.addButton')}
                                                         </a>
                                                     </div>
                                                 `
@@ -802,7 +815,7 @@ export class InvoiceStep extends LitElement {
                                                                     :
                                                                     html`
                                                                         <div class="tokensListEmpty">
-                                                                            <p>No tokens found</p>
+                                                                            <p>${this.i18n?.t('modals.tokens.noFoundMessage')}</p>
                                                                         </div>
                                                                     `
                                                     }
@@ -822,7 +835,7 @@ export class InvoiceStep extends LitElement {
                     <div class="contentWrapper ${(this.showTransactionsModalContent) ? 'show' : ''}">
                         <div class="content">
                             <div class="titleWrapper">
-                                <p>Transactions</p>
+                                <p>${this.i18n?.t('modals.transactions.title')}</p>
                                 <div class="closeButton"
                                      @click=${() => this.closeTransactionsModal()}
                                 >
@@ -888,7 +901,7 @@ export class InvoiceStep extends LitElement {
                                                                         (formatPrice !== '---')
                                                                                 ? html`
                                                                                     <p class="secondary">
-                                                                                        Amount: ${formatPrice}
+                                                                                        ${this.i18n?.t('modals.transactions.amount')}: ${formatPrice}
                                                                                         ${item.cryptocurrency.symbol}
                                                                                     </p>
                                                                                 `
@@ -897,7 +910,7 @@ export class InvoiceStep extends LitElement {
                                                             </div>
                                                             <div class="rightSection">
                                                                 <div class="status">
-                                                                    ${item.status}
+                                                                    ${this.getLocaliseTransactionStatus(item.status)}
                                                                 </div>
                                                                 <p class="secondary">
                                                                     ${updateDate}
@@ -918,18 +931,54 @@ export class InvoiceStep extends LitElement {
         `;
     }
 
-    private getUserName(){
+    private getLocaliseInvoiceStatus(status: InvoiceStatus) {
+        switch (status) {
+            case InvoiceStatus.Active:
+                return this.i18n?.t('invoiceStatus.active');
+            case InvoiceStatus.Closed:
+                return this.i18n?.t('invoiceStatus.closed');
+            case InvoiceStatus.Canceled:
+                return this.i18n?.t('invoiceStatus.canceled');
+            case InvoiceStatus.Success:
+                return this.i18n?.t('invoiceStatus.success');
+            default:
+                return '';
+        }
+    }
 
-        if(this.userProfile && this.userProfile.username){
+    private getLocaliseTransactionStatus(status: TransactionStatus) {
+        switch (status) {
+            case TransactionStatus.Created:
+                return this.i18n?.t('transactionStatus.created');
+            case TransactionStatus.Processing:
+                return this.i18n?.t('transactionStatus.processing');
+            case TransactionStatus.Confirming:
+                return this.i18n?.t('transactionStatus.confirming');
+            case TransactionStatus.Success:
+                return this.i18n?.t('transactionStatus.success');
+            case TransactionStatus.Rejected:
+                return this.i18n?.t('transactionStatus.rejected');
+            case TransactionStatus.Canceled:
+                return this.i18n?.t('transactionStatus.canceled');
+            case TransactionStatus.Expired:
+                return this.i18n?.t('transactionStatus.expired');
+            default:
+                return '';
+        }
+    }
+
+    private getUserName() {
+
+        if (this.userProfile && this.userProfile.username) {
             return this.userProfile.username
         }
 
-        if(this.user && this.user?.identity?.traits?.email){
+        if (this.user && this.user?.identity?.traits?.email) {
             return this.user?.identity?.traits?.email
         }
 
-        if(this.user && !this.user?.identity?.traits?.email && this.user?.authentication_methods.length > 0 && this.user?.authentication_methods[0].provider === "telegram"){
-            return 'Telegram Account';
+        if (this.user && !this.user?.identity?.traits?.email && this.user?.authentication_methods.length > 0 && this.user?.authentication_methods[0].provider === "telegram") {
+            return this.i18n?.t('user.telegram');
         }
 
     }

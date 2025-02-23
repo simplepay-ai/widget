@@ -33,7 +33,18 @@
         }
     },
 
+    "invoiceStep": {
+        "totalAmount": "Amount",
+        "leftAmount": "Left",
+        "historyButton": "Show history",
+        "tokenTitle": "Token",
+        "networkTitle": "Network",
+        "selectTokenPlaceholder": "Choose token"
+    },
 
+    "user": {
+        "telegram": "Telegram Account"
+    },
 
     "errors": {
         "invoiceAmount": {
@@ -47,7 +58,9 @@
         "create": "Create",
         "next": "Next",
         "confirm": "Confirm",
-        "createInvoice": "Create new invoice"
+        "createInvoice": "Create new invoice",
+        "login": "Login",
+        "activeTransaction": "To active transaction"
     },
     "loaders": {
         "creatingInvoice": "Creating invoice"
@@ -56,6 +69,34 @@
         "products": {
             "title": "Products",
             "count": "Count"
+        },
+        "tokens": {
+            "title": "Tokens",
+            "searchPlaceholder": "Search token",
+            "allNetworks": "All chains",
+            "emptyMessage": "No tokens are currently available in this store, but you can add them to get started!",
+            "addButton": "Add tokens",
+            "noFoundMessage": "No tokens found"
+        },
+        "transactions": {
+            "title": "Transactions",
+            "amount": "Amount"
         }
+    },
+
+    "invoiceStatus": {
+        "active": "Active",
+        "closed": "Closed",
+        "success": "Success",
+        "canceled": "Canceled"
+    },
+    "transactionStatus": {
+        "created": "Created",
+        "processing": "Processing",
+        "confirming": "Confirming",
+        "success": "Success",
+        "rejected": "Rejected",
+        "canceled": "Canceled",
+        "expired": "Expired"
     }
 }
