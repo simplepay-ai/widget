@@ -39,6 +39,8 @@ export type ViewMode = 'modal' | 'paymentPage' | 'relative'
 
 export type InvoiceType = 'request' | 'item' | 'cart'
 
+export type AppLanguage = 'en' | 'fr'
+
 export interface IOpenButton{
     backgroundColor: string;
     textColor: string;

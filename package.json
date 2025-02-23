@@ -40,6 +40,7 @@
         "@wagmi/connectors": "^5.2.2",
         "@wagmi/core": "^2.13.9",
         "corcojs-qrcode": "^1.0.0",
+        "i18n-js": "^4.5.1",
         "lit": "^3.2.0",
         "lit-element": "^2.5.1",
         "tronweb": "^6.0.1",

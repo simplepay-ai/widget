@@ -9,6 +9,7 @@ import {
 import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 import {
+    AppLanguage,
     AppStep,
     AppTheme,
     ICartProduct,
@@ -48,9 +49,11 @@ import './components/payment-page-layout/processing-transaction.ts';
 
 import {checkWalletAddress, generateUUID} from "./lib/util.ts";
 import themesConfig from '../themesConfig.json';
+import locales from '../src/locales/locales.ts'
 //@ts-ignore
 import style from "./styles/payment-app.css?inline";
 import axios from "axios";
+import {I18n} from "i18n-js";
 
 @customElement('payment-app')
 export class PaymentApp extends LitElement {
@@ -231,6 +234,12 @@ export class PaymentApp extends LitElement {
     @property({attribute: false, type: Object})
     activeTransaction: Transaction | null = null;
 
+    @property({attribute: false, type: String})
+    currentLanguage: AppLanguage = 'en';
+
+    @property({attribute: false, type: Object})
+    i18n: I18n | null = null;
+
     constructor() {
         super();
 
@@ -257,6 +266,8 @@ export class PaymentApp extends LitElement {
                 this.setTheme('light');
                 break;
         }
+
+        this.initLocalization();
 
         if (this.viewMode !== 'modal' && this.viewMode !== 'paymentPage' && this.viewMode !== 'relative') {
             this.errorTitle = 'Error';
@@ -575,6 +586,7 @@ export class PaymentApp extends LitElement {
 
     render() {
         const widgetContent = html`
+
             ${this.appStep === 'loadingStep'
                     ? html`
                         <loading-step></loading-step>`
@@ -590,6 +602,7 @@ export class PaymentApp extends LitElement {
             ${this.appStep === 'selectTypeStep'
                     ? html`
                         <select-type-step
+                                .i18n=${this.i18n}
                                 .invoiceType=${this.invoiceType}
                                 @updateInvoiceType=${(event: CustomEvent) => (this.invoiceType = event.detail.invoiceType)}
                                 @nextStep=${this.nextStep}
@@ -1072,6 +1085,34 @@ export class PaymentApp extends LitElement {
                     ${paymentPageContent}
                 </div>
             `;
+        }
+    }
+
+    private initLocalization(){
+        const userLocale = new Intl.Locale(navigator.language);
+        let defaultLocale: string;
+
+        switch (userLocale.language) {
+            case 'en':
+                defaultLocale = 'en';
+                break;
+            case 'fr':
+                defaultLocale = 'fr';
+                break;
+            default:
+                defaultLocale = 'en';
+                break;
+        }
+
+        this.i18n = new I18n({...locales});
+        this.i18n.defaultLocale = defaultLocale;
+        this.i18n.locale = defaultLocale;
+    }
+
+    private changeLocalization(localization: AppLanguage){
+        if(this.i18n){
+            this.i18n.locale = localization;
+            this.requestUpdate();
         }
     }
 

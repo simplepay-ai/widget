@@ -3,6 +3,7 @@ import {customElement} from 'lit/decorators.js';
 import {InvoiceType} from "../../../lib/types.ts";
 //@ts-ignore
 import style from "../../../styles/widget-styles/select-type-step.css?inline";
+import {I18n} from "i18n-js";
 
 @customElement('select-type-step')
 export class SelectTypeStep extends LitElement {
@@ -12,12 +13,15 @@ export class SelectTypeStep extends LitElement {
     @property({type: String})
     invoiceType: InvoiceType | '' = '';
 
+    @property({type: Object})
+    i18n: I18n | null = null;
+
     render() {
         return html`
             <div class="stepWrapper">
 
                 <main-header
-                        .title= ${'Select invoice type'}
+                        .title=${ this.i18n?.t('invoiceTypeSelectStep.title') }
                 ></main-header>
 
                 <div class="stepContent">
@@ -28,7 +32,7 @@ export class SelectTypeStep extends LitElement {
                     `}
                     @click=${() => this.SelectType('request')}
                     >
-                        <p>Request</p>
+                        <p>${this.i18n?.t('invoiceTypeSelectStep.buttons.request')}</p>
 
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -44,7 +48,7 @@ export class SelectTypeStep extends LitElement {
                     `}
                          @click=${() => this.SelectType('item')}
                     >
-                        <p>Item</p>
+                        <p>${this.i18n?.t('invoiceTypeSelectStep.buttons.item')}</p>
 
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -61,7 +65,7 @@ export class SelectTypeStep extends LitElement {
                     `}
                          @click=${() => this.SelectType('cart')}
                     >
-                        <p>Cart</p>
+                        <p>${this.i18n?.t('invoiceTypeSelectStep.buttons.cart')}</p>
 
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -79,7 +83,7 @@ export class SelectTypeStep extends LitElement {
                             @click=${this.dispatchNextStep}
                             .disabled=${this.invoiceType === ''}
                     >
-                        Next
+                        ${this.i18n?.t('invoiceTypeSelectStep.buttons.next')}
                     </button>
                 </div>
 

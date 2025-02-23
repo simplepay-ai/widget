@@ -1,0 +1,11 @@
+{
+  "invoiceTypeSelectStep": {
+    "title": "Select invoice type",
+    "buttons": {
+      "request": "Request",
+      "item": "Item",
+      "cart": "Cart",
+      "next": "Next"
+    }
+  }
+}
