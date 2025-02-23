@@ -70,7 +70,7 @@ export class PriceStep extends LitElement {
                                         />
                                     </svg>
 
-                                    <p>${`${this.i18n?.t('enterPriceStep.invoiceCreating')} ...`}</p>
+                                    <p>${`${this.i18n?.t('loaders.creatingInvoice')} ...`}</p>
                                 </div>
                             </div>
                         `
@@ -131,7 +131,7 @@ export class PriceStep extends LitElement {
                                                         <button class="secondaryButton"
                                                                 @click=${() => this.dispatchPrevStep()}
                                                         >
-                                                            ${this.i18n?.t('enterPriceStep.buttons.back')}
+                                                            ${this.i18n?.t('buttons.back')}
                                                         </button>
                                                     `
                                                     : ''
@@ -141,7 +141,7 @@ export class PriceStep extends LitElement {
                                             .disabled=${!this.priceValue || Number(this.priceValue) < 1}
                                             @click=${() => this.dispatchNextStep()}
                                     >
-                                        ${this.i18n?.t('enterPriceStep.buttons.create')}
+                                        ${this.i18n?.t('buttons.create')}
                                     </button>
 
                                 </div>

@@ -661,6 +661,7 @@ export class PaymentApp extends LitElement {
             ${this.appStep === 'createdInvoiceStep'
                     ? html`
                         <created-invoice-step
+                                .i18n=${this.i18n}
                                 .invoice=${this.newAppInvoice}
                                 @prevStep=${this.prevStep}
                         ></created-invoice-step>`
@@ -670,6 +671,7 @@ export class PaymentApp extends LitElement {
             ${this.appStep === 'invoiceStep'
                     ? html`
                         <invoice-step
+                                .i18n=${this.i18n}
                                 .invoice=${this.invoice}
                                 .selectedToken=${this.selectedToken}
                                 .selectedNetwork=${this.selectedNetwork}

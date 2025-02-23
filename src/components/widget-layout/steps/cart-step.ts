@@ -68,7 +68,7 @@ export class CartStep extends LitElement {
                                         />
                                     </svg>
 
-                                    <p>${`${this.i18n?.t('enterCartStep.invoiceCreating')} ...`}</p>
+                                    <p>${`${this.i18n?.t('loaders.creatingInvoice')} ...`}</p>
                                 </div>
                             </div>
                         `
@@ -199,7 +199,7 @@ export class CartStep extends LitElement {
                                                             class="secondaryButton"
                                                             @click=${() => this.dispatchPrevStep()}
                                                     >
-                                                        ${this.i18n?.t('enterCartStep.buttons.back')}
+                                                        ${this.i18n?.t('buttons.back')}
                                                     </button>
                                                 `
                                                 : ''
@@ -210,7 +210,7 @@ export class CartStep extends LitElement {
                                         @click=${this.dispatchNextStep}
                                         .disabled=${this.cart.length === 0}
                                 >
-                                    ${this.i18n?.t('enterCartStep.buttons.create')}
+                                    ${this.i18n?.t('buttons.create')}
                                 </button>
                             </div>
                         `
@@ -227,7 +227,7 @@ export class CartStep extends LitElement {
                     notificationData: {
                         title: this.i18n?.t('errors.invoiceAmount.title'),
                         text: this.i18n?.t('errors.invoiceAmount.text'),
-                        buttonText: this.i18n?.t('errors.buttons.confirm')
+                        buttonText: this.i18n?.t('buttons.confirm')
                     },
                     notificationShow: true
                 },

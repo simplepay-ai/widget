@@ -83,7 +83,7 @@ export class SelectTypeStep extends LitElement {
                             @click=${this.dispatchNextStep}
                             .disabled=${this.invoiceType === ''}
                     >
-                        ${this.i18n?.t('invoiceTypeSelectStep.buttons.next')}
+                        ${this.i18n?.t('buttons.next')}
                     </button>
                 </div>
 

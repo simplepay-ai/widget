@@ -1,8 +1,12 @@
 import {css, customElement, html, LitElement, property} from "lit-element";
 import {Invoice, InvoiceProduct} from "@simplepay-ai/api-client";
+import {I18n} from "i18n-js";
 
 @customElement('created-invoice-step')
 export class CreatedInvoiceStep extends LitElement {
+
+    @property({type: Object})
+    i18n: I18n | null = null;
 
     @property({type: Object})
     invoice: Invoice | null = null;
@@ -43,16 +47,16 @@ export class CreatedInvoiceStep extends LitElement {
                         <path stroke-width="2" d="m9 11 3 3L22 4"/>
                     </svg>
 
-                    <p>Successfully<br/>Created</p>
+                    <p>${this.i18n?.t('createdInvoiceStep.titleFirst')}<br/>${this.i18n?.t('createdInvoiceStep.titleSecond')}</p>
 
                 </div>
 
                 <div class="invoiceInfo">
 
-                    <p class="title">Invoice details:</p>
+                    <p class="title">${this.i18n?.t('createdInvoiceStep.detailsTitle')}:</p>
 
                     <div class="infoItem">
-                        <p class="title">Invoice ID:</p>
+                        <p class="title">${this.i18n?.t('createdInvoiceStep.fields.id')}:</p>
 
                         <div class="copyLine"
                              @click=${(event: CustomEvent) =>
@@ -109,7 +113,7 @@ export class CreatedInvoiceStep extends LitElement {
                         </div>
                     </div>
                     <div class="infoItem">
-                        <p class="title">Merchant:</p>
+                        <p class="title">${this.i18n?.t('createdInvoiceStep.fields.merchant')}:</p>
                         <div class="merchantInfo">
                             ${
                                     (this.invoice?.app?.image)
@@ -137,7 +141,7 @@ export class CreatedInvoiceStep extends LitElement {
                         </div>
                     </div>
                     <div class="infoItem">
-                        <p class="title">Total amount:</p>
+                        <p class="title">${this.i18n?.t('createdInvoiceStep.fields.amount')}:</p>
                         <p class="amountInfo">
                             ${(this.invoice?.total) ? this.invoice.total : 0}
                             ${this.invoice?.currency.symbol}
@@ -147,7 +151,7 @@ export class CreatedInvoiceStep extends LitElement {
                             (this.invoiceProducts.length === 1 && (this.invoiceProducts[0].count === 1 || !this.invoiceProducts[0].count))
                                     ? html`
                                         <div class="infoItem">
-                                            <p class="title">Product:</p>
+                                            <p class="title">${this.i18n?.t('createdInvoiceStep.fields.product')}:</p>
                                             <div class="productInfo">
                                                 ${
                                                         (this.invoiceProducts[0].product.image)
@@ -185,9 +189,9 @@ export class CreatedInvoiceStep extends LitElement {
                             ((this.invoiceProducts.length === 1 && this.invoiceProducts[0].count > 1) || (this.invoiceProducts.length > 1))
                                     ? html`
                                         <div class="infoItem">
-                                            <p class="title">Products:</p>
+                                            <p class="title">${this.i18n?.t('createdInvoiceStep.fields.products')}:</p>
                                             <div class="productButton" @click=${() => this.openProductModal()}>
-                                                <p class="name">Items: ${this.invoiceProducts.length}</p>
+                                                <p class="name">${this.i18n?.t('createdInvoiceStep.fields.productsCount')}: ${this.invoiceProducts.length}</p>
                                             </div>
                                         </div>
                                     `
@@ -200,7 +204,7 @@ export class CreatedInvoiceStep extends LitElement {
                             class="mainButton"
                             @click=${this.dispatchPrevStep}
                     >
-                        Create new invoice
+                        ${this.i18n?.t('buttons.createInvoice')}
                     </button>
                 </div>
 
@@ -212,7 +216,7 @@ export class CreatedInvoiceStep extends LitElement {
                     <div class="contentWrapper ${(this.showProductModalContent) ? 'show' : ''}">
                         <div class="content">
                             <div class="titleWrapper">
-                                <p>Products</p>
+                                <p>${this.i18n?.t('modals.products.title')}</p>
                                 <div class="closeButton"
                                      @click=${() => this.closeProductModal()}
                                 >
@@ -266,7 +270,7 @@ export class CreatedInvoiceStep extends LitElement {
                                                     <p class="price">
                                                         ${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].price) ? item.product.prices[0].price : ''}
                                                         ${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].currency.symbol) ? item.product.prices[0].currency.symbol : ''}</p>
-                                                    <p class="count">Count: ${item.count || '---'}</p>
+                                                    <p class="count">${this.i18n?.t('modals.products.count')}: ${item.count || '---'}</p>
                                                 </div>
 
                                             </div>

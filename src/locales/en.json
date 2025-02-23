@@ -4,44 +4,58 @@
         "buttons": {
             "request": "Request",
             "item": "Item",
-            "cart": "Cart",
-            "next": "Next"
+            "cart": "Cart"
         }
     },
     "enterPriceStep": {
-        "invoiceCreating": "Creating invoice",
-        "title": "Invoice from",
-        "buttons": {
-            "back": "Back",
-            "create": "Create"
-        }
+        "title": "Invoice from"
     },
     "enterProductStep": {
-        "invoiceCreating": "Creating invoice",
         "title": "Select product",
-        "emptyMessage": "You currently have no products created in this app",
-        "buttons": {
-            "back": "Back",
-            "create": "Create"
-        }
+        "emptyMessage": "You currently have no products created in this app"
     },
     "enterCartStep": {
-        "invoiceCreating": "Creating invoice",
         "title": "Select cart products",
         "emptyMessage": "You currently have no products created in this app",
-        "cartCount": "In cart",
-        "buttons": {
-            "back": "Back",
-            "create": "Create"
+        "cartCount": "In cart"
+    },
+    "createdInvoiceStep": {
+        "titleFirst": "Successfully",
+        "titleSecond": "Created",
+        "detailsTitle": "Invoice details",
+        "fields": {
+            "id": "Invoice ID",
+            "merchant": "Merchant",
+            "amount": "Total amount",
+            "product": "Product",
+            "products": "Products",
+            "productsCount": "Items"
         }
     },
+
+
+
     "errors": {
         "invoiceAmount": {
             "title": "Minimum Invoice Amount",
             "text": "The minimum amount required to create an invoice is 1 USD. Please adjust the amount and try again."
-        },
-        "buttons": {
-            "confirm": "Confirm"
+        }
+    },
+
+    "buttons": {
+        "back": "Back",
+        "create": "Create",
+        "next": "Next",
+        "confirm": "Confirm",
+        "createInvoice": "Create new invoice"
+    },
+    "loaders": {
+        "creatingInvoice": "Creating invoice"
+    },
+    "modals": {
+        "products": {
+            "title": "Products",
+            "count": "Count"
         }
     }
 }

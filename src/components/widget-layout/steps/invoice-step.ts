@@ -6,6 +6,7 @@ import {Cryptocurrency, Invoice, InvoiceProduct, Network, Transaction, UserProfi
 import style from "../../../styles/widget-styles/invoice-step.css?inline";
 //@ts-ignore
 import logo from "../../../assets/logo.jpg";
+import {I18n} from "i18n-js";
 
 interface NetworkOption {
     value: string;
@@ -16,6 +17,9 @@ interface NetworkOption {
 export class InvoiceStep extends LitElement {
 
     static styles = unsafeCSS(style);
+
+    @property({type: Object})
+    i18n: I18n | null = null;
 
     @property({type: Object})
     invoice: Invoice | null = null;
