@@ -539,4 +539,8 @@
         height: auto;
         max-height: 250px;
     }
+
+    .invoiceInfoWrapper .buttonsWrapper.full button{
+        max-width: unset;
+    }
 }
