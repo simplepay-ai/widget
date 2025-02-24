@@ -75,6 +75,7 @@ export class SuccessStep extends LitElement {
         }
     }
 
+
     firstUpdated(_changedProperties: PropertyValues) {
         super.firstUpdated(_changedProperties);
 
