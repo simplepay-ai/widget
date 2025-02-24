@@ -259,7 +259,6 @@ export class PaymentApp extends LitElement {
 
         this.isExperimentalMode = this.experimental === 'true';
         this.pollingMode = this.usePolling === 'true';
-        console.log('pollingMode', this.pollingMode)
         this.customServerMode = Boolean(this.serverUrl) && URL.canParse(this.serverUrl);
 
         switch (this.theme) {
@@ -1165,7 +1164,7 @@ export class PaymentApp extends LitElement {
             const appUrl = this.serverUrl + `/app/${this.invoice?.app?.id || ''}` + '?v=1';
             const saveInvoiceUrl = this.serverUrl + `/user/invoice` + '?v=1';
 
-            await axios.post(appUrl, {withCredentials: true})
+            await axios.get(appUrl, {withCredentials: true})
                 .then(async () => {
                     await axios.post(saveInvoiceUrl, {
                         withCredentials: true,
@@ -1871,7 +1870,7 @@ export class PaymentApp extends LitElement {
         }
     }
 
-    private async getInvoiceTransactions(invoiceId: string) {
+    private async getInvoiceTransactions(invoiceId: string, updateCurrentTransaction: boolean = false) {
 
         if(!invoiceId){
             this.notificationData = {
@@ -1892,6 +1891,14 @@ export class PaymentApp extends LitElement {
             await axios.get(url, {withCredentials: true})
                 .then((response) => {
                     this.invoiceTransactions = camelcaseKeys(response.data, { deep: true })
+
+                    if(updateCurrentTransaction && this.transaction && this.transaction.id){
+                        const transactionData = this.invoiceTransactions.find((item) => item.id === this.transaction?.id)
+                        if(transactionData){
+                            this.transaction = transactionData;
+                        }
+                    }
+
                 })
                 .catch(() => {
                     this.notificationData = {
@@ -1910,6 +1917,14 @@ export class PaymentApp extends LitElement {
                 this.invoiceTransactions = await this.API.transaction.list({
                     invoiceId
                 })
+
+                if(updateCurrentTransaction && this.transaction && this.transaction.id){
+                    const transactionData = this.invoiceTransactions.find((item) => item.id === this.transaction?.id)
+                    if(transactionData){
+                        this.transaction = transactionData;
+                    }
+                }
+
             } catch (e) {
                 this.notificationData = {
                     title: 'Get Invoice Transactions Failed',
@@ -1930,77 +1945,91 @@ export class PaymentApp extends LitElement {
             return;
         }
 
-        const ws = new WsClient();
-        const invoiceChannel = ws.invoice(invoiceId);
-        const transactionsChannel = ws.invoiceTransaction(invoiceId);
+        if(this.pollingMode){
 
-        invoiceChannel.on(InvoiceEventType.Success, (invoiceData) => {
-            this.getInvoice(invoiceData.id);
-        })
+            setInterval(() => {
+                this.getInvoice(invoiceId);
+            }, 2500);
 
-        transactionsChannel.on(TransactionEventType.Created, (transactionData) => {
+            setInterval(() => {
+                this.getInvoiceTransactions(invoiceId, true);
+            }, 2500);
 
-            if (this.transaction && this.transaction.id === transactionData.id) {
-                this.transaction = transactionData;
-            }
+        }else{
 
-            this.getInvoiceTransactions(transactionData.invoiceId);
-            return;
-        })
-        transactionsChannel.on(TransactionEventType.Processing, (transactionData) => {
+            const ws = new WsClient();
+            const invoiceChannel = ws.invoice(invoiceId);
+            const transactionsChannel = ws.invoiceTransaction(invoiceId);
 
-            if (this.transaction && this.transaction.id === transactionData.id) {
-                this.transaction = transactionData;
-            }
+            invoiceChannel.on(InvoiceEventType.Success, (invoiceData) => {
+                this.getInvoice(invoiceData.id);
+            })
 
-            this.getInvoiceTransactions(transactionData.invoiceId);
-            return;
-        })
-        transactionsChannel.on(TransactionEventType.Confirming, (transactionData) => {
+            transactionsChannel.on(TransactionEventType.Created, (transactionData) => {
 
-            if (this.transaction && this.transaction.id === transactionData.id) {
-                this.transaction = transactionData;
-            }
+                if (this.transaction && this.transaction.id === transactionData.id) {
+                    this.transaction = transactionData;
+                }
 
-            this.getInvoiceTransactions(transactionData.invoiceId);
-            return;
-        })
-        transactionsChannel.on(TransactionEventType.Rejected, (transactionData) => {
+                this.getInvoiceTransactions(transactionData.invoiceId);
+                return;
+            })
+            transactionsChannel.on(TransactionEventType.Processing, (transactionData) => {
 
-            if (this.transaction && this.transaction.id === transactionData.id) {
-                this.transaction = transactionData;
-            }
+                if (this.transaction && this.transaction.id === transactionData.id) {
+                    this.transaction = transactionData;
+                }
 
-            this.getInvoiceTransactions(transactionData.invoiceId);
-            return;
-        })
-        transactionsChannel.on(TransactionEventType.Expired, (transactionData) => {
+                this.getInvoiceTransactions(transactionData.invoiceId);
+                return;
+            })
+            transactionsChannel.on(TransactionEventType.Confirming, (transactionData) => {
 
-            if (this.transaction && this.transaction.id === transactionData.id) {
-                this.transaction = transactionData;
-            }
+                if (this.transaction && this.transaction.id === transactionData.id) {
+                    this.transaction = transactionData;
+                }
 
-            this.getInvoiceTransactions(transactionData.invoiceId);
-            return;
-        })
-        transactionsChannel.on(TransactionEventType.Canceled, (transactionData) => {
+                this.getInvoiceTransactions(transactionData.invoiceId);
+                return;
+            })
+            transactionsChannel.on(TransactionEventType.Rejected, (transactionData) => {
 
-            if (this.transaction && this.transaction.id === transactionData.id) {
-                this.transaction = transactionData;
-            }
+                if (this.transaction && this.transaction.id === transactionData.id) {
+                    this.transaction = transactionData;
+                }
 
-            this.getInvoiceTransactions(transactionData.invoiceId);
-            return;
-        })
-        transactionsChannel.on(TransactionEventType.Success, (transactionData) => {
+                this.getInvoiceTransactions(transactionData.invoiceId);
+                return;
+            })
+            transactionsChannel.on(TransactionEventType.Expired, (transactionData) => {
 
-            if (this.transaction && this.transaction.id === transactionData.id) {
-                this.transaction = transactionData;
-            }
+                if (this.transaction && this.transaction.id === transactionData.id) {
+                    this.transaction = transactionData;
+                }
 
-            this.getInvoiceTransactions(transactionData.invoiceId);
-            return;
-        })
+                this.getInvoiceTransactions(transactionData.invoiceId);
+                return;
+            })
+            transactionsChannel.on(TransactionEventType.Canceled, (transactionData) => {
+
+                if (this.transaction && this.transaction.id === transactionData.id) {
+                    this.transaction = transactionData;
+                }
+
+                this.getInvoiceTransactions(transactionData.invoiceId);
+                return;
+            })
+            transactionsChannel.on(TransactionEventType.Success, (transactionData) => {
+
+                if (this.transaction && this.transaction.id === transactionData.id) {
+                    this.transaction = transactionData;
+                }
+
+                this.getInvoiceTransactions(transactionData.invoiceId);
+                return;
+            })
+
+        }
 
     }
 
