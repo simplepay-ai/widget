@@ -51,6 +51,7 @@ import themesConfig from '../themesConfig.json';
 //@ts-ignore
 import style from "./styles/payment-app.css?inline";
 import axios from "axios";
+import camelcaseKeys from 'camelcase-keys';
 
 @customElement('payment-app')
 export class PaymentApp extends LitElement {
@@ -96,10 +97,22 @@ export class PaymentApp extends LitElement {
     @property({type: String})
     experimental: string = '';
 
+    @property({type: String})
+    serverUrl: string = '';
+
+    @property({type: String})
+    usePolling: string = '';
+
     ///////////////////
 
     @property({attribute: false, type: String})
     private openMode: OpenMode = 'auto';
+
+    @property({attribute: false, type: Boolean})
+    private pollingMode: boolean = false;
+
+    @property({attribute: false, type: Boolean})
+    private customServerMode: boolean = false;
 
     @property({attribute: false, type: Object})
     private openButtonParams: IOpenButton = {
@@ -245,6 +258,9 @@ export class PaymentApp extends LitElement {
         super.connectedCallback();
 
         this.isExperimentalMode = this.experimental === 'true';
+        this.pollingMode = this.usePolling === 'true';
+        console.log('pollingMode', this.pollingMode)
+        this.customServerMode = Boolean(this.serverUrl) && URL.canParse(this.serverUrl);
 
         switch (this.theme) {
             case "light":
@@ -1081,7 +1097,7 @@ export class PaymentApp extends LitElement {
 
         axios.get('https://api.simplepay.ai/id/sessions/whoami', {withCredentials: true})
             .then((response) => {
-                this.user = response.data;
+                this.user = camelcaseKeys(response.data, { deep: true });
                 this.loginLoading = false;
             })
             .catch(() => {
@@ -1099,7 +1115,7 @@ export class PaymentApp extends LitElement {
 
         axios.get('https://api.simplepay.ai/id/sessions/whoami', {withCredentials: true})
             .then((response) => {
-                this.user = response.data;
+                this.user = camelcaseKeys(response.data, { deep: true })
                 this.loginLoading = false;
 
                 // this.saveInvoice();
@@ -1111,25 +1127,61 @@ export class PaymentApp extends LitElement {
     }
 
     private async getUserProfile() {
-        if (this.API && this.user) {
-            try {
-                this.userProfile = await this.API.user.profile.get();
-            } catch (e) {
-                console.log('getUserProfile error', e)
+
+        if(!this.user){
+            return;
+        }
+
+        if(this.customServerMode){
+            const url = this.serverUrl + '/user/profile' + '?v=1';
+            await axios.get(url, {withCredentials: true})
+                .then((response) => {
+                    this.userProfile = camelcaseKeys(response.data, { deep: true })
+                })
+                .catch(() => {
+                    this.userProfile = null;
+                })
+        }else{
+            if (this.API) {
+                try {
+                    this.userProfile = await this.API.user.profile.get();
+                } catch (e) {
+                    console.log('getUserProfile error', e)
+                    this.userProfile = null;
+                }
+            } else {
                 this.userProfile = null;
             }
-        } else {
-            this.userProfile = null;
         }
     }
 
     private async saveInvoice() {
-        if (this.API && this.user) {
-            await (this.API as Client).app.get(this.invoice?.app?.id || '').then(async () => {
-                await (this.API as Client).user.invoice.link({
-                    invoiceId: this.invoice?.id || ''
+
+        if(!this.user){
+            return;
+        }
+
+        if(this.customServerMode){
+            const appUrl = this.serverUrl + `/app/${this.invoice?.app?.id || ''}` + '?v=1';
+            const saveInvoiceUrl = this.serverUrl + `/user/invoice` + '?v=1';
+
+            await axios.post(appUrl, {withCredentials: true})
+                .then(async () => {
+                    await axios.post(saveInvoiceUrl, {
+                        withCredentials: true,
+                        "invoice_id": this.invoice?.id || ''
+                    })
                 })
-            })
+        }else{
+
+            if (this.API) {
+                await (this.API as Client).app.get(this.invoice?.app?.id || '').then(async () => {
+                    await (this.API as Client).user.invoice.link({
+                        invoiceId: this.invoice?.id || ''
+                    })
+                })
+            }
+
         }
     }
 
@@ -1374,24 +1426,31 @@ export class PaymentApp extends LitElement {
     }
 
     private async getApp() {
-        try {
-            return await this.API.app.get(this.appId);
-        } catch (error) {
+
+        if(!this.appId){
             return 'error';
+        }
+
+        if(this.customServerMode){
+
+            const url = this.serverUrl + `/app/${this.appId}` + '?v=1';
+            return await axios.get(url, {withCredentials: true})
+                .then((response) => {
+                    return camelcaseKeys(response.data, { deep: true });
+                })
+
+        }else{
+            try {
+                return await this.API.app.get(this.appId);
+            } catch (error) {
+                return 'error';
+            }
         }
     }
 
     private async getTokens(appId: string) {
-        try {
-            const result: Cryptocurrency[] = await this.API.cryptocurrency.list({
-                appId: appId,
-                networks: true,
-                rates: true
-            });
 
-            return result;
-        } catch (error) {
-
+        if(!appId){
             this.errorTitle = 'Error';
             this.errorText =
                 'Failed to retrieve token data. Please try again later.';
@@ -1399,14 +1458,73 @@ export class PaymentApp extends LitElement {
             this.goToPaymentPageStep('errorStep')
             this.dispatchErrorEvent('Fetch Tokens Error', 'Failed to retrieve token data. Please try again later.');
         }
+
+        if(this.customServerMode){
+
+            const url = this.serverUrl + '/cryptocurrency' + `?v=1&app_id=${appId}&networks=true&rates=true`;
+            const result = await axios.get(url, {withCredentials: true})
+                .then((response) => {
+                    return camelcaseKeys(response.data, { deep: true });
+                })
+                .catch(() => {
+                    this.errorTitle = 'Error';
+                    this.errorText =
+                        'Failed to retrieve token data. Please try again later.';
+                    this.goToWidgetStep('errorStep');
+                    this.goToPaymentPageStep('errorStep')
+                    this.dispatchErrorEvent('Fetch Tokens Error', 'Failed to retrieve token data. Please try again later.');
+                })
+
+            return result as Cryptocurrency[];
+
+        }else{
+            try {
+                const result: Cryptocurrency[] = await this.API.cryptocurrency.list({
+                    appId: appId,
+                    networks: true,
+                    rates: true
+                });
+
+                return result;
+            } catch (error) {
+                this.errorTitle = 'Error';
+                this.errorText =
+                    'Failed to retrieve token data. Please try again later.';
+                this.goToWidgetStep('errorStep');
+                this.goToPaymentPageStep('errorStep')
+                this.dispatchErrorEvent('Fetch Tokens Error', 'Failed to retrieve token data. Please try again later.');
+            }
+        }
     }
 
     private async getProducts() {
-        try {
-            const result: Product[] = await this.API.product.list(this.appId);
-            return result;
-        } catch (error) {
+
+        if(!this.appId){
             return 'error';
+        }
+
+        if(this.customServerMode){
+
+            const url = this.serverUrl + '/product' + `?v=1&app_id=${this.appId}`;
+            const result =  await axios.get(url, {withCredentials: true})
+                .then((response) => {
+                    return camelcaseKeys(response.data, { deep: true });
+                })
+                .catch(() => {
+                    return 'error';
+                })
+
+            return result as Product[];
+
+        }else{
+
+            try {
+                const result: Product[] = await this.API.product.list(this.appId);
+                return result;
+            } catch (error) {
+                return 'error';
+            }
+
         }
     }
 
@@ -1440,36 +1558,95 @@ export class PaymentApp extends LitElement {
         this.creatingInvoice = true;
 
         const invoiceParams: any = {
-            appId: this.appId,
-            type: 'payment',
-            clientId: this.clientId,
-            currency: 'USD',
+            "app_id": this.appId,
+            "type": 'payment',
+            "client_id": this.clientId,
+            "currency": 'USD',
         }
 
         switch (this.invoiceType) {
             case "request":
-                invoiceParams.total = Number(this.invoicePrice);
+                invoiceParams['total'] = Number(this.invoicePrice);
                 break;
             case "item":
-                invoiceParams.products = [{
+                invoiceParams['products'] = [{
                     id: this.invoiceProductId,
                     count: 1
                 }]
                 break;
             case "cart":
-                invoiceParams.products = this.invoiceCart;
+                invoiceParams['products'] = this.invoiceCart;
                 break;
             default:
                 return;
         }
 
-        try {
-            const invoice = await this.API.invoice.create(invoiceParams, true);
-            const fullInvoice = await this.API.invoice.get(invoice.id, true);
+        if(this.customServerMode){
 
-            if (fullInvoice.id) {
-                this.newAppInvoice = fullInvoice;
-                this.dispatchInvoiceCreatedEvent(fullInvoice.id);
+            const createInvoiceUrl = this.serverUrl + '/invoice' + '?v=2';
+            let invoiceResult: any, fullInvoiceResult: any;
+
+            await axios.post(createInvoiceUrl, {
+                withCredentials: true,
+                ...invoiceParams
+            })
+                .then((response) => {
+                    invoiceResult = camelcaseKeys(response.data, { deep: true });
+                })
+                .then(async () => {
+
+                    const getInvoiceUrl = this.serverUrl + `/invoice/${invoiceResult.id}` + '?v=2&app=true';
+                    await axios.get(getInvoiceUrl, {withCredentials: true})
+                        .then((response) => {
+                            fullInvoiceResult = camelcaseKeys(response.data, { deep: true });
+                        })
+                        .catch((e) => {
+                            if (e instanceof ValidationError) {
+                                const error = e as ValidationError<InvoiceCreateErrors>;
+                                console.log(error.errors);
+                            }
+
+                            if (e instanceof HttpError) {
+                                const error = e as HttpError;
+                                console.log(error.code);
+                            }
+
+                            this.notificationData = {
+                                title: 'Invoice create failed',
+                                text: 'Failed to create invoice. Please, try again later',
+                                buttonText: 'Confirm'
+                            };
+                            this.notificationShow = true;
+                            this.creatingInvoice = false;
+                        })
+
+                })
+                .catch((e) => {
+                    if (e instanceof ValidationError) {
+                        const error = e as ValidationError<InvoiceCreateErrors>;
+                        console.log(error.errors);
+                    }
+
+                    if (e instanceof HttpError) {
+                        const error = e as HttpError;
+                        console.log(error.code);
+                    }
+
+                    this.notificationData = {
+                        title: 'Invoice create failed',
+                        text: 'Failed to create invoice. Please, try again later',
+                        buttonText: 'Confirm'
+                    };
+                    this.notificationShow = true;
+                    this.creatingInvoice = false;
+                })
+
+            const invoice = (fullInvoiceResult) ? fullInvoiceResult as Invoice : null;
+
+            if (invoice && invoice?.id) {
+
+                this.newAppInvoice = invoice;
+                this.dispatchInvoiceCreatedEvent(invoice.id);
 
                 this.goToWidgetStep('createdInvoiceStep');
 
@@ -1478,25 +1655,45 @@ export class PaymentApp extends LitElement {
                 this.invoiceProductId = '';
                 this.invoiceCart = [];
             }
-        } catch (e) {
 
-            if (e instanceof ValidationError) {
-                const error = e as ValidationError<InvoiceCreateErrors>;
-                console.log(error.errors);
+        }else{
+
+            try {
+                const invoice = await this.API.invoice.create(invoiceParams, true);
+                const fullInvoice = await this.API.invoice.get(invoice.id, true);
+
+                if (fullInvoice.id) {
+                    this.newAppInvoice = fullInvoice;
+                    this.dispatchInvoiceCreatedEvent(fullInvoice.id);
+
+                    this.goToWidgetStep('createdInvoiceStep');
+
+                    this.creatingInvoice = false;
+                    this.invoicePrice = '0';
+                    this.invoiceProductId = '';
+                    this.invoiceCart = [];
+                }
+            } catch (e) {
+
+                if (e instanceof ValidationError) {
+                    const error = e as ValidationError<InvoiceCreateErrors>;
+                    console.log(error.errors);
+                }
+
+                if (e instanceof HttpError) {
+                    const error = e as HttpError;
+                    console.log(error.code);
+                }
+
+                this.notificationData = {
+                    title: 'Invoice create failed',
+                    text: 'Failed to create invoice. Please, try again later',
+                    buttonText: 'Confirm'
+                };
+                this.notificationShow = true;
+                this.creatingInvoice = false;
+
             }
-
-            if (e instanceof HttpError) {
-                const error = e as HttpError;
-                console.log(error.code);
-            }
-
-            this.notificationData = {
-                title: 'Invoice create failed',
-                text: 'Failed to create invoice. Please, try again later',
-                buttonText: 'Confirm'
-            };
-            this.notificationShow = true;
-            this.creatingInvoice = false;
 
         }
 
@@ -1507,34 +1704,68 @@ export class PaymentApp extends LitElement {
         this.creatingTransaction = true;
 
         const transactionParams = {
-            invoiceId: this.invoice?.id,
-            from: this.walletAddress,
-            network: this.selectedNetwork?.symbol,
-            cryptocurrency: this.selectedToken?.symbol
+            "invoice_id": this.invoice?.id,
+            "from": this.walletAddress,
+            "network": this.selectedNetwork?.symbol,
+            "cryptocurrency": this.selectedToken?.symbol
         }
 
-        try {
+        if(this.customServerMode){
 
-            this.transaction = await this.API.transaction.create(transactionParams);
+            const url = this.serverUrl + '/transaction' + '?v=1';
+            const result = await axios.post(url, {
+                withCredentials: true,
+                ...transactionParams
+            })
+                .then((response) => {
+                    return camelcaseKeys(response.data, { deep: true });
+                })
+                .catch((e) => {
+                    if (e instanceof ValidationError) {
+                        const error = e as ValidationError<TransactionCreateErrors>;
+                        console.log(error.errors);
+                    }
 
-        } catch (e) {
-            if (e instanceof ValidationError) {
-                const error = e as ValidationError<TransactionCreateErrors>;
-                console.log(error.errors);
+                    if (e instanceof HttpError) {
+                        const error = e as HttpError;
+                        console.log(error.code);
+                    }
+
+                    this.notificationData = {
+                        title: 'Transaction create failed',
+                        text: 'Failed to create transaction. Please, try again later',
+                        buttonText: 'Confirm'
+                    };
+                    this.notificationShow = true;
+                    this.creatingTransaction = false;
+                })
+
+            if(result){
+                this.transaction = result as Transaction;
             }
 
-            if (e instanceof HttpError) {
-                const error = e as HttpError;
-                console.log(error.code);
-            }
+        }else{
+            try {
+                this.transaction = await this.API.transaction.create(transactionParams);
+            } catch (e) {
+                if (e instanceof ValidationError) {
+                    const error = e as ValidationError<TransactionCreateErrors>;
+                    console.log(error.errors);
+                }
 
-            this.notificationData = {
-                title: 'Transaction create failed',
-                text: 'Failed to create transaction. Please, try again later',
-                buttonText: 'Confirm'
-            };
-            this.notificationShow = true;
-            this.creatingTransaction = false;
+                if (e instanceof HttpError) {
+                    const error = e as HttpError;
+                    console.log(error.code);
+                }
+
+                this.notificationData = {
+                    title: 'Transaction create failed',
+                    text: 'Failed to create transaction. Please, try again later',
+                    buttonText: 'Confirm'
+                };
+                this.notificationShow = true;
+                this.creatingTransaction = false;
+            }
         }
 
         if (this.user) {
@@ -1557,46 +1788,92 @@ export class PaymentApp extends LitElement {
             return;
         }
 
-        try {
+        if(this.customServerMode){
+
             this.cancelingTransaction = true;
-            await this.API.transaction.cancel(this.transaction?.id)
-        } catch (error) {
 
-            this.notificationData = {
-                title: 'Error',
-                text: 'Failed to cancel the invoice. Please try again later.',
-                buttonText: 'Confirm'
-            };
-            this.cancelingTransaction = false;
-            this.dispatchErrorEvent('Invoice Canceling Error', 'Failed to cancel the invoice. Please try again later.');
-            return;
+            const url = this.serverUrl + `/transaction/${this.transaction?.id}` + '?v=1';
+            await axios.delete(url, {withCredentials: true})
+                .catch(() => {
+                    this.notificationData = {
+                        title: 'Error',
+                        text: 'Failed to cancel the invoice. Please try again later.',
+                        buttonText: 'Confirm'
+                    };
+                    this.cancelingTransaction = false;
+                    this.dispatchErrorEvent('Invoice Canceling Error', 'Failed to cancel the invoice. Please try again later.');
+                    return;
+                })
 
+        }else{
+            try {
+                this.cancelingTransaction = true;
+                await this.API.transaction.cancel(this.transaction?.id)
+            } catch (error) {
+
+                this.notificationData = {
+                    title: 'Error',
+                    text: 'Failed to cancel the invoice. Please try again later.',
+                    buttonText: 'Confirm'
+                };
+                this.cancelingTransaction = false;
+                this.dispatchErrorEvent('Invoice Canceling Error', 'Failed to cancel the invoice. Please try again later.');
+                return;
+
+            }
         }
     }
 
     private async getInvoice(invoiceId: string) {
-        try {
-            this.invoice = await this.API.invoice.get(invoiceId, true);
-        } catch (e) {
+
+        if(!invoiceId){
             return 'error';
+        }
+
+        if(this.customServerMode){
+
+            const url = this.serverUrl + `/invoice/${invoiceId}` + '?v=2&app=true';
+            await axios.get(url, {withCredentials: true})
+                .then((response) => {
+                    this.invoice = camelcaseKeys(response.data, { deep: true })
+                })
+                .catch(() => {
+                    return 'error';
+                })
+
+        }else{
+            try {
+                this.invoice = await this.API.invoice.get(invoiceId, true);
+            } catch (e) {
+                return 'error';
+            }
         }
     }
 
     private async getTransaction(transactionId: string) {
-        try {
-            this.transaction = await this.API.transaction.get(transactionId);
-        } catch (e) {
+
+        if(!transactionId){
             return 'error';
+        }
+
+        if(this.customServerMode){
+            const url = this.serverUrl + `/transaction/${transactionId}` + '?v=1';
+            this.transaction = await axios.get(url, {withCredentials: true})
+                .then((response) => {
+                    return camelcaseKeys(response.data, { deep: true });
+                })
+        }else{
+            try {
+                this.transaction = await this.API.transaction.get(transactionId);
+            } catch (e) {
+                return 'error';
+            }
         }
     }
 
     private async getInvoiceTransactions(invoiceId: string) {
 
-        try {
-            this.invoiceTransactions = await this.API.transaction.list({
-                invoiceId
-            })
-        } catch (e) {
+        if(!invoiceId){
             this.notificationData = {
                 title: 'Get Invoice Transactions Failed',
                 text: 'Failed to retrieve transactions of invoice.',
@@ -1605,6 +1882,45 @@ export class PaymentApp extends LitElement {
             this.notificationShow = true;
 
             this.dispatchErrorEvent('Fetch Invoice Transactions Error', 'Failed to retrieve transactions of invoice.');
+
+            return;
+        }
+
+        if(this.customServerMode){
+
+            const url = this.serverUrl + '/transaction' + `?v=1&invoice_id=${invoiceId}`;
+            await axios.get(url, {withCredentials: true})
+                .then((response) => {
+                    this.invoiceTransactions = camelcaseKeys(response.data, { deep: true })
+                })
+                .catch(() => {
+                    this.notificationData = {
+                        title: 'Get Invoice Transactions Failed',
+                        text: 'Failed to retrieve transactions of invoice.',
+                        buttonText: 'Confirm'
+                    };
+                    this.notificationShow = true;
+
+                    this.dispatchErrorEvent('Fetch Invoice Transactions Error', 'Failed to retrieve transactions of invoice.');
+                })
+
+        }else{
+
+            try {
+                this.invoiceTransactions = await this.API.transaction.list({
+                    invoiceId
+                })
+            } catch (e) {
+                this.notificationData = {
+                    title: 'Get Invoice Transactions Failed',
+                    text: 'Failed to retrieve transactions of invoice.',
+                    buttonText: 'Confirm'
+                };
+                this.notificationShow = true;
+
+                this.dispatchErrorEvent('Fetch Invoice Transactions Error', 'Failed to retrieve transactions of invoice.');
+            }
+
         }
 
     }

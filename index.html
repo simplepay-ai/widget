@@ -21,38 +21,30 @@
     }
 
     .appContainer{
+        margin: 0 auto;
         width: 100%;
-        height: 100%;
+        height: 700px;
+        max-width: 390px;
+        min-width: 390px;
+        border-radius: 6px;
+        overflow: hidden;
     }
 
-    //.appContainer{
-    //    margin: 0 auto;
-    //    width: 100%;
-    //    height: 700px;
-    //    max-width: 390px;
-    //    min-width: 390px;
-    //    border-radius: 6px;
-    //    overflow: hidden;
-    //}
-    //
-    //@media (max-width: 768px) {
-    //    .appContainer{
-    //        height: 100%;
-    //        max-width: unset;
-    //        border-radius: 0;
-    //        border: 0;
-    //    }
-    //}
-
+    @media (max-width: 768px) {
+        .appContainer{
+            height: 100%;
+            max-width: unset;
+            border-radius: 0;
+            border: 0;
+        }
+    }
 </style>
 
 <div class="appContainer">
     <payment-app
             theme="dark"
             invoiceId="2bbc5092-f174-41b7-8093-1c66ed136703"
-            viewMode="paymentPage"
     />
-
 
     <!--    theme="light"-->
 
@@ -72,6 +64,9 @@
     <!--    experimental="true"-->
 
     <!--    tokenSymbol="ETH" networkSymbol="ethereum"-->
+
+    <!--    serverUrl="https://api.simplepay.ai"-->
+    <!--    usePolling="true"-->
 
 </div>
 
