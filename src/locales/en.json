@@ -105,6 +105,41 @@
         }
     },
 
+    "invoiceInfo": {
+        "status": "Status",
+        "dateCreate": "Created Date",
+        "dateUpdate": "Last Update",
+        "amountTotal": "Total amount",
+        "amountLeft": "Left",
+        "productTotal": "total",
+        "productEach": "each",
+        "loginTitle": "Login as"
+    },
+    "tokenSelectForm": {
+        "selectedTokenTitle": "Selected Token",
+        "selectTokenTitle": "Select Token",
+        "tokensListTitle": "Tokens list",
+        "filterPlaceholder": "Search token",
+        "allNetworks": "All chains",
+        "amountToken": "Amount",
+        "emptyMessage": "No tokens are currently available in this store, but you can add them to get started!",
+        "addButton": "Add tokens",
+        "noFoundMessage": "No tokens found"
+    },
+    "addressForm": {
+        "connectWalletTitle": "Connect Wallet Address",
+        "enterAddressTitle": "Enter Wallet Address",
+        "addressResultTitle": "Connected by",
+        "injectedWallet": "Injected",
+        "injectedWalletResult": "Injected Wallet",
+        "customWallet": "By wallet address",
+        "customWalletResult": "Custom Wallet",
+        "selectTokenMessage": "To connect a wallet address, please select the token you want to use for payment first",
+        "addressInputPlaceholder": "Enter your %{networkSymbol} address",
+        "addressInputText": "Enter the address of the wallet you will use to complete the payment. We need this to track and verify the on-chain transaction as our service is fully decentralized",
+        "addressResult": "Address"
+    },
+
     "footer": {
         "total": "Total",
         "productsCount": "Items",
@@ -228,11 +263,12 @@
     "buttons": {
         "back": "Back",
         "create": "Create",
+        "createTransaction": "Create Transaction",
         "next": "Next",
         "confirm": "Confirm",
         "createInvoice": "Create new invoice",
         "login": "Login",
-        "activeTransaction": "To active transaction",
+        "activeTransaction": "To Active Transaction",
         "cancelTransaction": "Cancel transaction",
         "selectAddress": "Select address",
         "no": "No",
@@ -241,7 +277,9 @@
         "copied": "Copied",
         "pay": "Pay",
         "backToStore": "Back to Store",
-        "makePayment": "Make payment"
+        "makePayment": "Make payment",
+        "history": "Transactions History",
+        "change": "Change"
     },
     "loaders": {
         "creatingInvoice": "Creating invoice",

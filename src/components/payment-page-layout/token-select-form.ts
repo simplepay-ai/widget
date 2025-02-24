@@ -5,6 +5,7 @@ import style from "../../styles/payment-page-styles/token-select-form.css?inline
 import {TokenSelectMode} from "../../lib/types.ts";
 import {getTokenStandart, roundUpAmount} from "../../lib/util.ts";
 import {Cryptocurrency, Invoice, Network} from "@simplepay-ai/api-client";
+import {I18n} from "i18n-js";
 
 interface NetworkOption {
     value: string;
@@ -15,6 +16,9 @@ interface NetworkOption {
 export class TokenSelectForm extends LitElement {
 
     static styles = unsafeCSS(style);
+
+    @property({type: Object})
+    i18n: I18n | null = null;
 
     @property({type: Object})
     invoice: Invoice | null = null;
@@ -127,7 +131,6 @@ export class TokenSelectForm extends LitElement {
         if (changedProperties.has('invoice') && this.invoice) {
             const left = Number(this.invoice?.total!) - Number(this.invoice?.paid!)
             this.leftAmount = (left < 0) ? 0 : left;
-            // this.leftAmount = Number(this.invoice?.total!) - Number(this.invoice?.paid!);
         }
 
         if (changedProperties.has('tokenSearch')) {
@@ -180,7 +183,7 @@ export class TokenSelectForm extends LitElement {
                                     <div class="selectedToken">
                                         <div class="header">
                                             <p class="title">
-                                                Selected Token
+                                                ${this.i18n?.t('tokenSelectForm.selectedTokenTitle')}
                                             </p>
 
                                             ${
@@ -196,7 +199,7 @@ export class TokenSelectForm extends LitElement {
                                                                         <path d="m15 5 4 4"/>
                                                                     </svg>
 
-                                                                    Change
+                                                                    ${this.i18n?.t('buttons.change')}
                                                                 </button>
                                                             ` : ''
                                             }
@@ -204,7 +207,7 @@ export class TokenSelectForm extends LitElement {
 
                                         <div class="tokenInfo">
                                             <div class="amountInfo">
-                                                <p>Amount</p>
+                                                <p>${this.i18n?.t('tokenSelectForm.amountToken')}</p>
                                                 <p>${`${this.tokenPrice} ${this.selectedToken?.symbol}`}</p>
                                             </div>
                                             <div class="cryptoInfo">
@@ -277,7 +280,8 @@ export class TokenSelectForm extends LitElement {
                                             <p class="title">
                                                 ${
                                                         (this.selectedToken)
-                                                                ? 'Tokens list' : 'Select Token'
+                                                                ? this.i18n?.t('tokenSelectForm.tokensListTitle')
+                                                                : this.i18n?.t('tokenSelectForm.selectTokenTitle')
                                                 }
                                             </p>
                                         </div>
@@ -291,7 +295,7 @@ export class TokenSelectForm extends LitElement {
                                                         @input=${(event: CustomEvent | any) => {
                                                             this.tokenSearch = event.target.value;
                                                         }}
-                                                        placeholder= ${`Search token`}
+                                                        placeholder=${ this.i18n?.t('tokenSelectForm.filterPlaceholder') }
                                                 />
                                             </div>
 
@@ -305,7 +309,7 @@ export class TokenSelectForm extends LitElement {
                                                     <option value=""
                                                             selected
                                                     >
-                                                        All chains
+                                                        ${this.i18n?.t('tokenSelectForm.allNetworks')}
                                                     </option>
                                                     ${
                                                             this.networksList &&
@@ -327,12 +331,10 @@ export class TokenSelectForm extends LitElement {
                                                     (this.tokensEmpty)
                                                             ? html`
                                                                 <div class="emptyTokens">
-                                                                    <p>No tokens are currently available in this store, but you can add
-                                                                        them
-                                                                        to get started!</p>
+                                                                    <p>${this.i18n?.t('tokenSelectForm.emptyMessage')}</p>
 
                                                                     <a href="https://console.simplepay.ai/settings/tokens-edit">
-                                                                        Add tokens
+                                                                        ${this.i18n?.t('tokenSelectForm.addButton')}
                                                                     </a>
                                                                 </div>
                                                             `
@@ -423,7 +425,7 @@ export class TokenSelectForm extends LitElement {
                                                                                 :
                                                                                 html`
                                                                                     <div class="tokensEmpty">
-                                                                                        <p>No tokens found</p>
+                                                                                        <p>${this.i18n?.t('tokenSelectForm.noFoundMessage')}</p>
                                                                                     </div>
                                                                                 `
                                                                 }

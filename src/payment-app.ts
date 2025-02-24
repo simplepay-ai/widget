@@ -795,6 +795,7 @@ export class PaymentApp extends LitElement {
                             <div class="leftSection">
 
                                 <invoice-info
+                                        .i18n=${this.i18n}
                                         .theme=${this.theme}
                                         .currentStep=${this.paymentPageStep}
                                         .invoice=${this.invoice}
@@ -844,13 +845,14 @@ export class PaymentApp extends LitElement {
                                                                                         />
                                                                                     </svg>
 
-                                                                                    <p>Creating transaction ...</p>
+                                                                                    <p>${`${this.i18n?.t('loaders.creatingTransaction')} ...`}</p>
                                                                                 </div>
 
                                                                             </div>
                                                                         ` :
                                                                         html`
                                                                             <token-select-form
+                                                                                    .i18n=${this.i18n}
                                                                                     .tokens=${this.tokens}
                                                                                     .invoice=${this.invoice}
                                                                                     .selectedToken=${this.selectedToken}
@@ -863,6 +865,7 @@ export class PaymentApp extends LitElement {
                                                                             ></token-select-form>
 
                                                                             <address-form
+                                                                                    .i18n=${this.i18n}
                                                                                     .walletAddress=${this.walletAddress}
                                                                                     .walletType=${this.walletType}
                                                                                     .selectedToken=${this.selectedToken}

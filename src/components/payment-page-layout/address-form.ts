@@ -21,11 +21,15 @@ import {
 } from "@wagmi/core";
 import {arbitrum, avalanche, base, bsc, mainnet, optimism, polygon, zksync} from "@wagmi/core/chains";
 import {coinbaseWallet, metaMask, walletConnect} from "@wagmi/connectors";
+import {I18n} from "i18n-js";
 
 @customElement('address-form')
 export class AddressForm extends LitElement {
 
     static styles = unsafeCSS(style);
+
+    @property({type: Object})
+    i18n: I18n | null = null;
 
     @property({type: String})
     theme: AppTheme = 'light';
@@ -133,9 +137,9 @@ export class AddressForm extends LitElement {
                     const options = {
                         detail: {
                             notificationData: {
-                                title: 'Wallet Connection Not Confirmed',
-                                text: 'The wallet connection was not confirmed. Please try again to continue.',
-                                buttonText: 'Confirm'
+                                title: this.i18n?.t('errors.walletConnectionNotConfirmed.title'),
+                                text: this.i18n?.t('errors.walletConnectionNotConfirmed.text'),
+                                buttonText: this.i18n?.t('buttons.confirm')
                             },
                             notificationShow: true
                         },
@@ -176,9 +180,9 @@ export class AddressForm extends LitElement {
                     const options = {
                         detail: {
                             notificationData: {
-                                title: 'Wallet Connection Not Confirmed',
-                                text: 'The wallet connection was not confirmed. Please try again to continue.',
-                                buttonText: 'Confirm'
+                                title: this.i18n?.t('errors.walletConnectionNotConfirmed.title'),
+                                text: this.i18n?.t('errors.walletConnectionNotConfirmed.text'),
+                                buttonText: this.i18n?.t('buttons.confirm')
                             },
                             notificationShow: true
                         },
@@ -237,9 +241,9 @@ export class AddressForm extends LitElement {
                     const options = {
                         detail: {
                             notificationData: {
-                                title: 'Wallet Connection Not Confirmed',
-                                text: 'The wallet connection was not confirmed. Please try again to continue.',
-                                buttonText: 'Confirm'
+                                title: this.i18n?.t('errors.walletConnectionNotConfirmed.title'),
+                                text: this.i18n?.t('errors.walletConnectionNotConfirmed.text'),
+                                buttonText: this.i18n?.t('buttons.confirm')
                             },
                             notificationShow: true
                         },
@@ -294,9 +298,9 @@ export class AddressForm extends LitElement {
                     const options = {
                         detail: {
                             notificationData: {
-                                title: 'Wallet Connection Not Confirmed',
-                                text: 'The wallet connection was not confirmed. Please try again to continue.',
-                                buttonText: 'Confirm'
+                                title: this.i18n?.t('errors.walletConnectionNotConfirmed.title'),
+                                text: this.i18n?.t('errors.walletConnectionNotConfirmed.text'),
+                                buttonText: this.i18n?.t('buttons.confirm')
                             },
                             notificationShow: true
                         },
@@ -367,9 +371,9 @@ export class AddressForm extends LitElement {
                     const options = {
                         detail: {
                             notificationData: {
-                                title: 'Wallet Connection Not Confirmed',
-                                text: 'The wallet connection was not confirmed. Please try again to continue.',
-                                buttonText: 'Confirm'
+                                title: this.i18n?.t('errors.walletConnectionNotConfirmed.title'),
+                                text: this.i18n?.t('errors.walletConnectionNotConfirmed.text'),
+                                buttonText: this.i18n?.t('buttons.confirm')
                             },
                             notificationShow: true
                         },
@@ -435,9 +439,9 @@ export class AddressForm extends LitElement {
                     const options = {
                         detail: {
                             notificationData: {
-                                title: 'Wallet Connection Not Confirmed',
-                                text: ['The wallet connection was not confirmed. Please try again to continue.', 'Maybe your wallet extension is inactive in browser. Activate it by clicking on its icon in your browser.'],
-                                buttonText: 'Confirm'
+                                title: this.i18n?.t('errors.walletConnectionNotConfirmed.title'),
+                                text: this.i18n?.t('errors.walletConnectionNotConfirmed.text'),
+                                buttonText: this.i18n?.t('buttons.confirm')
                             },
                             notificationShow: true
                         },
@@ -461,9 +465,9 @@ export class AddressForm extends LitElement {
             const options = {
                 detail: {
                     notificationData: {
-                        title: 'Connection Failed',
-                        text: 'Unable to establish a connection with the wallet connector. Please check your wallet and try again.',
-                        buttonText: 'Confirm'
+                        title: this.i18n?.t('errors.walletConnectionFailed.title'),
+                        text: this.i18n?.t('errors.walletConnectionFailed.text'),
+                        buttonText: this.i18n?.t('buttons.confirm')
                     },
                     notificationShow: true
                 },
@@ -484,9 +488,9 @@ export class AddressForm extends LitElement {
             const options = {
                 detail: {
                     notificationData: {
-                        title: 'No Wallet Addresses Found',
-                        text: 'No addresses were found in your wallet. Please add an address or try connecting a different wallet.',
-                        buttonText: 'Confirm'
+                        title: this.i18n?.t('errors.noAddress.title'),
+                        text: this.i18n?.t('errors.noAddress.text'),
+                        buttonText: this.i18n?.t('buttons.confirm')
                     },
                     notificationShow: true
                 },
@@ -533,7 +537,7 @@ export class AddressForm extends LitElement {
 
         if (!checkWalletAddress(this.customAddressValue, this.selectedNetwork?.type || '')) {
 
-            this.customAddressErrorText = 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.';
+            this.customAddressErrorText = this.i18n?.t('errors.walletAddressInvalid.text') || '';
             this.showCustomAddressErrorError = true;
 
             return;
@@ -666,9 +670,9 @@ export class AddressForm extends LitElement {
                         const options = {
                             detail: {
                                 notificationData: {
-                                    title: 'No Wallet Addresses Found',
-                                    text: 'No addresses were found in your wallet. Please add an address or try connecting a different wallet.',
-                                    buttonText: 'Confirm'
+                                    title: this.i18n?.t('errors.noAddress.title'),
+                                    text: this.i18n?.t('errors.noAddress.text'),
+                                    buttonText: this.i18n?.t('buttons.confirm')
                                 },
                                 notificationShow: true
                             },
@@ -701,9 +705,9 @@ export class AddressForm extends LitElement {
                         const options = {
                             detail: {
                                 notificationData: {
-                                    title: 'No Wallet Addresses Found',
-                                    text: 'No addresses were found in your wallet. Please add an address or try connecting a different wallet.',
-                                    buttonText: 'Confirm'
+                                    title: this.i18n?.t('errors.noAddress.title'),
+                                    text: this.i18n?.t('errors.noAddress.text'),
+                                    buttonText: this.i18n?.t('buttons.confirm')
                                 },
                                 notificationShow: true
                             },
@@ -866,7 +870,7 @@ export class AddressForm extends LitElement {
                                                 (this.selectedNetwork)
                                                         ? html`
                                                             <p class="title">
-                                                                Connect Wallet Address
+                                                                ${this.i18n?.t('addressForm.connectWalletTitle')}
                                                             </p>
 
                                                             <div class="connectorsList">
@@ -1125,7 +1129,7 @@ export class AddressForm extends LitElement {
                                                                      ${(this.connectingInProcess && this.connectingType !== 'Injected') ? 'waiting' : ''}
                                                                      `}
                                                                                     >
-                                                                                        <p>Injected</p>
+                                                                                        <p>${this.i18n?.t('addressForm.injectedWallet')}</p>
                                                                                         <svg class="typeIcon" xmlns="http://www.w3.org/2000/svg"
                                                                                              width="24"
                                                                                              height="24"
@@ -1245,7 +1249,7 @@ export class AddressForm extends LitElement {
                                                                  `}
                                                                      @click=${() => this.selectWalletType('Custom')}
                                                                 >
-                                                                    <p>By wallet address</p>
+                                                                    <p>${this.i18n?.t('addressForm.customWallet')}</p>
                                                                     <svg class="typeIcon" xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24"
                                                                          viewBox="0 0 24 24"
@@ -1261,8 +1265,7 @@ export class AddressForm extends LitElement {
                                                         `
                                                         : html`
                                                             <div class="selectToken">
-                                                                <p>To connect a wallet address, please select the token you want to use
-                                                                    for payment first</p>
+                                                                <p>${this.i18n?.t('addressForm.selectTokenMessage')}</p>
                                                             </div>
                                                         `
                                         }
@@ -1297,7 +1300,7 @@ export class AddressForm extends LitElement {
                                             </button>
 
                                             <p class="title">
-                                                Enter Wallet Address
+                                                ${this.i18n?.t('addressForm.enterAddressTitle')}
                                             </p>
                                         </div>
 
@@ -1309,7 +1312,7 @@ export class AddressForm extends LitElement {
                                                             type="text"
                                                             value=${this.customAddressValue}
                                                             @input=${this.inputHandler}
-                                                            placeholder=${`Enter your ${this.selectedNetwork?.symbol} address`}
+                                                            placeholder=${this.i18n?.t('addressForm.addressInputPlaceholder', { networkSymbol: this.selectedNetwork?.symbol })}
                                                     />
 
                                                     <div class="pasteButton" @click=${() => this.pasteData()}>
@@ -1349,7 +1352,7 @@ export class AddressForm extends LitElement {
                                                     ${
                                                             (this.showCustomAddressErrorError)
                                                                     ? this.customAddressErrorText
-                                                                    : 'Enter the address of the wallet you will use to complete the payment. We need this to track and verify the on-chain transaction as our service is fully decentralized'
+                                                                    : this.i18n?.t('addressForm.addressInputText')
                                                     }
                                                 </p>
                                             </div>
@@ -1358,7 +1361,7 @@ export class AddressForm extends LitElement {
                                                     @click=${this.selectCustomWallet}
                                                     .disabled=${this.showCustomAddressErrorError || this.customAddressValue.trim() === ''}
                                             >
-                                                Select address
+                                                ${this.i18n?.t('buttons.selectAddress')}
                                             </button>
                                         </div>
                                     </div>
@@ -1373,11 +1376,11 @@ export class AddressForm extends LitElement {
                                         <div class="header">
                                             <div class="connectedInfo">
 
-                                                <p>Connected by</p>
+                                                <p>${this.i18n?.t('addressForm.addressResultTitle')}</p>
                                                 ${
                                                         (this.walletType === 'Custom')
                                                                 ? html`
-                                                                    <p>Custom Wallet</p>
+                                                                    <p>${this.i18n?.t('addressForm.customWalletResult')}</p>
                                                                     <div class="icon customWalletIcon">
                                                                         <svg class="typeIcon" xmlns="http://www.w3.org/2000/svg"
                                                                              width="24"
@@ -1463,7 +1466,7 @@ export class AddressForm extends LitElement {
                                                 ${
                                                         (this.walletType === 'Injected')
                                                                 ? html`
-                                                                    <p>Injected Wallet</p>
+                                                                    <p>${this.i18n?.t('addressForm.injectedWalletResult')}</p>
                                                                     <div class="icon injectedIcon">
                                                                         <svg class="typeIcon" xmlns="http://www.w3.org/2000/svg"
                                                                              width="24"
@@ -1652,12 +1655,12 @@ export class AddressForm extends LitElement {
                                                     <path d="m15 5 4 4"/>
                                                 </svg>
 
-                                                Change
+                                                ${this.i18n?.t('buttons.change')}
                                             </button>
                                         </div>
 
                                         <div class="addressInfo">
-                                            <p>Address</p>
+                                            <p>${this.i18n?.t('addressForm.addressResult')}</p>
                                             <p>${this.walletAddress}</p>
                                         </div>
 

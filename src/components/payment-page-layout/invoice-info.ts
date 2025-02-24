@@ -2,15 +2,19 @@ import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 //@ts-ignore
 import style from "../../styles/payment-page-styles/invoice-info.css?inline";
-import {Invoice, InvoiceProduct, UserProfile} from "@simplepay-ai/api-client";
+import {Invoice, InvoiceProduct, InvoiceStatus, TransactionStatus, UserProfile} from "@simplepay-ai/api-client";
 //@ts-ignore
 import logo from "../../assets/logo.jpg";
 import {AppTheme, PaymentPageStep} from "../../lib/types.ts";
+import {I18n} from "i18n-js";
 
 @customElement('invoice-info')
 export class InvoiceInfo extends LitElement {
 
     static styles = unsafeCSS(style);
+
+    @property({type: Object})
+    i18n: I18n | null = null;
 
     @property({type: String})
     theme: AppTheme = 'light';
@@ -95,7 +99,7 @@ export class InvoiceInfo extends LitElement {
         }
 
         if (this.user && !this.user?.identity?.traits?.email && this.user?.authentication_methods.length > 0 && this.user?.authentication_methods[0].provider === "telegram") {
-            return 'Telegram Account';
+            return this.i18n?.t('user.telegram');
         }
 
     }
@@ -128,6 +132,21 @@ export class InvoiceInfo extends LitElement {
         });
 
         this.dispatchEvent(changeTransactionStepEvent);
+    }
+
+    private getLocaliseInvoiceStatus(status: InvoiceStatus) {
+        switch (status) {
+            case InvoiceStatus.Active:
+                return this.i18n?.t('invoiceStatus.active');
+            case InvoiceStatus.Closed:
+                return this.i18n?.t('invoiceStatus.closed');
+            case InvoiceStatus.Canceled:
+                return this.i18n?.t('invoiceStatus.canceled');
+            case InvoiceStatus.Success:
+                return this.i18n?.t('invoiceStatus.success');
+            default:
+                return '';
+        }
     }
 
     render() {
@@ -177,17 +196,17 @@ export class InvoiceInfo extends LitElement {
                     <div>
                         <div class="infoRow">
                             <p class="infoTitle">
-                                Status
+                                ${this.i18n?.t('invoiceInfo.status')}
                             </p>
                             <div class=${`infoValue ${this.invoice?.status}`}>
                                 <div class="circle"></div>
-                                ${this.invoice?.status}
+                                ${this.getLocaliseInvoiceStatus(this.invoice?.status!)}
                             </div>
                         </div>
 
                         <div class="infoRow">
                             <p class="infoTitle">
-                                Created Date
+                                ${this.i18n?.t('invoiceInfo.dateCreate')}
                             </p>
                             <div class="infoValue">
                                 ${`${new Date(this.invoice?.createdAt!).toDateString()} ${new Date(this.invoice?.createdAt!).toTimeString().split(':')[0]}:${new Date(this.invoice?.createdAt!).toTimeString().split(':')[1]}`}
@@ -199,7 +218,7 @@ export class InvoiceInfo extends LitElement {
                                         ? html`
                                             <div class="infoRow">
                                                 <p class="infoTitle">
-                                                    Last Update
+                                                    ${this.i18n?.t('invoiceInfo.dateUpdate')}
                                                 </p>
                                                 <div class="infoValue">
                                                     ${`${new Date().toDateString()} ${new Date(this.invoice?.updatedAt!).toTimeString().split(':')[0]}:${new Date(this.invoice?.updatedAt!).toTimeString().split(':')[1]}`}
@@ -212,7 +231,7 @@ export class InvoiceInfo extends LitElement {
                     <div class="priceInfo">
 
                         <div class="totalWrapper">
-                            <p>Total amount</p>
+                            <p>${this.i18n?.t('invoiceInfo.amountTotal')}</p>
                             <p>$${this.invoice?.total}</p>
                         </div>
 
@@ -220,7 +239,7 @@ export class InvoiceInfo extends LitElement {
                                 (Number(this.invoice?.paid) > 0)
                                         ? html`
                                             <div class="leftWrapper">
-                                                <p>Left</p>
+                                                <p>${this.i18n?.t('invoiceInfo.amountLeft')}</p>
                                                 <p>$${parseFloat(this.leftAmount.toString()).toFixed(2)}</p>
                                             </div>
                                         ` : ''
@@ -283,11 +302,11 @@ export class InvoiceInfo extends LitElement {
                                                                 <div class="priceWrapper">
                                                                     <p class="total">
                                                                             $${parseFloat(totalPrice.toString()).toFixed(2)}
-                                                                        total
+                                                                        ${this.i18n?.t('invoiceInfo.productTotal')}
                                                                     </p>
                                                                     <p class="price">
                                                                             $${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].price) ? item.product.prices[0].price : ''}
-                                                                        each
+                                                                        ${this.i18n?.t('invoiceInfo.productEach')}
                                                                     </p>
                                                                 </div>
 
@@ -314,7 +333,7 @@ export class InvoiceInfo extends LitElement {
                                                 (this.user)
                                                         ? html`
                                                             <div class="userInfoWrapper">
-                                                                <p class="title">Login as</p>
+                                                                <p class="title">${this.i18n?.t('invoiceInfo.loginTitle')}</p>
                                                                 <div class="info">
                                                                     <div class="icon">
                                                                         <img src=${(this.userProfile && this.userProfile.image) ? this.userProfile.image : logo}
@@ -345,7 +364,7 @@ export class InvoiceInfo extends LitElement {
                                                                                 `
                                                                                 : html`
                                                                                     <img src=${logo} alt="logo image">
-                                                                                    Login
+                                                                                    ${this.i18n?.t('buttons.login')}
                                                                                 `
                                                                 }
                                                             </button>
@@ -370,7 +389,7 @@ export class InvoiceInfo extends LitElement {
                                                                         }
                                                                     }}
                                                             >
-                                                                ${(this.hasActiveTransaction) ? 'To Active Transaction' : 'Create Transaction'}
+                                                                ${(this.hasActiveTransaction) ? this.i18n?.t('buttons.activeTransaction') : this.i18n?.t('buttons.createTransaction')}
                                                             </button>
                                                         `
                                                         :
@@ -378,7 +397,7 @@ export class InvoiceInfo extends LitElement {
                                                             <button class="mainButton"
                                                                     @click=${() => this.dispatchStepChange('transactionsHistoryStep')}
                                                             >
-                                                                Transactions History
+                                                                ${this.i18n?.t('invoiceInfo.history')}
                                                             </button>
                                                         `
                                         }
