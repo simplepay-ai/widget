@@ -257,9 +257,10 @@ export class PaymentApp extends LitElement {
     async connectedCallback() {
         super.connectedCallback();
 
-        this.isExperimentalMode = this.experimental === 'true';
         this.pollingMode = this.usePolling === 'true';
         this.customServerMode = Boolean(this.serverUrl) && URL.canParse(this.serverUrl);
+
+        this.isExperimentalMode = this.experimental === 'true' && !this.customServerMode;
 
         switch (this.theme) {
             case "light":
@@ -813,6 +814,7 @@ export class PaymentApp extends LitElement {
                                         .loginLoading=${this.loginLoading}
                                         .hasTransactions=${(this.invoiceTransactions) ? this.invoiceTransactions.length > 0 : false}
                                         .hasActiveTransaction=${Boolean(this.activeTransaction)}
+                                        .experimentalMode=${this.isExperimentalMode}
                                         @login=${this.login}
                                         @goToStep=${(event: CustomEvent) => {
                                             this.goToPaymentPageStep(event.detail.stepName)

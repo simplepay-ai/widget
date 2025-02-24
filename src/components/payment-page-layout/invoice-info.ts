@@ -15,6 +15,9 @@ export class InvoiceInfo extends LitElement {
     @property({type: String})
     theme: AppTheme = 'light';
 
+    @property({type: Boolean})
+    experimentalMode: boolean = false;
+
     @property({type: String})
     currentStep: PaymentPageStep | '' = '';
 
@@ -299,50 +302,58 @@ export class InvoiceInfo extends LitElement {
 
                 </div>
 
-                <div class="buttonsWrapper">
+                <div class=${`
+                buttonsWrapper
+                ${ (!this.experimentalMode) && 'full' }
+                `}>
 
                     ${
-                            (this.user)
+                            (this.experimentalMode)
                                     ? html`
-                                        <div class="userInfoWrapper">
-                                            <p class="title">Login as</p>
-                                            <div class="info">
-                                                <div class="icon">
-                                                    <img src=${(this.userProfile && this.userProfile.image) ? this.userProfile.image : logo}
-                                                         alt="SimpleID Logo">
-                                                </div>
-                                                <p>${this.userName}</p>
-                                            </div>
-                                        </div>
-                                    `
-                                    : html`
-                                        <button class=${`secondaryButton loginButton ${this.theme}`}
-                                                @click=${() => this.dispatchLogin()}
-                                                .disabled=${this.loginLoading}
-                                        >
-                                            ${
-                                                    (this.loginLoading)
-                                                            ? html`
-                                                                <div class="spinner">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                                         viewBox="0 0 24 24">
-                                                                        <circle cx="12" cy="12" r="10"
-                                                                                stroke-width="4"/>
-                                                                        <path
-                                                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                                                        />
-                                                                    </svg>
+                                        ${
+                                                (this.user)
+                                                        ? html`
+                                                            <div class="userInfoWrapper">
+                                                                <p class="title">Login as</p>
+                                                                <div class="info">
+                                                                    <div class="icon">
+                                                                        <img src=${(this.userProfile && this.userProfile.image) ? this.userProfile.image : logo}
+                                                                             alt="SimpleID Logo">
+                                                                    </div>
+                                                                    <p>${this.userName}</p>
                                                                 </div>
-                                                            `
-                                                            : html`
-                                                                <img src=${logo} alt="logo image">
-                                                                Login
-                                                            `
-                                            }
-                                        </button>
-                                    `
+                                                            </div>
+                                                        `
+                                                        : html`
+                                                            <button class=${`secondaryButton loginButton ${this.theme}`}
+                                                                    @click=${() => this.dispatchLogin()}
+                                                                    .disabled=${this.loginLoading}
+                                                            >
+                                                                ${
+                                                                        (this.loginLoading)
+                                                                                ? html`
+                                                                                    <div class="spinner">
+                                                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                                                             viewBox="0 0 24 24">
+                                                                                            <circle cx="12" cy="12" r="10"
+                                                                                                    stroke-width="4"/>
+                                                                                            <path
+                                                                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                                                            />
+                                                                                        </svg>
+                                                                                    </div>
+                                                                                `
+                                                                                : html`
+                                                                                    <img src=${logo} alt="logo image">
+                                                                                    Login
+                                                                                `
+                                                                }
+                                                            </button>
+                                                        `
+                                        }
+                                    ` : ''
                     }
-                    
+
                     ${
                             (this.invoice?.status === 'active')
                                     ? html`
