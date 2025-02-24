@@ -41,6 +41,18 @@
         "networkTitle": "Network",
         "selectTokenPlaceholder": "Choose token"
     },
+    "walletStep": {
+        "title": "Connect wallet",
+        "injectedWallet": "Injected",
+        "customWallet": "By wallet address"
+    },
+
+    "footer": {
+        "total": "Total",
+        "productsCount": "Items",
+        "explorer": "View in explorer",
+        "timer": "Expiration time"
+    },
 
     "user": {
         "telegram": "Telegram Account"
@@ -50,6 +62,22 @@
         "invoiceAmount": {
             "title": "Minimum Invoice Amount",
             "text": "The minimum amount required to create an invoice is 1 USD. Please adjust the amount and try again."
+        },
+        "noAddress": {
+            "title": "No Wallet Addresses Found",
+            "text": "No addresses were found in your wallet. Please add an address or try connecting a different wallet."
+        },
+        "walletConnectionNotConfirmed": {
+            "title": "Wallet Connection Not Confirmed",
+            "text": "The wallet connection was not confirmed. Please try again to continue.",
+            "textSecond": "Maybe your wallet extension is inactive in browser. Activate it by clicking on its icon in your browser."
+        },
+        "walletConnectionFailed": {
+            "title": "Connection Failed",
+            "text": "Unable to establish a connection with the wallet connector. Please check your wallet and try again."
+        },
+        "walletAddressInvalid": {
+            "text": "The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted."
         }
     },
 
@@ -60,10 +88,15 @@
         "confirm": "Confirm",
         "createInvoice": "Create new invoice",
         "login": "Login",
-        "activeTransaction": "To active transaction"
+        "activeTransaction": "To active transaction",
+        "cancelTransaction": "Cancel transaction",
+        "selectAddress": "Select address",
+        "no": "No",
+        "continue": "Continue"
     },
     "loaders": {
-        "creatingInvoice": "Creating invoice"
+        "creatingInvoice": "Creating invoice",
+        "creatingTransaction": "Creating transaction"
     },
     "modals": {
         "products": {
@@ -81,6 +114,15 @@
         "transactions": {
             "title": "Transactions",
             "amount": "Amount"
+        },
+        "wallet": {
+            "title": "Wallet address",
+            "inputPlaceholder": "Enter your %{networkSymbol} address",
+            "inputText": "Enter the address of the wallet you will use to complete the payment. We need this to track and verify the on-chain transaction as our service is fully decentralized"
+        },
+        "address": {
+            "title": "Approve the Wallet to Continue",
+            "text": "Please confirm if you'd like to proceed using this wallet address to continue with the transaction."
         }
     },
 

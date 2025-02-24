@@ -701,6 +701,7 @@ export class PaymentApp extends LitElement {
             ${this.appStep === 'walletStep'
                     ? html`
                         <wallet-step
+                                .i18n=${this.i18n}
                                 .invoice=${this.invoice}
                                 .creatingTransaction=${this.creatingTransaction}
                                 .walletAddress=${this.walletAddress}

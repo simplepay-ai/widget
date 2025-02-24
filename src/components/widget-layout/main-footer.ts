@@ -3,11 +3,15 @@ import {customElement} from 'lit/decorators.js';
 import {Invoice, InvoiceProduct} from "@simplepay-ai/api-client";
 //@ts-ignore
 import style from "../../styles/widget-styles/main-footer.css?inline";
+import {I18n} from "i18n-js";
 
 @customElement('main-footer')
 export class MainFooter extends LitElement {
 
     static styles = unsafeCSS(style);
+
+    @property({type: Object})
+    i18n: I18n | null = null;
 
     @property({ type: Array })
     products: InvoiceProduct[] = [];
@@ -95,7 +99,7 @@ export class MainFooter extends LitElement {
                                             @click=${this.dispatchCancelInvoice}
                                             ?disabled=${this.buttonDisabled}
                                     >
-                                        Cancel transaction
+                                        ${this.i18n?.t('buttons.cancelTransaction')}
                                     </button>
                                 `
                                 : ''
@@ -113,7 +117,7 @@ export class MainFooter extends LitElement {
                                         </div>
 
                                         <div class="price">
-                                            <p>Total:</p>
+                                            <p>${this.i18n?.t('footer.total')}:</p>
                                             <p>${this.price ? `${ parseFloat(this.price).toFixed(2) } USD` : '0 USD'}</p>
                                         </div>
                                     </div>
@@ -149,11 +153,11 @@ export class MainFooter extends LitElement {
                                         >
                                             <div class="info">
                                                 <div class="row">
-                                                    <p>Items:</p>
+                                                    <p>${this.i18n?.t('footer.productsCount')}:</p>
                                                     <p>${this.products.length}</p>
                                                 </div>
                                                 <div class="row">
-                                                    <p>Total:</p>
+                                                    <p>${this.i18n?.t('footer.total')}:</p>
                                                     <p>${parseFloat(this.price.toString()).toFixed(2)} USD</p>
                                                 </div>
                                             </div>
@@ -194,7 +198,7 @@ export class MainFooter extends LitElement {
                         ? html`
                             <a href=${this.explorerLink} target="_blank">
                                 <button class="mainButton withIcon">
-                                    View in explorer
+                                    ${this.i18n?.t('footer.explorer')}
                                     <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             width="24"
@@ -255,7 +259,7 @@ export class MainFooter extends LitElement {
                                 </div>
 
                                 <div class="info">
-                                    <p class="title">Expiration time</p>
+                                    <p class="title">${this.i18n?.t('footer.timer')}</p>
                                     <p
                                             id="timerTime"
                                             class=${`timerLeft
@@ -281,7 +285,7 @@ export class MainFooter extends LitElement {
                                     <div class="contentWrapper">
                                         <div class="content">
                                             <div class="titleWrapper">
-                                                <p class="infoTitle">Products</p>
+                                                <p class="infoTitle">${this.i18n?.t('modals.products.title')}</p>
                                                 <div class="closeButton"
                                                      @click=${this.toggleProductInfo}
                                                 >
@@ -319,7 +323,7 @@ export class MainFooter extends LitElement {
 
                                                         <div class="priceWrapper">
                                                             <p class="price">${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].price) ? item.product.prices[0].price : ''} ${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].currency.symbol) ? item.product.prices[0].currency.symbol : ''}</p>
-                                                            <p class="count">Count: ${item.count || '---'}</p>
+                                                            <p class="count">${this.i18n?.t('modals.products.count')}: ${item.count || '---'}</p>
                                                         </div>
 
                                                     </div>

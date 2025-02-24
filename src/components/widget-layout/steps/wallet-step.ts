@@ -17,11 +17,15 @@ import style from "../../../styles/widget-styles/wallet-step.css?inline";
 import TronWeb from "tronweb";
 import {TronLinkAdapter, WalletConnectAdapter} from "@tronweb3/tronwallet-adapters";
 import {ChainNetwork} from "@tronweb3/tronwallet-abstract-adapter";
+import {I18n} from "i18n-js";
 
 @customElement('wallet-step')
 export class WalletStep extends LitElement {
 
     static styles = unsafeCSS(style);
+
+    @property({type: Object})
+    i18n: I18n | null = null;
 
     @property({type: String})
     theme: AppTheme = 'light';
@@ -120,7 +124,7 @@ export class WalletStep extends LitElement {
         return html`
             <div class=${`stepWrapper`}>
                 <main-header
-                        .title= ${'Connect wallet'}
+                        .title=${ this.i18n?.t('walletStep.title') }
                         .hasBackButton=${true}
                         .backButtonDisabled=${this.creatingTransaction}
                         .showToken=${true}
@@ -146,7 +150,7 @@ export class WalletStep extends LitElement {
                                         />
                                     </svg>
 
-                                    <p>Creating transaction ...</p>
+                                    <p>${`${this.i18n?.t('loaders.creatingTransaction')} ...`}</p>
                                 </div>
                             </div>
                         `
@@ -340,7 +344,7 @@ export class WalletStep extends LitElement {
                                                          ${(this.connectingInProcess && this.connectingType !== 'Injected') ? 'waiting' : ''}
                                                          `}
                                                     >
-                                                        <p>Injected</p>
+                                                        <p>${this.i18n?.t('walletStep.injectedWallet')}</p>
                                                         <svg class="typeIcon" xmlns="http://www.w3.org/2000/svg" width="24"
                                                              height="24"
                                                              viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -452,7 +456,7 @@ export class WalletStep extends LitElement {
                                      ${(this.connectingInProcess && this.connectingType !== 'Custom') ? 'waiting' : ''}
                                      `}
                                 >
-                                    <p>By wallet address</p>
+                                    <p>${this.i18n?.t('walletStep.customWallet')}</p>
                                     <svg class="typeIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                          viewBox="0 0 24 24"
                                          fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
@@ -482,7 +486,7 @@ export class WalletStep extends LitElement {
                                     <div class="contentWrapper ${(this.showWalletModalContent) ? 'show' : ''}">
                                         <div class="content">
                                             <div class="titleWrapper">
-                                                <p>Wallet address</p>
+                                                <p>${this.i18n?.t('modals.wallet.title')}</p>
                                                 <div class="closeButton"
                                                      @click=${this.hideWalletModal}
                                                 >
@@ -504,7 +508,7 @@ export class WalletStep extends LitElement {
                                                             type="text"
                                                             value=${this.inputValue}
                                                             @input=${this.inputHandler}
-                                                            placeholder=${`Enter your ${this.selectedNetwork?.symbol} address`}
+                                                            placeholder=${this.i18n?.t('modals.wallet.inputPlaceholder', { networkSymbol: this.selectedNetwork?.symbol })}
                                                     />
 
                                                     <div class="pasteButton" @click=${() => this.pasteData()}>
@@ -544,7 +548,7 @@ export class WalletStep extends LitElement {
                                                     ${
                                                             (this.showWalletModalError)
                                                                     ? this.walletModalErrorText
-                                                                    : 'Enter the address of the wallet you will use to complete the payment. We need this to track and verify the on-chain transaction as our service is fully decentralized'
+                                                                    : this.i18n?.t('modals.wallet.inputText')
                                                     }
                                                 </p>
                                             </div>
@@ -553,7 +557,7 @@ export class WalletStep extends LitElement {
                                                     @click=${this.selectCustomWallet}
                                                     .disabled=${this.showWalletModalError || this.inputValue.trim() === ''}
                                             >
-                                                Select address
+                                                ${this.i18n?.t('buttons.selectAddress')}
                                             </button>
                                         </div>
                                     </div>
@@ -567,7 +571,7 @@ export class WalletStep extends LitElement {
                                     <div class="contentWrapper ${(this.showApproveAddressModalContent) ? 'show' : ''}">
                                         <div class="content">
                                             <div class="titleWrapper">
-                                                <p>Approve the Wallet to Continue</p>
+                                                <p>${this.i18n?.t('modals.address.title')}</p>
                                                 <div class="closeButton"
                                                      @click=${this.hideApproveAddressModal}
                                                 >
@@ -584,8 +588,7 @@ export class WalletStep extends LitElement {
                                             </div>
 
                                             <p class="text">
-                                                Please confirm if you'd like to proceed using this wallet
-                                                address to continue with the transaction.
+                                                ${this.i18n?.t('modals.address.text')}
                                             </p>
 
                                             <p class="address">
@@ -596,15 +599,14 @@ export class WalletStep extends LitElement {
                                                 <button class="secondaryButton"
                                                         @click=${this.disconnectWallet}
                                                 >
-                                                    No
+                                                    ${this.i18n?.t('buttons.no')}
                                                 </button>
 
                                                 <button class="mainButton"
                                                         @click=${this.approveWallet}
                                                 >
-                                                    Continue
+                                                    ${this.i18n?.t('buttons.continue')}
                                                 </button>
-
                                             </div>
                                         </div>
                                     </div>
@@ -616,10 +618,11 @@ export class WalletStep extends LitElement {
                 }
 
                 <main-footer
+                        .i18n=${this.i18n}
                         .price=${Number(this.invoice?.total!) - Number(this.invoice?.paid!)}
                         .hasButton=${true}
                         .buttonDisabled=${this.buttonDisabled || this.creatingTransaction}
-                        .buttonText=${'Confirm'}
+                        .buttonText=${ this.i18n?.t('buttons.confirm') }
                         .products=${this.invoiceProducts}
                         @footerButtonClick=${this.dispatchNextStep}
                 ></main-footer>
@@ -760,9 +763,9 @@ export class WalletStep extends LitElement {
                     const options = {
                         detail: {
                             notificationData: {
-                                title: 'No Wallet Addresses Found',
-                                text: 'No addresses were found in your wallet. Please add an address or try connecting a different wallet.',
-                                buttonText: 'Confirm'
+                                title: this.i18n?.t('errors.noAddress.title'),
+                                text: this.i18n?.t('errors.noAddress.text'),
+                                buttonText: this.i18n?.t('buttons.confirm')
                             },
                             notificationShow: true
                         },
@@ -795,9 +798,9 @@ export class WalletStep extends LitElement {
                     const options = {
                         detail: {
                             notificationData: {
-                                title: 'No Wallet Addresses Found',
-                                text: 'No addresses were found in your wallet. Please add an address or try connecting a different wallet.',
-                                buttonText: 'Confirm'
+                                title: this.i18n?.t('errors.noAddress.title'),
+                                text: this.i18n?.t('errors.noAddress.text'),
+                                buttonText: this.i18n?.t('buttons.confirm')
                             },
                             notificationShow: true
                         },
@@ -879,9 +882,9 @@ export class WalletStep extends LitElement {
                     const options = {
                         detail: {
                             notificationData: {
-                                title: 'Wallet Connection Not Confirmed',
-                                text: 'The wallet connection was not confirmed. Please try again to continue.',
-                                buttonText: 'Confirm'
+                                title: this.i18n?.t('errors.walletConnectionNotConfirmed.title'),
+                                text: this.i18n?.t('errors.walletConnectionNotConfirmed.text'),
+                                buttonText: this.i18n?.t('buttons.confirm')
                             },
                             notificationShow: true
                         },
@@ -922,9 +925,9 @@ export class WalletStep extends LitElement {
                     const options = {
                         detail: {
                             notificationData: {
-                                title: 'Wallet Connection Not Confirmed',
-                                text: 'The wallet connection was not confirmed. Please try again to continue.',
-                                buttonText: 'Confirm'
+                                title: this.i18n?.t('errors.walletConnectionNotConfirmed.title'),
+                                text: this.i18n?.t('errors.walletConnectionNotConfirmed.text'),
+                                buttonText: this.i18n?.t('buttons.confirm')
                             },
                             notificationShow: true
                         },
@@ -983,9 +986,9 @@ export class WalletStep extends LitElement {
                     const options = {
                         detail: {
                             notificationData: {
-                                title: 'Wallet Connection Not Confirmed',
-                                text: 'The wallet connection was not confirmed. Please try again to continue.',
-                                buttonText: 'Confirm'
+                                title: this.i18n?.t('errors.walletConnectionNotConfirmed.title'),
+                                text: this.i18n?.t('errors.walletConnectionNotConfirmed.text'),
+                                buttonText: this.i18n?.t('buttons.confirm')
                             },
                             notificationShow: true
                         },
@@ -1040,9 +1043,9 @@ export class WalletStep extends LitElement {
                     const options = {
                         detail: {
                             notificationData: {
-                                title: 'Wallet Connection Not Confirmed',
-                                text: 'The wallet connection was not confirmed. Please try again to continue.',
-                                buttonText: 'Confirm'
+                                title: this.i18n?.t('errors.walletConnectionNotConfirmed.title'),
+                                text: this.i18n?.t('errors.walletConnectionNotConfirmed.text'),
+                                buttonText: this.i18n?.t('buttons.confirm')
                             },
                             notificationShow: true
                         },
@@ -1113,9 +1116,9 @@ export class WalletStep extends LitElement {
                     const options = {
                         detail: {
                             notificationData: {
-                                title: 'Wallet Connection Not Confirmed',
-                                text: 'The wallet connection was not confirmed. Please try again to continue.',
-                                buttonText: 'Confirm'
+                                title: this.i18n?.t('errors.walletConnectionNotConfirmed.title'),
+                                text: this.i18n?.t('errors.walletConnectionNotConfirmed.text'),
+                                buttonText: this.i18n?.t('buttons.confirm')
                             },
                             notificationShow: true
                         },
@@ -1181,9 +1184,9 @@ export class WalletStep extends LitElement {
                     const options = {
                         detail: {
                             notificationData: {
-                                title: 'Wallet Connection Not Confirmed',
-                                text: ['The wallet connection was not confirmed. Please try again to continue.', 'Maybe your wallet extension is inactive in browser. Activate it by clicking on its icon in your browser.'],
-                                buttonText: 'Confirm'
+                                title: this.i18n?.t('errors.walletConnectionNotConfirmed.title'),
+                                text: [this.i18n?.t('errors.walletConnectionNotConfirmed.text'), this.i18n?.t('errors.walletConnectionNotConfirmed.textSecond')],
+                                buttonText: this.i18n?.t('buttons.confirm')
                             },
                             notificationShow: true
                         },
@@ -1207,9 +1210,9 @@ export class WalletStep extends LitElement {
             const options = {
                 detail: {
                     notificationData: {
-                        title: 'Connection Failed',
-                        text: 'Unable to establish a connection with the wallet connector. Please check your wallet and try again.',
-                        buttonText: 'Confirm'
+                        title: this.i18n?.t('errors.walletConnectionFailed.title'),
+                        text: this.i18n?.t('errors.walletConnectionFailed.text'),
+                        buttonText: this.i18n?.t('buttons.confirm')
                     },
                     notificationShow: true
                 },
@@ -1230,9 +1233,9 @@ export class WalletStep extends LitElement {
             const options = {
                 detail: {
                     notificationData: {
-                        title: 'No Wallet Addresses Found',
-                        text: 'No addresses were found in your wallet. Please add an address or try connecting a different wallet.',
-                        buttonText: 'Confirm'
+                        title: this.i18n?.t('errors.noAddress.title'),
+                        text: this.i18n?.t('errors.noAddress.text'),
+                        buttonText: this.i18n?.t('buttons.confirm')
                     },
                     notificationShow: true
                 },
@@ -1315,7 +1318,7 @@ export class WalletStep extends LitElement {
 
         if (!checkWalletAddress(this.inputValue, this.selectedNetwork?.type || '')) {
 
-            this.walletModalErrorText = 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.';
+            this.walletModalErrorText = this.i18n?.t('errors.walletAddressInvalid.text') || '';
             this.showWalletModalError = true;
             this.buttonDisabled = true;
 
