@@ -286,9 +286,8 @@ export class PaymentApp extends LitElement {
         this.initLocalization();
 
         if (this.viewMode !== 'modal' && this.viewMode !== 'paymentPage' && this.viewMode !== 'relative') {
-            this.errorTitle = 'Error';
-            this.errorText =
-                'Invalid viewMode: the provided attribute is not valid. Please ensure it matches one of the supported view modes: modal or relative (default).';
+            this.errorTitle = this.i18n?.t('errors.viewModeInvalid.title') || '';
+            this.errorText = this.i18n?.t('errors.viewModeInvalid.text') || ''
             this.goToWidgetStep('errorStep');
             this.dispatchErrorEvent('View Mode Error', 'Invalid viewMode: the provided attribute is not valid. Please ensure it matches one of the supported view modes: modal, paymentPage or relative (default).');
 
@@ -300,11 +299,10 @@ export class PaymentApp extends LitElement {
         }
 
         if (this.viewMode === 'modal' && this.trigger === '') {
-            this.errorTitle = 'Error';
-            this.errorText =
-                'Invalid trigger: the provided attribute is empty.';
+            this.errorTitle = this.i18n?.t('errors.modalTriggerInvalid.title') || ''
+            this.errorText = this.i18n?.t('errors.modalTriggerInvalid.text') || ''
             this.goToWidgetStep('errorStep');
-            this.dispatchErrorEvent('Trigger Error', 'Invalid trigger: the provided attribute is empty.');
+            this.dispatchErrorEvent('Modal Trigger Error', 'Invalid trigger: the provided attribute is empty.');
 
             return;
         }
@@ -335,9 +333,8 @@ export class PaymentApp extends LitElement {
         }
 
         if (this.viewMode === 'paymentPage' && (!this.invoiceId && !this.transactionId)) {
-            this.errorTitle = 'View Mode Error';
-            this.errorText =
-                'The paymentPage display mode is currently available only for viewing invoices and transactions. To access invoice creation options, please use the relative (default) or modal display mode.';
+            this.errorTitle = this.i18n?.t('errors.paymentPageNotAvailable.title') || ''
+            this.errorText = this.i18n?.t('errors.paymentPageNotAvailable.text') || ''
             this.goToPaymentPageStep('errorStep');
             this.dispatchErrorEvent('View Mode Error', 'The paymentPage display mode is currently available only for viewing invoices and transactions. To access invoice creation options, please use the relative (default) or modal display mode.');
 
@@ -350,9 +347,8 @@ export class PaymentApp extends LitElement {
             const isNumber = Boolean(Number(this.clientId));
 
             if (!isUUID && !isNumber) {
-                this.errorTitle = 'Error';
-                this.errorText =
-                    'Invalid clientId: it must be either a number or a valid UUID v4 format.';
+                this.errorTitle = this.i18n?.t('errors.clientIdInvalid.title') || ''
+                this.errorText = this.i18n?.t('errors.clientIdInvalid.text') || ''
                 this.goToWidgetStep('errorStep');
                 this.goToPaymentPageStep('errorStep')
                 this.dispatchErrorEvent('Client ID Error', 'Invalid clientId: it must be either a number or a valid UUID v4 format.');
@@ -373,9 +369,8 @@ export class PaymentApp extends LitElement {
                 this.getTransaction(this.transactionId).then((data) => {
 
                     if (data === 'error') {
-                        this.errorTitle = 'Error';
-                        this.errorText =
-                            'Failed to retrieve transaction data. Please try again later.';
+                        this.errorTitle = this.i18n?.t('errors.fetchTransactionFailed.title') || ''
+                        this.errorText = this.i18n?.t('errors.fetchTransactionFailed.text') || ''
                         this.goToWidgetStep('errorStep');
                         this.goToPaymentPageStep('errorStep')
                         this.dispatchErrorEvent('Fetch Transaction Error', 'Failed to retrieve transaction data. Please try again later.');
@@ -386,27 +381,15 @@ export class PaymentApp extends LitElement {
                         this.getInvoice(this.transaction?.invoiceId || '').then(async (data) => {
 
                             if (data === 'error') {
-                                this.errorTitle = 'Error';
-                                this.errorText =
-                                    'Failed to retrieve invoice data. Please try again later.';
+                                this.errorTitle = this.i18n?.t('errors.fetchInvoiceFailed.title') || ''
+                                this.errorText = this.i18n?.t('errors.fetchInvoiceFailed.text') || ''
                                 this.goToWidgetStep('errorStep');
                                 this.goToPaymentPageStep('errorStep')
                                 this.dispatchErrorEvent('Fetch Invoice Error', 'Failed to retrieve invoice data. Please try again later.');
                                 return;
                             }
 
-
                             this.tokens = await this.getTokens(this.invoice?.app?.id || '')
-
-                            // if (this.tokens && this.tokens.length === 0) {
-                            //     this.errorTitle = 'Error';
-                            //     this.errorText =
-                            //         'Currently, there are no tokens available for selection as a payment option on this project.';
-                            //     this.goToWidgetStep('errorStep');
-                            //     this.dispatchErrorEvent('Empty Tokens', 'Currently, there are no tokens available for selection as a payment option on this project.');
-                            //
-                            //     return;
-                            // }
 
                             this.getInvoiceTransactions(this.invoice?.id || '').then(() => {
                                 this.subscribeInvoice(this.invoice?.id || '')
@@ -424,9 +407,8 @@ export class PaymentApp extends LitElement {
                 this.getInvoice(this.invoiceId).then(async (data) => {
 
                     if (data === 'error') {
-                        this.errorTitle = 'Error';
-                        this.errorText =
-                            'Failed to retrieve invoice data. Please try again later.';
+                        this.errorTitle = this.i18n?.t('errors.fetchInvoiceFailed.title') || ''
+                        this.errorText = this.i18n?.t('errors.fetchInvoiceFailed.text') || ''
                         this.goToWidgetStep('errorStep');
                         this.goToPaymentPageStep('errorStep')
                         this.dispatchErrorEvent('Fetch Invoice Error', 'Failed to retrieve invoice data. Please try again later.');
@@ -435,15 +417,6 @@ export class PaymentApp extends LitElement {
 
                     this.tokens = await this.getTokens(this.invoice?.app?.id || '')
 
-                    // if (this.tokens && this.tokens.length === 0) {
-                    //     this.errorTitle = 'Error';
-                    //     this.errorText =
-                    //         'Currently, there are no tokens available for selection as a payment option on this project.';
-                    //     this.goToWidgetStep('errorStep');
-                    //     this.dispatchErrorEvent('Empty Tokens', 'Currently, there are no tokens available for selection as a payment option on this project.');
-                    //
-                    //     return;
-                    // }
                     if (this.tokens && this.tokens.length > 0) {
 
                         const defaultToken = this.tokens?.find((item: Cryptocurrency) => item.symbol === this.tokenSymbol && item);
@@ -457,21 +430,18 @@ export class PaymentApp extends LitElement {
                         if ((!defaultToken && this.tokenSymbol !== '') || (!defaultNetwork && this.networkSymbol !== '')) {
 
                             if (!defaultToken) {
-                                this.errorTitle = 'Invalid Token Name';
-                                this.errorText =
-                                    'The token name you entered is incorrect. Please double-check the name and try again.';
+                                this.errorTitle = this.i18n?.t('errors.tokenNameInvalid.title') || ''
+                                this.errorText = this.i18n?.t('errors.tokenNameInvalid.text') || ''
                             }
 
                             if (!defaultNetwork) {
-                                this.errorTitle = 'Invalid Token Network';
-                                this.errorText =
-                                    'The token network you selected is incorrect. Please verify the network and try again.';
+                                this.errorTitle = this.i18n?.t('errors.networkNameInvalid.title') || ''
+                                this.errorText = this.i18n?.t('errors.networkNameInvalid.text') || ''
                             }
 
                             if (!defaultNetwork && !defaultToken) {
-                                this.errorTitle = 'Invalid Token Name and Network';
-                                this.errorText =
-                                    'The token name and network you entered is incorrect. Please verify the token name and network and try again.';
+                                this.errorTitle = this.i18n?.t('errors.cryptocurrencyInvalid.title') || ''
+                                this.errorText = this.i18n?.t('errors.cryptocurrencyInvalid.text') || ''
                             }
 
                             this.goToWidgetStep('errorStep');
@@ -509,9 +479,8 @@ export class PaymentApp extends LitElement {
         }
 
         if (!this.appId) {
-            this.errorTitle = 'Empty appId';
-            this.errorText =
-                'You did not pass the appId. In order to continue, the appId field must be filled in.';
+            this.errorTitle = this.i18n?.t('errors.appIdInvalid.title') || ''
+            this.errorText = this.i18n?.t('errors.appIdInvalid.text') || ''
 
             this.goToWidgetStep('errorStep');
             this.goToPaymentPageStep('errorStep')
@@ -525,9 +494,8 @@ export class PaymentApp extends LitElement {
 
         const appInfoResult = await this.getApp();
         if (appInfoResult === 'error') {
-            this.errorTitle = 'Error';
-            this.errorText =
-                'Failed to retrieve app data. Please try again later.';
+            this.errorTitle = this.i18n?.t('errors.fetchAppFailed.title') || ''
+            this.errorText = this.i18n?.t('errors.fetchAppFailed.text') || ''
             this.goToWidgetStep('errorStep');
             this.goToPaymentPageStep('errorStep')
             this.dispatchErrorEvent('Fetch App Error', 'Failed to retrieve app data. Please try again later.');
@@ -536,16 +504,15 @@ export class PaymentApp extends LitElement {
 
         const products = await this.getProducts();
         if (products === 'error') {
-            this.errorTitle = 'Error';
-            this.errorText =
-                'Failed to retrieve app products data. Please try again later.';
+            this.errorTitle = this.i18n?.t('errors.fetchProductsFailed.title') || ''
+            this.errorText = this.i18n?.t('errors.fetchProductsFailed.text') || ''
             this.goToWidgetStep('errorStep');
             this.goToPaymentPageStep('errorStep')
             this.dispatchErrorEvent('Fetch Products Error', 'Failed to retrieve app products data. Please try again later.');
             return;
         }
 
-        this.appInfo = appInfoResult;//await this.getApp();
+        this.appInfo = appInfoResult;
         this.appProducts = products;
 
         if (this.paymentType) {
@@ -1375,13 +1342,13 @@ export class PaymentApp extends LitElement {
 
         if (this.appStep === 'walletStep' && this.walletAddress && !checkWalletAddress(this.walletAddress, this.selectedNetwork?.type || '')) {
             this.notificationData = {
-                title: 'Invalid Wallet Address',
-                text: 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.',
-                buttonText: 'Confirm'
+                title: this.i18n?.t('errors.walletAddressInvalid.title'),
+                text: this.i18n?.t('errors.walletAddressInvalid.text'),
+                buttonText: this.i18n?.t('buttons.confirm')
             };
             this.notificationShow = true;
 
-            this.dispatchErrorEvent('Invalid Wallet Address', 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.');
+            this.dispatchErrorEvent('Wallet Address Error', 'The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted.');
             return;
         }
 
@@ -1502,9 +1469,8 @@ export class PaymentApp extends LitElement {
     private async getTokens(appId: string) {
 
         if(!appId){
-            this.errorTitle = 'Error';
-            this.errorText =
-                'Failed to retrieve token data. Please try again later.';
+            this.errorTitle = this.i18n?.t('errors.fetchTokensFailed.title') || ''
+            this.errorText = this.i18n?.t('errors.fetchTokensFailed.text') || ''
             this.goToWidgetStep('errorStep');
             this.goToPaymentPageStep('errorStep')
             this.dispatchErrorEvent('Fetch Tokens Error', 'Failed to retrieve token data. Please try again later.');
@@ -1518,9 +1484,8 @@ export class PaymentApp extends LitElement {
                     return camelcaseKeys(response.data, { deep: true });
                 })
                 .catch(() => {
-                    this.errorTitle = 'Error';
-                    this.errorText =
-                        'Failed to retrieve token data. Please try again later.';
+                    this.errorTitle = this.i18n?.t('errors.fetchTokensFailed.title') || ''
+                    this.errorText = this.i18n?.t('errors.fetchTokensFailed.text') || ''
                     this.goToWidgetStep('errorStep');
                     this.goToPaymentPageStep('errorStep')
                     this.dispatchErrorEvent('Fetch Tokens Error', 'Failed to retrieve token data. Please try again later.');
@@ -1538,9 +1503,8 @@ export class PaymentApp extends LitElement {
 
                 return result;
             } catch (error) {
-                this.errorTitle = 'Error';
-                this.errorText =
-                    'Failed to retrieve token data. Please try again later.';
+                this.errorTitle = this.i18n?.t('errors.fetchTokensFailed.title') || ''
+                this.errorText = this.i18n?.t('errors.fetchTokensFailed.text') || ''
                 this.goToWidgetStep('errorStep');
                 this.goToPaymentPageStep('errorStep')
                 this.dispatchErrorEvent('Fetch Tokens Error', 'Failed to retrieve token data. Please try again later.');
@@ -1663,9 +1627,9 @@ export class PaymentApp extends LitElement {
                             }
 
                             this.notificationData = {
-                                title: 'Invoice create failed',
-                                text: 'Failed to create invoice. Please, try again later',
-                                buttonText: 'Confirm'
+                                title: this.i18n?.t('errors.invoiceCreateFailed.title'),
+                                text: this.i18n?.t('errors.invoiceCreateFailed.text'),
+                                buttonText: this.i18n?.t('buttons.confirm')
                             };
                             this.notificationShow = true;
                             this.creatingInvoice = false;
@@ -1684,9 +1648,9 @@ export class PaymentApp extends LitElement {
                     }
 
                     this.notificationData = {
-                        title: 'Invoice create failed',
-                        text: 'Failed to create invoice. Please, try again later',
-                        buttonText: 'Confirm'
+                        title: this.i18n?.t('errors.invoiceCreateFailed.title'),
+                        text: this.i18n?.t('errors.invoiceCreateFailed.text'),
+                        buttonText: this.i18n?.t('buttons.confirm')
                     };
                     this.notificationShow = true;
                     this.creatingInvoice = false;
@@ -1737,9 +1701,9 @@ export class PaymentApp extends LitElement {
                 }
 
                 this.notificationData = {
-                    title: 'Invoice create failed',
-                    text: 'Failed to create invoice. Please, try again later',
-                    buttonText: 'Confirm'
+                    title: this.i18n?.t('errors.invoiceCreateFailed.title'),
+                    text: this.i18n?.t('errors.invoiceCreateFailed.text'),
+                    buttonText: this.i18n?.t('buttons.confirm')
                 };
                 this.notificationShow = true;
                 this.creatingInvoice = false;
@@ -1783,9 +1747,9 @@ export class PaymentApp extends LitElement {
                     }
 
                     this.notificationData = {
-                        title: 'Transaction create failed',
-                        text: 'Failed to create transaction. Please, try again later',
-                        buttonText: 'Confirm'
+                        title: this.i18n?.t('errors.transactionCreateFailed.title'),
+                        text: this.i18n?.t('errors.transactionCreateFailed.text'),
+                        buttonText: this.i18n?.t('buttons.confirm')
                     };
                     this.notificationShow = true;
                     this.creatingTransaction = false;
@@ -1810,9 +1774,9 @@ export class PaymentApp extends LitElement {
                 }
 
                 this.notificationData = {
-                    title: 'Transaction create failed',
-                    text: 'Failed to create transaction. Please, try again later',
-                    buttonText: 'Confirm'
+                    title: this.i18n?.t('errors.transactionCreateFailed.title'),
+                    text: this.i18n?.t('errors.transactionCreateFailed.text'),
+                    buttonText: this.i18n?.t('buttons.confirm')
                 };
                 this.notificationShow = true;
                 this.creatingTransaction = false;
@@ -1830,12 +1794,12 @@ export class PaymentApp extends LitElement {
         if (!this.transaction?.id) {
 
             this.notificationData = {
-                title: 'Error',
-                text: 'Unable to retrieve the ID of transaction. Please try again later.',
-                buttonText: 'Confirm'
+                title: this.i18n?.t('errors.transactionIdEmpty.title'),
+                text: this.i18n?.t('errors.transactionIdEmpty.text'),
+                buttonText: this.i18n?.t('buttons.confirm')
             };
             this.notificationShow = true;
-            this.dispatchErrorEvent('Transaction Canceling Error', 'Unable to retrieve the ID of transaction. Please try again later.');
+            this.dispatchErrorEvent('Transaction ID Error', 'Unable to retrieve the ID of transaction. Please try again later.');
             return;
         }
 
@@ -1847,12 +1811,12 @@ export class PaymentApp extends LitElement {
             await axios.delete(url, {withCredentials: true})
                 .catch(() => {
                     this.notificationData = {
-                        title: 'Error',
-                        text: 'Failed to cancel the invoice. Please try again later.',
-                        buttonText: 'Confirm'
+                        title: this.i18n?.t('errors.transactionCancelFailed.title'),
+                        text: this.i18n?.t('errors.transactionCancelFailed.text'),
+                        buttonText: this.i18n?.t('buttons.confirm')
                     };
                     this.cancelingTransaction = false;
-                    this.dispatchErrorEvent('Invoice Canceling Error', 'Failed to cancel the invoice. Please try again later.');
+                    this.dispatchErrorEvent('Transaction Canceling Error', 'Failed to cancel the transaction. Please try again later.');
                     return;
                 })
 
@@ -1863,12 +1827,12 @@ export class PaymentApp extends LitElement {
             } catch (error) {
 
                 this.notificationData = {
-                    title: 'Error',
-                    text: 'Failed to cancel the invoice. Please try again later.',
-                    buttonText: 'Confirm'
+                    title: this.i18n?.t('errors.transactionCancelFailed.title'),
+                    text: this.i18n?.t('errors.transactionCancelFailed.text'),
+                    buttonText: this.i18n?.t('buttons.confirm')
                 };
                 this.cancelingTransaction = false;
-                this.dispatchErrorEvent('Invoice Canceling Error', 'Failed to cancel the invoice. Please try again later.');
+                this.dispatchErrorEvent('Transaction Canceling Error', 'Failed to cancel the transaction. Please try again later.');
                 return;
 
             }
@@ -1926,13 +1890,13 @@ export class PaymentApp extends LitElement {
 
         if(!invoiceId){
             this.notificationData = {
-                title: 'Get Invoice Transactions Failed',
-                text: 'Failed to retrieve transactions of invoice.',
-                buttonText: 'Confirm'
+                title: this.i18n?.t('errors.fetchTransactionsFailed.title'),
+                text: this.i18n?.t('errors.fetchTransactionsFailed.text'),
+                buttonText: this.i18n?.t('buttons.confirm')
             };
             this.notificationShow = true;
 
-            this.dispatchErrorEvent('Fetch Invoice Transactions Error', 'Failed to retrieve transactions of invoice.');
+            this.dispatchErrorEvent('Fetch Transactions Error', 'Failed to retrieve transactions of invoice. Please try again later.');
 
             return;
         }
@@ -1954,13 +1918,13 @@ export class PaymentApp extends LitElement {
                 })
                 .catch(() => {
                     this.notificationData = {
-                        title: 'Get Invoice Transactions Failed',
-                        text: 'Failed to retrieve transactions of invoice.',
-                        buttonText: 'Confirm'
+                        title: this.i18n?.t('errors.fetchTransactionsFailed.title'),
+                        text: this.i18n?.t('errors.fetchTransactionsFailed.text'),
+                        buttonText: this.i18n?.t('buttons.confirm')
                     };
                     this.notificationShow = true;
 
-                    this.dispatchErrorEvent('Fetch Invoice Transactions Error', 'Failed to retrieve transactions of invoice.');
+                    this.dispatchErrorEvent('Fetch Transactions Error', 'Failed to retrieve transactions of invoice. Please try again later.');
                 })
 
         }else{
@@ -1979,13 +1943,13 @@ export class PaymentApp extends LitElement {
 
             } catch (e) {
                 this.notificationData = {
-                    title: 'Get Invoice Transactions Failed',
-                    text: 'Failed to retrieve transactions of invoice.',
-                    buttonText: 'Confirm'
+                    title: this.i18n?.t('errors.fetchTransactionsFailed.title'),
+                    text: this.i18n?.t('errors.fetchTransactionsFailed.text'),
+                    buttonText: this.i18n?.t('buttons.confirm')
                 };
                 this.notificationShow = true;
 
-                this.dispatchErrorEvent('Fetch Invoice Transactions Error', 'Failed to retrieve transactions of invoice.');
+                this.dispatchErrorEvent('Fetch Transactions Error', 'Failed to retrieve transactions of invoice. Please try again later.');
             }
 
         }

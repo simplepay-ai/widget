@@ -1,4 +1,4 @@
-import {Invoice, InvoiceProduct, Transaction} from '@simplepay-ai/api-client';
+import {Invoice, InvoiceProduct, Transaction, TransactionStatus} from '@simplepay-ai/api-client';
 //@ts-ignore
 import QRCode from 'corcojs-qrcode';
 import {PropertyValues} from 'lit';
@@ -79,7 +79,6 @@ export class SuccessStep extends LitElement {
         }
     }
 
-
     firstUpdated(_changedProperties: PropertyValues) {
         super.firstUpdated(_changedProperties);
 
@@ -112,7 +111,7 @@ export class SuccessStep extends LitElement {
         return html`
             <div class=${`stepWrapper`}>
                 <main-header
-                        .title=${this.i18n?.t('successStep.title', {statusName: this.transaction?.status})}
+                        .title=${this.getStatusTitle(this.transaction?.status!)}
                         .hasBackButton=${this.hasReturnBack}
                         .hasShareButton=${true}
                         .sharedData=${(this.transaction?.hash) ? {
@@ -133,21 +132,23 @@ export class SuccessStep extends LitElement {
                                 </div>
                                 <div class="infoWrapper">
                                     <div class="infoItem">
-                                        <p class="title">Invoice created</p>
+                                        <p class="title">${this.i18n?.t('successStep.progressCreatedTitle')}</p>
                                         <p class="text">
                                             ${`${new Date(this.transaction?.createdAt!).toLocaleDateString()} ${new Date(this.transaction?.createdAt!).toLocaleTimeString()}`}
                                         </p>
                                     </div>
                                     <div class="infoItem">
-                                        <p class="title">Processing</p>
+                                        <p class="title">${this.i18n?.t('successStep.progressProcessingTitle')}</p>
                                         <p class="text capitalize">${this.transaction?.status}</p>
                                     </div>
 
                                     <div class="infoItem">
                                         <p class="title">
-                                            ${this.transaction?.status.toString() === 'success'
-                                                    ? 'Payment success'
-                                                    : 'Payment failed'}
+                                            ${
+                                                    (this.transaction?.status.toString() === 'success')
+                                                    ? this.i18n?.t('successStep.progressSuccessResultTitle')
+                                                            : this.i18n?.t('successStep.progressFailedResultTitle')
+                                            }
                                         </p>
                                         <p class="text">
                                             ${`${new Date(this.transaction?.updatedAt!).toLocaleDateString()} ${new Date(this.transaction?.updatedAt!).toLocaleTimeString()}`}
@@ -178,10 +179,10 @@ export class SuccessStep extends LitElement {
 
                     <div class="infoContent">
                         <div class="infoWrapper">
-                            <p class="title">Transaction details:</p>
+                            <p class="title">${this.i18n?.t('successStep.transactionDetailsTitle')}:</p>
 
                             <div class="infoItem">
-                                <p class="title">Network:</p>
+                                <p class="title">${this.i18n?.t('successStep.transactionFields.network')}:</p>
                                 <div class="networkInfo">
                                     <network-icon
                                             .id=${this.transaction?.network.symbol}
@@ -193,7 +194,7 @@ export class SuccessStep extends LitElement {
                                 </div>
                             </div>
                             <div class="infoItem">
-                                <p class="title">Token:</p>
+                                <p class="title">${this.i18n?.t('successStep.transactionFields.token')}:</p>
                                 <div class="tokenInfo">
                                     <token-icon
                                             .id=${this.transaction?.cryptocurrency.symbol.toString().replace('x', '')}
@@ -209,14 +210,14 @@ export class SuccessStep extends LitElement {
                                 </div>
                             </div>
                             <div class="infoItem">
-                                <p class="title">Amount:</p>
+                                <p class="title">${this.i18n?.t('successStep.transactionFields.amount')}:</p>
                                 <p class="amountInfo">
                                     ${(this.amountToken) ? this.amountToken : 0}
                                     ${this.transaction?.cryptocurrency.symbol}
                                 </p>
                             </div>
                             <div class="infoItem">
-                                <p class="title">From:</p>
+                                <p class="title">${this.i18n?.t('successStep.transactionFields.from')}:</p>
 
                                 <div class="copyLine"
                                      @click=${(event: CustomEvent) =>
@@ -273,7 +274,7 @@ export class SuccessStep extends LitElement {
                                 </div>
                             </div>
                             <div class="infoItem">
-                                <p class="title">To:</p>
+                                <p class="title">${this.i18n?.t('successStep.transactionFields.to')}:</p>
 
                                 <div class="copyLine"
                                      @click=${(event: CustomEvent) =>
@@ -331,10 +332,10 @@ export class SuccessStep extends LitElement {
                             </div>
                         </div>
                         <div class="infoWrapper">
-                            <p class="title">Invoice details:</p>
+                            <p class="title">${this.i18n?.t('successStep.invoiceDetailsTitle')}:</p>
 
                             <div class="infoItem">
-                                <p class="title">Merchant:</p>
+                                <p class="title">${this.i18n?.t('successStep.invoiceFields.merchant')}:</p>
                                 <div class="merchantInfo">
                                     ${
                                             (this.invoice?.app?.image)
@@ -362,14 +363,14 @@ export class SuccessStep extends LitElement {
                                 </div>
                             </div>
                             <div class="infoItem">
-                                <p class="title">Total amount:</p>
+                                <p class="title">${this.i18n?.t('successStep.invoiceFields.amountTotal')}:</p>
                                 <p class="amountInfo">
                                     ${(this.invoice?.total) ? this.invoice.total : 0}
                                     ${this.invoice?.currency.symbol}
                                 </p>
                             </div>
                             <div class="infoItem">
-                                <p class="title">Paid amount:</p>
+                                <p class="title">${this.i18n?.t('successStep.invoiceFields.amountPaid')}:</p>
                                 <p class="amountInfo">
                                     ${(this.invoice?.paid) ? this.invoice.paid : 0}
                                     ${this.invoice?.currency.symbol}
@@ -380,7 +381,7 @@ export class SuccessStep extends LitElement {
                                     (this.invoiceProducts.length === 1 && (this.invoiceProducts[0].count === 1 || !this.invoiceProducts[0].count))
                                             ? html`
                                                 <div class="infoItem">
-                                                    <p class="title">Product:</p>
+                                                    <p class="title">${this.i18n?.t('successStep.invoiceFields.product')}:</p>
                                                     <div class="productInfo">
                                                         ${
                                                                 (this.invoiceProducts[0].product.image)
@@ -416,9 +417,9 @@ export class SuccessStep extends LitElement {
                                     ((this.invoiceProducts.length === 1 && this.invoiceProducts[0].count > 1) || (this.invoiceProducts.length > 1))
                                             ? html`
                                                 <div class="infoItem">
-                                                    <p class="title">Products:</p>
+                                                    <p class="title">${this.i18n?.t('successStep.invoiceFields.products')}:</p>
                                                     <div class="productButton" @click=${() => this.openProductModal()}>
-                                                        <p class="name">Items: ${this.invoiceProducts.length}</p>
+                                                        <p class="name">${this.i18n?.t('successStep.invoiceFields.productCount')}: ${this.invoiceProducts.length}</p>
                                                     </div>
                                                 </div>
                                             `
@@ -442,7 +443,7 @@ export class SuccessStep extends LitElement {
                     <div class="contentWrapper ${(this.showProductModalContent) ? 'show' : ''}">
                         <div class="content">
                             <div class="titleWrapper">
-                                <p>Products</p>
+                                <p>${this.i18n?.t('modals.products.title')}</p>
                                 <div class="closeButton"
                                      @click=${() => this.closeProductModal()}
                                 >
@@ -492,7 +493,7 @@ export class SuccessStep extends LitElement {
 
                                                 <div class="priceWrapper">
                                                     <p class="price">${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].price) ? item.product.prices[0].price : ''} ${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].currency.symbol) ? item.product.prices[0].currency.symbol : ''}</p>
-                                                    <p class="count">Count: ${item.count || '---'}</p>
+                                                    <p class="count">${this.i18n?.t('modals.products.count')}: ${item.count || '---'}</p>
                                                 </div>
 
                                             </div>
@@ -506,6 +507,19 @@ export class SuccessStep extends LitElement {
                 </div>
             </div>
         `;
+    }
+
+    private getStatusTitle(status: TransactionStatus){
+        switch (status) {
+            case TransactionStatus.Canceled:
+                return this.i18n?.t('successStep.statusTitle.canceled');
+            case TransactionStatus.Expired:
+                return this.i18n?.t('successStep.statusTitle.expired');
+            case TransactionStatus.Rejected:
+                return this.i18n?.t('successStep.statusTitle.rejected');
+            case TransactionStatus.Success:
+                return this.i18n?.t('successStep.statusTitle.success');
+        }
     }
 
     private copyData(event: CustomEvent, text: string) {

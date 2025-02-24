@@ -75,12 +75,34 @@
         }
     },
     "successStep": {
-        "title": "%{statusName} transaction",
+        "statusTitle": {
+            "canceled": "Canceled transaction",
+            "expired": "Expired transaction",
+            "rejected": "Rejected transaction",
+            "success": "Success transaction"
+        },
         "shareTitle": "New Invoice",
         "progressCreatedTitle": "Invoice created",
         "progressProcessingTitle": "Processing",
-        "progressCompleteTitle": "Payment complete",
-        "progressCompleteText": "Awaiting"
+        "progressSuccessResultTitle": "Payment success",
+        "progressFailedResultTitle": "Payment failed",
+        "transactionDetailsTitle": "Transaction details",
+        "transactionFields": {
+            "network": "Network",
+            "token": "Token",
+            "amount": "Amount",
+            "from": "From",
+            "to": "To"
+        },
+        "invoiceDetailsTitle": "Invoice details",
+        "invoiceFields": {
+            "merchant": "Merchant",
+            "amountTotal": "Total amount",
+            "amountPaid": "Paid amount",
+            "product": "Product",
+            "products": "Products",
+            "productCount": "Items"
+        }
     },
 
     "footer": {
@@ -97,27 +119,28 @@
 
     "errors": {
         "invoiceAmount": {
-            "title": "Minimum Invoice Amount",
+            "title": "Invoice Amount Error",
             "text": "The minimum amount required to create an invoice is 1 USD. Please adjust the amount and try again."
         },
         "noAddress": {
-            "title": "No Wallet Addresses Found",
+            "title": "Wallet Addresses Error",
             "text": "No addresses were found in your wallet. Please add an address or try connecting a different wallet."
         },
         "walletConnectionNotConfirmed": {
-            "title": "Wallet Connection Not Confirmed",
+            "title": "Wallet Connection Error",
             "text": "The wallet connection was not confirmed. Please try again to continue.",
             "textSecond": "Maybe your wallet extension is inactive in browser. Activate it by clicking on its icon in your browser."
         },
         "walletConnectionFailed": {
-            "title": "Connection Failed",
+            "title": "Wallet Connection Error",
             "text": "Unable to establish a connection with the wallet connector. Please check your wallet and try again."
         },
         "walletAddressInvalid": {
+            "title": "Wallet Address Error",
             "text": "The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted."
         },
         "networkChangeFailed": {
-            "title": "Network Change Failed",
+            "title": "Network Change Error",
             "text": "Unable to automatically switch the wallet network. Please change the network manually in your wallet settings and try again."
         },
         "transactionCanceled": {
@@ -127,6 +150,78 @@
             "timeLimitText": "The time limit for completing the payment has expired. Please try again to proceed with your transaction.",
             "somethingWrongText": "Something went wrong with the transaction. Please try again later.",
             "wrongNetworkText": "The current network of your wallet is incompatible with this transaction. Please switch to the %{networkName} network manually and try again."
+        },
+        "viewModeInvalid": {
+            "title": "View Mode Error",
+            "text": "Invalid viewMode: the provided attribute is not valid. Please ensure it matches one of the supported view modes: modal, paymentPage or relative (default)."
+        },
+        "modalTriggerInvalid": {
+            "title": "Modal Trigger Error",
+            "text": "Invalid trigger: the provided attribute is empty."
+        },
+        "paymentPageNotAvailable": {
+            "title": "View Mode Error",
+            "text": "The paymentPage display mode is currently available only for viewing invoices and transactions. To access invoice creation options, please use the relative (default) or modal display mode."
+        },
+        "clientIdInvalid": {
+            "title": "Client ID Error",
+            "text": "clientId must be either a number or a valid UUID v4 format."
+        },
+        "fetchTransactionFailed": {
+            "title": "Fetch Transaction Error",
+            "text": "Failed to retrieve transaction data. Please try again later."
+        },
+        "fetchInvoiceFailed": {
+            "title": "Fetch Invoice Error",
+            "text": "Failed to retrieve invoice data. Please try again later."
+        },
+        "tokenNameInvalid": {
+            "title": "Cryptocurrency Error",
+            "text": "The token name you entered is incorrect. Please double-check the name and try again."
+        },
+        "networkNameInvalid": {
+            "title": "Cryptocurrency Error",
+            "text": "The token network you selected is incorrect. Please verify the network and try again."
+        },
+        "cryptocurrencyInvalid": {
+            "title": "Cryptocurrency Error",
+            "text": "The token name and network you entered is incorrect. Please verify the token name and network and try again."
+        },
+        "appIdInvalid": {
+            "title": "App ID Error",
+            "text": "You did not pass the appId. In order to continue, the appId field must be filled in."
+        },
+        "fetchAppFailed": {
+            "title": "Fetch App Error",
+            "text": "Failed to retrieve app data. Please try again later."
+        },
+        "fetchProductsFailed": {
+            "title": "Fetch Products Error",
+            "text": "Failed to retrieve app products data. Please try again later."
+        },
+        "fetchTokensFailed": {
+            "title": "Fetch Tokens Error",
+            "text": "Failed to retrieve token data. Please try again later."
+        },
+        "invoiceCreateFailed": {
+            "title": "Invoice Create Error",
+            "text": "Failed to create invoice. Please, try again later."
+        },
+        "transactionCreateFailed": {
+            "title": "Transaction Create Error",
+            "text": "Failed to create transaction. Please, try again later."
+        },
+        "transactionIdEmpty": {
+            "title": "Transaction ID Error",
+            "text": "Unable to retrieve the ID of transaction. Please try again later."
+        },
+        "transactionCancelFailed": {
+            "title": "Transaction Canceling Error",
+            "text": "Failed to cancel the transaction. Please try again later."
+        },
+        "fetchTransactionsFailed": {
+            "title": "Fetch Transactions Error",
+            "text": "Failed to retrieve transactions of invoice. Please try again later."
         }
     },
 
