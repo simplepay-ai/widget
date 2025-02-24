@@ -46,12 +46,49 @@
         "injectedWallet": "Injected",
         "customWallet": "By wallet address"
     },
+    "paymentStep": {
+        "title": "Awaiting for Payment",
+        "network": "Network",
+        "token": "Token",
+        "payAddress": "Address to pay",
+        "payAmount": "Amount",
+        "products": "Products",
+        "productCount": "Products",
+        "totalAmount": "Amount"
+    },
+    "processingStep": {
+        "title": "Proсessing transaction",
+        "sharedTitle": "New Invoice",
+        "progressCreatedTitle": "Invoice created",
+        "progressPaymentTitle": "Payment in progress",
+        "progressCompleteTitle": "Payment complete",
+        "progressCompleteText": "Awaiting",
+        "loadingTitle": "Time to estimate",
+        "loadingPercentText": "Completed",
+        "detailsTitle": "Transaction details",
+        "fields": {
+            "network": "Network",
+            "token": "Token",
+            "amount": "Amount",
+            "from": "From",
+            "to": "To"
+        }
+    },
+    "successStep": {
+        "title": "%{statusName} transaction",
+        "shareTitle": "New Invoice",
+        "progressCreatedTitle": "Invoice created",
+        "progressProcessingTitle": "Processing",
+        "progressCompleteTitle": "Payment complete",
+        "progressCompleteText": "Awaiting"
+    },
 
     "footer": {
         "total": "Total",
         "productsCount": "Items",
         "explorer": "View in explorer",
-        "timer": "Expiration time"
+        "timer": "Expiration time",
+        "leftPay": "Left to pay"
     },
 
     "user": {
@@ -78,6 +115,18 @@
         },
         "walletAddressInvalid": {
             "text": "The wallet address you entered is invalid. Please check the address for any errors and ensure it is correctly formatted."
+        },
+        "networkChangeFailed": {
+            "title": "Network Change Failed",
+            "text": "Unable to automatically switch the wallet network. Please change the network manually in your wallet settings and try again."
+        },
+        "transactionCanceled": {
+            "title": "Transaction Canceled",
+            "userCancelText": "You have canceled the transaction. If this was unintentional, please try again.",
+            "lowBalanceText": "Your balance is too low to complete the transaction. Please add funds to your account and try again.",
+            "timeLimitText": "The time limit for completing the payment has expired. Please try again to proceed with your transaction.",
+            "somethingWrongText": "Something went wrong with the transaction. Please try again later.",
+            "wrongNetworkText": "The current network of your wallet is incompatible with this transaction. Please switch to the %{networkName} network manually and try again."
         }
     },
 
@@ -92,11 +141,18 @@
         "cancelTransaction": "Cancel transaction",
         "selectAddress": "Select address",
         "no": "No",
-        "continue": "Continue"
+        "continue": "Continue",
+        "copy": "Copy",
+        "copied": "Copied",
+        "pay": "Pay",
+        "backToStore": "Back to Store",
+        "makePayment": "Make payment"
     },
     "loaders": {
         "creatingInvoice": "Creating invoice",
-        "creatingTransaction": "Creating transaction"
+        "creatingTransaction": "Creating transaction",
+        "cancelingTransaction": "Canceling transaction",
+        "checkingTransaction": "Checking transaction"
     },
     "modals": {
         "products": {

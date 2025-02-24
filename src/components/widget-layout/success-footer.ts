@@ -3,11 +3,15 @@ import {customElement} from 'lit/decorators.js';
 import {Invoice} from "@simplepay-ai/api-client";
 //@ts-ignore
 import style from "../../styles/widget-styles/success-footer.css?inline";
+import {I18n} from "i18n-js";
 
 @customElement('success-footer')
 export class SuccessFooter extends LitElement {
 
     static styles = unsafeCSS(style);
+
+    @property({type: Object})
+    i18n: I18n | null = null;
 
     @property({type: Object})
     invoice: Invoice | null = null;
@@ -53,20 +57,20 @@ export class SuccessFooter extends LitElement {
                                         </div>
 
                                         <div class="price">
-                                            <p>Left to pay:</p>
+                                            <p>${this.i18n?.t('footer.leftPay')}:</p>
                                             <p>${this.leftPaid ? `${this.leftPaid} USD` : '0 USD'}</p>
                                         </div>
                                     </div>
 
                                     <button class="mainButton" @click=${() => this.dispatchReturnBack()}>
-                                        Make payment
+                                        ${this.i18n?.t('buttons.makePayment')}
                                     </button>
                                 `
                                 : html`
                                     <button class="mainButton full" @click=${() => {
                                         window.location.replace(this.backButtonUrl || location.href);
                                     }}>
-                                        Back to Store
+                                        ${this.i18n?.t('buttons.backToStore')}
                                     </button>
 
                                 `

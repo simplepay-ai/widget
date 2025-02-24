@@ -6,11 +6,15 @@ import {customElement, html, LitElement, property, query, unsafeCSS} from 'lit-e
 import {getTokenStandart, roundUpAmount} from "../../../lib/util.ts";
 //@ts-ignore
 import style from "../../../styles/widget-styles/success-step.css?inline";
+import {I18n} from "i18n-js";
 
 @customElement('success-step')
 export class SuccessStep extends LitElement {
 
     static styles = unsafeCSS(style);
+
+    @property({type: Object})
+    i18n: I18n | null = null;
 
     @property({type: Object})
     invoice: Invoice | null = null;
@@ -107,11 +111,11 @@ export class SuccessStep extends LitElement {
         return html`
             <div class=${`stepWrapper`}>
                 <main-header
-                        .title=${`${this.transaction?.status} transaction`}
+                        .title=${this.i18n?.t('successStep.title', {statusName: this.transaction?.status})}
                         .hasBackButton=${this.hasReturnBack}
                         .hasShareButton=${true}
                         .sharedData=${(this.transaction?.hash) ? {
-                            title: 'New Invoice',
+                            title: this.i18n?.t('successStep.shareTitle'),
                             url: this.qrCodeUrl
                         } : null}
                 ></main-header>
@@ -424,6 +428,7 @@ export class SuccessStep extends LitElement {
                 </div>
 
                 <success-footer
+                        .i18n=${this.i18n}
                         .invoice=${this.invoice}
                         .backButtonUrl=${this.backToStoreUrl}
                 ></success-footer>

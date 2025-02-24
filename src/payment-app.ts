@@ -740,6 +740,7 @@ export class PaymentApp extends LitElement {
             ${this.appStep === 'paymentStep'
                     ? html`
                         <payment-step
+                                .i18n=${this.i18n}
                                 .transaction=${this.transaction}
                                 .walletAddress=${this.walletAddress}
                                 .invoice=${this.invoice}
@@ -762,6 +763,7 @@ export class PaymentApp extends LitElement {
             ${this.appStep === 'processingStep'
                     ? html`
                         <processing-step
+                                .i18n=${this.i18n}
                                 .invoice=${this.invoice}
                                 .transaction=${this.transaction}
                                 .hasReturnBack=${!this.onlyTransaction}
@@ -772,6 +774,7 @@ export class PaymentApp extends LitElement {
             ${this.appStep === 'successStep'
                     ? html`
                         <success-step
+                                .i18n=${this.i18n}
                                 .invoice=${this.invoice}
                                 .transaction=${this.transaction}
                                 .backToStoreUrl=${this.backToStoreUrl}
