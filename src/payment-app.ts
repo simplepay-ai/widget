@@ -593,9 +593,6 @@ export class PaymentApp extends LitElement {
             }
         }
 
-        if (changedProperties.has('i18n')) {
-            console.log('i18n changed', this.i18n)
-        }
     }
 
     render() {

@@ -2,7 +2,7 @@ import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
 //@ts-ignore
 import style from "../../styles/payment-page-styles/invoice-info.css?inline";
-import {Invoice, InvoiceProduct, InvoiceStatus, TransactionStatus, UserProfile} from "@simplepay-ai/api-client";
+import {Invoice, InvoiceProduct, InvoiceStatus, UserProfile} from "@simplepay-ai/api-client";
 //@ts-ignore
 import logo from "../../assets/logo.jpg";
 import {AppTheme, PaymentPageStep} from "../../lib/types.ts";

@@ -8,7 +8,7 @@ export class LanguageSelector extends LitElement {
     @property({type: Object})
     i18n: I18n | null = null;
 
-    _handleChange(e) {
+    _handleChange(e: any) {
         if (this.i18n) {
             this.i18n.locale = e.target.value;
             window.dispatchEvent(new CustomEvent('localeChanged'));
