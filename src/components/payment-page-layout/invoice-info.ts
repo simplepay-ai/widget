@@ -397,7 +397,7 @@ export class InvoiceInfo extends LitElement {
                                                             <button class="mainButton"
                                                                     @click=${() => this.dispatchStepChange('transactionsHistoryStep')}
                                                             >
-                                                                ${this.i18n?.t('invoiceInfo.history')}
+                                                                ${this.i18n?.t('buttons.history')}
                                                             </button>
                                                         `
                                         }

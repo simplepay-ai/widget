@@ -17,6 +17,7 @@ import {
     WriteContractErrorType
 } from "@wagmi/core";
 import {Address, parseEther, parseUnits} from "viem";
+import {I18n} from "i18n-js";
 
 const ABI_USDT_BSC = [
     {
@@ -792,6 +793,9 @@ export class AwaitingPaymentTransaction extends LitElement {
     /////////////////////
 
     @property({type: Object})
+    i18n: I18n | null = null;
+
+    @property({type: Object})
     transaction: Transaction | null = null;
 
     @property({type: Object})
@@ -959,9 +963,9 @@ export class AwaitingPaymentTransaction extends LitElement {
                 const options = {
                     detail: {
                         notificationData: {
-                            title: 'Network Change Failed',
-                            text: 'Unable to automatically switch the wallet network. Please change the network manually in your wallet settings and try again.',
-                            buttonText: 'Confirm'
+                            title: this.i18n?.t('errors.networkChangeFailed.title'),
+                            text: this.i18n?.t('errors.networkChangeFailed.text'),
+                            buttonText: this.i18n?.t('buttons.confirm')
                         },
                         notificationShow: true
                     },
@@ -1040,23 +1044,23 @@ export class AwaitingPaymentTransaction extends LitElement {
                     if (errorMessage.indexOf('rejected') !== -1
                         || errorMessage.indexOf('not support') !== -1) {
 
-                        messageTitle = 'Transaction Canceled'
-                        messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+                        messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                        messageText = this.i18n?.t('errors.transactionCanceled.userCancelText') || ''
 
                     } else if (errorMessage.indexOf('balance') !== -1) {
 
-                        messageTitle = 'Transaction Canceled'
-                        messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+                        messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                        messageText = this.i18n?.t('errors.transactionCanceled.lowBalanceText') || ''
 
                     } else if (errorMessage.indexOf('timeout') !== -1) {
 
-                        messageTitle = 'Transaction Canceled'
-                        messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
+                        messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                        messageText = this.i18n?.t('errors.transactionCanceled.timeLimitText') || ''
 
                     } else {
 
-                        messageTitle = 'Transaction Canceled';
-                        messageText = 'Something went wrong with the transaction. Please try again later.'
+                        messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                        messageText = this.i18n?.t('errors.transactionCanceled.somethingWrongText') || ''
 
                     }
 
@@ -1122,23 +1126,23 @@ export class AwaitingPaymentTransaction extends LitElement {
                     if (errorMessage.indexOf('rejected') !== -1
                         || errorMessage.indexOf('not support') !== -1) {
 
-                        messageTitle = 'Transaction Canceled'
-                        messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+                        messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                        messageText = this.i18n?.t('errors.transactionCanceled.userCancelText') || ''
 
                     } else if (errorMessage.indexOf('balance') !== -1) {
 
-                        messageTitle = 'Transaction Canceled'
-                        messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+                        messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                        messageText = this.i18n?.t('errors.transactionCanceled.lowBalanceText') || ''
 
                     } else if (errorMessage.indexOf('timeout') !== -1) {
 
-                        messageTitle = 'Transaction Canceled'
-                        messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
+                        messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                        messageText = this.i18n?.t('errors.transactionCanceled.timeLimitText') || ''
 
                     } else {
 
-                        messageTitle = 'Transaction Canceled';
-                        messageText = 'Something went wrong with the transaction. Please try again later.'
+                        messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                        messageText = this.i18n?.t('errors.transactionCanceled.somethingWrongText') || ''
 
                     }
 
@@ -1204,28 +1208,28 @@ export class AwaitingPaymentTransaction extends LitElement {
 
                         if (error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.userCancelText') || ''
 
                         } else if (error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.lowBalanceText') || ''
 
                         } else if (error.message.indexOf('not match the target chain') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the BNB network manually and try again.`
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.wrongNetworkText', {networkName: 'BNB'}) || ''
 
                         } else if (error.message.indexOf('Timeout error') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.timeLimitText') || ''
 
                         } else {
 
-                            messageTitle = 'Transaction Canceled';
-                            messageText = 'Something went wrong with the transaction. Please try again later.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.somethingWrongText') || ''
 
                         }
 
@@ -1287,28 +1291,28 @@ export class AwaitingPaymentTransaction extends LitElement {
 
                         if (error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.userCancelText') || ''
 
                         } else if (error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.lowBalanceText') || ''
 
                         } else if (error.message.indexOf('not match the target chain') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the Ethereum Mainnet network manually and try again.`
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.wrongNetworkText', {networkName: 'Ethereum Mainnet'}) || ''
 
                         } else if (error.message.indexOf('Timeout error') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.timeLimitText') || ''
 
                         } else {
 
-                            messageTitle = 'Transaction Canceled';
-                            messageText = 'Something went wrong with the transaction. Please try again later.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.somethingWrongText') || ''
 
                         }
 
@@ -1370,28 +1374,28 @@ export class AwaitingPaymentTransaction extends LitElement {
 
                         if (error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.userCancelText') || ''
 
                         } else if (error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.lowBalanceText') || ''
 
                         } else if (error.message.indexOf('not match the target chain') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the zkSync Mainnet network manually and try again.`
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.wrongNetworkText', {networkName: 'zkSync Mainnet'}) || ''
 
                         } else if (error.message.indexOf('Timeout error') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.timeLimitText') || ''
 
                         } else {
 
-                            messageTitle = 'Transaction Canceled';
-                            messageText = 'Something went wrong with the transaction. Please try again later.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.somethingWrongText') || ''
 
                         }
 
@@ -1453,28 +1457,28 @@ export class AwaitingPaymentTransaction extends LitElement {
 
                         if (error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.userCancelText') || ''
 
                         } else if (error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.lowBalanceText') || ''
 
                         } else if (error.message.indexOf('not match the target chain') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the Arbitrum One network manually and try again.`
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.wrongNetworkText', {networkName: 'Arbitrum One'}) || ''
 
                         } else if (error.message.indexOf('Timeout error') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.timeLimitText') || ''
 
                         } else {
 
-                            messageTitle = 'Transaction Canceled';
-                            messageText = 'Something went wrong with the transaction. Please try again later.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.somethingWrongText') || ''
 
                         }
 
@@ -1536,28 +1540,28 @@ export class AwaitingPaymentTransaction extends LitElement {
 
                         if (error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.userCancelText') || ''
 
                         } else if (error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.lowBalanceText') || ''
 
                         } else if (error.message.indexOf('not match the target chain') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the OP Mainnet network manually and try again.`
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.wrongNetworkText', {networkName: 'OP Mainnet'}) || ''
 
                         } else if (error.message.indexOf('Timeout error') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.timeLimitText') || ''
 
                         } else {
 
-                            messageTitle = 'Transaction Canceled';
-                            messageText = 'Something went wrong with the transaction. Please try again later.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.somethingWrongText') || ''
 
                         }
 
@@ -1619,28 +1623,28 @@ export class AwaitingPaymentTransaction extends LitElement {
 
                         if (error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.userCancelText') || ''
 
                         } else if (error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.lowBalanceText') || ''
 
                         } else if (error.message.indexOf('not match the target chain') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the Base network manually and try again.`
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.wrongNetworkText', {networkName: 'Base'}) || ''
 
                         } else if (error.message.indexOf('Timeout error') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.timeLimitText') || ''
 
                         } else {
 
-                            messageTitle = 'Transaction Canceled';
-                            messageText = 'Something went wrong with the transaction. Please try again later.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.somethingWrongText') || ''
 
                         }
 
@@ -1703,28 +1707,28 @@ export class AwaitingPaymentTransaction extends LitElement {
 
                         if (error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.userCancelText') || ''
 
                         } else if (error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.lowBalanceText') || ''
 
                         } else if (error.message.indexOf('not match the target chain') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the Polygon network manually and try again.`
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.wrongNetworkText', {networkName: 'Polygon'}) || ''
 
                         } else if (error.message.indexOf('Timeout error') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.timeLimitText') || ''
 
                         } else {
 
-                            messageTitle = 'Transaction Canceled';
-                            messageText = 'Something went wrong with the transaction. Please try again later.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.somethingWrongText') || ''
 
                         }
 
@@ -1787,28 +1791,28 @@ export class AwaitingPaymentTransaction extends LitElement {
 
                         if (error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.userCancelText') || ''
 
                         } else if (error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.lowBalanceText') || ''
 
                         } else if (error.message.indexOf('not match the target chain') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the Avalanche network manually and try again.`
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.wrongNetworkText', {networkName: 'Avalanche'}) || ''
 
                         } else if (error.message.indexOf('Timeout error') !== -1) {
 
-                            messageTitle = 'Transaction Canceled'
-                            messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.timeLimitText') || ''
 
                         } else {
 
-                            messageTitle = 'Transaction Canceled';
-                            messageText = 'Something went wrong with the transaction. Please try again later.'
+                            messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                            messageText = this.i18n?.t('errors.transactionCanceled.somethingWrongText') || ''
 
                         }
 
@@ -1908,13 +1912,13 @@ export class AwaitingPaymentTransaction extends LitElement {
 
             if (error.message.indexOf('User rejected') !== -1 || error.message.indexOf('does not support the requested method') !== -1) {
 
-                messageTitle = 'Transaction Canceled'
-                messageText = 'You have canceled the transaction. If this was unintentional, please try again.'
+                messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                messageText = this.i18n?.t('errors.transactionCanceled.userCancelText') || ''
 
             } else if (error.message.indexOf('exceeds the balance') !== -1 || error.message.indexOf('exceeds balance') !== -1 || error.message.indexOf('resource not found') !== -1) {
 
-                messageTitle = 'Transaction Canceled'
-                messageText = 'Your balance is too low to complete the transaction. Please add funds to your account and try again.'
+                messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                messageText = this.i18n?.t('errors.transactionCanceled.lowBalanceText') || ''
 
             } else if (error.message.indexOf('not match the target chain') !== -1) {
 
@@ -1949,18 +1953,18 @@ export class AwaitingPaymentTransaction extends LitElement {
                         break;
                 }
 
-                messageTitle = 'Transaction Canceled'
-                messageText = `The current network of your wallet is incompatible with this transaction. Please switch to the ${chainName} network manually and try again.`
+                messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                messageText = this.i18n?.t('errors.transactionCanceled.wrongNetworkText', {networkName: chainName}) || ''
 
             } else if (error.message.indexOf('Timeout error') !== -1) {
 
-                messageTitle = 'Transaction Canceled'
-                messageText = `The time limit for completing the payment has expired. Please try again to proceed with your transaction.`
+                messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                messageText = this.i18n?.t('errors.transactionCanceled.timeLimitText') || ''
 
             } else {
 
-                messageTitle = 'Transaction Canceled';
-                messageText = 'Something went wrong with the transaction. Please try again later.'
+                messageTitle = this.i18n?.t('errors.transactionCanceled.title') || ''
+                messageText = this.i18n?.t('errors.transactionCanceled.somethingWrongText') || ''
 
             }
 
@@ -2072,7 +2076,7 @@ export class AwaitingPaymentTransaction extends LitElement {
                     </button>
 
                     <p class="title">
-                        Awaiting For Payment
+                        ${this.i18n?.t('paymentStep.title')}
                     </p>
 
                     <div class="badge withAddress">
@@ -2100,7 +2104,7 @@ export class AwaitingPaymentTransaction extends LitElement {
                                                     />
                                                 </svg>
 
-                                                <p>Canceling transaction ...</p>
+                                                <p>${`${this.i18n?.t('loaders.cancelingTransaction')} ...`}</p>
                                             </div>
                                         </div>
                                     `
@@ -2123,7 +2127,7 @@ export class AwaitingPaymentTransaction extends LitElement {
                                                     />
                                                 </svg>
 
-                                                <p>Checking transaction ...</p>
+                                                <p>${`${this.i18n?.t('loaders.checkingTransaction')} ...`}</p>
                                             </div>
                                         </div>
                                     `
@@ -2135,7 +2139,7 @@ export class AwaitingPaymentTransaction extends LitElement {
                                     ? html`
                                         <div class="topInfo">
                                             <div class="infoItem">
-                                                <p class="title">Network:</p>
+                                                <p class="title">${this.i18n?.t('paymentStep.network')}:</p>
                                                 <div class="info">
                                                     <network-icon
                                                             .id=${this.transaction?.network.symbol}
@@ -2148,7 +2152,7 @@ export class AwaitingPaymentTransaction extends LitElement {
                                             </div>
 
                                             <div class="infoItem">
-                                                <p class="title">Token:</p>
+                                                <p class="title">${this.i18n?.t('paymentStep.token')}:</p>
 
                                                 <div class="info">
                                                     <token-icon
@@ -2188,7 +2192,7 @@ export class AwaitingPaymentTransaction extends LitElement {
 
                                         <div class="bottomInfo">
                                             <label class="inputWrapper" for="payAddress">
-                                                <p class="labelText">Address to pay:</p>
+                                                <p class="labelText">${this.i18n?.t('paymentStep.payAddress')}:</p>
 
                                                 <div class="input">
                                                     <input
@@ -2221,7 +2225,7 @@ export class AwaitingPaymentTransaction extends LitElement {
                                                                         d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
                                                                 />
                                                             </svg>
-                                                            Copy
+                                                            ${this.i18n?.t('buttons.copy')}
                                                         </div>
                                                         <div class="active">
                                                             <svg
@@ -2237,14 +2241,14 @@ export class AwaitingPaymentTransaction extends LitElement {
                                                             >
                                                                 <path d="M20 6 9 17l-5-5"/>
                                                             </svg>
-                                                            Copied
+                                                            ${this.i18n?.t('buttons.copied')}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </label>
 
                                             <label class="inputWrapper" for="payAmount">
-                                                <p class="labelText">Amount:</p>
+                                                <p class="labelText">${this.i18n?.t('paymentStep.payAmount')}:</p>
 
                                                 <div class="input">
                                                     <input
@@ -2277,7 +2281,7 @@ export class AwaitingPaymentTransaction extends LitElement {
                                                                         d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
                                                                 />
                                                             </svg>
-                                                            Copy
+                                                            ${this.i18n?.t('buttons.copy')}
                                                         </div>
                                                         <div class="active">
                                                             <svg
@@ -2293,7 +2297,7 @@ export class AwaitingPaymentTransaction extends LitElement {
                                                             >
                                                                 <path d="M20 6 9 17l-5-5"/>
                                                             </svg>
-                                                            Copied
+                                                            ${this.i18n?.t('buttons.copied')}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -2343,7 +2347,7 @@ export class AwaitingPaymentTransaction extends LitElement {
                                                                                                                 </svg>
                                                                                                             </div>
 
-                                                                                                            <p>Pay With Coinbase</p>
+                                                                                                            <p>${`${this.i18n?.t('buttons.payWith')} Coinbase`}</p>
                                                                                                         ` : ''
                                                                                         }
 
@@ -2365,7 +2369,7 @@ export class AwaitingPaymentTransaction extends LitElement {
                                                                                                                     </g>
                                                                                                                 </svg>
                                                                                                             </div>
-                                                                                                            <p>Pay With WalletConnect</p>
+                                                                                                            <p>${`${this.i18n?.t('buttons.payWith')} WalletConnect`}</p>
                                                                                                         ` : ''
                                                                                         }
 
@@ -2402,7 +2406,7 @@ export class AwaitingPaymentTransaction extends LitElement {
                                                                                                                     </g>
                                                                                                                 </svg>
                                                                                                             </div>
-                                                                                                            <p>Pay With TronLink</p>
+                                                                                                            <p>${`${this.i18n?.t('buttons.payWith')} TronLink`}</p>
                                                                                                         ` : ''
                                                                                         }
 
@@ -2622,7 +2626,7 @@ export class AwaitingPaymentTransaction extends LitElement {
                             @click=${this.dispatchCancelInvoice}
                             .disabled=${this.cancelingTransaction || this.connectorPaymentAwaiting || this.checkingTransaction}
                     >
-                        Cancel transaction
+                        ${this.i18n?.t('buttons.cancelTransaction')}
                     </button>
 
                     <div class="timerWrapper">
@@ -2662,7 +2666,7 @@ export class AwaitingPaymentTransaction extends LitElement {
                         </div>
 
                         <div class="info">
-                            <p class="title">Expiration time</p>
+                            <p class="title">${this.i18n?.t('footer.timer')}</p>
                             <p
                                     id="timerTime"
                                     class=${`timerLeft

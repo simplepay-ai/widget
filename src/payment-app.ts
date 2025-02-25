@@ -324,7 +324,7 @@ export class PaymentApp extends LitElement {
             this.openButtonParams = {
                 backgroundColor: (buttonParams && buttonParams.backgroundColor) ? buttonParams.backgroundColor : '#3b82f6',
                 textColor: (buttonParams && buttonParams.textColor) ? buttonParams.textColor : '#ffffff',
-                title: (buttonParams && buttonParams.title) ? buttonParams.title : 'Pay in crypto'
+                title: (buttonParams && buttonParams.title) ? buttonParams.title : this.i18n?.t('buttons.payCrypto')
             }
         }
 
@@ -917,7 +917,7 @@ export class PaymentApp extends LitElement {
                                                                                                         .disabled=${!this.selectedToken || !this.selectedNetwork || !this.walletAddress || !this.walletType}
                                                                                                         @click=${() => this.createTransaction()}
                                                                                                 >
-                                                                                                    Create Transaction
+                                                                                                    ${this.i18n?.t('buttons.createTransaction')}
                                                                                                 </button>
                                                                                             ` : ''
                                                                             }
@@ -934,7 +934,7 @@ export class PaymentApp extends LitElement {
                                                     <div class="hasActiveTransaction">
 
                                                         <div class="message">
-                                                            <p>This invoice already has active transaction in progress</p>
+                                                            <p>${this.i18n?.t('paymentPage.activeTransactionMessage')}</p>
                                                         </div>
 
                                                         <button class="mainButton"
@@ -943,7 +943,7 @@ export class PaymentApp extends LitElement {
                                                                     this.goToTransactionStep(this.activeTransaction?.status!)
                                                                 }}
                                                         >
-                                                            To Active Transaction
+                                                            ${this.i18n?.t('buttons.activeTransaction')}
                                                         </button>
 
                                                     </div>
@@ -954,6 +954,7 @@ export class PaymentApp extends LitElement {
                                         (this.paymentPageStep === 'awaitingPaymentStep')
                                                 ? html`
                                                     <awaiting-payment-transaction
+                                                            .i18n=${this.i18n}
                                                             .invoice=${this.invoice}
                                                             .transaction=${this.transaction}
                                                             .cancelingTransaction=${this.cancelingTransaction}
