@@ -70,6 +70,8 @@ export class ProductStep extends LitElement {
                         : html`
                             <main-header
                                     .title=${this.i18n?.t('enterProductStep.title')}
+                                    .i18n=${this.i18n}
+                                    .hasLanguageSelector=${this.paymentTypeSelected}
                             ></main-header>
 
                             <div class="stepContent">

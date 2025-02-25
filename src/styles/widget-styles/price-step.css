@@ -31,7 +31,13 @@
     padding: 16px;
 }
 
-.stepWrapper .header p {
+.stepWrapper .header .topSection{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stepWrapper .header .topSection p {
     font-size: 20px;
     line-height: 1.2;
     font-weight: 700;
