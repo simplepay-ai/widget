@@ -2,17 +2,24 @@ import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import { customElement } from 'lit/decorators.js';
 //@ts-ignore
 import style from "../../styles/widget-styles/main-header.css?inline";
+import {I18n} from "i18n-js";
 
 @customElement('main-header')
 export class MainHeader extends LitElement {
 
     static styles = unsafeCSS(style);
 
+    @property({type: Object})
+    i18n: I18n | null = null;
+
     @property({ type: String })
     title: string = '';
 
     @property({ type: Boolean })
     hasBackButton: boolean = false;
+
+    @property({ type: Boolean })
+    hasLanguageSelector: boolean = false;
 
     @property({ type: Boolean })
     backButtonDisabled: boolean = false;
@@ -79,6 +86,16 @@ export class MainHeader extends LitElement {
                     </div>
 
                     <div class="rightSection">
+                        
+                        ${
+                                (this.hasLanguageSelector)
+                                ? html`
+                                            <language-selector
+                                                    .i18n=${this.i18n}
+                                            ></language-selector>
+                                        ` : ''
+                        }
+                        
                         ${this.showToken && this.token
                             ? html`
                                   <div class="tokenIconWrapper">

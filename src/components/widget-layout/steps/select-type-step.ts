@@ -16,12 +16,33 @@ export class SelectTypeStep extends LitElement {
     @property({type: Object})
     i18n: I18n | null = null;
 
+    constructor() {
+        super();
+        this._onLocaleChanged = this._onLocaleChanged.bind(this);
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        window.addEventListener('localeChanged', this._onLocaleChanged);
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('localeChanged', this._onLocaleChanged);
+        super.disconnectedCallback();
+    }
+
+    _onLocaleChanged() {
+        this.requestUpdate();
+    }
+
     render() {
         return html`
             <div class="stepWrapper">
 
                 <main-header
                         .title=${ this.i18n?.t('invoiceTypeSelectStep.title') }
+                        .hasLanguageSelector=${true}
+                        .i18n=${this.i18n}
                 ></main-header>
 
                 <div class="stepContent">

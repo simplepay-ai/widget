@@ -46,6 +46,7 @@ import './components/payment-page-layout/transactions-history.ts';
 import './components/payment-page-layout/completed-transaction.ts';
 import './components/payment-page-layout/awaiting-payment-transaction.ts';
 import './components/payment-page-layout/processing-transaction.ts';
+import './components/ui/language-selector.ts';
 
 import {checkWalletAddress, generateUUID} from "./lib/util.ts";
 import themesConfig from '../themesConfig.json';
@@ -578,9 +579,14 @@ export class PaymentApp extends LitElement {
                 this.cancelingTransaction = false;
             }
         }
+
+        if (changedProperties.has('i18n')) {
+            console.log('i18n changed', this.i18n)
+        }
     }
 
     render() {
+
         const widgetContent = html`
 
             ${this.appStep === 'loadingStep'
@@ -1104,7 +1110,7 @@ export class PaymentApp extends LitElement {
 
     private initLocalization() {
         const userLocale = new Intl.Locale(navigator.language);
-        let defaultLocale: string;
+        let defaultLocale: string ;
 
         switch (userLocale.language) {
             case 'en':
@@ -1121,13 +1127,6 @@ export class PaymentApp extends LitElement {
         this.i18n = new I18n({...locales});
         this.i18n.defaultLocale = defaultLocale;
         this.i18n.locale = defaultLocale;
-    }
-
-    private changeLocalization(localization: AppLanguage) {
-        if (this.i18n) {
-            this.i18n.locale = localization;
-            this.requestUpdate();
-        }
     }
 
     private async login() {
