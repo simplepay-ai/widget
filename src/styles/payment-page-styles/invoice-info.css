@@ -288,6 +288,10 @@
     width: 100%;
 }
 
+.invoiceInfoWrapper .buttonsWrapper.full{
+    justify-content: center;
+}
+
 .invoiceInfoWrapper .userInfoWrapper{
     display: flex;
     gap: 8px;
