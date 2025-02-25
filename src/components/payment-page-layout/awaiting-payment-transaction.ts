@@ -2412,7 +2412,8 @@ export class AwaitingPaymentTransaction extends LitElement {
 
                                                                                         ${
                                                                                                 (this.walletType === 'Injected')
-                                                                                                        ? 'Pay' : ''
+                                                                                                        ? this.i18n?.t('buttons.pay')
+                                                                                                        : ''
                                                                                         }
 
                                                                                         ${
@@ -2601,7 +2602,7 @@ export class AwaitingPaymentTransaction extends LitElement {
                                                                                                                           stroke-linejoin="round"/>
                                                                                                                 </svg>
                                                                                                             </div>
-                                                                                                            <p>Pay With MetaMask</p>
+                                                                                                            <p>${`${this.i18n?.t('buttons.payWith')} MetaMask`}</p>
                                                                                                         ` : ''
                                                                                         }
 

@@ -8,11 +8,15 @@ import {PropertyValues} from "lit";
 import QRCode from "corcojs-qrcode";
 import {Invoice, Transaction} from "@simplepay-ai/api-client";
 import {getTokenStandart, roundUpAmount} from "../../lib/util.ts";
+import {I18n} from "i18n-js";
 
 @customElement('processing-transaction')
 export class ProcessingTransaction extends LitElement {
 
     static styles = unsafeCSS(style);
+
+    @property({type: Object})
+    i18n: I18n | null = null;
 
     @property({type: Object})
     invoice: Invoice | null = null;
@@ -202,7 +206,7 @@ export class ProcessingTransaction extends LitElement {
                     </button>
 
                     <p class="title">
-                        Proсessing Transaction
+                        ${this.i18n?.t('processingStep.title')}
                     </p>
                 </div>
 
@@ -218,20 +222,20 @@ export class ProcessingTransaction extends LitElement {
                             </div>
                             <div class="infoWrapper">
                                 <div class="infoItem">
-                                    <p class="title">Invoice created</p>
+                                    <p class="title">${this.i18n?.t('processingStep.progressCreatedTitle')}</p>
                                     <p class="text">
                                         ${`${new Date(this.transaction?.createdAt!).toLocaleDateString()} ${new Date(this.transaction?.createdAt!).toLocaleTimeString()}`}
                                     </p>
                                 </div>
                                 <div class="infoItem">
-                                    <p class="title">Payment in progress</p>
+                                    <p class="title">${this.i18n?.t('processingStep.progressPaymentTitle')}</p>
                                     <p class="text">
                                         ${this.progressNumber} / ${this.progressMaxNumber}
                                     </p>
                                 </div>
                                 <div class="infoItem notActive">
-                                    <p class="title">Payment complete</p>
-                                    <p class="text">Awaiting</p>
+                                    <p class="title">${this.i18n?.t('processingStep.progressCompleteTitle')}</p>
+                                    <p class="text">${this.i18n?.t('processingStep.progressCompleteText')}</p>
                                 </div>
                             </div>
                         </div>
@@ -248,7 +252,7 @@ export class ProcessingTransaction extends LitElement {
                     </div>
 
                     <div class="loaderWrapper">
-                        <p class="title">Time to estimate:</p>
+                        <p class="title">${this.i18n?.t('processingStep.loadingTitle')}:</p>
 
                         <div class="loader">
                             <div
@@ -257,14 +261,14 @@ export class ProcessingTransaction extends LitElement {
                             ></div>
                         </div>
 
-                        <p class="text">~${this.progressPercent}% Completed</p>
+                        <p class="text">~${this.progressPercent}% ${this.i18n?.t('processingStep.loadingPercentText')}</p>
                     </div>
 
                     <div class="infoWrapper">
-                        <p class="title">Transaction details:</p>
+                        <p class="title">${this.i18n?.t('processingStep.detailsTitle')}:</p>
 
                         <div class="infoItem">
-                            <p class="title">Network:</p>
+                            <p class="title">${this.i18n?.t('processingStep.fields.network')}:</p>
                             <div class="networkInfo">
                                 <network-icon
                                         .id=${this.transaction?.network.symbol}
@@ -276,7 +280,7 @@ export class ProcessingTransaction extends LitElement {
                             </div>
                         </div>
                         <div class="infoItem">
-                            <p class="title">Token:</p>
+                            <p class="title">${this.i18n?.t('processingStep.fields.token')}:</p>
                             <div class="tokenInfo">
                                 <token-icon
                                         .id=${this.transaction?.cryptocurrency.symbol.toString().replace('x', '')}
@@ -292,13 +296,13 @@ export class ProcessingTransaction extends LitElement {
                             </div>
                         </div>
                         <div class="infoItem">
-                            <p class="title">Amount:</p>
+                            <p class="title">${this.i18n?.t('processingStep.fields.amount')}:</p>
                             <p class="amountInfo">
                                 ${this.amountToken} ${this.transaction?.cryptocurrency.symbol}
                             </p>
                         </div>
                         <div class="infoItem">
-                            <p class="title">From:</p>
+                            <p class="title">${this.i18n?.t('processingStep.fields.from')}:</p>
 
                             <div class="copyLine"
                                  @click=${(event: CustomEvent) =>
@@ -355,7 +359,7 @@ export class ProcessingTransaction extends LitElement {
                             </div>
                         </div>
                         <div class="infoItem">
-                            <p class="title">To:</p>
+                            <p class="title">${this.i18n?.t('processingStep.fields.to')}:</p>
 
                             <div class="copyLine"
                                  @click=${(event: CustomEvent) =>
@@ -417,7 +421,7 @@ export class ProcessingTransaction extends LitElement {
                 <div class="linkWrapper">
                     <a href=${this.qrCodeUrl} target="_blank">
                         <button class="mainButton withIcon">
-                            View in explorer
+                            ${this.i18n?.t('footer.explorer')}
                             <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="24"

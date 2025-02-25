@@ -57,7 +57,7 @@
         "totalAmount": "Amount"
     },
     "processingStep": {
-        "title": "Proсessing transaction",
+        "title": "Proсessing Transaction",
         "sharedTitle": "New Invoice",
         "progressCreatedTitle": "Invoice created",
         "progressPaymentTitle": "Payment in progress",
@@ -141,6 +141,11 @@
         "addressInputPlaceholder": "Enter your %{networkSymbol} address",
         "addressInputText": "Enter the address of the wallet you will use to complete the payment. We need this to track and verify the on-chain transaction as our service is fully decentralized",
         "addressResult": "Address"
+    },
+    "transactionHistory": {
+        "title": "Transactions History",
+        "amount": "Amount",
+        "emptyMessage": "There are no transactions for this invoice yet"
     },
 
     "footer": {

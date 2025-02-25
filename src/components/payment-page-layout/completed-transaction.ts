@@ -1,4 +1,4 @@
-import {Invoice, InvoiceProduct, Transaction} from '@simplepay-ai/api-client';
+import {Invoice, InvoiceProduct, Transaction, TransactionStatus} from '@simplepay-ai/api-client';
 //@ts-ignore
 import QRCode from 'corcojs-qrcode';
 import {PropertyValues} from 'lit';
@@ -7,11 +7,15 @@ import {customElement, html, LitElement, property, query, unsafeCSS} from 'lit-e
 import style from "../../styles/payment-page-styles/completed-transaction.css?inline";
 import {getTokenStandart, roundUpAmount} from "../../lib/util.ts";
 import {PaymentPageStep} from "../../lib/types.ts";
+import {I18n} from "i18n-js";
 
 @customElement('completed-transaction')
 export class CompletedTransaction extends LitElement {
 
     static styles = unsafeCSS(style);
+
+    @property({type: Object})
+    i18n: I18n | null = null;
 
     @property({type: Object})
     invoice: Invoice | null = null;
@@ -113,6 +117,40 @@ export class CompletedTransaction extends LitElement {
         }
     }
 
+    private getStatusTitle(status: TransactionStatus) {
+        switch (status) {
+            case TransactionStatus.Canceled:
+                return this.i18n?.t('successStep.statusTitle.canceled');
+            case TransactionStatus.Expired:
+                return this.i18n?.t('successStep.statusTitle.expired');
+            case TransactionStatus.Rejected:
+                return this.i18n?.t('successStep.statusTitle.rejected');
+            case TransactionStatus.Success:
+                return this.i18n?.t('successStep.statusTitle.success');
+        }
+    }
+
+    private getLocaliseTransactionStatus(status: TransactionStatus) {
+        switch (status) {
+            case TransactionStatus.Created:
+                return this.i18n?.t('transactionStatus.created');
+            case TransactionStatus.Processing:
+                return this.i18n?.t('transactionStatus.processing');
+            case TransactionStatus.Confirming:
+                return this.i18n?.t('transactionStatus.confirming');
+            case TransactionStatus.Success:
+                return this.i18n?.t('transactionStatus.success');
+            case TransactionStatus.Rejected:
+                return this.i18n?.t('transactionStatus.rejected');
+            case TransactionStatus.Canceled:
+                return this.i18n?.t('transactionStatus.canceled');
+            case TransactionStatus.Expired:
+                return this.i18n?.t('transactionStatus.expired');
+            default:
+                return '';
+        }
+    }
+
     render() {
         return html`
             <div class=${`completedTransaction`}>
@@ -138,10 +176,10 @@ export class CompletedTransaction extends LitElement {
                     </button>
 
                     <p class="title">
-                        ${this.transaction?.status} transaction
+                        ${this.getStatusTitle(this.transaction?.status!)}
                     </p>
                 </div>
-                
+
                 <div class="contentWrapper">
                     <div class="topContent">
                         <div class="topInfo">
@@ -154,21 +192,24 @@ export class CompletedTransaction extends LitElement {
                                 </div>
                                 <div class="infoWrapper">
                                     <div class="infoItem">
-                                        <p class="title">Invoice created</p>
+                                        <p class="title">${this.i18n?.t('successStep.progressCreatedTitle')}</p>
                                         <p class="text">
                                             ${`${new Date(this.transaction?.createdAt!).toLocaleDateString()} ${new Date(this.transaction?.createdAt!).toLocaleTimeString()}`}
                                         </p>
                                     </div>
                                     <div class="infoItem">
-                                        <p class="title">Processing</p>
-                                        <p class="text capitalize">${this.transaction?.status}</p>
+                                        <p class="title">${this.i18n?.t('successStep.progressProcessingTitle')}</p>
+                                        <p class="text capitalize">
+                                            ${this.getLocaliseTransactionStatus(this.transaction?.status!)}</p>
                                     </div>
 
                                     <div class="infoItem">
                                         <p class="title">
-                                            ${this.transaction?.status.toString() === 'success'
-                                                    ? 'Payment success'
-                                                    : 'Payment failed'}
+                                            ${
+                                                    (this.transaction?.status.toString() === 'success')
+                                                            ? this.i18n?.t('successStep.progressSuccessResultTitle')
+                                                            : this.i18n?.t('successStep.progressFailedResultTitle')
+                                            }
                                         </p>
                                         <p class="text">
                                             ${`${new Date(this.transaction?.updatedAt!).toLocaleDateString()} ${new Date(this.transaction?.updatedAt!).toLocaleTimeString()}`}
@@ -196,10 +237,10 @@ export class CompletedTransaction extends LitElement {
                     </div>
                     <div class="infoContent">
                         <div class="infoWrapper">
-                            <p class="title">Transaction details:</p>
+                            <p class="title">${this.i18n?.t('successStep.transactionDetailsTitle')}:</p>
 
                             <div class="infoItem">
-                                <p class="title">Network:</p>
+                                <p class="title">${this.i18n?.t('successStep.transactionFields.network')}:</p>
                                 <div class="networkInfo">
                                     <network-icon
                                             .id=${this.transaction?.network.symbol}
@@ -211,7 +252,7 @@ export class CompletedTransaction extends LitElement {
                                 </div>
                             </div>
                             <div class="infoItem">
-                                <p class="title">Token:</p>
+                                <p class="title">${this.i18n?.t('successStep.transactionFields.token')}:</p>
                                 <div class="tokenInfo">
                                     <token-icon
                                             .id=${this.transaction?.cryptocurrency.symbol.toString().replace('x', '')}
@@ -227,14 +268,14 @@ export class CompletedTransaction extends LitElement {
                                 </div>
                             </div>
                             <div class="infoItem">
-                                <p class="title">Amount:</p>
+                                <p class="title">${this.i18n?.t('successStep.transactionFields.amount')}:</p>
                                 <p class="amountInfo">
                                     ${(this.amountToken) ? this.amountToken : 0}
                                     ${this.transaction?.cryptocurrency.symbol}
                                 </p>
                             </div>
                             <div class="infoItem">
-                                <p class="title">From:</p>
+                                <p class="title">${this.i18n?.t('successStep.transactionFields.from')}:</p>
 
                                 <div class="copyLine"
                                      @click=${(event: CustomEvent) =>
@@ -291,7 +332,7 @@ export class CompletedTransaction extends LitElement {
                                 </div>
                             </div>
                             <div class="infoItem">
-                                <p class="title">To:</p>
+                                <p class="title">${this.i18n?.t('successStep.transactionFields.to')}:</p>
 
                                 <div class="copyLine"
                                      @click=${(event: CustomEvent) =>
@@ -353,14 +394,18 @@ export class CompletedTransaction extends LitElement {
 
                 <button class="mainButton"
                         @click=${() => {
-                            if(this.invoice?.status === 'active'){
+                            if (this.invoice?.status === 'active') {
                                 this.dispatchStepChange('invoiceStep')
-                            }else{
+                            } else {
                                 window.location.replace(this.backToStoreUrl || location.href)
                             }
                         }}
                 >
-                    ${ (this.invoice?.status === 'active') ? 'Make payment' : 'Back to Store' }
+                    ${
+                            (this.invoice?.status === 'active')
+                                    ? this.i18n?.t('buttons.makePayment')
+                                    : this.i18n?.t('buttons.backToStore')
+                    }
                 </button>
 
             </div>

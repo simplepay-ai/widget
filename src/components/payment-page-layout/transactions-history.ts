@@ -3,13 +3,17 @@ import {customElement} from 'lit/decorators.js';
 //@ts-ignore
 import style from "../../styles/payment-page-styles/transactions-history.css?inline";
 import {PaymentPageStep} from "../../lib/types.ts";
-import {Invoice, Transaction} from "@simplepay-ai/api-client";
+import {Invoice, Transaction, TransactionStatus} from "@simplepay-ai/api-client";
 import {roundUpAmount} from "../../lib/util.ts";
+import {I18n} from "i18n-js";
 
 @customElement('transactions-history')
 export class TransactionsHistory extends LitElement {
 
     static styles = unsafeCSS(style);
+
+    @property({type: Object})
+    i18n: I18n | null = null;
 
     @property({type: Object})
     invoice: Invoice | null = null;
@@ -43,6 +47,27 @@ export class TransactionsHistory extends LitElement {
         }
     }
 
+    private getLocaliseTransactionStatus(status: TransactionStatus) {
+        switch (status) {
+            case TransactionStatus.Created:
+                return this.i18n?.t('transactionStatus.created');
+            case TransactionStatus.Processing:
+                return this.i18n?.t('transactionStatus.processing');
+            case TransactionStatus.Confirming:
+                return this.i18n?.t('transactionStatus.confirming');
+            case TransactionStatus.Success:
+                return this.i18n?.t('transactionStatus.success');
+            case TransactionStatus.Rejected:
+                return this.i18n?.t('transactionStatus.rejected');
+            case TransactionStatus.Canceled:
+                return this.i18n?.t('transactionStatus.canceled');
+            case TransactionStatus.Expired:
+                return this.i18n?.t('transactionStatus.expired');
+            default:
+                return '';
+        }
+    }
+
     render() {
         return html`
             <div class="transactionsHistory">
@@ -72,7 +97,7 @@ export class TransactionsHistory extends LitElement {
                     }
 
                     <p class="title">
-                        Transactions History
+                        ${this.i18n?.t('transactionHistory.title')}
                     </p>
                 </div>
                 
@@ -126,7 +151,7 @@ export class TransactionsHistory extends LitElement {
                                                                     (formatPrice !== '---')
                                                                             ? html`
                                                                         <p class="secondary">
-                                                                            Amount: ${formatPrice}
+                                                                            ${this.i18n?.t('transactionHistory.amount')}: ${formatPrice}
                                                                             ${item.cryptocurrency.symbol}
                                                                         </p>
                                                                     `
@@ -135,7 +160,7 @@ export class TransactionsHistory extends LitElement {
                                                 </div>
                                                 <div class="rightSection">
                                                     <div class="status">
-                                                        ${item.status}
+                                                        ${this.getLocaliseTransactionStatus(item.status)}
                                                     </div>
                                                     <p class="secondary">
                                                         ${updateDate}
@@ -150,12 +175,12 @@ export class TransactionsHistory extends LitElement {
                                 :
                                 html`
                                     <div class="transactionsEmptyMessage">
-                                        <p>There are no transactions for this invoice yet</p>
+                                        <p>${this.i18n?.t('transactionHistory.emptyMessage')}</p>
                                         
                                         <button class="mainButton"
                                                 @click=${() => this.dispatchStepChange('invoiceStep')}
                                         >
-                                            Create Transaction
+                                            ${this.i18n?.t('buttons.createTransaction')}
                                         </button>
                                     </div>
                                 `

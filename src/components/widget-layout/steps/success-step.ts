@@ -139,7 +139,7 @@ export class SuccessStep extends LitElement {
                                     </div>
                                     <div class="infoItem">
                                         <p class="title">${this.i18n?.t('successStep.progressProcessingTitle')}</p>
-                                        <p class="text capitalize">${this.transaction?.status}</p>
+                                        <p class="text capitalize">${this.getLocaliseTransactionStatus(this.transaction?.status!)}</p>
                                     </div>
 
                                     <div class="infoItem">
@@ -507,6 +507,27 @@ export class SuccessStep extends LitElement {
                 </div>
             </div>
         `;
+    }
+
+    private getLocaliseTransactionStatus(status: TransactionStatus) {
+        switch (status) {
+            case TransactionStatus.Created:
+                return this.i18n?.t('transactionStatus.created');
+            case TransactionStatus.Processing:
+                return this.i18n?.t('transactionStatus.processing');
+            case TransactionStatus.Confirming:
+                return this.i18n?.t('transactionStatus.confirming');
+            case TransactionStatus.Success:
+                return this.i18n?.t('transactionStatus.success');
+            case TransactionStatus.Rejected:
+                return this.i18n?.t('transactionStatus.rejected');
+            case TransactionStatus.Canceled:
+                return this.i18n?.t('transactionStatus.canceled');
+            case TransactionStatus.Expired:
+                return this.i18n?.t('transactionStatus.expired');
+            default:
+                return '';
+        }
     }
 
     private getStatusTitle(status: TransactionStatus){

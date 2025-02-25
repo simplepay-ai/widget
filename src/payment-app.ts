@@ -982,6 +982,7 @@ export class PaymentApp extends LitElement {
                                         (this.paymentPageStep === 'processingTransactionStep')
                                                 ? html`
                                                     <processing-transaction
+                                                            .i18n=${this.i18n}
                                                             .invoice=${this.invoice}
                                                             .transaction=${this.transaction}
                                                             @goToStep=${(event: CustomEvent) => {
@@ -996,6 +997,7 @@ export class PaymentApp extends LitElement {
                                         (this.paymentPageStep === 'successTransactionStep')
                                                 ? html`
                                                     <completed-transaction
+                                                            .i18n=${this.i18n}
                                                             .invoice=${this.invoice}
                                                             .transaction=${this.transaction}
                                                             .backToStoreUrl=${this.backToStoreUrl}
@@ -1011,6 +1013,7 @@ export class PaymentApp extends LitElement {
                                         (this.paymentPageStep === 'transactionsHistoryStep' || (this.invoice?.status !== 'active' && this.paymentPageStep === 'invoiceStep'))
                                                 ? html`
                                                     <transactions-history
+                                                            .i18n=${this.i18n}
                                                             .invoice=${this.invoice}
                                                             .transactions=${this.invoiceTransactions}
                                                             @goToStep=${(event: CustomEvent) => {
