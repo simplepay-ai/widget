@@ -70,8 +70,15 @@ export class MainFooter extends LitElement {
     @property({ attribute: false })
     productInfoOverlayActive: boolean = false;
 
+    constructor() {
+        super();
+        this._onLocaleChanged = this._onLocaleChanged.bind(this);
+    }
+
     async connectedCallback() {
         super.connectedCallback();
+
+        window.addEventListener('localeChanged', this._onLocaleChanged);
 
         if(this.hasTimer) {
 
@@ -85,6 +92,15 @@ export class MainFooter extends LitElement {
 
             setInterval(() => this.calcTimer(oneStep), 1000);
         }
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('localeChanged', this._onLocaleChanged);
+        super.disconnectedCallback();
+    }
+
+    _onLocaleChanged() {
+        this.requestUpdate();
     }
 
     render() {

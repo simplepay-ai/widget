@@ -99,8 +99,15 @@ export class WalletStep extends LitElement {
     @property({attribute: false, type: Array})
     invoiceProducts: InvoiceProduct[] = [];
 
+    constructor() {
+        super();
+        this._onLocaleChanged = this._onLocaleChanged.bind(this);
+    }
+
     async connectedCallback() {
         super.connectedCallback();
+
+        window.addEventListener('localeChanged', this._onLocaleChanged);
 
         if (['bsc', 'ethereum', 'polygon', 'avalanche', 'zksync', 'arbitrum', 'optimism', 'base'].includes(this.selectedNetwork?.symbol || '')) {
             await this.checkConnectorConfig();
@@ -118,6 +125,15 @@ export class WalletStep extends LitElement {
             this.invoiceProducts = this.invoice.products;
         }
 
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('localeChanged', this._onLocaleChanged);
+        super.disconnectedCallback();
+    }
+
+    _onLocaleChanged() {
+        this.requestUpdate();
     }
 
     render() {

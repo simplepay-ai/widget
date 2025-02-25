@@ -45,12 +45,28 @@ export class MainHeader extends LitElement {
     @property({ type: Boolean })
     navigatorCheck: boolean = false;
 
+    constructor() {
+        super();
+        this._onLocaleChanged = this._onLocaleChanged.bind(this);
+    }
+
     connectedCallback() {
         super.connectedCallback();
+
+        window.addEventListener('localeChanged', this._onLocaleChanged);
 
         if (this.hasShareButton && this.sharedData) {
             this.navigatorCheck = navigator.canShare(this.sharedData);
         }
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('localeChanged', this._onLocaleChanged);
+        super.disconnectedCallback();
+    }
+
+    _onLocaleChanged() {
+        this.requestUpdate();
     }
 
     render() {

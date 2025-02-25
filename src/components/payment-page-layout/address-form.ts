@@ -837,8 +837,24 @@ export class AddressForm extends LitElement {
 
     ////////////////
 
+    constructor() {
+        super();
+        this._onLocaleChanged = this._onLocaleChanged.bind(this);
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('localeChanged', this._onLocaleChanged);
+        super.disconnectedCallback();
+    }
+
+    _onLocaleChanged() {
+        this.requestUpdate();
+    }
+
     async connectedCallback() {
         super.connectedCallback();
+
+        window.addEventListener('localeChanged', this._onLocaleChanged);
     }
 
     async updated(changedProperties: Map<string | symbol, unknown>) {

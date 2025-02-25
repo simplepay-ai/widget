@@ -29,6 +29,25 @@ export class CartStep extends LitElement {
     @property({attribute: false, type: Number})
     cartSum: number = 0;
 
+    constructor() {
+        super();
+        this._onLocaleChanged = this._onLocaleChanged.bind(this);
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        window.addEventListener('localeChanged', this._onLocaleChanged);
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('localeChanged', this._onLocaleChanged);
+        super.disconnectedCallback();
+    }
+
+    _onLocaleChanged() {
+        this.requestUpdate();
+    }
+
     updated(changedProperties: Map<string | symbol, unknown>): void {
         super.updated(changedProperties);
 

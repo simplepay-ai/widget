@@ -786,6 +786,11 @@ export class PaymentStep extends LitElement {
     @property({attribute: false, type: Array})
     invoiceProducts: InvoiceProduct[] = [];
 
+    constructor() {
+        super();
+        this._onLocaleChanged = this._onLocaleChanged.bind(this);
+    }
+
     firstUpdated(_changedProperties: PropertyValues) {
         super.firstUpdated(_changedProperties);
 
@@ -803,6 +808,8 @@ export class PaymentStep extends LitElement {
     async connectedCallback() {
         super.connectedCallback();
 
+        window.addEventListener('localeChanged', this._onLocaleChanged);
+
         if(this.invoice?.payload?.products && this.invoice?.payload?.products.length > 0){
             this.invoiceProducts = this.invoice?.payload?.products;
         }
@@ -813,8 +820,9 @@ export class PaymentStep extends LitElement {
     }
 
     disconnectedCallback() {
-        super.disconnectedCallback()
+        window.removeEventListener('localeChanged', this._onLocaleChanged);
         this.updatePaymentAwaiting(false);
+        super.disconnectedCallback()
     }
 
     updated(changedProperties: Map<string | symbol, unknown>): void {
@@ -828,6 +836,10 @@ export class PaymentStep extends LitElement {
             const price = left / Number(this.transaction?.rate);
             this.leftAmountToken = roundUpAmount(price.toString(), this.transaction?.cryptocurrency.stable!).toString();
         }
+    }
+
+    _onLocaleChanged() {
+        this.requestUpdate();
     }
 
     render() {

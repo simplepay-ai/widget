@@ -25,6 +25,25 @@ export class ProductStep extends LitElement {
     @property({type: Boolean})
     paymentTypeSelected: boolean = false;
 
+    constructor() {
+        super();
+        this._onLocaleChanged = this._onLocaleChanged.bind(this);
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        window.addEventListener('localeChanged', this._onLocaleChanged);
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('localeChanged', this._onLocaleChanged);
+        super.disconnectedCallback();
+    }
+
+    _onLocaleChanged() {
+        this.requestUpdate();
+    }
+
     render() {
         return html`
             <div class="stepWrapper">

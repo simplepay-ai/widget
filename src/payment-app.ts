@@ -257,6 +257,8 @@ export class PaymentApp extends LitElement {
     constructor() {
         super();
 
+        this._onLocaleChanged = this._onLocaleChanged.bind(this);
+
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Enter') {
                 this.nextStep();
@@ -266,6 +268,8 @@ export class PaymentApp extends LitElement {
 
     async connectedCallback() {
         super.connectedCallback();
+
+        window.addEventListener('localeChanged', this._onLocaleChanged);
 
         this.pollingMode = this.usePolling === 'true';
         this.customServerMode = Boolean(this.serverUrl) && URL.canParse(this.serverUrl);
@@ -552,6 +556,15 @@ export class PaymentApp extends LitElement {
         this.goToWidgetStep('selectTypeStep');
 
         return;
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('localeChanged', this._onLocaleChanged);
+        super.disconnectedCallback();
+    }
+
+    _onLocaleChanged() {
+        this.requestUpdate();
     }
 
     updated(changedProperties: Map<string | symbol, unknown>): void {

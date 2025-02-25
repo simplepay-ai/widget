@@ -56,8 +56,24 @@ export class InvoiceInfo extends LitElement {
 
     ///////////////////////
 
+    constructor() {
+        super();
+        this._onLocaleChanged = this._onLocaleChanged.bind(this);
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('localeChanged', this._onLocaleChanged);
+        super.disconnectedCallback();
+    }
+
+    _onLocaleChanged() {
+        this.requestUpdate();
+    }
+
     connectedCallback() {
         super.connectedCallback();
+
+        window.addEventListener('localeChanged', this._onLocaleChanged);
 
         const left = Number(this.invoice?.total!) - Number(this.invoice?.paid!)
         this.leftAmount = (left < 0) ? 0 : left;

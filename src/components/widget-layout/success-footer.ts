@@ -22,13 +22,25 @@ export class SuccessFooter extends LitElement {
     @property({attribute: false, type: String})
     leftPaid: string = '';
 
+    constructor() {
+        super();
+        this._onLocaleChanged = this._onLocaleChanged.bind(this);
+    }
+
     async connectedCallback() {
         super.connectedCallback();
+
+        window.addEventListener('localeChanged', this._onLocaleChanged);
 
         if (this.invoice) {
             const leftNumber = Number(this.invoice.total) - Number(this.invoice.paid);
             this.leftPaid = (leftNumber < 0) ? '0' : parseFloat(leftNumber.toString()).toFixed(2);
         }
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('localeChanged', this._onLocaleChanged);
+        super.disconnectedCallback();
     }
 
     updated(changedProperties: Map<string | symbol, unknown>): void {
@@ -38,6 +50,10 @@ export class SuccessFooter extends LitElement {
             const leftNumber = Number(this.invoice.total) - Number(this.invoice.paid);
             this.leftPaid = (leftNumber < 0) ? '0' : parseFloat(leftNumber.toString()).toFixed(2);
         }
+    }
+
+    _onLocaleChanged() {
+        this.requestUpdate();
     }
 
     render() {

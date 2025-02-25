@@ -55,8 +55,15 @@ export class ProcessingStep extends LitElement {
     @property({attribute: false, type: Array})
     invoiceProducts: InvoiceProduct[] = [];
 
+    constructor() {
+        super();
+        this._onLocaleChanged = this._onLocaleChanged.bind(this);
+    }
+
     connectedCallback() {
         super.connectedCallback();
+
+        window.addEventListener('localeChanged', this._onLocaleChanged);
 
         if(this.transaction?.amount){
             this.amountToken = roundUpAmount(this.transaction.amount, this.transaction.cryptocurrency.stable).toString();
@@ -110,6 +117,15 @@ export class ProcessingStep extends LitElement {
 
             this.qrcode.innerHTML = qr.createSvgTag();
         }
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('localeChanged', this._onLocaleChanged);
+        super.disconnectedCallback();
+    }
+
+    _onLocaleChanged() {
+        this.requestUpdate();
     }
 
     render() {

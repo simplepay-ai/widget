@@ -34,8 +34,15 @@ export class PriceStep extends LitElement {
     @property({attribute: false, type: Array})
     private numpadButtons = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', 'backspace'];
 
+    constructor() {
+        super();
+        this._onLocaleChanged = this._onLocaleChanged.bind(this);
+    }
+
     connectedCallback() {
         super.connectedCallback();
+
+        window.addEventListener('localeChanged', this._onLocaleChanged);
 
         if (this.price && this.price !== '0') {
             this.priceValue = parseFloat(this.price).toFixed(2)
@@ -47,8 +54,14 @@ export class PriceStep extends LitElement {
     }
 
     disconnectedCallback() {
-        super.disconnectedCallback()
+        window.removeEventListener('localeChanged', this._onLocaleChanged);
         this.numpadButtonsActive = false;
+
+        super.disconnectedCallback()
+    }
+
+    _onLocaleChanged() {
+        this.requestUpdate();
     }
 
     render() {
@@ -77,7 +90,21 @@ export class PriceStep extends LitElement {
                         : html`
                             <div class="header">
 
-                                <p>${this.i18n?.t('enterPriceStep.title')}:</p>
+                                <div class="topSection">
+
+                                    <p>${this.i18n?.t('enterPriceStep.title')}:</p>
+                                    
+                                    ${
+                                            (this.paymentTypeSelected)
+                                                    ? html`
+                                                        <language-selector
+                                                                .i18n=${this.i18n}
+                                                        ></language-selector>
+                                                    `
+                                                    : ''
+                                    }
+                                    
+                                </div>
                                 <div class="merchantInfo">
 
                                     ${

@@ -65,8 +65,24 @@ export class CompletedTransaction extends LitElement {
         this.dispatchEvent(changeStepEvent);
     }
 
+    constructor() {
+        super();
+        this._onLocaleChanged = this._onLocaleChanged.bind(this);
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('localeChanged', this._onLocaleChanged);
+        super.disconnectedCallback();
+    }
+
+    _onLocaleChanged() {
+        this.requestUpdate();
+    }
+
     connectedCallback() {
         super.connectedCallback();
+
+        window.addEventListener('localeChanged', this._onLocaleChanged);
 
         if (this.transaction?.amount) {
             this.amountToken = roundUpAmount(this.transaction.amount, this.transaction.cryptocurrency.stable).toString();

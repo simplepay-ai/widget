@@ -23,8 +23,24 @@ export class CreatedInvoiceStep extends LitElement {
     @property({attribute: false, type: Boolean})
     showProductModalContent: boolean = false;
 
+    constructor() {
+        super();
+        this._onLocaleChanged = this._onLocaleChanged.bind(this);
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('localeChanged', this._onLocaleChanged);
+        super.disconnectedCallback();
+    }
+
+    _onLocaleChanged() {
+        this.requestUpdate();
+    }
+
     connectedCallback() {
         super.connectedCallback();
+
+        window.addEventListener('localeChanged', this._onLocaleChanged);
 
         if (this.invoice?.payload?.products && this.invoice?.payload?.products.length > 0) {
             this.invoiceProducts = this.invoice?.payload?.products;

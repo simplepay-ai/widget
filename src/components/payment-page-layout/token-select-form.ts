@@ -62,8 +62,24 @@ export class TokenSelectForm extends LitElement {
     @property({attribute: false, type: String})
     tokenStandart: string = '';
 
+    constructor() {
+        super();
+        this._onLocaleChanged = this._onLocaleChanged.bind(this);
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('localeChanged', this._onLocaleChanged);
+        super.disconnectedCallback();
+    }
+
+    _onLocaleChanged() {
+        this.requestUpdate();
+    }
+
     connectedCallback() {
         super.connectedCallback();
+
+        window.addEventListener('localeChanged', this._onLocaleChanged);
 
         if(this.tokenAvailable){
             this.changeMode('selectedToken');
