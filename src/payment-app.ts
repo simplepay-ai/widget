@@ -848,6 +848,7 @@ export class PaymentApp extends LitElement {
                                         }}
                                         @goToTransactionStep=${() => {
                                             if (this.activeTransaction) {
+                                                this.transaction = this.activeTransaction;
                                                 this.goToTransactionStep(this.activeTransaction.status)
                                             }
                                         }}

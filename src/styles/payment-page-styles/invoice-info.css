@@ -305,7 +305,8 @@
     line-height: 1.2;
     font-weight: 400;
     color: var(--sp-widget-secondary-text-color);
-    white-space: nowrap;
+    /*white-space: nowrap;*/
+    max-width: 90px;
 }
 
 .invoiceInfoWrapper .userInfoWrapper .info{

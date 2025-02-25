@@ -138,7 +138,7 @@
         "customWalletResult": "Portefeuille personnalisé",
         "selectTokenMessage": "Pour connecter une adresse de portefeuille, veuillez d'abord sélectionner le jeton à utiliser pour le paiement",
         "addressInputPlaceholder": "Entrez votre adresse %{networkSymbol}",
-        "addressInputText": "Enter the address of the wallet you will use to complete the payment. We need this to track and verify the on-chain transaction as our service is fully decentralized",
+        "addressInputText": "Saisissez l'adresse du portefeuille que vous utiliserez pour effectuer le paiement. Nous en avons besoin pour suivre et vérifier la transaction en chaîne car notre service est entièrement décentralisé",
         "addressResult": "Adresse"
     },
     "transactionHistory": {
