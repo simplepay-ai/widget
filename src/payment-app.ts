@@ -596,7 +596,6 @@ export class PaymentApp extends LitElement {
     }
 
     render() {
-
         const widgetContent = html`
 
             ${this.appStep === 'loadingStep'
