@@ -1,11 +1,336 @@
 {
-  "invoiceTypeSelectStep": {
-    "title": "Select invoice type 1",
+    "invoiceTypeSelectStep": {
+        "title": "Sélectionner le type de facture",
+        "buttons": {
+            "request": "Demande",
+            "item": "Article",
+            "cart": "Panier"
+        }
+    },
+    "enterPriceStep": {
+        "title": "Facture de"
+    },
+    "enterProductStep": {
+        "title": "Sélectionner un produit",
+        "emptyMessage": "Vous n'avez actuellement aucun produit créé dans cette application"
+    },
+    "enterCartStep": {
+        "title": "Sélectionner les produits du panier",
+        "emptyMessage": "Vous n'avez actuellement aucun produit créé dans cette application",
+        "cartCount": "Dans le panier"
+    },
+    "createdInvoiceStep": {
+        "titleFirst": "Succès",
+        "titleSecond": "Créé",
+        "detailsTitle": "Détails de la facture",
+        "fields": {
+            "id": "ID de la facture",
+            "merchant": "Commerçant",
+            "amount": "Montant total",
+            "product": "Produit",
+            "products": "Produits",
+            "productsCount": "Articles"
+        }
+    },
+    "invoiceStep": {
+        "totalAmount": "Montant",
+        "leftAmount": "Restant",
+        "historyButton": "Afficher l'historique",
+        "tokenTitle": "Jeton",
+        "networkTitle": "Réseau",
+        "selectTokenPlaceholder": "Choisir un jeton"
+    },
+    "walletStep": {
+        "title": "Connecter le portefeuille",
+        "injectedWallet": "Injecté",
+        "customWallet": "Par adresse de portefeuille"
+    },
+    "paymentStep": {
+        "title": "En attente de paiement",
+        "network": "Réseau",
+        "token": "Jeton",
+        "payAddress": "Adresse de paiement",
+        "payAmount": "Montant",
+        "products": "Produits",
+        "productCount": "Produits",
+        "totalAmount": "Montant"
+    },
+    "processingStep": {
+        "title": "Proсessing Transaction",
+        "sharedTitle": "Nouvelle facture",
+        "progressCreatedTitle": "Facture créée",
+        "progressPaymentTitle": "Paiement en cours",
+        "progressCompleteTitle": "Paiement terminé",
+        "progressCompleteText": "En attente",
+        "loadingTitle": "Temps estimé",
+        "loadingPercentText": "Terminé",
+        "detailsTitle": "Détails de la transaction",
+        "fields": {
+            "network": "Réseau",
+            "token": "Jeton",
+            "amount": "Montant",
+            "from": "De",
+            "to": "À"
+        }
+    },
+    "successStep": {
+        "statusTitle": {
+            "canceled": "Transaction annulée",
+            "expired": "Transaction expirée",
+            "rejected": "Transaction rejetée",
+            "success": "Transaction réussie"
+        },
+        "shareTitle": "Nouvelle facture",
+        "progressCreatedTitle": "Facture créée",
+        "progressProcessingTitle": "Traitement",
+        "progressSuccessResultTitle": "Paiement réussi",
+        "progressFailedResultTitle": "Échec du paiement",
+        "transactionDetailsTitle": "Détails de la transaction",
+        "transactionFields": {
+            "network": "Réseau",
+            "token": "Jeton",
+            "amount": "Montant",
+            "from": "De",
+            "to": "À"
+        },
+        "invoiceDetailsTitle": "Détails de la facture",
+        "invoiceFields": {
+            "merchant": "Commerçant",
+            "amountTotal": "Montant total",
+            "amountPaid": "Paid amount",
+            "product": "Produit",
+            "products": "Produits",
+            "productCount": "Articles"
+        }
+    },
+    "paymentPage": {
+        "activeTransactionMessage": "Cette facture a déjà une transaction en cours"
+    },
+    "invoiceInfo": {
+        "status": "Statut",
+        "dateCreate": "Date de création",
+        "dateUpdate": "Dernière mise à jour",
+        "amountTotal": "Montant total",
+        "amountLeft": "Restant",
+        "productTotal": "Totale",
+        "productEach": "Chacun",
+        "loginTitle": "Se connecter en tant que"
+    },
+    "tokenSelectForm": {
+        "selectedTokenTitle": "Jeton sélectionné",
+        "selectTokenTitle": "Sélectionner un jeton",
+        "tokensListTitle": "Liste des jetons",
+        "filterPlaceholder": "Rechercher un jeton",
+        "allNetworks": "Toutes les chaînes",
+        "amountToken": "Montant",
+        "emptyMessage": "Aucun jeton n'est actuellement disponible dans cette boutique, mais vous pouvez les ajouter pour commencer !",
+        "addButton": "Ajouter des jetons",
+        "noFoundMessage": "Aucun jeton trouvé"
+    },
+    "addressForm": {
+        "connectWalletTitle": "Connecter l'adresse du portefeuille",
+        "enterAddressTitle": "Entrer l'adresse du portefeuille",
+        "addressResultTitle": "Connecté par",
+        "injectedWallet": "Injecté",
+        "injectedWalletResult": "Portefeuille injecté",
+        "customWallet": "Par adresse de portefeuille",
+        "customWalletResult": "Portefeuille personnalisé",
+        "selectTokenMessage": "Pour connecter une adresse de portefeuille, veuillez d'abord sélectionner le jeton à utiliser pour le paiement",
+        "addressInputPlaceholder": "Entrez votre adresse %{networkSymbol}",
+        "addressInputText": "Enter the address of the wallet you will use to complete the payment. We need this to track and verify the on-chain transaction as our service is fully decentralized",
+        "addressResult": "Adresse"
+    },
+    "transactionHistory": {
+        "title": "Historique des transactions",
+        "amount": "Montant",
+        "emptyMessage": "Il n'y a encore aucune transaction pour cette facture"
+    },
+    "footer": {
+        "total": "Totale",
+        "productsCount": "Articles",
+        "explorer": "Afficher dans l'explorateur",
+        "timer": "Délai d'expiration",
+        "leftPay": "Reste à payer"
+    },
+    "user": {
+        "telegram": "Compte Telegram"
+    },
+    "errors": {
+        "invoiceAmount": {
+            "title": "Erreur dans le montant de la facture",
+            "text": "Le montant minimum requis pour créer une facture est de 1 USD. Veuillez ajuster le montant et réessayer."
+        },
+        "noAddress": {
+            "title": "Erreur dans l'adresse du portefeuille",
+            "text": "Aucune adresse n'a été trouvée dans votre portefeuille. Veuillez ajouter une adresse ou essayer de vous connecter à un autre portefeuille."
+        },
+        "walletConnectionNotConfirmed": {
+            "title": "Erreur de connexion du portefeuille",
+            "text": "La connexion au portefeuille n'a pas été confirmée. Veuillez réessayer pour continuer.",
+            "textSecond": "Il se peut que l'extension de votre portefeuille soit inactive dans votre navigateur. Activez-la en cliquant sur son icône dans votre navigateur."
+        },
+        "walletConnectionFailed": {
+            "title": "Erreur de connexion du portefeuille",
+            "text": "Impossible d'établir une connexion avec le connecteur de portefeuille. Veuillez vérifier votre portefeuille et réessayer."
+        },
+        "walletAddressInvalid": {
+            "title": "Erreur dans l'adresse du portefeuille",
+            "text": "L'adresse du portefeuille que vous avez saisie n'est pas valide. Veuillez vérifier que l'adresse n'est pas erronée et qu'elle est correctement formatée."
+        },
+        "networkChangeFailed": {
+            "title": "Erreur de changement de réseau",
+            "text": "Impossible de changer automatiquement le réseau du portefeuille. Veuillez changer le réseau manuellement dans les paramètres de votre portefeuille et réessayer."
+        },
+        "transactionCanceled": {
+            "title": "Transaction annulée",
+            "userCancelText": "Vous avez annulé la transaction. Si cela n'était pas intentionnel, veuillez réessayer.",
+            "lowBalanceText": "Votre solde est trop faible pour effectuer la transaction. Veuillez créditer votre compte et réessayer.",
+            "timeLimitText": "Le délai pour effectuer le paiement a expiré. Veuillez réessayer pour poursuivre votre transaction.",
+            "somethingWrongText": "Un problème s'est produit lors de la transaction. Veuillez réessayer plus tard.",
+            "wrongNetworkText": "Le réseau actuel de votre portefeuille est incompatible avec cette transaction. Veuillez passer au réseau %{nomdu réseau} manuellement et réessayer."
+        },
+        "viewModeInvalid": {
+            "title": "Erreur de mode d'affichage",
+            "text": "Mode d'affichage non valide : l'attribut fourni n'est pas valide. Veuillez vous assurer qu'il correspond à l'un des modes d'affichage pris en charge : modal, paymentPage ou relatif (par défaut)."
+        },
+        "modalTriggerInvalid": {
+            "title": "Erreur de déclencheur modal",
+            "text": "Déclencheur non valide : l'attribut fourni est vide."
+        },
+        "paymentPageNotAvailable": {
+            "title": "Erreur de mode d'affichage",
+            "text": "Le mode d'affichage paymentPage n'est actuellement disponible que pour l'affichage des factures et des transactions. Pour accéder aux options de création de factures, veuillez utiliser le mode d'affichage relatif (par défaut) ou modal."
+        },
+        "clientIdInvalid": {
+            "title": "Erreur d'ID client",
+            "text": "clientId doit être soit un nombre, soit un format UUID v4 valide."
+        },
+        "fetchTransactionFailed": {
+            "title": "Erreur de transaction de récupération",
+            "text": "Échec de la récupération des données de transaction. Veuillez réessayer ultérieurement."
+        },
+        "fetchInvoiceFailed": {
+            "title": "Erreur de récupération de facture",
+            "text": "Échec de la récupération des données de facture. Veuillez réessayer ultérieurement."
+        },
+        "tokenNameInvalid": {
+            "title": "Erreur de crypto-monnaie",
+            "text": "Le nom du jeton que vous avez saisi est incorrect. Veuillez revérifier le nom et réessayer."
+        },
+        "networkNameInvalid": {
+            "title": "Erreur de crypto-monnaie",
+            "text": "Le réseau de jetons que vous avez sélectionné est incorrect. Veuillez vérifier le réseau et réessayer."
+        },
+        "cryptocurrencyInvalid": {
+            "title": "Erreur de cryptomonnaie",
+            "text": "Le nom du jeton et le réseau que vous avez saisis sont incorrects. Veuillez vérifier le nom du jeton et le réseau et réessayer."
+        },
+        "appIdInvalid": {
+            "title": "Erreur d'ID d'application",
+            "text": "Vous n'avez pas transmis l'appId. Pour continuer, le champ appId doit être rempli."
+        },
+        "fetchAppFailed": {
+            "title": "Erreur de récupération de l'application",
+            "text": "Échec de la récupération des données de l'application. Veuillez réessayer ultérieurement."
+        },
+        "fetchProductsFailed": {
+            "title": "Erreur de récupération des produits",
+            "text": "Échec de la récupération des données des produits de l'application. Veuillez réessayer ultérieurement."
+        },
+        "fetchTokensFailed": {
+            "title": "Erreur de récupération des jetons",
+            "text": "Échec de la récupération des données du jeton. Veuillez réessayer ultérieurement."
+        },
+        "invoiceCreateFailed": {
+            "title": "Erreur de création de facture",
+            "text": "Échec de la création de la facture. Veuillez réessayer ultérieurement."
+        },
+        "transactionCreateFailed": {
+            "title": "Erreur de création de transaction",
+            "text": "Échec de la création de la transaction. Veuillez réessayer ultérieurement."
+        },
+        "transactionIdEmpty": {
+            "title": "Erreur d'ID de transaction",
+            "text": "Impossible de récupérer l'ID de la transaction. Veuillez réessayer ultérieurement."
+        },
+        "transactionCancelFailed": {
+            "title": "Erreur d'annulation de transaction",
+            "text": "Échec de l'annulation de la transaction. Veuillez réessayer ultérieurement."
+        },
+        "fetchTransactionsFailed": {
+            "title": "Erreur de récupération des transactions",
+            "text": "Échec de la récupération des transactions de la facture. Veuillez réessayer ultérieurement."
+        }
+    },
     "buttons": {
-      "request": "Request 1",
-      "item": "Item 1",
-      "cart": "Cart 1",
-      "next": "Next 1"
+        "back": "Retour",
+        "create": "Créer",
+        "createTransaction": "Créer une transaction",
+        "next": "Suivant",
+        "confirm": "Confirmer",
+        "createInvoice": "Créer une nouvelle facture",
+        "login": "Connexion",
+        "activeTransaction": "Vers la transaction active",
+        "cancelTransaction": "Annuler la transaction",
+        "selectAddress": "Sélectionner l'adresse",
+        "no": "Non",
+        "continue": "Continuer",
+        "copy": "Copier",
+        "copied": "Copié",
+        "pay": "Payer",
+        "payCrypto": "Payer en crypto",
+        "payWith": "Payer avec",
+        "backToStore": "Retour au magasin",
+        "makePayment": "Effectuer un paiement",
+        "history": "Historique des transactions",
+        "change": "Modifier"
+    },
+    "loaders": {
+        "creatingInvoice": "Création de la facture",
+        "creatingTransaction": "Création d'une transaction",
+        "cancelingTransaction": "Annulation de la transaction",
+        "checkingTransaction": "Vérification de la transaction"
+    },
+    "modals": {
+        "products": {
+            "title": "Produits",
+            "count": "Compter"
+        },
+        "tokens": {
+            "title": "Tokens",
+            "searchPlaceholder": "Rechercher un jeton",
+            "allNetworks": "Toutes les chaînes",
+            "emptyMessage": "Aucun jeton n'est actuellement disponible dans cette boutique, mais vous pouvez les ajouter pour commencer !",
+            "addButton": "Ajouter des jetons",
+            "noFoundMessage": "Aucun jeton trouvé"
+        },
+        "transactions": {
+            "title": "Transactions",
+            "amount": "Montant"
+        },
+        "wallet": {
+            "title": "Adresse du portefeuille",
+            "inputPlaceholder": "Entrez votre adresse %{networkSymbol}",
+            "inputText": "Saisissez l'adresse du portefeuille que vous utiliserez pour effectuer le paiement. Nous avons besoin de cette adresse pour suivre et vérifier la transaction sur la chaîne, car notre service est entièrement décentralisé."
+        },
+        "address": {
+            "title": "Approuver la poursuite du portefeuille",
+            "text": "Veuillez confirmer si vous souhaitez utiliser cette adresse de portefeuille pour poursuivre la transaction."
+        }
+    },
+    "invoiceStatus": {
+        "active": "Actif",
+        "closed": "Fermé",
+        "success": "Succès",
+        "canceled": "Annulé"
+    },
+    "transactionStatus": {
+        "created": "Créé",
+        "processing": "Traitement",
+        "confirming": "Confirmation",
+        "success": "Succès",
+        "rejected": "Rejeté",
+        "canceled": "Annulé",
+        "expired": "Expiré"
     }
-  }
 }
