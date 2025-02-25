@@ -54,14 +54,14 @@
     background: var(--sp-widget-scroll-color);
 }
 
-.stepWrapper .mainSection .authentication{
+.stepWrapper .mainSection .topSection{
     padding: 0.5rem 0.5rem 0;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
 }
 
-.stepWrapper .mainSection .authentication .loginButton{
+.stepWrapper .mainSection .topSection .loginButton{
     min-width: 78px;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -96,14 +96,14 @@
     transition-duration: 150ms;
 }
 
-.stepWrapper .mainSection .authentication .loginButton svg{
+.stepWrapper .mainSection .topSection .loginButton svg{
     width: 16px;
     height: 16px;
     color: #007bff;
     color: var(--sp-widget-active-color);
 }
 
-.stepWrapper .mainSection .authentication .loginButton .spinner {
+.stepWrapper .mainSection .topSection .loginButton .spinner {
     width: 16px;
     height: 16px;
     margin: 0 auto;
@@ -121,14 +121,14 @@
 }
 
 /* Fallback for older browsers */
-.stepWrapper .mainSection .authentication .loginButton .spinner:before {
+.stepWrapper .mainSection .topSection .loginButton .spinner:before {
     content: '';
     display: inline-block;
     height: 100%;
     vertical-align: middle;
 }
 
-.stepWrapper .mainSection .authentication .loginButton .spinner svg {
+.stepWrapper .mainSection .topSection .loginButton .spinner svg {
     width: 20px;
     height: 20px;
     -webkit-animation: spin 1s linear infinite;
@@ -138,13 +138,13 @@
     vertical-align: middle;
 }
 
-.stepWrapper .mainSection .authentication .loginButton .spinner circle {
+.stepWrapper .mainSection .topSection .loginButton .spinner circle {
     stroke: #000000; /* Fallback color */
     stroke: var(--sp-widget-active-color, #000000);
     opacity: 0.25;
 }
 
-.stepWrapper .mainSection .authentication .loginButton .spinner path {
+.stepWrapper .mainSection .topSection .loginButton .spinner path {
     fill: #000000; /* Fallback color */
     fill: var(--sp-widget-active-color, #000000);
     opacity: 0.75;
@@ -173,7 +173,7 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-    .stepWrapper .mainSection .authentication .loginButton:hover {
+    .stepWrapper .mainSection .topSection .loginButton:hover {
         border: 1px solid #b3b3b3; /* Fallback */
         border: 1px solid var(--sp-widget-function-button-hover-border-color);
         background: #e9ecef; /* Fallback */
@@ -181,7 +181,7 @@
     }
 }
 
-.stepWrapper .mainSection .authentication .userInfo{
+.stepWrapper .mainSection .topSection .userInfo{
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -197,7 +197,7 @@
     border-radius: 4px;
 }
 
-.stepWrapper .mainSection .authentication .userInfo .icon{
+.stepWrapper .mainSection .topSection .userInfo .icon{
     border-radius: 50%;
     width: 18px;
     height: 18px;
@@ -208,13 +208,13 @@
     overflow: hidden;
 }
 
-.stepWrapper .mainSection .authentication .userInfo .icon img{
+.stepWrapper .mainSection .topSection .userInfo .icon img{
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.stepWrapper .mainSection .authentication .userInfo p{
+.stepWrapper .mainSection .topSection .userInfo p{
     font-size: 12px;
     font-weight: 500;
     color: #ffffff; /* Fallback */

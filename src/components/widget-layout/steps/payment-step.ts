@@ -846,6 +846,7 @@ export class PaymentStep extends LitElement {
         return html`
             <div class=${`stepWrapper`}>
                 <main-header
+                        .i18n=${this.i18n}
                         .title=${ this.i18n?.t('paymentStep.title') }
                         .hasBackButton=${this.hasReturnBack}
                         .showAddress=${true}
@@ -1227,6 +1228,7 @@ export class PaymentStep extends LitElement {
                 }
 
                 <main-footer
+                        .i18n=${this.i18n}
                         .price=${this.leftAmount}
                         .hasButton=${false}
                         .hasCancelButton=${true}

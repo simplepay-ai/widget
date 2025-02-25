@@ -794,6 +794,7 @@ export class PaymentApp extends LitElement {
                                 .transaction=${this.transaction}
                                 .backToStoreUrl=${this.backToStoreUrl}
                                 .hasReturnBack=${!this.onlyTransaction}
+                                .hasLanguageSelector=${this.onlyTransaction}
                                 @returnBack=${this.prevStep}
                         ></success-step>`
                     : ''}

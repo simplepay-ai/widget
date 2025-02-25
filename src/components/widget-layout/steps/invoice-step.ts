@@ -233,11 +233,17 @@ export class InvoiceStep extends LitElement {
 
                 <div class="mainSection">
 
-                    ${
-                            (this.experimentalMode)
-                                    ? html`
-                                        <div class="authentication">
+                    <div class=${`
+                    topSection
+                    `}>
 
+                        <language-selector
+                                .i18n=${this.i18n}
+                        ></language-selector>
+
+                        ${
+                                (this.experimentalMode)
+                                        ? html`
                                             ${
                                                     (this.user)
                                                             ? html`
@@ -286,11 +292,11 @@ export class InvoiceStep extends LitElement {
                                                                 </button>
                                                             `
                                             }
+                                        `
+                                        : ''
+                        }
 
-                                        </div>
-                                    `
-                                    : ''
-                    }
+                    </div>
 
                     <div class="merchantInfo">
 
@@ -342,7 +348,7 @@ export class InvoiceStep extends LitElement {
                                             </div>
                                         ` : ''
                         }
-                        
+
                         <div class=${`
                         card
                         ${(this.invoiceProducts && this.invoiceProducts.length > 0) && 'hasProduct'}
@@ -423,7 +429,8 @@ export class InvoiceStep extends LitElement {
                             <p class="title">${this.i18n?.t('invoiceStep.totalAmount')}</p>
                             <p class="price">${`$${this.invoice?.total}`}</p>
 
-                            <p class="left">${this.i18n?.t('invoiceStep.leftAmount')}: $${parseFloat(this.leftAmount.toString()).toFixed(2)}</p>
+                            <p class="left">${this.i18n?.t('invoiceStep.leftAmount')}:
+                                    $${parseFloat(this.leftAmount.toString()).toFixed(2)}</p>
                         </div>
 
                         ${
@@ -515,7 +522,8 @@ export class InvoiceStep extends LitElement {
                                                                                         ></token-icon>
                                                                                     `
                                                                                     : html`
-                                                                                        <p>${this.i18n?.t('invoiceStep.selectTokenPlaceholder')}</p>
+                                                                                        <p>
+                                                                                            ${this.i18n?.t('invoiceStep.selectTokenPlaceholder')}</p>
 
                                                                                         <div class="image placeholder">
                                                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24"
@@ -656,7 +664,8 @@ export class InvoiceStep extends LitElement {
                                                     <p class="price">
                                                         ${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].price) ? item.product.prices[0].price : ''}
                                                         ${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].currency.symbol) ? item.product.prices[0].currency.symbol : ''}</p>
-                                                    <p class="count">${this.i18n?.t('modals.products.count')}: ${item.count || '---'}</p>
+                                                    <p class="count">${this.i18n?.t('modals.products.count')}:
+                                                        ${item.count || '---'}</p>
                                                 </div>
 
                                             </div>
@@ -831,7 +840,8 @@ export class InvoiceStep extends LitElement {
                                                                     :
                                                                     html`
                                                                         <div class="tokensListEmpty">
-                                                                            <p>${this.i18n?.t('modals.tokens.noFoundMessage')}</p>
+                                                                            <p>
+                                                                                ${this.i18n?.t('modals.tokens.noFoundMessage')}</p>
                                                                         </div>
                                                                     `
                                                     }
@@ -917,7 +927,8 @@ export class InvoiceStep extends LitElement {
                                                                         (formatPrice !== '---')
                                                                                 ? html`
                                                                                     <p class="secondary">
-                                                                                        ${this.i18n?.t('modals.transactions.amount')}: ${formatPrice}
+                                                                                        ${this.i18n?.t('modals.transactions.amount')}
+                                                                                        : ${formatPrice}
                                                                                         ${item.cryptocurrency.symbol}
                                                                                     </p>
                                                                                 `

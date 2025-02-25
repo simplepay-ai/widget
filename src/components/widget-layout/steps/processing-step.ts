@@ -132,6 +132,7 @@ export class ProcessingStep extends LitElement {
         return html`
             <div class=${`stepWrapper`}>
                 <main-header
+                        .i18n=${this.i18n}
                         .title=${this.i18n?.t('processingStep.title')}
                         .hasBackButton=${this.hasReturnBack}
                         .hasShareButton=${true}
@@ -354,6 +355,7 @@ export class ProcessingStep extends LitElement {
                 </div>
 
                 <main-footer
+                        .i18n=${this.i18n}
                         .price=${Number(this.invoice?.total!) - Number(this.invoice?.paid!)}
                         .hasExplorerButton=${true}
                         .explorerLink=${this.qrCodeUrl}

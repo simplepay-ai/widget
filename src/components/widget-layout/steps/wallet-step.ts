@@ -140,6 +140,7 @@ export class WalletStep extends LitElement {
         return html`
             <div class=${`stepWrapper`}>
                 <main-header
+                        .i18n=${this.i18n}
                         .title=${ this.i18n?.t('walletStep.title') }
                         .hasBackButton=${true}
                         .backButtonDisabled=${this.creatingTransaction}

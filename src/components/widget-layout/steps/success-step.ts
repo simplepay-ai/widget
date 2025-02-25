@@ -16,6 +16,9 @@ export class SuccessStep extends LitElement {
     @property({type: Object})
     i18n: I18n | null = null;
 
+    @property({ type: Boolean })
+    hasLanguageSelector: boolean = false;
+
     @property({type: Object})
     invoice: Invoice | null = null;
 
@@ -127,8 +130,10 @@ export class SuccessStep extends LitElement {
         return html`
             <div class=${`stepWrapper`}>
                 <main-header
+                        .i18n=${this.i18n}
                         .title=${this.getStatusTitle(this.transaction?.status!)}
                         .hasBackButton=${this.hasReturnBack}
+                        .hasLanguageSelector=${this.hasLanguageSelector}
                         .hasShareButton=${true}
                         .sharedData=${(this.transaction?.hash) ? {
                             title: this.i18n?.t('successStep.shareTitle'),
