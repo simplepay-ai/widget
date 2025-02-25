@@ -824,6 +824,13 @@ export class PaymentApp extends LitElement {
             ${['invoiceStep', 'transactionsHistoryStep', 'awaitingPaymentStep', 'processingTransactionStep', 'successTransactionStep'].includes(this.paymentPageStep)
                     ? html`
                         <div class=${`paymentPageContent`}>
+                            
+                            <div class="languageSelectorWrapper">
+                                <p>${this.i18n?.t('paymentPage.languageTitle')}:</p>
+                                <language-selector
+                                        .i18n=${this.i18n}
+                                ></language-selector>
+                            </div>
 
                             <div class="leftSection">
 

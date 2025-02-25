@@ -106,7 +106,8 @@
     },
 
     "paymentPage": {
-        "activeTransactionMessage": "This invoice already has active transaction in progress"
+        "activeTransactionMessage": "This invoice already has active transaction in progress",
+        "languageTitle": "Language"
     },
     "invoiceInfo": {
         "status": "Status",

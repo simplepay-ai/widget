@@ -160,6 +160,7 @@
 }
 
 .paymentPage .paymentPageContent{
+    position: relative;
     padding: 48px 32px;
     display: flex;
     gap: 54px;
@@ -168,6 +169,23 @@
     width: 100%;
     max-width: 1024px;
     margin: 0 auto;
+}
+
+.paymentPage .paymentPageContent .languageSelectorWrapper{
+    position: absolute;
+    bottom: 48px;
+    right: 32px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 40px;
+}
+
+.paymentPage .paymentPageContent .languageSelectorWrapper p{
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 400;
+    color: var(--sp-widget-text-color);
 }
 
 .paymentPage .paymentPageContent .leftSection{
@@ -402,8 +420,15 @@
     }
 
     .paymentPage .paymentPageContent{
-        padding: 24px 16px;
+        padding: 48px 16px 24px;
         flex-direction: column;
         max-width: 520px;
+    }
+
+    .paymentPage .paymentPageContent .languageSelectorWrapper{
+        bottom: unset;
+        min-height: auto;
+        top: 12px;
+        right: 16px;
     }
 }

@@ -104,7 +104,8 @@
         }
     },
     "paymentPage": {
-        "activeTransactionMessage": "Cette facture a déjà une transaction en cours"
+        "activeTransactionMessage": "Cette facture a déjà une transaction en cours",
+        "languageTitle": "Langue"
     },
     "invoiceInfo": {
         "status": "Statut",
