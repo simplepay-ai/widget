@@ -21,30 +21,37 @@
     }
 
     .appContainer{
-        margin: 0 auto;
         width: 100%;
-        height: 700px;
-        max-width: 390px;
-        min-width: 390px;
-        border-radius: 6px;
-        overflow: hidden;
+        height: 100%;
     }
 
-    @media (max-width: 768px) {
-        .appContainer{
-            height: 100%;
-            max-width: unset;
-            border-radius: 0;
-            border: 0;
-        }
-    }
+    /*.appContainer{*/
+    /*    margin: 0 auto;*/
+    /*    width: 100%;*/
+    /*    height: 700px;*/
+    /*    max-width: 390px;*/
+    /*    min-width: 390px;*/
+    /*    border-radius: 6px;*/
+    /*    overflow: hidden;*/
+    /*}*/
 
+    /*@media (max-width: 768px) {*/
+    /*    .appContainer{*/
+    /*        height: 100%;*/
+    /*        max-width: unset;*/
+    /*        border-radius: 0;*/
+    /*        border: 0;*/
+    /*    }*/
+    /*}*/
 </style>
 
 <div class="appContainer">
     <payment-app
             theme="dark"
-            invoiceId="64f54c6b-cbb4-4b95-bcfb-9be3c5801c45"
+            invoiceId="74cb5652-7f50-487b-ac7c-34b618ddd70b"
+            viewMode="paymentPage"
+            serverUrl="https"
+            experimental="true"
     />
 
     <!--    theme="light"-->
