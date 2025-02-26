@@ -16,6 +16,12 @@ export class SuccessStep extends LitElement {
     @property({type: Object})
     i18n: I18n | null = null;
 
+    @property({type: String})
+    merchantLogoUrl: string = '';
+
+    @property({type: Boolean})
+    private customServerMode: boolean = false;
+
     @property({ type: Boolean })
     hasLanguageSelector: boolean = false;
 
@@ -107,10 +113,15 @@ export class SuccessStep extends LitElement {
                     break;
             }
 
-            this.qrCodeUrl = `https://blockchair.com/${networkSymbol}/transaction/${this.transaction.hash}?from=simplepay`;
+            let resultUrl = `https://blockchair.com/${networkSymbol}/transaction/${this.transaction.hash}`;
+            if(!this.customServerMode){
+                resultUrl += '?from=simplepay'
+            }
+
+            this.qrCodeUrl = resultUrl;
 
             const qr = QRCode(0, 'H');
-            qr.addData(this.qrCodeUrl);
+            qr.addData(resultUrl);
             qr.make();
 
             this.qrcode.innerHTML = qr.createSvgTag();
@@ -359,10 +370,10 @@ export class SuccessStep extends LitElement {
                                 <p class="title">${this.i18n?.t('successStep.invoiceFields.merchant')}:</p>
                                 <div class="merchantInfo">
                                     ${
-                                            (this.invoice?.app?.image)
+                                            (this.invoice?.app?.image || this.merchantLogoUrl)
                                                     ? html`
                                                         <div class="image">
-                                                            <img src=${this.invoice?.app?.image}
+                                                            <img src=${this.merchantLogoUrl || this.invoice?.app?.image}
                                                                  alt="merchant image">
                                                         </div>
                                                     `

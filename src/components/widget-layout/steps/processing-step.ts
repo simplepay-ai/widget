@@ -16,6 +16,9 @@ export class ProcessingStep extends LitElement {
     @property({type: Object})
     i18n: I18n | null = null;
 
+    @property({type: Boolean})
+    private customServerMode: boolean = false;
+
     @property({type: Object})
     invoice: Invoice | null = null;
 
@@ -109,10 +112,15 @@ export class ProcessingStep extends LitElement {
                     break;
             }
 
-            this.qrCodeUrl = `https://blockchair.com/${networkSymbol}/transaction/${this.transaction.hash}?from=simplepay`;
+            let resultUrl = `https://blockchair.com/${networkSymbol}/transaction/${this.transaction.hash}`;
+            if(!this.customServerMode){
+                resultUrl += '?from=simplepay'
+            }
+
+            this.qrCodeUrl = resultUrl;
 
             const qr = QRCode(0, 'H');
-            qr.addData(this.qrCodeUrl);
+            qr.addData(resultUrl);
             qr.make();
 
             this.qrcode.innerHTML = qr.createSvgTag();

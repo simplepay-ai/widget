@@ -30,6 +30,9 @@ export class InvoiceStep extends LitElement {
     @property({type: Object})
     i18n: I18n | null = null;
 
+    @property({type: String})
+    merchantLogoUrl: string = '';
+
     @property({type: Object})
     invoice: Invoice | null = null;
 
@@ -301,10 +304,10 @@ export class InvoiceStep extends LitElement {
                     <div class="merchantInfo">
 
                         ${
-                                (this.invoice?.app?.image)
+                                (this.invoice?.app?.image || this.merchantLogoUrl)
                                         ? html`
                                             <div class="image">
-                                                <img src=${this.invoice?.app?.image}
+                                                <img src=${this.merchantLogoUrl || this.invoice?.app?.image}
                                                      alt="merchant image">
                                             </div>
                                         `

@@ -13,6 +13,9 @@ export class PriceStep extends LitElement {
     @property({type: Object})
     i18n: I18n | null = null;
 
+    @property({type: String})
+    merchantLogoUrl: string = '';
+
     @property({type: Object})
     appInfo: App | null = null;
 
@@ -108,10 +111,10 @@ export class PriceStep extends LitElement {
                                 <div class="merchantInfo">
 
                                     ${
-                                            (this.appInfo?.image)
+                                            (this.appInfo?.image || this.merchantLogoUrl)
                                                     ? html`
                                                         <div class="image">
-                                                            <img src=${this.appInfo.image}
+                                                            <img src=${this.merchantLogoUrl || this.appInfo?.image}
                                                                  alt="merchant image">
                                                         </div>
                                                     `

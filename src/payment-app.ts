@@ -63,6 +63,9 @@ export class PaymentApp extends LitElement {
     static styles = unsafeCSS(style);
 
     @property({type: String})
+    merchantLogoUrl: string = '';
+
+    @property({type: String})
     viewMode: ViewMode = 'relative';
 
     @property({type: String})
@@ -624,6 +627,7 @@ export class PaymentApp extends LitElement {
             ${this.appStep === 'priceStep'
                     ? html`
                         <price-step
+                                .merchantLogoUrl=${this.merchantLogoUrl}
                                 .i18n=${this.i18n}
                                 .appInfo=${this.appInfo}
                                 .price=${this.invoicePrice}
@@ -672,6 +676,7 @@ export class PaymentApp extends LitElement {
             ${this.appStep === 'createdInvoiceStep'
                     ? html`
                         <created-invoice-step
+                                .merchantLogoUrl=${this.merchantLogoUrl}
                                 .i18n=${this.i18n}
                                 .invoice=${this.newAppInvoice}
                                 @prevStep=${this.prevStep}
@@ -682,6 +687,7 @@ export class PaymentApp extends LitElement {
             ${this.appStep === 'invoiceStep'
                     ? html`
                         <invoice-step
+                                .merchantLogoUrl=${this.merchantLogoUrl}
                                 .i18n=${this.i18n}
                                 .invoice=${this.invoice}
                                 .selectedToken=${this.selectedToken}
@@ -778,6 +784,7 @@ export class PaymentApp extends LitElement {
                                 .invoice=${this.invoice}
                                 .transaction=${this.transaction}
                                 .hasReturnBack=${!this.onlyTransaction}
+                                .customServerMode=${this.customServerMode}
                                 @nextStep=${this.nextStep}
                                 @returnBack=${this.prevStep}
                         ></processing-step>`
@@ -785,12 +792,14 @@ export class PaymentApp extends LitElement {
             ${this.appStep === 'successStep'
                     ? html`
                         <success-step
+                                .merchantLogoUrl=${this.merchantLogoUrl}
                                 .i18n=${this.i18n}
                                 .invoice=${this.invoice}
                                 .transaction=${this.transaction}
                                 .backToStoreUrl=${this.backToStoreUrl}
                                 .hasReturnBack=${!this.onlyTransaction}
                                 .hasLanguageSelector=${this.onlyTransaction}
+                                .customServerMode=${this.customServerMode}
                                 @returnBack=${this.prevStep}
                         ></success-step>`
                     : ''}
@@ -837,6 +846,7 @@ export class PaymentApp extends LitElement {
                                         .invoice=${this.invoice}
                                         .user=${this.user}
                                         .userProfile=${this.userProfile}
+                                        .merchantLogoUrl=${this.merchantLogoUrl}
                                         .loginLoading=${this.loginLoading}
                                         .hasTransactions=${(this.invoiceTransactions) ? this.invoiceTransactions.length > 0 : false}
                                         .hasActiveTransaction=${Boolean(this.activeTransaction)}
@@ -1009,6 +1019,7 @@ export class PaymentApp extends LitElement {
                                                             .i18n=${this.i18n}
                                                             .invoice=${this.invoice}
                                                             .transaction=${this.transaction}
+                                                            .customServerMode=${this.customServerMode}
                                                             @goToStep=${(event: CustomEvent) => {
                                                                 this.goToPaymentPageStep(event.detail.stepName)
                                                                 this.transaction = null;
@@ -1025,6 +1036,7 @@ export class PaymentApp extends LitElement {
                                                             .invoice=${this.invoice}
                                                             .transaction=${this.transaction}
                                                             .backToStoreUrl=${this.backToStoreUrl}
+                                                            .customServerMode=${this.customServerMode}
                                                             @goToStep=${(event: CustomEvent) => {
                                                                 this.goToPaymentPageStep(event.detail.stepName)
                                                                 this.transaction = null;

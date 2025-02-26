@@ -17,6 +17,9 @@ export class InvoiceInfo extends LitElement {
     i18n: I18n | null = null;
 
     @property({type: String})
+    merchantLogoUrl: string = '';
+
+    @property({type: String})
     theme: AppTheme = 'light';
 
     @property({type: Boolean})
@@ -171,12 +174,12 @@ export class InvoiceInfo extends LitElement {
 
                 <div class="merchantInfo">
                     <div class="topInfo">
-
+                        
                         ${
-                                (this.invoice?.app?.image)
+                                (this.invoice?.app?.image || this.merchantLogoUrl)
                                         ? html`
                                             <div class="image">
-                                                <img src=${this.invoice?.app?.image}
+                                                <img src=${this.merchantLogoUrl || this.invoice?.app?.image}
                                                      alt="merchant image">
                                             </div>
                                         `
