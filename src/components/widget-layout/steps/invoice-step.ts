@@ -30,6 +30,9 @@ export class InvoiceStep extends LitElement {
     @property({type: Object})
     i18n: I18n | null = null;
 
+    @property({type: Boolean})
+    private customServerMode: boolean = false;
+
     @property({type: String})
     merchantLogoUrl: string = '';
 
@@ -753,9 +756,14 @@ export class InvoiceStep extends LitElement {
                                                     <div class="emptyTokens">
                                                         <p>${this.i18n?.t('modals.tokens.emptyMessage')}</p>
 
-                                                        <a href="https://console.simplepay.ai/settings/tokens-edit">
-                                                            ${this.i18n?.t('modals.tokens.addButton')}
-                                                        </a>
+                                                        ${
+                                                                (!this.customServerMode)
+                                                                        ? html`
+                                                                            <a href="https://console.simplepay.ai/settings/tokens-edit">
+                                                                                ${this.i18n?.t('modals.tokens.addButton')}
+                                                                            </a>
+                                                                        ` : ''
+                                                        }
                                                     </div>
                                                 `
                                                 :

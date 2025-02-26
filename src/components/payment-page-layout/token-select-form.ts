@@ -20,6 +20,9 @@ export class TokenSelectForm extends LitElement {
     @property({type: Object})
     i18n: I18n | null = null;
 
+    @property({type: Boolean})
+    private customServerMode: boolean = false;
+
     @property({type: Object})
     invoice: Invoice | null = null;
 
@@ -349,9 +352,14 @@ export class TokenSelectForm extends LitElement {
                                                                 <div class="emptyTokens">
                                                                     <p>${this.i18n?.t('tokenSelectForm.emptyMessage')}</p>
 
-                                                                    <a href="https://console.simplepay.ai/settings/tokens-edit">
-                                                                        ${this.i18n?.t('tokenSelectForm.addButton')}
-                                                                    </a>
+                                                                    ${
+                                                                            (!this.customServerMode)
+                                                                            ? html`
+                                                                                        <a href="https://console.simplepay.ai/settings/tokens-edit">
+                                                                                            ${this.i18n?.t('tokenSelectForm.addButton')}
+                                                                                        </a>
+                                                                                    ` : ''
+                                                                    }
                                                                 </div>
                                                             `
                                                             :

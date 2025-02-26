@@ -687,6 +687,7 @@ export class PaymentApp extends LitElement {
             ${this.appStep === 'invoiceStep'
                     ? html`
                         <invoice-step
+                                .customServerMode=${this.customServerMode}
                                 .merchantLogoUrl=${this.merchantLogoUrl}
                                 .i18n=${this.i18n}
                                 .invoice=${this.invoice}
@@ -901,6 +902,7 @@ export class PaymentApp extends LitElement {
                                                                         html`
                                                                             <token-select-form
                                                                                     .i18n=${this.i18n}
+                                                                                    .customServerMode=${this.customServerMode}
                                                                                     .tokens=${this.tokens}
                                                                                     .invoice=${this.invoice}
                                                                                     .selectedToken=${this.selectedToken}
