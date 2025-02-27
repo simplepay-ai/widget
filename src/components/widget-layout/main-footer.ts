@@ -134,7 +134,7 @@ export class MainFooter extends LitElement {
 
                                         <div class="price">
                                             <p>${this.i18n?.t('footer.total')}:</p>
-                                            <p>${this.price ? `${ parseFloat(this.price).toFixed(2) } USD` : '0 USD'}</p>
+                                            <p>${this.price ? `${ parseFloat(this.price).toFixed(2) } ${this.invoice?.currency.symbol}` : `0 ${this.invoice?.currency.symbol}`}</p>
                                         </div>
                                     </div>
                                 `
@@ -174,7 +174,7 @@ export class MainFooter extends LitElement {
                                                 </div>
                                                 <div class="row">
                                                     <p>${this.i18n?.t('footer.total')}:</p>
-                                                    <p>${parseFloat(this.price.toString()).toFixed(2)} USD</p>
+                                                    <p>${parseFloat(this.price.toString()).toFixed(2)} ${this.invoice?.currency.symbol}</p>
                                                 </div>
                                             </div>
 

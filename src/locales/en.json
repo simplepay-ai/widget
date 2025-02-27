@@ -243,6 +243,10 @@
             "title": "Fetch Products Error",
             "text": "Failed to retrieve app products data. Please try again later."
         },
+        "fetchCurrenciesFailed": {
+            "title": "Fetch Currencies Error",
+            "text": "Failed to retrieve currencies data. Please try again later."
+        },
         "fetchTokensFailed": {
             "title": "Fetch Tokens Error",
             "text": "Failed to retrieve token data. Please try again later."

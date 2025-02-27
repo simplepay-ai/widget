@@ -227,6 +227,27 @@
     animation: blink 1.5s step-end infinite;
 }
 
+.stepWrapper .stepContent .priceEnter .custom-select{
+    margin-top: 4px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    outline: none;
+    cursor: pointer;
+    background-color: var(--sp-widget-bg-color);
+    color: var(--sp-widget-text-color);
+    border: 0;
+    padding: 8px 10px;
+    font-size: 12px;
+    border-radius: 6px;
+    min-width: 70px;
+    max-width: 70px;
+    background-image: var(--select-background-image);
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    transition: border-color 0.15s ease;
+}
+
 .stepWrapper .stepContent .priceEnter span {
     font-size: 40px;
     line-height: 1.2;

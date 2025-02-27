@@ -641,6 +641,7 @@ export class WalletStep extends LitElement {
                         .buttonDisabled=${this.buttonDisabled || this.creatingTransaction}
                         .buttonText=${ this.i18n?.t('buttons.confirm') }
                         .products=${this.invoiceProducts}
+                        .invoice=${this.invoice}
                         @footerButtonClick=${this.dispatchNextStep}
                 ></main-footer>
             </div>

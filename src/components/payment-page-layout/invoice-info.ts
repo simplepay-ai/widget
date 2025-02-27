@@ -251,7 +251,7 @@ export class InvoiceInfo extends LitElement {
 
                         <div class="totalWrapper">
                             <p>${this.i18n?.t('invoiceInfo.amountTotal')}</p>
-                            <p>$${this.invoice?.total}</p>
+                            <p>${this.invoice?.total} <span>${this.invoice?.currency.symbol}</span></p>
                         </div>
 
                         ${
@@ -259,7 +259,7 @@ export class InvoiceInfo extends LitElement {
                                         ? html`
                                             <div class="leftWrapper">
                                                 <p>${this.i18n?.t('invoiceInfo.amountLeft')}</p>
-                                                <p>$${parseFloat(this.leftAmount.toString()).toFixed(2)}</p>
+                                                <p>${parseFloat(this.leftAmount.toString()).toFixed(2)} <span>${this.invoice?.currency.symbol}</span></p>
                                             </div>
                                         ` : ''
                         }
@@ -320,12 +320,10 @@ export class InvoiceInfo extends LitElement {
 
                                                                 <div class="priceWrapper">
                                                                     <p class="total">
-                                                                            $${parseFloat(totalPrice.toString()).toFixed(2)}
-                                                                        ${this.i18n?.t('invoiceInfo.productTotal')}
+                                                                            ${parseFloat(totalPrice.toString()).toFixed(2)} ${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].currency) ? item.product.prices[0].currency.symbol : ''} ${this.i18n?.t('invoiceInfo.productTotal')}
                                                                     </p>
                                                                     <p class="price">
-                                                                            $${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].price) ? item.product.prices[0].price : ''}
-                                                                        ${this.i18n?.t('invoiceInfo.productEach')}
+                                                                            ${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].price) ? item.product.prices[0].price : ''} ${(item.product.prices && item.product.prices.length > 0 && item.product.prices[0].currency) ? item.product.prices[0].currency.symbol : ''} ${this.i18n?.t('invoiceInfo.productEach')}
                                                                     </p>
                                                                 </div>
 

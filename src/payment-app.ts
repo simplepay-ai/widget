@@ -4,7 +4,7 @@ import {
     HttpError,
     Invoice, InvoiceCreateErrors, InvoiceEventType,
     Network, Product, Transaction, TransactionCreateErrors, TransactionEventType,
-    ValidationError, WsClient, TransactionStatus, UserProfile
+    ValidationError, WsClient, TransactionStatus, UserProfile, Currency
 } from '@simplepay-ai/api-client';
 import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
@@ -257,6 +257,12 @@ export class PaymentApp extends LitElement {
     @property({attribute: false, type: Object})
     i18n: I18n | null = null;
 
+    @property({attribute: false, type: Object})
+    selectedCurrency: Currency | null = null;
+
+    @property({attribute: false, type: Array})
+    currencies: Currency[] = [];
+
     constructor() {
         super();
 
@@ -380,112 +386,124 @@ export class PaymentApp extends LitElement {
 
             if (this.transactionId) {
                 this.onlyTransaction = true;
-                this.getTransaction(this.transactionId).then((data) => {
 
-                    if (data === 'error') {
-                        this.errorTitle = this.i18n?.t('errors.fetchTransactionFailed.title') || ''
-                        this.errorText = this.i18n?.t('errors.fetchTransactionFailed.text') || ''
-                        this.goToWidgetStep('errorStep');
-                        this.goToPaymentPageStep('errorStep')
-                        this.dispatchErrorEvent('Fetch Transaction Error', 'Failed to retrieve transaction data. Please try again later.');
-                        return;
-                    }
+                const transactionResult = await this.getTransaction(this.transactionId);
+                if (transactionResult === 'error') {
+                    this.errorTitle = this.i18n?.t('errors.fetchTransactionFailed.title') || ''
+                    this.errorText = this.i18n?.t('errors.fetchTransactionFailed.text') || ''
+                    this.goToWidgetStep('errorStep');
+                    this.goToPaymentPageStep('errorStep')
+                    this.dispatchErrorEvent('Fetch Transaction Error', 'Failed to retrieve transaction data. Please try again later.');
+                    return;
+                }
 
-                    if (this.transaction) {
-                        this.getInvoice(this.transaction?.invoiceId || '').then(async (data) => {
+                const invoiceResult = await this.getInvoice(this.transaction?.invoiceId || '');
+                if (invoiceResult === 'error') {
+                    this.errorTitle = this.i18n?.t('errors.fetchInvoiceFailed.title') || ''
+                    this.errorText = this.i18n?.t('errors.fetchInvoiceFailed.text') || ''
+                    this.goToWidgetStep('errorStep');
+                    this.goToPaymentPageStep('errorStep')
+                    this.dispatchErrorEvent('Fetch Invoice Error', 'Failed to retrieve invoice data. Please try again later.');
+                    return;
+                }
 
-                            if (data === 'error') {
-                                this.errorTitle = this.i18n?.t('errors.fetchInvoiceFailed.title') || ''
-                                this.errorText = this.i18n?.t('errors.fetchInvoiceFailed.text') || ''
-                                this.goToWidgetStep('errorStep');
-                                this.goToPaymentPageStep('errorStep')
-                                this.dispatchErrorEvent('Fetch Invoice Error', 'Failed to retrieve invoice data. Please try again later.');
-                                return;
-                            }
+                const tokensResult = await this.getTokens(this.invoice?.app?.id || '');
+                if(tokensResult === 'error'){
+                    console.log(1)
+                    this.errorTitle = this.i18n?.t('errors.fetchTokensFailed.title') || ''
+                    this.errorText = this.i18n?.t('errors.fetchTokensFailed.text') || ''
+                    this.goToWidgetStep('errorStep');
+                    this.goToPaymentPageStep('errorStep')
+                    this.dispatchErrorEvent('Fetch Tokens Error', 'Failed to retrieve token data. Please try again later.');
+                    return;
+                }
+                this.tokens = tokensResult
 
-                            this.tokens = await this.getTokens(this.invoice?.app?.id || '')
+                this.getInvoiceTransactions(this.invoice?.id || '').then(() => {
+                    this.subscribeInvoice(this.invoice?.id || '')
 
-                            this.getInvoiceTransactions(this.invoice?.id || '').then(() => {
-                                this.subscribeInvoice(this.invoice?.id || '')
-
-                                if (this.isExperimentalMode) {
-                                    this.checkUser();
-                                }
-                            });
-                        })
+                    if (this.isExperimentalMode) {
+                        this.checkUser();
                     }
                 });
+
                 return;
             } else {
 
-                this.getInvoice(this.invoiceId).then(async (data) => {
+                const invoiceResult = await this.getInvoice(this.invoiceId);
+                if (invoiceResult === 'error') {
+                    this.errorTitle = this.i18n?.t('errors.fetchInvoiceFailed.title') || ''
+                    this.errorText = this.i18n?.t('errors.fetchInvoiceFailed.text') || ''
+                    this.goToWidgetStep('errorStep');
+                    this.goToPaymentPageStep('errorStep')
+                    this.dispatchErrorEvent('Fetch Invoice Error', 'Failed to retrieve invoice data. Please try again later.');
+                    return;
+                }
 
-                    if (data === 'error') {
-                        this.errorTitle = this.i18n?.t('errors.fetchInvoiceFailed.title') || ''
-                        this.errorText = this.i18n?.t('errors.fetchInvoiceFailed.text') || ''
+                const tokensResult = await this.getTokens(this.invoice?.app?.id || '');
+                if(tokensResult === 'error'){
+                    this.errorTitle = this.i18n?.t('errors.fetchTokensFailed.title') || ''
+                    this.errorText = this.i18n?.t('errors.fetchTokensFailed.text') || ''
+                    this.goToWidgetStep('errorStep');
+                    this.goToPaymentPageStep('errorStep')
+                    this.dispatchErrorEvent('Fetch Tokens Error', 'Failed to retrieve token data. Please try again later.');
+                    return;
+                }
+                this.tokens = tokensResult;
+                if (this.tokens && this.tokens.length > 0) {
+
+                    const defaultToken = this.tokens?.find((item: Cryptocurrency) => item.symbol === this.tokenSymbol && item);
+                    let defaultNetwork: Network | undefined = undefined;
+
+                    if (defaultToken && defaultToken.networks && defaultToken.networks?.length > 0) {
+                        const networks: Network[] = defaultToken.networks;
+                        defaultNetwork = networks.find((item: Network) => item.symbol === this.networkSymbol);
+                    }
+
+                    if ((!defaultToken && this.tokenSymbol !== '') || (!defaultNetwork && this.networkSymbol !== '')) {
+
+                        if (!defaultToken) {
+                            this.errorTitle = this.i18n?.t('errors.tokenNameInvalid.title') || ''
+                            this.errorText = this.i18n?.t('errors.tokenNameInvalid.text') || ''
+                        }
+
+                        if (!defaultNetwork) {
+                            this.errorTitle = this.i18n?.t('errors.networkNameInvalid.title') || ''
+                            this.errorText = this.i18n?.t('errors.networkNameInvalid.text') || ''
+                        }
+
+                        if (!defaultNetwork && !defaultToken) {
+                            this.errorTitle = this.i18n?.t('errors.cryptocurrencyInvalid.title') || ''
+                            this.errorText = this.i18n?.t('errors.cryptocurrencyInvalid.text') || ''
+                        }
+
                         this.goToWidgetStep('errorStep');
                         this.goToPaymentPageStep('errorStep')
-                        this.dispatchErrorEvent('Fetch Invoice Error', 'Failed to retrieve invoice data. Please try again later.');
+
                         return;
                     }
 
-                    this.tokens = await this.getTokens(this.invoice?.app?.id || '')
-
-                    if (this.tokens && this.tokens.length > 0) {
-
-                        const defaultToken = this.tokens?.find((item: Cryptocurrency) => item.symbol === this.tokenSymbol && item);
-                        let defaultNetwork: Network | undefined = undefined;
-
-                        if (defaultToken && defaultToken.networks && defaultToken.networks?.length > 0) {
-                            const networks: Network[] = defaultToken.networks;
-                            defaultNetwork = networks.find((item: Network) => item.symbol === this.networkSymbol);
-                        }
-
-                        if ((!defaultToken && this.tokenSymbol !== '') || (!defaultNetwork && this.networkSymbol !== '')) {
-
-                            if (!defaultToken) {
-                                this.errorTitle = this.i18n?.t('errors.tokenNameInvalid.title') || ''
-                                this.errorText = this.i18n?.t('errors.tokenNameInvalid.text') || ''
-                            }
-
-                            if (!defaultNetwork) {
-                                this.errorTitle = this.i18n?.t('errors.networkNameInvalid.title') || ''
-                                this.errorText = this.i18n?.t('errors.networkNameInvalid.text') || ''
-                            }
-
-                            if (!defaultNetwork && !defaultToken) {
-                                this.errorTitle = this.i18n?.t('errors.cryptocurrencyInvalid.title') || ''
-                                this.errorText = this.i18n?.t('errors.cryptocurrencyInvalid.text') || ''
-                            }
-
-                            this.goToWidgetStep('errorStep');
-                            this.goToPaymentPageStep('errorStep')
-
-                            return;
-                        }
-
-                        if (defaultToken && defaultNetwork) {
-                            this.selectedToken = defaultToken;
-                            this.selectedNetwork = defaultNetwork;
-                            this.tokenAvailable = true;
-                        }
-
+                    if (defaultToken && defaultNetwork) {
+                        this.selectedToken = defaultToken;
+                        this.selectedNetwork = defaultNetwork;
+                        this.tokenAvailable = true;
                     }
-                }).then(() => {
-                    if (this.invoice) {
-                        this.getInvoiceTransactions(this.invoiceId).then(() => {
-                            this.subscribeInvoice(this.invoiceId).then(() => {
-                                this.goToWidgetStep('invoiceStep');
-                                this.goToPaymentPageStep('invoiceStep')
 
-                                if (this.isExperimentalMode) {
-                                    this.checkUser();
-                                }
+                }
 
-                            })
-                        });
-                    }
-                });
+                if(this.invoice){
+                    this.getInvoiceTransactions(this.invoiceId).then(() => {
+                        this.subscribeInvoice(this.invoiceId).then(() => {
+                            this.goToWidgetStep('invoiceStep');
+                            this.goToPaymentPageStep('invoiceStep')
+
+                            if (this.isExperimentalMode) {
+                                this.checkUser();
+                            }
+
+                        })
+                    });
+                }
 
                 return;
             }
@@ -531,6 +549,21 @@ export class PaymentApp extends LitElement {
             this.goToPaymentPageStep('errorStep')
             this.dispatchErrorEvent('Fetch Products Error', 'Failed to retrieve app products data. Please try again later.');
             return;
+        }
+
+        const currencies = await this.getCurrencies();
+        if (currencies === 'error') {
+            this.errorTitle = this.i18n?.t('errors.fetchCurrenciesFailed.title') || ''
+            this.errorText = this.i18n?.t('errors.fetchCurrenciesFailed.text') || ''
+            this.goToWidgetStep('errorStep');
+            this.goToPaymentPageStep('errorStep')
+            this.dispatchErrorEvent('Fetch Currencies Error', 'Failed to retrieve currencies data. Please try again later.');
+            return;
+        }
+
+        this.currencies = currencies;
+        if(currencies.length > 0){
+            this.selectedCurrency = currencies[0];
         }
 
         this.appInfo = appInfoResult;
@@ -627,6 +660,8 @@ export class PaymentApp extends LitElement {
             ${this.appStep === 'priceStep'
                     ? html`
                         <price-step
+                                .currencies=${this.currencies}
+                                .selectedCurrency=${this.selectedCurrency}
                                 .merchantLogoUrl=${this.merchantLogoUrl}
                                 .i18n=${this.i18n}
                                 .appInfo=${this.appInfo}
@@ -634,6 +669,7 @@ export class PaymentApp extends LitElement {
                                 .creatingInvoice=${this.creatingInvoice}
                                 .paymentTypeSelected=${this.paymentTypeSelected}
                                 @updatePrice=${(event: CustomEvent) => (this.invoicePrice = event.detail.price)}
+                                @updateCurrency=${(event: CustomEvent) => (this.selectedCurrency = event.detail.currency)}
                                 @nextStep=${this.nextStep}
                                 @prevStep=${this.prevStep}
                         ></price-step>`
@@ -1478,13 +1514,8 @@ export class PaymentApp extends LitElement {
     }
 
     private async getTokens(appId: string) {
-
         if (!appId) {
-            this.errorTitle = this.i18n?.t('errors.fetchTokensFailed.title') || ''
-            this.errorText = this.i18n?.t('errors.fetchTokensFailed.text') || ''
-            this.goToWidgetStep('errorStep');
-            this.goToPaymentPageStep('errorStep')
-            this.dispatchErrorEvent('Fetch Tokens Error', 'Failed to retrieve token data. Please try again later.');
+            return 'error';
         }
 
         try {
@@ -1496,13 +1527,17 @@ export class PaymentApp extends LitElement {
 
             return result;
         } catch (error) {
-            this.errorTitle = this.i18n?.t('errors.fetchTokensFailed.title') || ''
-            this.errorText = this.i18n?.t('errors.fetchTokensFailed.text') || ''
-            this.goToWidgetStep('errorStep');
-            this.goToPaymentPageStep('errorStep')
-            this.dispatchErrorEvent('Fetch Tokens Error', 'Failed to retrieve token data. Please try again later.');
+            return 'error';
         }
 
+    }
+
+    private async getCurrencies() {
+        try {
+            return await this.API.currency.list();
+        } catch (error) {
+            return 'error';
+        }
     }
 
     private async getProducts() {
@@ -1552,21 +1587,24 @@ export class PaymentApp extends LitElement {
             appId: this.appId,
             type: 'payment',
             clientId: this.clientId,
-            currency: 'USD',
         }
 
         switch (this.invoiceType) {
             case "request":
                 invoiceParams['total'] = Number(this.invoicePrice);
+                invoiceParams['currency'] = this.selectedCurrency?.symbol || 'USD';
                 break;
             case "item":
+                const product = this.appProducts.find((item) => item.id === this.invoiceProductId);
                 invoiceParams['products'] = [{
                     id: this.invoiceProductId,
                     count: 1
                 }]
+                invoiceParams['currency'] = (product) ? product.prices[0].currency.symbol : 'USD';
                 break;
             case "cart":
                 invoiceParams['products'] = this.invoiceCart;
+                invoiceParams['currency'] = 'USD';
                 break;
             default:
                 return;

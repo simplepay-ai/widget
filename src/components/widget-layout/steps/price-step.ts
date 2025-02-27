@@ -1,6 +1,6 @@
 import {html, LitElement, property, unsafeCSS} from 'lit-element';
 import {customElement} from 'lit/decorators.js';
-import {App} from "@simplepay-ai/api-client";
+import {App, Currency} from "@simplepay-ai/api-client";
 //@ts-ignore
 import style from "../../../styles/widget-styles/price-step.css?inline";
 import {I18n} from "i18n-js";
@@ -12,6 +12,12 @@ export class PriceStep extends LitElement {
 
     @property({type: Object})
     i18n: I18n | null = null;
+
+    @property({type: Array})
+    currencies: Currency[] = [];
+
+    @property({type: Object})
+    selectedCurrency: Currency | null = null;
 
     @property({type: String})
     merchantLogoUrl: string = '';
@@ -96,7 +102,7 @@ export class PriceStep extends LitElement {
                                 <div class="topSection">
 
                                     <p>${this.i18n?.t('enterPriceStep.title')}:</p>
-                                    
+
                                     ${
                                             (this.paymentTypeSelected)
                                                     ? html`
@@ -106,7 +112,7 @@ export class PriceStep extends LitElement {
                                                     `
                                                     : ''
                                     }
-                                    
+
                                 </div>
                                 <div class="merchantInfo">
 
@@ -147,7 +153,40 @@ export class PriceStep extends LitElement {
                                     <p>
                                         ${this.priceValue} <span class="line"></span>
                                     </p>
-                                    <span>USD</span>
+
+                                    <select id="currency"
+                                            class=${`
+                                            custom-select
+                                            `}
+                                            @change=${(event: CustomEvent | any) => {
+                                                const currency = this.currencies.find((item) => item.id === event.target.value)
+                                                if(currency){
+                                                    this.dispatchEvent(
+                                                            new CustomEvent('updateCurrency', {
+                                                                detail: {
+                                                                    currency
+                                                                },
+                                                                bubbles: true,
+                                                                composed: true
+                                                            })
+                                                    );
+                                                }
+                                            }}
+                                            .value=${this.selectedCurrency?.id}
+                                    >
+                                        ${
+                                                this.currencies &&
+                                                this.currencies.map((item) => {
+                                                    return html`
+                                                        <option value=${item.id}>
+                                                            ${item.symbol}
+                                                        </option>
+                                                    `
+                                                })
+                                        }
+                                    </select>
+
+<!--                                    <span>USD</span>-->
                                 </div>
                             </div>
 
@@ -157,7 +196,7 @@ export class PriceStep extends LitElement {
 
                                     ${
                                             (!this.paymentTypeSelected)
-                                            ? html`
+                                                    ? html`
                                                         <button class="secondaryButton"
                                                                 @click=${() => this.dispatchPrevStep()}
                                                         >

@@ -238,6 +238,10 @@
             "title": "Erreur de récupération des produits",
             "text": "Échec de la récupération des données des produits de l'application. Veuillez réessayer ultérieurement."
         },
+        "fetchCurrenciesFailed": {
+            "title": "Erreur de recherche de devises",
+            "text": "Échec de la récupération des données sur les devises. Veuillez réessayer plus tard."
+        },
         "fetchTokensFailed": {
             "title": "Erreur de récupération des jetons",
             "text": "Échec de la récupération des données du jeton. Veuillez réessayer ultérieurement."

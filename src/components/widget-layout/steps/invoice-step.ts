@@ -433,10 +433,9 @@ export class InvoiceStep extends LitElement {
                             }
 
                             <p class="title">${this.i18n?.t('invoiceStep.totalAmount')}</p>
-                            <p class="price">${`$${this.invoice?.total}`}</p>
+                            <p class="price">${`${this.invoice?.total} ${this.invoice?.currency.symbol}`}</p>
 
-                            <p class="left">${this.i18n?.t('invoiceStep.leftAmount')}:
-                                    $${parseFloat(this.leftAmount.toString()).toFixed(2)}</p>
+                            <p class="left">${this.i18n?.t('invoiceStep.leftAmount')}: ${parseFloat(this.leftAmount.toString()).toFixed(2)} ${this.invoice?.currency.symbol}</p>
                         </div>
 
                         ${
@@ -723,6 +722,10 @@ export class InvoiceStep extends LitElement {
 
                                 <div class="networkSelectWrapper">
                                     <select id="networkFilter"
+                                            class=${`
+                                            custom-select
+                                            ${ (this.networkSearch === '') && 'defaultValue' }
+                                            `}
                                             @change=${(event: CustomEvent | any) => {
                                                 this.networkSearch = event.target.value;
                                             }}

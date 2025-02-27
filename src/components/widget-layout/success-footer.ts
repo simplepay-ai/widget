@@ -74,7 +74,7 @@ export class SuccessFooter extends LitElement {
 
                                         <div class="price">
                                             <p>${this.i18n?.t('footer.leftPay')}:</p>
-                                            <p>${this.leftPaid ? `${this.leftPaid} USD` : '0 USD'}</p>
+                                            <p>${this.leftPaid ? `${this.leftPaid} ${this.invoice.currency.symbol}` : `0 ${this.invoice.currency.symbol}`}</p>
                                         </div>
                                     </div>
 

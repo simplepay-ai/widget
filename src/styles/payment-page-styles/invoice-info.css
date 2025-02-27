@@ -152,6 +152,21 @@
     align-items: flex-start;
 }
 
+.invoiceInfoWrapper .mainInfo .priceInfo p span{
+    font-weight: 800;
+    line-height: 1.2;
+    font-size: 18px;
+    margin-top: 4px;
+}
+
+.invoiceInfoWrapper .mainInfo .priceInfo .totalWrapper p span{
+    color: var(--sp-widget-text-color);
+}
+
+.invoiceInfoWrapper .mainInfo .priceInfo .leftWrapper p span{
+    color: var(--sp-widget-secondary-text-color);
+}
+
 .invoiceInfoWrapper .mainInfo .priceInfo .leftWrapper{
     text-align: right;
 }
